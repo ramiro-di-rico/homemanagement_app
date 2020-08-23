@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/services/authentication.service.dart';
+import 'package:injector/injector.dart';
 import '../main/home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +16,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool passwordFieldEnabled = false;
   bool enableButton = false;
   bool isEmailValid = false;
+  Injector injector = Injector.appInstance;
+  AuthenticationService authenticationService;
+
+  void initState() {
+    super.initState();
+    this.authenticationService = injector.getDependency<AuthenticationService>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void onButtonPressed(){
-    print(this.email);
-    print(this.password);
+    this.authenticationService.authenticate(this.email, this.password);
 
-    Navigator.pushNamed(context, HomeScreen.id);
+    Navigator.popAndPushNamed(context, HomeScreen.id);
   }
 
   Widget createEmailTextField() {
