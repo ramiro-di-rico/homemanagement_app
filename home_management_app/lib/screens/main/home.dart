@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'widgets/test.dart';
+import 'package:home_management_app/screens/main/widgets/outcome.widget.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String id = 'home_screen';
@@ -13,8 +13,14 @@ class HomeScreen extends StatelessWidget {
       body: Center(
           child: Column(
             children: [
-              Text('Home'),
-              TestWidget()
+              Row(
+                children:[
+                  Expanded(
+                    child: OutcomeWidget()),
+                  Expanded(
+                    child: OutcomeWidget()),
+                ]
+              )
             ],
           )),
     );

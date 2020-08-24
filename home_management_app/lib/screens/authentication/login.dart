@@ -72,8 +72,28 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void onButtonPressed(){
-    this.authenticationService.authenticate(this.email, this.password);
+  Future<void> onButtonPressed() async{
+    var result = await this.authenticationService.authenticate(this.email, this.password);
+
+    if(!result){
+      showDialog(
+        context: this.context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Authentication error.'),
+            actions: [
+              FlatButton(
+                child: Text('ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+      return;
+    }
 
     Navigator.popAndPushNamed(context, HomeScreen.id);
   }
