@@ -22,6 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     this.authenticationService = injector.getDependency<AuthenticationService>();
+    if(authenticationService.isAuthenticated()){
+      email = authenticationService.user.email;
+      password = authenticationService.user.password;
+    }
   }
 
   @override
@@ -58,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void onEmailChanged(String character){
     setState(() {
-      this.email = character;
+      this.email = character.trim();
       this.isEmailValid = this.email.contains('@');
       this.enableButton = this.email.length > 0;
       this.passwordFieldEnabled = this.email.length > 0 && this.isEmailValid;      

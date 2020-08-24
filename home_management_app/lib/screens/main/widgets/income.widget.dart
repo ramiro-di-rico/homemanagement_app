@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/models/overall.dart';
 import 'package:home_management_app/services/metrics.service.dart';
 import 'package:injector/injector.dart';
 
-class OutcomeWidget extends StatefulWidget {
+class IncomeWidget extends StatefulWidget {
   @override
-  _OutcomeWidgetState createState() => _OutcomeWidgetState();
+  _IncomeWidgetState createState() => _IncomeWidgetState();
 }
 
-class _OutcomeWidgetState extends State<OutcomeWidget> {
+class _IncomeWidgetState extends State<IncomeWidget> {
   Injector injector = Injector.appInstance;
   MetricService metricService;
-  int outcome;
-  Color trendColor = Colors.white;
+  int income;
   IconData icon = Icons.trending_flat;
+  Color trendColor = Colors.white;
 
   @override
   void initState() {
     super.initState();
-    fetchOutcome();
+    fetchIncome();
   }
 
   @override
@@ -34,25 +35,25 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Outcome'),
-                Text(outcome.toString()),
-                Icon(this.icon,
-                  color: trendColor,
+                Text('Income'),
+                Text(income.toString()),
+                Icon(
+                    this.icon,
+                color: trendColor,
                 )
               ],
             )
           ]),
-        ),
-    );
+        ));
   }
 
-  void fetchOutcome() async {
+  void fetchIncome() async {
     this.metricService = injector.getDependency<MetricService>();
     var result = await this.metricService.getOverall();
     setState(() {
-      this.outcome = result.outcomeTransactions;
-      this.icon = this.outcome > 0 ? Icons.trending_up : Icons.trending_down;
-      this.trendColor = this.outcome > 0 ? Colors.green[400] : Colors.red[400];
+      this.income = result.incomeTransactions;
+      this.icon = this.income > 0 ? Icons.trending_up : Icons.trending_down;
+      this.trendColor = this.income > 0 ? Colors.green[400] : Colors.red[400];
     });
   }
 }
