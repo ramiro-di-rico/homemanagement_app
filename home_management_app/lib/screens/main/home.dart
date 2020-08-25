@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/screens/authentication/login.dart';
 import 'package:home_management_app/screens/main/settings.dart';
+import 'package:home_management_app/services/authentication.service.dart';
+import 'package:injector/injector.dart';
 import 'account.list.dart';
 import 'dashboard.dart';
 
@@ -11,27 +14,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const String id = 'home_screen';
-
   List<Widget> children = [
     Dashboard(),
     AccountListScreen(),
     SettingsScreen(),
   ];
+  List<Widget> floatingButtons = [];
   int bottomBarNavigationIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    this.addFloatingActions();
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home')
-      ),
+      appBar: AppBar(title: Text('Home')),
       body: children[bottomBarNavigationIndex],
+      floatingActionButton: floatingButtons[bottomBarNavigationIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: bottomBarNavigationIndex,
         backgroundColor: ThemeData.dark().bottomAppBarColor,
         selectedItemColor: Colors.pinkAccent,
-        onTap: (index){
+        onTap: (index) {
           setState(() {
             this.bottomBarNavigationIndex = index;
           });
@@ -46,11 +49,28 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.account_balance_wallet),
           ),
           BottomNavigationBarItem(
-            title: Text('Settings'),
-              icon: Icon(Icons.settings)
-          )
+              title: Text('Settings'), icon: Icon(Icons.settings))
         ],
       ),
     );
+  }
+
+  void addFloatingActions() {
+    this.floatingButtons.addAll([
+      null,
+      FloatingActionButton(
+        child: Icon(Icons.plus_one),
+        onPressed: () {},
+      ),
+      FloatingActionButton(
+        child: Icon(Icons.exit_to_app),
+        onPressed: () {
+          var authenticationService =
+              Injector.appInstance.getDependency<AuthenticationService>();
+          authenticationService.logout();
+          Navigator.popAndPushNamed(this.context, LoginScreen.id);
+        },
+      )
+    ]);
   }
 }

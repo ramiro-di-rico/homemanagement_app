@@ -51,4 +51,8 @@ class AuthenticationService{
         return false;
       }
   }
+
+  void logout(){
+    this.user = null;
+  }
 }
