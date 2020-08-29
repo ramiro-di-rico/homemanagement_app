@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/custom/main-card.dart';
 
 class SyncOptionsWidget extends StatefulWidget {
   SyncOptionsWidget({Key key}) : super(key: key);
@@ -18,12 +19,7 @@ class _SyncOptionsWidgetState extends State<SyncOptionsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: ThemeData.dark().bottomAppBarColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return MainCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

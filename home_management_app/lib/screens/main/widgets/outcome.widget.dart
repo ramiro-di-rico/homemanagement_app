@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/services/metrics.service.dart';
 import 'package:injector/injector.dart';
 
@@ -22,12 +23,7 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: ThemeData.dark().bottomAppBarColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
+    return MainCard(
         child: Padding(
           padding: EdgeInsets.all(10),
           child: Column(children: [

@@ -31,12 +31,6 @@ class _DashboardState extends State<Dashboard> {
               child: ChartSampleWidget(),
             )
           ),
-          /*Expanded(
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: LineChartSample2(),
-            ),
-          ),*/
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/custom/main-card.dart';
 
 class TwoFactorAuthenticationWidget extends StatefulWidget {
   TwoFactorAuthenticationWidget({Key key}) : super(key: key);
@@ -19,12 +20,7 @@ class _TwoFactorAuthenticationWidgetState extends State<TwoFactorAuthenticationW
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: ThemeData.dark().bottomAppBarColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return MainCard(      
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

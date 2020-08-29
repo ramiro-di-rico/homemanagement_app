@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: floatingButtons[bottomBarNavigationIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: bottomBarNavigationIndex,
-        backgroundColor: ThemeData.dark().bottomAppBarColor,
+        backgroundColor: Theme.of(context).bottomAppBarColor,
         selectedItemColor: Colors.pinkAccent,
         onTap: (index) {
           setState(() {

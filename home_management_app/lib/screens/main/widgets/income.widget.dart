@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/models/overall.dart';
+import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/services/metrics.service.dart';
 import 'package:injector/injector.dart';
 
@@ -23,28 +23,24 @@ class _IncomeWidgetState extends State<IncomeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: ThemeData.dark().bottomAppBarColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Column(children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Income'),
-                Text(income.toString()),
-                Icon(
-                    this.icon,
+    return MainCard(
+      child: Padding(
+        padding: EdgeInsets.all(10),
+        child: Column(children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Income'),
+              Text(income.toString()),
+              Icon(
+                this.icon,
                 color: trendColor,
-                )
-              ],
-            )
-          ]),
-        ));
+              )
+            ],
+          )
+        ]),
+      ),
+    );
   }
 
   void fetchIncome() async {

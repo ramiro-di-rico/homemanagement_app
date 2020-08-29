@@ -3,6 +3,7 @@ import 'package:home_management_app/services/authentication.service.dart';
 import 'package:injector/injector.dart';
 import 'screens/main/home.dart';
 import 'screens/authentication/login.dart';
+import 'services/account.service.dart';
 import 'services/caching.dart';
 import 'services/cryptography.service.dart';
 import 'services/metrics.service.dart';
@@ -28,12 +29,22 @@ void main() {
       authenticationService: authenticationService,
       caching: caching);
   });
+
+  injector.registerDependency((injector) {
+    var authenticationService = injector.getDependency<AuthenticationService>();
+    var caching = injector.getDependency<Caching>();
+    return AccountService(
+      authenticationService: authenticationService,
+      caching: caching);
+  });
   
   runApp(MyApp());
 }
 
 
 class MyApp extends StatelessWidget {
+
+  
   @override
   Widget build(BuildContext context) {
     var authenticationService = Injector.appInstance.getDependency<AuthenticationService>();
@@ -43,7 +54,9 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData.dark(),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
       home: LoginScreen(),
       routes: {
         LoginScreen.id: (context) => LoginScreen(),

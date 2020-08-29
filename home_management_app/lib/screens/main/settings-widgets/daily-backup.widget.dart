@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/custom/main-card.dart';
 
 class DailyBackupWdiget extends StatefulWidget {
   @override
@@ -16,12 +17,7 @@ class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: ThemeData.dark().bottomAppBarColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
+    return MainCard(
       child: Row(             
         mainAxisAlignment: MainAxisAlignment.start,   
         children: [
