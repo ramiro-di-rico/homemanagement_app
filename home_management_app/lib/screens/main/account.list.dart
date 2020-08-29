@@ -16,47 +16,50 @@ class _AccountListScreenState extends State<AccountListScreen> {
   @override
   void initState() {
     super.initState();
-    loadAccounts().whenComplete(() => null);
+    loadAccounts();
   }
   
-  Future loadAccounts() async {
+  void loadAccounts() async {
     var ac = await accountService.getAccounts();
     setState(() {
       this.accounts.clear();
       this.accounts.addAll(ac);
-      print(this.accounts.first.name);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-        itemCount: accounts.length,
-        itemBuilder: (context, index) {
-          final item = accounts[index];
+    return ListView.builder(
+      itemCount: accounts.length,
+      itemBuilder: (context, index) {
+        final item = accounts[index];
 
-          return Dismissible(
-            key: Key(item.name),
-            onDismissed: (direction) {
-              setState(() {
-                accounts.removeAt(index);
-              });
-
-              Scaffold.of(context)
-                  .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
-            },
-            child: ListTile(
-              title: Text(
-                item.name,
-                style: TextStyle(
-                  color: Colors.white
-                  )
-                )
+        return Dismissible(
+          key: Key(item.name),
+          direction: DismissDirection.endToStart,
+          background: Container(
+          color: Colors.blueAccent,
+          ),
+          secondaryBackground: Container(
+            color: Colors.redAccent,
+          ),
+          onDismissed: (direction) {
+            setState(() {
+              accounts.removeAt(index);
+            });
+            Scaffold.of(context)
+                .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
+          },
+          child: ListTile(
+            title: Text(
+              item.name,
               ),
-          );
-        },
-      ),
+            onTap: (){
+              print(item.name + 'was tapped');
+            },
+            ),
+        );
+      },
     );
   }
 }
