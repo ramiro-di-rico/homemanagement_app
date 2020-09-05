@@ -16,13 +16,15 @@ class _LoginScreenState extends State<LoginScreen> {
   bool passwordFieldEnabled = false;
   bool enableButton = false;
   bool isEmailValid = false;
+  Function buttonPressed = null;
   Injector injector = Injector.appInstance;
   AuthenticationService authenticationService;
 
   void initState() {
     super.initState();
-    this.authenticationService = injector.getDependency<AuthenticationService>();
-    if(authenticationService.isAuthenticated()){
+    this.authenticationService =
+        injector.getDependency<AuthenticationService>();
+    if (authenticationService.isAuthenticated()) {
       email = authenticationService.user.email;
       password = authenticationService.user.password;
     }
@@ -41,17 +43,21 @@ class _LoginScreenState extends State<LoginScreen> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: createEmailTextField(),
+                  child: createTextField('Email', true, false, onEmailChanged),
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: createPasswordTextField(),
+                  child: createTextField('Password', this.passwordFieldEnabled, true, onPasswordChanged),
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),                  
-                  child: IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: onButtonPressed,
+                  child: FlatButton(
+                    color: Colors.blueAccent,
+                    disabledColor: Colors.grey,
+                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    shape: RoundedRectangleBorder(),
+                    child: Icon(Icons.send, color: Colors.white),
+                    onPressed: buttonPressed,                    
                   ),
                 )
               ]),
@@ -60,72 +66,67 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void onEmailChanged(String character){
+  void onEmailChanged(String character) {
     setState(() {
       this.email = character.trim();
       this.isEmailValid = this.email.contains('@');
       this.enableButton = this.email.length > 0;
-      this.passwordFieldEnabled = this.email.length > 0 && this.isEmailValid;      
+      this.passwordFieldEnabled = this.email.length > 0 && this.isEmailValid;
     });
   }
 
-  void onPasswordChanged(String character){
+  void onPasswordChanged(String character) {
     setState(() {
       this.password = character;
-      this.enableButton = this.password.length > 0;      
+      this.enableButton = this.password.length > 0;
+
+      if(this.enableButton){
+        this.buttonPressed = onButtonPressed;
+      }
     });
   }
 
-  Future<void> onButtonPressed() async{
-    var result = await this.authenticationService.authenticate(this.email, this.password);
+  Future<void> onButtonPressed() async {
+    var result = await this
+        .authenticationService
+        .authenticate(this.email, this.password);
 
-    if(!result){
+    if (!result) {
       showDialog(
-        context: this.context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Authentication error.'),
-            actions: [
-              FlatButton(
-                child: Text('ok'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
+          context: this.context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Authentication error.'),
+              actions: [
+                FlatButton(
+                  child: Text('ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
       return;
     }
 
     Navigator.popAndPushNamed(context, HomeScreen.id);
   }
 
-  Widget createEmailTextField() {
+  Widget createTextField(
+      String label, bool enabled, bool obscureText, Function(String) onChanged) {
     return TextField(
       keyboardType: TextInputType.emailAddress,
-      onChanged: onEmailChanged,
+      onChanged: onChanged,
+      obscureText: obscureText,
+      enabled: enabled,
       textAlign: TextAlign.center,
       decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
-          labelText: 'Email'),
-    );
-  }
-
-  Widget createPasswordTextField() {
-    return TextField(
-      enabled: passwordFieldEnabled,
-      onChanged: onPasswordChanged,
-      obscureText: true,
-      textAlign: TextAlign.center,
-      decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-          ),
-          labelText: 'Password'),
+          labelText: label),
     );
   }
 }

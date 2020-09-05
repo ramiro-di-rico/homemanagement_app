@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/screens/accounts/add.acount.dart';
 import 'package:home_management_app/services/authentication.service.dart';
 import 'package:injector/injector.dart';
 import 'screens/main/home.dart';
 import 'screens/authentication/login.dart';
+import 'screens/transactions/transactions.list.dart';
 import 'services/account.service.dart';
 import 'services/caching.dart';
 import 'services/cryptography.service.dart';
@@ -42,9 +44,7 @@ void main() {
 }
 
 
-class MyApp extends StatelessWidget {
-
-  
+class MyApp extends StatelessWidget {  
   @override
   Widget build(BuildContext context) {
     var authenticationService = Injector.appInstance.getDependency<AuthenticationService>();
@@ -60,7 +60,9 @@ class MyApp extends StatelessWidget {
       home: LoginScreen(),
       routes: {
         LoginScreen.id: (context) => LoginScreen(),
-        HomeScreen.id: (context) => HomeScreen()
+        HomeScreen.id: (context) => HomeScreen(),
+        AddAccountScreen.id: (context) => AddAccountScreen(),
+        TransactionsListScreen.id: (context) => TransactionsListScreen(),
       },
       initialRoute: startingRoute,
     );

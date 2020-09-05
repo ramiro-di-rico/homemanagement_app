@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/account.dart';
+import 'package:home_management_app/screens/transactions/transactions.list.dart';
 import 'package:home_management_app/services/account.service.dart';
 import 'package:injector/injector.dart';
 
@@ -55,7 +56,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
               item.name,
               ),
             onTap: (){
-              print(item.name + 'was tapped');
+              Navigator.pushNamed(context, TransactionsListScreen.id, arguments: item);
             },
             ),
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/screens/accounts/add.acount.dart';
 import 'package:home_management_app/screens/authentication/login.dart';
 import 'package:home_management_app/screens/main/settings.dart';
 import 'package:home_management_app/services/authentication.service.dart';
@@ -20,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
     SettingsScreen(),
   ];
   List<Widget> floatingButtons = [];
+  List<Color> selectedItemsColor = [Colors.greenAccent, Colors.pinkAccent, Colors.blueAccent];
   int bottomBarNavigationIndex = 0;
 
   @override
@@ -33,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: bottomBarNavigationIndex,
         backgroundColor: Theme.of(context).bottomAppBarColor,
-        selectedItemColor: Colors.pinkAccent,
+        selectedItemColor: this.selectedItemsColor[bottomBarNavigationIndex],
         onTap: (index) {
           setState(() {
             this.bottomBarNavigationIndex = index;
@@ -57,20 +59,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void addFloatingActions() {
     this.floatingButtons.addAll([
-      null,
+      createLogoutButton(),
       FloatingActionButton(
-        child: Icon(Icons.plus_one),
-        onPressed: () {},
-      ),
-      FloatingActionButton(
-        child: Icon(Icons.exit_to_app),
+        child: Icon(Icons.add),
         onPressed: () {
-          var authenticationService =
-              Injector.appInstance.getDependency<AuthenticationService>();
-          authenticationService.logout();
-          Navigator.popAndPushNamed(this.context, LoginScreen.id);
+          Navigator.pushNamed(context, AddAccountScreen.id);
         },
-      )
+      ),
+      createLogoutButton(),
     ]);
+  }
+
+  Widget createLogoutButton() {
+    return FloatingActionButton(
+      child: Icon(Icons.exit_to_app),
+      onPressed: () {
+        var authenticationService =
+            Injector.appInstance.getDependency<AuthenticationService>();
+        authenticationService.logout();
+        Navigator.popAndPushNamed(this.context, LoginScreen.id);
+      },
+    );
   }
 }
