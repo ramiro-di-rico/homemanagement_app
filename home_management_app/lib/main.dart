@@ -54,8 +54,12 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData.light().copyWith(
+        toggleableActiveColor: Colors.pinkAccent
+      ),
+      darkTheme: ThemeData.dark().copyWith(
+        toggleableActiveColor: Colors.pinkAccent
+      ),
       themeMode: ThemeMode.system,
       home: LoginScreen(),
       routes: {

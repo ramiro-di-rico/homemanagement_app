@@ -16,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool passwordFieldEnabled = false;
   bool enableButton = false;
   bool isEmailValid = false;
+  bool hidePassword = true;
   Function buttonPressed = null;
   Injector injector = Injector.appInstance;
   AuthenticationService authenticationService;
@@ -43,21 +44,33 @@ class _LoginScreenState extends State<LoginScreen> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: createTextField('Email', true, false, onEmailChanged),
+                  child: createTextField(
+                      'Email', true, false, onEmailChanged, null, Icon(Icons.email)),
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: createTextField('Password', this.passwordFieldEnabled, true, onPasswordChanged),
+                  child: createTextField(
+                      'Password',
+                      this.passwordFieldEnabled,
+                      hidePassword,
+                      onPasswordChanged,
+                      FlatButton(
+                        shape: CircleBorder(),
+                        child: Icon(Icons.remove_red_eye),
+                        onPressed: changePasswordVisibility,
+                      ),
+                      Icon(Icons.vpn_key)
+                    ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(20),                  
+                  padding: EdgeInsets.all(20),
                   child: FlatButton(
                     color: Colors.blueAccent,
                     disabledColor: Colors.grey,
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
                     shape: RoundedRectangleBorder(),
                     child: Icon(Icons.send, color: Colors.white),
-                    onPressed: buttonPressed,                    
+                    onPressed: buttonPressed,
                   ),
                 )
               ]),
@@ -80,9 +93,15 @@ class _LoginScreenState extends State<LoginScreen> {
       this.password = character;
       this.enableButton = this.password.length > 0;
 
-      if(this.enableButton){
+      if (this.enableButton) {
         this.buttonPressed = onButtonPressed;
       }
+    });
+  }
+
+  void changePasswordVisibility(){
+    setState(() {
+      this.hidePassword = !this.hidePassword;
     });
   }
 
@@ -114,8 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
     Navigator.popAndPushNamed(context, HomeScreen.id);
   }
 
-  Widget createTextField(
-      String label, bool enabled, bool obscureText, Function(String) onChanged) {
+  Widget createTextField(String label, bool enabled, bool obscureText,
+      Function(String) onChanged, Widget suffixIcon, Widget prefixIcon) {
     return TextField(
       keyboardType: TextInputType.emailAddress,
       onChanged: onChanged,
@@ -126,6 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
+          suffixIcon: suffixIcon,
+          prefixIcon: prefixIcon,
           labelText: label),
     );
   }

@@ -24,7 +24,6 @@ class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
           Checkbox(
             value: dailyBackupEnabled, 
             onChanged: onEnableChanged,
-            activeColor: Colors.pinkAccent,
           ),
           Expanded(
             child: Text('Sync Options'),
