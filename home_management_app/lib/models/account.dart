@@ -14,13 +14,13 @@ class AccountModel{
       json['name'], 
       double.parse(json['balance'].toString()),
       json['measurable'],
-      json['accountType'] == 0 ? AccountType.Income : AccountType.Outcome, 
+      json['accountType'] == 0 ? AccountType.Cash : AccountType.BankAccount, 
       json['currencyId'], 
       json['userId']);
   }
 }
 
 enum AccountType{
-  Income,
-  Outcome
+  Cash,
+  BankAccount
 }

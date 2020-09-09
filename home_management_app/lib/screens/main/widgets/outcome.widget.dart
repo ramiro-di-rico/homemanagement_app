@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/services/metrics.service.dart';
-import 'package:injector/injector.dart';
 
 class OutcomeWidget extends StatefulWidget {
   @override
@@ -9,8 +9,7 @@ class OutcomeWidget extends StatefulWidget {
 }
 
 class _OutcomeWidgetState extends State<OutcomeWidget> {
-  Injector injector = Injector.appInstance;
-  MetricService metricService;
+  MetricService metricService = GetIt.instance<MetricService>();
   int outcome;
   Color trendColor = Colors.white;
   IconData icon = Icons.trending_flat;
@@ -43,7 +42,6 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
   }
 
   void fetchOutcome() async {
-    this.metricService = injector.getDependency<MetricService>();
     var result = await this.metricService.getOverall();
     setState(() {
       this.outcome = result.outcomeTransactions;

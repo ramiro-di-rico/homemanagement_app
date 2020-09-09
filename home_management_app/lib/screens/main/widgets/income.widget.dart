@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/services/metrics.service.dart';
-import 'package:injector/injector.dart';
 
 class IncomeWidget extends StatefulWidget {
   @override
@@ -9,8 +9,7 @@ class IncomeWidget extends StatefulWidget {
 }
 
 class _IncomeWidgetState extends State<IncomeWidget> {
-  Injector injector = Injector.appInstance;
-  MetricService metricService;
+  MetricService metricService = GetIt.instance<MetricService>();
   int income;
   IconData icon = Icons.trending_flat;
   Color trendColor = Colors.white;
@@ -44,7 +43,6 @@ class _IncomeWidgetState extends State<IncomeWidget> {
   }
 
   void fetchIncome() async {
-    this.metricService = injector.getDependency<MetricService>();
     var result = await this.metricService.getOverall();
     setState(() {
       this.income = result.incomeTransactions;

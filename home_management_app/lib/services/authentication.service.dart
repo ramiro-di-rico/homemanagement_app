@@ -13,8 +13,8 @@ class AuthenticationService{
   String authenticateApi = 'api/Authentication/MobileSignIn';
   UserModel user;
 
-  AuthenticationService({@required this.cryptographyService, @required this.userStore}){
-    init();
+  AuthenticationService({@required this.cryptographyService, this.userStore}){
+    //init();
   }
 
   init(){
@@ -45,7 +45,7 @@ class AuthenticationService{
 
       if(response.statusCode == 200){
         this.user = UserModel.fromJson(json.decode(response.body));
-        this.userStore.store(this.user);
+        //this.userStore.store(this.user);
         return true;
       }else{
         return false;

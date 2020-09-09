@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
+import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/screens/transactions/transactions.list.dart';
-import 'package:home_management_app/services/account.service.dart';
-import 'package:injector/injector.dart';
 
 class AccountListScreen extends StatefulWidget {
   @override
@@ -10,36 +10,40 @@ class AccountListScreen extends StatefulWidget {
 }
 
 class _AccountListScreenState extends State<AccountListScreen> {
-
-  AccountService accountService = Injector.appInstance.getDependency<AccountService>();
   List<AccountModel> accounts = List<AccountModel>();
+  AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
 
   @override
   void initState() {
     super.initState();
-    loadAccounts();
+    refreshAccounts();
+    accountsRepo.addListener(refreshAccounts);    
   }
-  
-  void loadAccounts() async {
-    var ac = await accountService.getAccounts();
+
+  @override
+  void dispose() { 
+    accountsRepo.removeListener(refreshAccounts);
+    super.dispose();
+  }
+
+  refreshAccounts(){
     setState(() {
-      this.accounts.clear();
-      this.accounts.addAll(ac);
+      this.accounts = accountsRepo.accounts;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: accounts.length,
+      itemCount: this.accounts.length,
       itemBuilder: (context, index) {
-        final item = accounts[index];
+        final item = this.accounts[index];
 
         return Dismissible(
           key: Key(item.name),
           direction: DismissDirection.endToStart,
           background: Container(
-          color: Colors.blueAccent,
+            color: Colors.blueAccent,
           ),
           secondaryBackground: Container(
             color: Colors.redAccent,
@@ -54,11 +58,12 @@ class _AccountListScreenState extends State<AccountListScreen> {
           child: ListTile(
             title: Text(
               item.name,
-              ),
-            onTap: (){
-              Navigator.pushNamed(context, TransactionsListScreen.id, arguments: item);
-            },
             ),
+            onTap: () {
+              Navigator.pushNamed(context, TransactionsListScreen.id,
+                  arguments: item);
+            },
+          ),
         );
       },
     );

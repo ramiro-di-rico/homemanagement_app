@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_management_app/services/metrics.service.dart';
-import 'package:injector/injector.dart';
 
 class TestWidget extends StatefulWidget {
   @override
@@ -8,7 +8,6 @@ class TestWidget extends StatefulWidget {
 }
 
 class _TestWidgetState extends State<TestWidget> {
-  Injector injector = Injector.appInstance;
   MetricService metricService;
 
   void initState() {
@@ -22,7 +21,7 @@ class _TestWidgetState extends State<TestWidget> {
   }
 
   Future getValues() async {
-    this.metricService = injector.getDependency<MetricService>();
+    this.metricService = GetIt.I<MetricService>();
     var result = await this.metricService.getOverall();
     print(result.outcomeTransactions);
   }

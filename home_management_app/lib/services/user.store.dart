@@ -8,10 +8,6 @@ class UserStore{
   String tokenKey = 'token';
   SharedPreferences preferences;
 
-  UserStore(){
-    init();
-  }
-
   void init() async {
     preferences = await SharedPreferences.getInstance();
     if(preferences.containsKey(emailKey) &&

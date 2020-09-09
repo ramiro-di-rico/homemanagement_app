@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/screens/accounts/add.acount.dart';
 import 'package:home_management_app/screens/authentication/login.dart';
 import 'package:home_management_app/screens/main/settings.dart';
 import 'package:home_management_app/services/authentication.service.dart';
-import 'package:injector/injector.dart';
 import 'account.list.dart';
 import 'dashboard.dart';
 
@@ -15,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
   List<Widget> children = [
     Dashboard(),
     AccountListScreen(),
@@ -22,7 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   List<Widget> floatingButtons = [];
   List<Color> selectedItemsColor = [Colors.greenAccent, Colors.pinkAccent, Colors.blueAccent];
-  int bottomBarNavigationIndex = 0;
+  int bottomBarNavigationIndex = 0; 
+
+  @override
+  void initState() {
+    super.initState();
+    AccountRepository accountRepository = GetIt.instance<AccountRepository>();
+    accountRepository.load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return FloatingActionButton(
       child: Icon(Icons.exit_to_app),
       onPressed: () {
-        var authenticationService =
-            Injector.appInstance.getDependency<AuthenticationService>();
         authenticationService.logout();
         Navigator.popAndPushNamed(this.context, LoginScreen.id);
       },

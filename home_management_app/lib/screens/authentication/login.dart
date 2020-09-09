@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_management_app/services/authentication.service.dart';
-import 'package:injector/injector.dart';
 import '../main/home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,13 +18,11 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isEmailValid = false;
   bool hidePassword = true;
   Function buttonPressed = null;
-  Injector injector = Injector.appInstance;
-  AuthenticationService authenticationService;
+  AuthenticationService authenticationService = GetIt.instance<AuthenticationService>();
 
   void initState() {
     super.initState();
-    this.authenticationService =
-        injector.getDependency<AuthenticationService>();
+        
     if (authenticationService.isAuthenticated()) {
       email = authenticationService.user.email;
       password = authenticationService.user.password;

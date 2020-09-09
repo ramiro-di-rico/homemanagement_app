@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/dropdown.component.dart';
 import 'package:home_management_app/custom/input.factory.dart';
+import 'package:home_management_app/models/account.dart';
+import 'package:home_management_app/repositories/account.repository.dart';
 
 class AddAccountScreen extends StatefulWidget {
   static const String id = 'add_account_screen';
@@ -11,7 +14,16 @@ class AddAccountScreen extends StatefulWidget {
 }
 
 class _AddAccountScreenState extends State<AddAccountScreen> {
+  AccountRepository accountsRepository = GetIt.instance<AccountRepository>();
+
+  String accountName = '';
+  AccountType accountType;
+  int currencyId;
   bool isMeasurable = false;
+
+  List<String> currencies = ['USD', 'EUR', 'ARS'];
+  bool enableButton = false;
+  Function onAddPressed = null;
 
   @override
   Widget build(BuildContext context) {
@@ -23,27 +35,35 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: accountNameTextField(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: accountTypeDropDown(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: currencyTypeDropDown(),
-                  )
-                ],
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: accountNameTextField(),
               ),
             ),
-            Padding(
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: accountTypeDropDown(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: currencyTypeDropDown(),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
@@ -55,7 +75,29 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
                       child: Text('Is Measurable'),
                     ),
                   ],
-                )),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: keyboardIsVisible() ? 1 : 5,
+              child: SizedBox()
+            ),
+            Expanded(
+              flex: 1,
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: OutlineButton(                  
+                  onPressed: onAddPressed,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add),
+                      Text('Add')
+                    ],
+                  ),
+                ),
+                ),
+              ),
           ],
         ),
       ),
@@ -67,7 +109,15 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
         keyboardType: TextInputType.name,
         textAlign: TextAlign.center,
         decoration:
-            InputFactory.createdRoundedOutLineDecoration('Account Name'));
+            InputFactory.createdRoundedOutLineDecoration('Account Name'),
+        onChanged: (value){
+          setState(() {
+            this.enableButton = value.length > 0;
+            this.onAddPressed = this.enableButton ? addNewAccount : null;
+            this.accountName = value;
+          });
+        },
+    );
   }
 
   Widget accountTypeDropDown() {
@@ -77,20 +127,38 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
     );
   }
 
-  onAccountTypeChanged(String accountType) {}
+  onAccountTypeChanged(String accountType) {
+    setState(() {
+      this.accountType = accountType == 'Cash' ? AccountType.Cash : AccountType.BankAccount;
+    });
+  }
 
   Widget currencyTypeDropDown() {
     return DropdownComponent(
-      items: ['USD', 'EUR', 'ARS'],
+      items: currencies,
       onChanged: onCurrencyTypeChanged,
     );
   }
 
-  onCurrencyTypeChanged(String accountType) {}
+  onCurrencyTypeChanged(String currency) {
+    setState(() {
+      this.currencyId = this.currencies.indexOf(currency);
+    });
+  }
 
-  onMeasurableChanged(bool value){
+  onMeasurableChanged(bool value) {
     setState(() {
       this.isMeasurable = value;
     });
+  }
+
+  bool keyboardIsVisible() {
+    return !(MediaQuery.of(context).viewInsets.bottom == 0.0);
+  }
+
+  void addNewAccount(){
+    AccountModel accountModel = AccountModel(0, this.accountName, 0, this.isMeasurable, this.accountType, this.currencyId, 0);
+    this.accountsRepository.add(accountModel);
+    Navigator.pop(context);
   }
 }
