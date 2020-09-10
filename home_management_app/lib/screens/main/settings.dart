@@ -15,10 +15,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(      
       child: Column(
         children: [
-          Padding(            
+          /*Padding(            
             padding: EdgeInsets.all(10),
             child: SyncOptionsWidget(),
-          ),
+          ),*/
           Padding(
             padding: EdgeInsets.all(10),
             child: DailyBackupWdiget(),

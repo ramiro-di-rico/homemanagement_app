@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/models/currency.dart';
 import 'package:home_management_app/services/currency.service.dart';
 
-class CurrencyRepository {
+class CurrencyRepository extends ChangeNotifier{
   @protected  
   CurrencyService currencyService;
   
@@ -13,5 +13,9 @@ class CurrencyRepository {
   Future load() async {
     var result = await this.currencyService.fetchCurrencies();
     currencies.addAll(result);
+  }
+
+  Future update() async {
+    notifyListeners();
   }
 }

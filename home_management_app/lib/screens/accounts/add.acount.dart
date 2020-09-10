@@ -29,7 +29,6 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
   bool enableButton = false;
   Function onAddPressed = null;
 
-
   @override
   void initState() {
     super.initState();
