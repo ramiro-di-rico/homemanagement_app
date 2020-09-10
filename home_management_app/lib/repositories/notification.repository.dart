@@ -17,4 +17,14 @@ class NotificationRepository extends ChangeNotifier {
   Future update() async {
     notifyListeners();
   }
+
+  Future remove(NotificationModel notificationModel) async {
+    notifications.remove(notificationModel);
+    notifyListeners();
+  }
+
+  Future dismiss(NotificationModel notificationModel) async {
+    notificationModel.dismissed = true;
+    notifyListeners();
+  }
 }

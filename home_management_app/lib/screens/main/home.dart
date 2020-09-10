@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/models/notification.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/repositories/notification.repository.dart';
 import 'package:home_management_app/repositories/preferences.repository.dart';
@@ -19,16 +20,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
-  NotificationRepository notificationRepository = GetIt.I<NotificationRepository>();
+  AuthenticationService authenticationService =
+      GetIt.I<AuthenticationService>();
+  NotificationRepository notificationRepository =
+      GetIt.I<NotificationRepository>();
   List<Widget> children = [
     Dashboard(),
     AccountListScreen(),
     SettingsScreen(),
   ];
   List<Widget> floatingButtons = [];
-  List<Color> selectedItemsColor = [Colors.greenAccent, Colors.pinkAccent, Colors.blueAccent];
-  int bottomBarNavigationIndex = 0; 
+  List<Color> selectedItemsColor = [
+    Colors.greenAccent,
+    Colors.pinkAccent,
+    Colors.blueAccent
+  ];
+  int bottomBarNavigationIndex = 0;
   bool hasNotifications = false;
 
   @override
@@ -84,13 +91,46 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppBar(
       title: Text('Home'),
       actions: [
-        FlatButton(onPressed: () { 
-            
-          },
-          shape: CircleBorder(),
-          child: Icon(hasNotifications ? Icons.notifications : Icons.notifications_none)),
+        FlatButton(
+            onPressed: displayNotifications,
+            shape: CircleBorder(),
+            child: Icon(hasNotifications
+                ? Icons.notifications
+                : Icons.notifications_none)),
       ],
     );
+  }
+
+  displayNotifications() {
+    showModalBottomSheet(
+        isDismissible: true,
+        context: this.context,
+        builder: (BuildContext context) {
+          return Center(
+              child: Column(
+                  children: this
+                      .notificationRepository
+                      .notifications
+                      .map((e) => ListTile(
+                            title: Text(
+                              e.title,
+                              style: TextStyle(
+                                decoration: e.dismissed ? TextDecoration.lineThrough : TextDecoration.none
+                              ),
+                            ),
+                            trailing: FlatButton(
+                              onPressed: () => dismissNotification(e),
+                              child: Icon(Icons.check),
+                            ),
+                          ))
+                      .toList()));
+        });
+  }
+
+  void dismissNotification(NotificationModel notificationModel) {
+    setState(() {
+      this.notificationRepository.dismiss(notificationModel);
+    });
   }
 
   void addFloatingActions() {
