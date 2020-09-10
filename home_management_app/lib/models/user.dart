@@ -5,7 +5,7 @@ class UserModel{
   UserModel(this.email, this.password, this.token);
 
   factory UserModel.fromJson(Map<String, dynamic> json){
-    return UserModel(json['username'], json['password'], json['token']);
+    return UserModel(json['email'], json['password'], json['token']);
   }
 
 }

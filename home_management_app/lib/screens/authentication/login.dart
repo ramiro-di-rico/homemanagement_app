@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/keyboard.factory.dart';
+import 'package:home_management_app/repositories/user.repository.dart';
 import 'package:home_management_app/services/authentication.service.dart';
 import '../main/home.dart';
 
@@ -18,14 +20,23 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isEmailValid = false;
   bool hidePassword = true;
   Function buttonPressed = null;
-  AuthenticationService authenticationService = GetIt.instance<AuthenticationService>();
+  AuthenticationService authenticationService =
+      GetIt.instance<AuthenticationService>();
+  UserRepository userRepository = GetIt.instance<UserRepository>();
+  KeyboardFactory keyboardFactory;
 
   void initState() {
     super.initState();
-        
+    this.keyboardFactory = KeyboardFactory(context: context);
+    loadUser();
+  }
+
+  Future loadUser() async {
+    await userRepository.load();
+    authenticationService.init();
+
     if (authenticationService.isAuthenticated()) {
-      email = authenticationService.user.email;
-      password = authenticationService.user.password;
+      Navigator.popAndPushNamed(context, HomeScreen.id);
     }
   }
 
@@ -42,8 +53,8 @@ class _LoginScreenState extends State<LoginScreen> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.all(20),
-                  child: createTextField(
-                      'Email', true, false, onEmailChanged, null, Icon(Icons.email)),
+                  child: createTextField('Email', true, false, onEmailChanged,
+                      null, Icon(Icons.email)),
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),
@@ -57,8 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Icon(Icons.remove_red_eye),
                         onPressed: changePasswordVisibility,
                       ),
-                      Icon(Icons.vpn_key)
-                    ),
+                      Icon(Icons.vpn_key)),
                 ),
                 Padding(
                   padding: EdgeInsets.all(20),
@@ -75,6 +85,14 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() { 
+    if(keyboardFactory.isKeyboardVisible()){
+      keyboardFactory.unFocusKeyboard();
+    }
+    super.dispose();
   }
 
   void onEmailChanged(String character) {
@@ -97,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void changePasswordVisibility(){
+  void changePasswordVisibility() {
     setState(() {
       this.hidePassword = !this.hidePassword;
     });

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/dropdown.component.dart';
 import 'package:home_management_app/custom/input.factory.dart';
+import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 
@@ -15,6 +16,7 @@ class AddAccountScreen extends StatefulWidget {
 
 class _AddAccountScreenState extends State<AddAccountScreen> {
   AccountRepository accountsRepository = GetIt.instance<AccountRepository>();
+  KeyboardFactory keyboardFactory;
 
   String accountName = '';
   AccountType accountType;
@@ -24,6 +26,13 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
   List<String> currencies = ['USD', 'EUR', 'ARS'];
   bool enableButton = false;
   Function onAddPressed = null;
+
+
+  @override
+  void initState() {
+    super.initState();
+    this.keyboardFactory = KeyboardFactory(context: context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +88,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
               ),
             ),
             Expanded(
-              flex: keyboardIsVisible() ? 1 : 5,
+              flex: this.keyboardFactory.isKeyboardVisible() ? 1 : 5,
               child: SizedBox()
             ),
             Expanded(
@@ -150,10 +159,6 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
     setState(() {
       this.isMeasurable = value;
     });
-  }
-
-  bool keyboardIsVisible() {
-    return !(MediaQuery.of(context).viewInsets.bottom == 0.0);
   }
 
   void addNewAccount(){

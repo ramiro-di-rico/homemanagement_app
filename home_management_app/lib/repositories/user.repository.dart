@@ -1,14 +1,14 @@
-import 'package:home_management_app/models/user.dart';
+import '../models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserStore{
+class UserRepository{
   UserModel userModel;
   String emailKey = 'email';
   String passwordKey = 'password';
   String tokenKey = 'token';
   SharedPreferences preferences;
 
-  void init() async {
+  Future load() async {
     preferences = await SharedPreferences.getInstance();
     if(preferences.containsKey(emailKey) &&
         preferences.containsKey(passwordKey) &&
@@ -25,5 +25,11 @@ class UserStore{
     preferences.setString(emailKey, this.userModel.email);
     preferences.setString(passwordKey, this.userModel.password);
     preferences.setString(tokenKey, this.userModel.token);
+  }
+
+  void clear(){
+    preferences.remove(emailKey);
+    preferences.remove(passwordKey);
+    preferences.remove(tokenKey);
   }
 }
