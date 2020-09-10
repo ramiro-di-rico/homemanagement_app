@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
+import 'package:home_management_app/repositories/notification.repository.dart';
 import 'package:home_management_app/repositories/preferences.repository.dart';
 import 'package:home_management_app/repositories/currency.repository.dart';
 import 'package:home_management_app/screens/accounts/add.acount.dart';
@@ -19,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   AuthenticationService authenticationService = GetIt.I<AuthenticationService>();
+  NotificationRepository notificationRepository = GetIt.I<NotificationRepository>();
   List<Widget> children = [
     Dashboard(),
     AccountListScreen(),
@@ -27,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> floatingButtons = [];
   List<Color> selectedItemsColor = [Colors.greenAccent, Colors.pinkAccent, Colors.blueAccent];
   int bottomBarNavigationIndex = 0; 
+  bool hasNotifications = false;
 
   @override
   void initState() {
@@ -35,6 +38,13 @@ class _HomeScreenState extends State<HomeScreen> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<PreferencesRepository>().load();
+    notificationRepository.load();
+
+    notificationRepository.addListener(() {
+      setState(() {
+        hasNotifications = this.notificationRepository.notifications.length > 0;
+      });
+    });
   }
 
   @override
@@ -42,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     this.addFloatingActions();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Home')),
+      appBar: buildAppBar(),
       body: children[bottomBarNavigationIndex],
       floatingActionButton: floatingButtons[bottomBarNavigationIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -67,6 +77,19 @@ class _HomeScreenState extends State<HomeScreen> {
               title: Text('Settings'), icon: Icon(Icons.settings))
         ],
       ),
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      title: Text('Home'),
+      actions: [
+        FlatButton(onPressed: () { 
+            
+          },
+          shape: CircleBorder(),
+          child: Icon(hasNotifications ? Icons.notifications : Icons.notifications_none)),
+      ],
     );
   }
 
