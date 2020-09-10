@@ -4,10 +4,8 @@ import 'package:http/http.dart' as http;
 import 'authentication.service.dart';
 import 'dart:convert';
 
-class AccountService extends ChangeNotifier {
+class AccountService {
   AuthenticationService authenticationService;
-  String cacheKey = 'accountsKey';
-  final List<AccountModel> accounts = List<AccountModel>();
 
   AccountService(
       {@required this.authenticationService});

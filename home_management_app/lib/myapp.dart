@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/screens/accounts/account.detail.dart';
 
 import 'screens/accounts/add.acount.dart';
 import 'screens/authentication/login.dart';
 import 'screens/main/home.dart';
-import 'screens/transactions/transactions.list.dart';
 
 class MyApp extends StatelessWidget {  
   @override
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => LoginScreen(),
         HomeScreen.id: (context) => HomeScreen(),
         AddAccountScreen.id: (context) => AddAccountScreen(),
-        TransactionsListScreen.id: (context) => TransactionsListScreen(),
+        AccountDetailScren.id: (context) => AccountDetailScren(),
       },
       initialRoute: LoginScreen.id,
     );

@@ -6,6 +6,7 @@ import 'package:home_management_app/custom/input.factory.dart';
 import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
+import 'package:home_management_app/repositories/currency.repository.dart';
 
 class AddAccountScreen extends StatefulWidget {
   static const String id = 'add_account_screen';
@@ -16,6 +17,7 @@ class AddAccountScreen extends StatefulWidget {
 
 class _AddAccountScreenState extends State<AddAccountScreen> {
   AccountRepository accountsRepository = GetIt.instance<AccountRepository>();
+  CurrencyRepository currencyRepository = GetIt.I<CurrencyRepository>();
   KeyboardFactory keyboardFactory;
 
   String accountName = '';
@@ -23,7 +25,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
   int currencyId;
   bool isMeasurable = false;
 
-  List<String> currencies = ['USD', 'EUR', 'ARS'];
+  List<String> currencies = [];
   bool enableButton = false;
   Function onAddPressed = null;
 
@@ -32,6 +34,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
+    currencies.addAll(this.currencyRepository.currencies.map((c) => c.name));
   }
 
   @override

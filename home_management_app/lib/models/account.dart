@@ -1,10 +1,10 @@
 class AccountModel{
 
-  final int id, currencyId, userId;
-  final String name;
-  final double balance;
-  final bool measurable;
-  final AccountType accountType;
+  int id, currencyId, userId;
+  String name;
+  double balance;
+  bool measurable;
+  AccountType accountType;
 
   AccountModel(this.id, this.name, this.balance, this.measurable, this.accountType, this.currencyId, this.userId);
 
@@ -17,6 +17,17 @@ class AccountModel{
       json['accountType'] == 0 ? AccountType.Cash : AccountType.BankAccount, 
       json['currencyId'], 
       json['userId']);
+  }
+
+  String accountTypeToString(){
+    switch (this.accountType) {
+      case AccountType.Cash:
+        return 'Cash';
+      case AccountType.BankAccount:
+        return 'Bank Account';
+      default:
+      return '';
+    }
   }
 }
 

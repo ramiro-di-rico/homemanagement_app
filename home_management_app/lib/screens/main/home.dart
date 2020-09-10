@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
+import 'package:home_management_app/repositories/currency.repository.dart';
 import 'package:home_management_app/screens/accounts/add.acount.dart';
 import 'package:home_management_app/screens/authentication/login.dart';
 import 'package:home_management_app/screens/main/settings.dart';
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     AccountRepository accountRepository = GetIt.instance<AccountRepository>();
     accountRepository.load();
+    GetIt.I<CurrencyRepository>().load();
   }
 
   @override

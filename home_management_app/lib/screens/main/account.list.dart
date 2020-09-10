@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
-import 'package:home_management_app/screens/transactions/transactions.list.dart';
+import 'package:home_management_app/screens/accounts/account.detail.dart';
 
 class AccountListScreen extends StatefulWidget {
   @override
@@ -60,7 +60,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
               item.name,
             ),
             onTap: () {
-              Navigator.pushNamed(context, TransactionsListScreen.id,
+              Navigator.pushNamed(context, AccountDetailScren.id,
                   arguments: item);
             },
           ),

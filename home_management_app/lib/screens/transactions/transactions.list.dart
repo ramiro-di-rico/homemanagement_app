@@ -1,30 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/models/account.dart';
 
-class TransactionsListScreen extends StatefulWidget {
-  static const String id = 'transactions_list_screen';
-
+class TransactionListWidget extends StatefulWidget {
   @override
-  _TransactionsListScreenState createState() => _TransactionsListScreenState();
+  _TransactionListWidgetState createState() => _TransactionListWidgetState();
 }
 
-class _TransactionsListScreenState extends State<TransactionsListScreen> {
-
+class _TransactionListWidgetState extends State<TransactionListWidget> {
   @override
   Widget build(BuildContext context) {
-    AccountModel account = ModalRoute.of(context).settings.arguments as AccountModel;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(account.name),
-      ),
-      body: SafeArea(
-        child: Center(
-          child: Container(
-            child: Text('Transactions Page'),
-          ),
-        ),
-      ),
+    return Container(
+      child: Text('Transactions Page test'),
     );
   }
 }

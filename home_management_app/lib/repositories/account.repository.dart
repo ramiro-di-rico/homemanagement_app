@@ -19,4 +19,8 @@ class AccountRepository extends ChangeNotifier {
     this.accounts.add(accountModel);
     notifyListeners();
   }
+
+  void update(AccountModel accountModel){
+    notifyListeners();
+  }
 }
