@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 class DropdownComponent extends StatefulWidget {
 
-  List<String> items;
-  Function(String) onChanged;
+  final List<String> items;
+  final Function(String) onChanged;
+  final String currentValue;
 
-  DropdownComponent({@required this.items, @required this.onChanged});
+  DropdownComponent({@required this.items, @required this.onChanged, this.currentValue});
 
   @override
   _DropdownComponentState createState() => _DropdownComponentState();
@@ -18,7 +19,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
   @override
   void initState() {
     super.initState();
-    this.value = this.widget.items.first;
+    this.value = widget.currentValue != null && widget.currentValue.isNotEmpty ? widget.currentValue : this.widget.items.first;
   }
 
   @override

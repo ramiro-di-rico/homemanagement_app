@@ -3,6 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/screens/accounts/account.detail.dart';
+import 'package:home_management_app/screens/accounts/add.acount.dart';
+import 'package:home_management_app/screens/accounts/edit.account.dart';
 
 class AccountListScreen extends StatefulWidget {
   @override
@@ -17,16 +19,16 @@ class _AccountListScreenState extends State<AccountListScreen> {
   void initState() {
     super.initState();
     refreshAccounts();
-    accountsRepo.addListener(refreshAccounts);    
+    accountsRepo.addListener(refreshAccounts);
   }
 
   @override
-  void dispose() { 
+  void dispose() {
     accountsRepo.removeListener(refreshAccounts);
     super.dispose();
   }
 
-  refreshAccounts(){
+  refreshAccounts() {
     setState(() {
       this.accounts = accountsRepo.accounts;
     });
@@ -62,6 +64,16 @@ class _AccountListScreenState extends State<AccountListScreen> {
             onTap: () {
               Navigator.pushNamed(context, AccountDetailScren.id,
                   arguments: item);
+            },
+            onLongPress: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditAccountScreen(
+                    account: item,
+                  ),
+                ),
+              );
             },
           ),
         );
