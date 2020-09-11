@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
-    //loadUser();
+    loadUser();
   }
 
   Future loadUser() async {

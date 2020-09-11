@@ -6,6 +6,7 @@ class UserRepository{
   String emailKey = 'email';
   String passwordKey = 'password';
   String tokenKey = 'token';
+  String expirationDateKey = 'expirationDateKey';
   SharedPreferences preferences;
 
   Future load() async {
@@ -16,7 +17,8 @@ class UserRepository{
       userModel = new UserModel(
           preferences.getString(emailKey),
           preferences.getString(passwordKey),
-          preferences.getString(tokenKey));
+          preferences.getString(tokenKey),
+          DateTime.parse(preferences.getString(expirationDateKey)));
     }
   }
 
@@ -30,6 +32,7 @@ class UserRepository{
     preferences.setString(emailKey, this.userModel.email);
     preferences.setString(passwordKey, this.userModel.password);
     preferences.setString(tokenKey, this.userModel.token);
+    preferences.setString(expirationDateKey, this.userModel.expirationDate.toString());
   }
 
   void clear(){
