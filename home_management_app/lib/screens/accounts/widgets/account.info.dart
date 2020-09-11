@@ -26,6 +26,12 @@ class AccountDetailWidget extends StatelessWidget {
             child: Chip(
               label: Text('USD'),
             ),
+          ),
+          Expanded(
+            child: MaterialButton(              
+              onPressed: () {},
+              child: Icon(Icons.insert_chart, color: Colors.pinkAccent),
+            ),
           )
         ],
       ),

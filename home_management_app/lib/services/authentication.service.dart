@@ -16,7 +16,7 @@ class AuthenticationService{
   AuthenticationService({@required this.cryptographyService, this.userRepository});
 
   init(){
-    this.user = this.userRepository.userModel;
+    //this.user = this.userRepository.userModel;
   }
 
   bool isAuthenticated(){
@@ -41,7 +41,7 @@ class AuthenticationService{
 
       if(response.statusCode == 200){
         this.user = UserModel.fromJson(json.decode(response.body));
-        this.userRepository.store(this.user);
+        //this.userRepository.store(this.user);
         return true;
       }else{
         return false;
@@ -50,6 +50,6 @@ class AuthenticationService{
 
   void logout(){
     this.user = null;
-    this.userRepository.clear();
+    //this.userRepository.clear();
   }
 }

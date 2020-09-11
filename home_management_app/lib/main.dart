@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'myapp.dart';
 import 'repositories/account.repository.dart';
 import 'repositories/notification.repository.dart';
@@ -14,6 +15,8 @@ import 'services/preferences.service.dart';
 import 'services/cryptography.service.dart';
 import 'services/currency.service.dart';
 import 'services/metrics.service.dart';
+import 'services/transaction.paging.service.dart';
+import 'services/transaction.service.dart';
 
 void main() {
   registerDependencies();
@@ -36,6 +39,9 @@ void registerDependencies(){
   var notificationService = NotificationService(authenticationService: authenticationService);
   var notificationRepository = NotificationRepository(notificationService: notificationService);
 
+  var transactionService = TransactionService(authenticationService: authenticationService);
+  var transactionRepository = TransactionRepository(transactionService: transactionService);
+
   GetIt.instance.registerFactory(() => CryptographyService());
   GetIt.instance.registerFactory(() => Caching());
   GetIt.instance.registerFactory(() => metricService);
@@ -43,11 +49,13 @@ void registerDependencies(){
   GetIt.instance.registerFactory(() => currencyService);
   GetIt.instance.registerFactory(() => preferenceService);
   GetIt.instance.registerFactory(() => notificationService);
+  GetIt.instance.registerFactory(() => TransactionService(authenticationService: authenticationService));
+  GetIt.instance.registerFactory(() => TransactionPagingService(transactionService: transactionService, transactionRepository: transactionRepository));
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
   GetIt.instance.registerSingleton(authenticationService);
   GetIt.instance.registerSingleton(currencyRepository);
   GetIt.instance.registerSingleton(preferencesRepository);
   GetIt.instance.registerSingleton(notificationRepository);
-  
+  GetIt.instance.registerSingleton(transactionRepository);
 }

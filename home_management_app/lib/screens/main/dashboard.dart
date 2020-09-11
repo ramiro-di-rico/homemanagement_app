@@ -25,18 +25,18 @@ class _DashboardState extends State<Dashboard> {
                     child: OutcomeWidget()),
               ]
           ),
-          Expanded(
+          /*Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),
               child: ChartSampleWidget(),
             )
-          ),
-          Expanded(
+          ),*/
+          /*Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),
               child: BarChartSample2(),
             ),
-          )
+          )*/
         ],
       ),
     );

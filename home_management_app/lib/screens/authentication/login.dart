@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
-    loadUser();
+    //loadUser();
   }
 
   Future loadUser() async {
@@ -88,11 +88,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   @override
-  void dispose() { 
+  void deactivate() {
     if(keyboardFactory.isKeyboardVisible()){
       keyboardFactory.unFocusKeyboard();
     }
-    super.dispose();
+    super.deactivate();
   }
 
   void onEmailChanged(String character) {

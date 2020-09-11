@@ -34,11 +34,18 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
             child: Column(
               children: [
                 AccountDetailWidget(accountModel: account),
-                TransactionListWidget(),
+                TransactionListWidget(account.id),
               ],
             ),
           ),
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
@@ -66,7 +73,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(account.name),
+              Text(account.name.length > 15 ? account.name.substring(0, 15) +'...' : account.name),
               FlatButton(
                 onPressed: (){
                   setState(() {
