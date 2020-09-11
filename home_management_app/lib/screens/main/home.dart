@@ -5,7 +5,6 @@ import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/repositories/notification.repository.dart';
 import 'package:home_management_app/repositories/preferences.repository.dart';
 import 'package:home_management_app/repositories/currency.repository.dart';
-import 'package:home_management_app/repositories/user.repository.dart';
 import 'package:home_management_app/screens/accounts/add.acount.dart';
 import 'package:home_management_app/screens/authentication/login.dart';
 import 'package:home_management_app/screens/main/settings.dart';

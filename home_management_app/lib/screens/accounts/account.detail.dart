@@ -21,9 +21,8 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
 
   @override
   Widget build(BuildContext context) {
-    account =
-        ModalRoute.of(context).settings.arguments as AccountModel;
-    
+    account = ModalRoute.of(context).settings.arguments as AccountModel;
+
     accountNameController = TextEditingController(text: this.account.name);
 
     return Scaffold(
@@ -42,9 +41,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-
-        },
+        onPressed: () {},
         child: Icon(Icons.add),
       ),
     );
@@ -53,37 +50,22 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   AppBar buildAppBar() {
     return AppBar(
       title: Container(
-        child: edit ? 
-          TextField(
-            controller: accountNameController,
-            autofocus: true,
-            decoration: InputDecoration(
-              suffix: FlatButton(
-                onPressed: (){
-                  setState(() {
-                    edit = false;
-                    account.name = accountNameController.text;
-                    accountRepository.update(account);
-                  });
-                }, 
-                child: Icon(Icons.check)
-              )
-            ),
-          ) : 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(account.name.length > 15 ? account.name.substring(0, 15) +'...' : account.name),
-              FlatButton(
-                onPressed: (){
-                  setState(() {
-                    edit = true;
-                  });
-                }, 
-                child: Icon(Icons.edit),
-              )
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(account.name.length > 15
+                ? account.name.substring(0, 15) + '...'
+                : account.name),
+            FlatButton(
+              onPressed: () {
+                setState(() {
+                  edit = true;
+                });
+              },
+              child: Icon(Icons.filter_list),
+            )
+          ],
+        ),
       ),
     );
   }
