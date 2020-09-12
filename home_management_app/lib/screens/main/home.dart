@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/notification.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
+import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/notification.repository.dart';
 import 'package:home_management_app/repositories/preferences.repository.dart';
 import 'package:home_management_app/repositories/currency.repository.dart';
@@ -46,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<PreferencesRepository>().load();
     notificationRepository.load();
+    GetIt.I<CategoryRepository>().load();
 
     notificationRepository.addListener(() {
       setState(() {

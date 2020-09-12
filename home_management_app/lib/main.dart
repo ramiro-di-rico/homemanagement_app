@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'myapp.dart';
 import 'repositories/account.repository.dart';
+import 'repositories/category.repository.dart';
 import 'repositories/notification.repository.dart';
 import 'repositories/preferences.repository.dart';
 import 'repositories/currency.repository.dart';
@@ -10,6 +11,7 @@ import 'repositories/user.repository.dart';
 import 'services/authentication.service.dart';
 import 'services/account.service.dart';
 import 'services/caching.dart';
+import 'services/category.service.dart';
 import 'services/notification.service.dart';
 import 'services/preferences.service.dart';
 import 'services/cryptography.service.dart';
@@ -42,6 +44,8 @@ void registerDependencies(){
   var transactionService = TransactionService(authenticationService: authenticationService);
   var transactionRepository = TransactionRepository(transactionService: transactionService);
 
+  var categoryRepository = CategoryRepository(CategoryService(authenticationService: authenticationService));
+
   GetIt.instance.registerFactory(() => CryptographyService());
   GetIt.instance.registerFactory(() => Caching());
   GetIt.instance.registerFactory(() => metricService);
@@ -51,6 +55,7 @@ void registerDependencies(){
   GetIt.instance.registerFactory(() => notificationService);
   GetIt.instance.registerFactory(() => TransactionService(authenticationService: authenticationService));
   GetIt.instance.registerFactory(() => TransactionPagingService(transactionService: transactionService, transactionRepository: transactionRepository));
+  GetIt.instance.registerFactory(() => CategoryService(authenticationService: authenticationService));
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
   GetIt.instance.registerSingleton(authenticationService);
@@ -58,4 +63,5 @@ void registerDependencies(){
   GetIt.instance.registerSingleton(preferencesRepository);
   GetIt.instance.registerSingleton(notificationRepository);
   GetIt.instance.registerSingleton(transactionRepository);
+  GetIt.instance.registerSingleton(categoryRepository);
 }

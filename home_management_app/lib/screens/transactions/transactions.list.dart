@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/models/transaction.dart';
+import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/services/transaction.paging.service.dart';
 import 'package:intl/intl.dart';
 
@@ -17,6 +18,8 @@ class TransactionListWidget extends StatefulWidget {
 class _TransactionListWidgetState extends State<TransactionListWidget> {
   TransactionPagingService transactionPagingService =
       GetIt.I<TransactionPagingService>();
+  CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
+
   List<TransactionModel> transctions = List<TransactionModel>();
   ScrollController scrollController = ScrollController();
 
@@ -46,6 +49,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                 itemBuilder: (context, index) {
                   var transaction =
                       this.transactionPagingService.transactions[index];
+                  var category = categoryRepository.categories.firstWhere((element) => element.id == transaction.categoryId);
 
                   return Container(
                     child: Column(
@@ -68,10 +72,20 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                             ],
                           ),
                         ),
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                            child: Text(
-                                DateFormat.MMMd().format(transaction.date)))
+                        Row(
+                          children: [
+                            Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                                child: Text(
+                                    DateFormat.MMMd().format(transaction.date))),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                              child: Chip(
+                                  label: Text(category.name),
+                              ),
+                            )
+                          ],
+                        )
                       ],
                     ),
                   );
