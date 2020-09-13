@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/preference.dart';
 import 'package:http/http.dart' as http;
+import 'api.service.factory.dart';
 import 'authentication.service.dart';
 import 'dart:convert';
 
 class PreferenceService{
   AuthenticationService authenticationService;
+  ApiServiceFactory apiServiceFactory;
 
-  PreferenceService({@required this.authenticationService});
+  PreferenceService({@required this.authenticationService, @required this.apiServiceFactory});
 
   Future<List<PreferenceModel>> fetch() async {
     var token = this.authenticationService.getUserToken();

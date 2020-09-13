@@ -8,6 +8,7 @@ import 'repositories/notification.repository.dart';
 import 'repositories/preferences.repository.dart';
 import 'repositories/currency.repository.dart';
 import 'repositories/user.repository.dart';
+import 'services/api.service.factory.dart';
 import 'services/authentication.service.dart';
 import 'services/account.service.dart';
 import 'services/caching.dart';
@@ -30,32 +31,33 @@ void registerDependencies(){
   Caching caching = Caching();
   var userRepository = UserRepository();
   AuthenticationService authenticationService = AuthenticationService(cryptographyService: cryptographyService, userRepository: userRepository);
-  AccountService accountService = AccountService(authenticationService: authenticationService);  
+  AccountService accountService = AccountService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService));
   var accountRepository = AccountRepository(accountService: accountService);
   var metricService = MetricService(caching: caching, authenticationService: authenticationService);
-  var currencyService = CurrencyService(authenticationService: authenticationService);
+  var currencyService = CurrencyService(authenticationService: authenticationService, apiServiceFactory:  ApiServiceFactory(authenticationService: authenticationService));
   var currencyRepository = CurrencyRepository(currencyService: currencyService);
-  var preferenceService = PreferenceService(authenticationService: authenticationService);
+  var preferenceService = PreferenceService(authenticationService: authenticationService,  apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService));
   var preferencesRepository = PreferencesRepository(preferenceService: preferenceService);
 
-  var notificationService = NotificationService(authenticationService: authenticationService);
+  var notificationService = NotificationService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService));
   var notificationRepository = NotificationRepository(notificationService: notificationService);
 
   var transactionService = TransactionService(authenticationService: authenticationService);
   var transactionRepository = TransactionRepository(transactionService: transactionService);
 
-  var categoryRepository = CategoryRepository(CategoryService(authenticationService: authenticationService));
+  var categoryRepository = CategoryRepository(CategoryService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
 
   GetIt.instance.registerFactory(() => CryptographyService());
   GetIt.instance.registerFactory(() => Caching());
   GetIt.instance.registerFactory(() => metricService);
-  GetIt.instance.registerFactory(() => accountService);
+  GetIt.instance.registerFactory(() => AccountService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
   GetIt.instance.registerFactory(() => currencyService);
   GetIt.instance.registerFactory(() => preferenceService);
   GetIt.instance.registerFactory(() => notificationService);
   GetIt.instance.registerFactory(() => TransactionService(authenticationService: authenticationService));
   GetIt.instance.registerFactory(() => TransactionPagingService(transactionService: transactionService, transactionRepository: transactionRepository));
-  GetIt.instance.registerFactory(() => CategoryService(authenticationService: authenticationService));
+  GetIt.instance.registerFactory(() => CategoryService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
+  GetIt.instance.registerFactory(() => ApiServiceFactory(authenticationService: authenticationService));
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
   GetIt.instance.registerSingleton(authenticationService);

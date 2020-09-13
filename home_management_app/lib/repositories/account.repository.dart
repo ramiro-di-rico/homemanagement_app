@@ -20,7 +20,13 @@ class AccountRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void update(AccountModel accountModel){
-    notifyListeners();
+  Future update(AccountModel accountModel) async {
+    try{
+      await accountService.update(accountModel);
+      notifyListeners();
+    }
+    catch(ex){
+      print(ex);
+    }
   }
 }

@@ -19,6 +19,17 @@ class AccountModel{
       json['userId']);
   }
 
+  Map<String, dynamic> toJson() =>
+      {
+        'id': id,
+        'name': name,
+        'balance': balance,
+        'measurable': measurable,
+        'accountType' : accountType == AccountType.Cash ? 0 : 1,
+        'currencyId': currencyId,
+        'userId': userId
+      };
+
   String accountTypeToString(){
     switch (this.accountType) {
       case AccountType.Cash:
