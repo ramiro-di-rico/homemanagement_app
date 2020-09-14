@@ -15,9 +15,15 @@ class AccountRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void add(AccountModel accountModel){
-    this.accounts.add(accountModel);
-    notifyListeners();
+  Future add(AccountModel accountModel) async {
+    try{
+      await this.accountService.add(accountModel);
+      this.accounts.add(accountModel);
+      notifyListeners();
+    }
+    catch(ex){
+      print(ex);
+    }
   }
 
   Future update(AccountModel accountModel) async {
@@ -27,6 +33,18 @@ class AccountRepository extends ChangeNotifier {
     }
     catch(ex){
       print(ex);
+    }
+  }
+
+  Future delete(AccountModel accountModel) async {
+    try{
+      await this.accountService.delete(accountModel);
+      this.accounts.remove(accountModel);
+      notifyListeners();
+    }
+    catch(ex) {
+      print(ex);
+      throw ex;
     }
   }
 }

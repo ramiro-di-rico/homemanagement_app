@@ -25,6 +25,22 @@ class ApiServiceFactory{
     }
   }
 
+  Future apiPost(String api, String body) async {
+    var token = this.authenticationService.getUserToken();
+
+    var response = await http.post('http://206.189.239.38:5100/api/$api',
+        headers: <String, String>{
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+        body: body
+    );
+
+    if(response.statusCode != 200){
+      throw Exception('Failed to post to $api');
+    }
+  }
+
   Future apiPut(String api, String body) async {
     var token = this.authenticationService.getUserToken();
 
@@ -37,7 +53,22 @@ class ApiServiceFactory{
     );
 
     if(response.statusCode != 200){
-      throw Exception('Failed to update account');
+      throw Exception('Failed to put to $api');
+    }
+  }
+
+  Future apiDelete(String api, String id) async {
+    var token = this.authenticationService.getUserToken();
+
+    var response = await http.delete('http://206.189.239.38:5100/api/$api/$id',
+        headers: <String, String>{
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+    );
+
+    if(response.statusCode != 200){
+      throw Exception('Failed to put to $api');
     }
   }
 }

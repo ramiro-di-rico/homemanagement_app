@@ -19,6 +19,8 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   AccountModel account;
   TextEditingController accountNameController;
 
+  bool visibility = true;
+
   @override
   Widget build(BuildContext context) {
     account = ModalRoute.of(context).settings.arguments as AccountModel;
@@ -33,7 +35,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
             child: Column(
               children: [
                 AccountDetailWidget(accountModel: account),
-                TransactionListWidget(account.id),
+                TransactionListWidget(account.id)
               ],
             ),
           ),
@@ -57,11 +59,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                 ? account.name.substring(0, 15) + '...'
                 : account.name),
             FlatButton(
-              onPressed: () {
-                setState(() {
-                  edit = true;
-                });
-              },
+              onPressed: null,
               child: Icon(Icons.filter_list),
             )
           ],

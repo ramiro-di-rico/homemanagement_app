@@ -17,8 +17,17 @@ class AccountService {
     return result;
   }
 
+  Future add(AccountModel accountModel) async {
+    var body = jsonEncode(accountModel);
+    await this.apiServiceFactory.apiPost('account', body);
+  }
+
   Future update(AccountModel account) async {
     var msg = jsonEncode(account);
     await this.apiServiceFactory.apiPut('account', msg);
+  }
+
+  Future delete(AccountModel accountModel) async {
+    await this.apiServiceFactory.apiDelete('account', accountModel.id.toString());
   }
 }

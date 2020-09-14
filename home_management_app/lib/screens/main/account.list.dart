@@ -3,7 +3,6 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/screens/accounts/account.detail.dart';
-import 'package:home_management_app/screens/accounts/add.acount.dart';
 import 'package:home_management_app/screens/accounts/edit.account.dart';
 
 class AccountListScreen extends StatefulWidget {
@@ -42,7 +41,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
         final item = this.accounts[index];
 
         return Dismissible(
-          key: Key(item.name),
+          key: Key(item.id.toString()),
           direction: DismissDirection.endToStart,
           background: Container(
             color: Colors.blueAccent,
@@ -50,13 +49,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
           secondaryBackground: Container(
             color: Colors.redAccent,
           ),
-          onDismissed: (direction) {
-            setState(() {
-              accounts.removeAt(index);
-            });
-            Scaffold.of(context)
-                .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
-          },
+          onDismissed: (direction) => remove(item, index),
           child: ListTile(
             title: Text(
               item.name,
@@ -79,5 +72,19 @@ class _AccountListScreenState extends State<AccountListScreen> {
         );
       },
     );
+  }
+
+  Future remove(item, index) async {
+    try {
+      await this.accountsRepo.delete(item);
+      setState(() {
+        accounts.remove(item);
+      });
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
+    } catch (ex) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed to remove ${item.name}')));
+    }
   }
 }

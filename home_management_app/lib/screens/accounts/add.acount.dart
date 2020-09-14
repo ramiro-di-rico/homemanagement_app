@@ -34,6 +34,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
     currencies.addAll(this.currencyRepository.currencies.map((c) => c.name));
+    this.currencyId = this.currencyRepository.currencies.first.id;
   }
 
   @override
