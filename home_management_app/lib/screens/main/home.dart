@@ -64,28 +64,32 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: buildAppBar(),
       body: children[bottomBarNavigationIndex],
       floatingActionButton: floatingButtons[bottomBarNavigationIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: bottomBarNavigationIndex,
-        backgroundColor: Theme.of(context).bottomAppBarColor,
-        selectedItemColor: this.selectedItemsColor[bottomBarNavigationIndex],
-        onTap: (index) {
-          setState(() {
-            this.bottomBarNavigationIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            title: Text('Dashboard'),
-            icon: Icon(Icons.dashboard),
-          ),
-          BottomNavigationBarItem(
-            title: Text('Accounts'),
-            icon: Icon(Icons.account_balance_wallet),
-          ),
-          BottomNavigationBarItem(
-              title: Text('Settings'), icon: Icon(Icons.settings))
-        ],
-      ),
+      bottomNavigationBar: buildBottomNavigationBar(context),
+    );
+  }
+
+  BottomNavigationBar buildBottomNavigationBar(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: bottomBarNavigationIndex,
+      backgroundColor: Theme.of(context).bottomAppBarColor,
+      selectedItemColor: this.selectedItemsColor[bottomBarNavigationIndex],
+      onTap: (index) {
+        setState(() {
+          this.bottomBarNavigationIndex = index;
+        });
+      },
+      items: [
+        BottomNavigationBarItem(
+          title: Text('Dashboard'),
+          icon: Icon(Icons.dashboard),          
+        ),
+        BottomNavigationBarItem(
+          title: Text('Accounts'),
+          icon: Icon(Icons.account_balance_wallet),
+        ),
+        BottomNavigationBarItem(
+            title: Text('Settings'), icon: Icon(Icons.settings))
+      ],
     );
   }
 
@@ -117,8 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             title: Text(
                               e.title,
                               style: TextStyle(
-                                decoration: e.dismissed ? TextDecoration.lineThrough : TextDecoration.none
-                              ),
+                                  decoration: e.dismissed
+                                      ? TextDecoration.lineThrough
+                                      : TextDecoration.none),
                             ),
                             trailing: FlatButton(
                               onPressed: () => dismissNotification(e),

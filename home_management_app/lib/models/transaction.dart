@@ -19,6 +19,10 @@ class TransactionModel {
   }  
 
   static TransactionType parse(int value) => value == 0 ? TransactionType.Income : TransactionType.Outcome;
+
+  static TransactionType parseByName(String value) => value == 'Income' ? TransactionType.Income : TransactionType.Outcome;
+
+  static List<String> getTransactionTypes() => ['Income', 'Outcome'];
 }
 
 enum TransactionType{
