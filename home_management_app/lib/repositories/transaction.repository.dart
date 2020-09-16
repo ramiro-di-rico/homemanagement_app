@@ -26,5 +26,6 @@ class TransactionRepository extends ChangeNotifier {
   Future addNew(TransactionModel transaction) async {
     await this.transactionService.add(transaction);
     this.transactions.add(transaction);
+    notifyListeners();
   }
 }

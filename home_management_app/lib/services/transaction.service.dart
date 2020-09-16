@@ -35,37 +35,7 @@ class TransactionService{
   }
 
   Future add(TransactionModel transactionModel) async {
-    /*
-    var body = jsonEncode(transactionModel);
-    var value = JsonEncoder().convert(transactionModel);
-
-    await apiServiceFactory.apiPost('transactions', value);
-    */
-
-    var token = this.authenticationService.getUserToken();
-
-    var bod = JsonEncoder().convert(jsonEncode(transactionModel));
-    Map data = {
-      'id': transactionModel.id,
-      'accountId': transactionModel.accountId,
-      'categoryId': transactionModel.categoryId,
-      'name': transactionModel.name,
-      'price': transactionModel.price,
-      'date': transactionModel.date.toIso8601String(),
-      'transactionType': transactionModel.transactionType == TransactionType.Income ? 0 : 1,
-    };
-    var body = json.encode(data);
-    var response = await http.post('http://206.189.239.38:5100/api/transactions',
-        headers: <String, String>{
-          'Authorization': token,
-          'Content-Type': 'application/json',
-        },
-        body: body,
-        encoding: Encoding.getByName('utf-8')
-    );
-
-    if(response.statusCode != 200){
-      throw Exception('Failed to post to transactions');
-    }
+    var body = json.encode(transactionModel.toJson());
+    await apiServiceFactory.apiPost('transactions', body);
   }
 }

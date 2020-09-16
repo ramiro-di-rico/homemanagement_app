@@ -52,44 +52,55 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                   var category = categoryRepository.categories.firstWhere(
                       (element) => element.id == transaction.categoryId);
 
-                  return Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  return Dismissible(
+                    key: Key(transaction.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.blueAccent,
+                    ),
+                    secondaryBackground: Container(
+                      color: Colors.redAccent,
+                    ),
+                    onDismissed: (direction) => remove(transaction, index),
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(transaction.name),
+                                Text(
+                                  transaction.price.toString(),
+                                  style: TextStyle(
+                                      color: transaction.transactionType ==
+                                              TransactionType.Income
+                                          ? Colors.greenAccent
+                                          : Colors.redAccent),
+                                )
+                              ],
+                            ),
+                          ),
+                          Row(
                             children: [
-                              Text(transaction.name),
-                              Text(
-                                transaction.price.toString(),
-                                style: TextStyle(
-                                    color: transaction.transactionType ==
-                                            TransactionType.Income
-                                        ? Colors.greenAccent
-                                        : Colors.redAccent),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                                child: Text(
+                                  DateFormat.MMMd().format(transaction.date),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                                child: Chip(
+                                  label: Text(category.name),
+                                ),
                               )
                             ],
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                              child: Text(
-                                DateFormat.MMMd().format(transaction.date),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                              child: Chip(
-                                label: Text(category.name),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   );
                 })
@@ -128,6 +139,20 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
     if (scrollController.offset <= scrollController.position.minScrollExtent &&
         !scrollController.position.outOfRange) {
       print('reached top');
+    }
+  }
+
+  Future remove(item, index) async {
+    try {
+      /*await this..delete(item);
+      setState(() {
+        accounts.remove(item);
+      });*/
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
+    } catch (ex) {
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to remove ${item.name}')));
     }
   }
 }

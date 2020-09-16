@@ -14,9 +14,18 @@ class TransactionPagingService extends ChangeNotifier {
 
   TransactionPagingService(
       {@required this.transactionService,
-      @required this.transactionRepository});
+      @required this.transactionRepository})
+  {
+    this.transactionRepository.addListener(clear);
+  }
+
+  Future clear() async {
+    this.transactions.clear();
+    await this.loadFirstPage(this.currentAccountId);
+  }
 
   Future loadFirstPage(int accountId) async {
+    this.currentAccountId = accountId;
     page = TransactionPageModel.newPage(accountId, 1, pageSize);
     await fetchPage();
   }

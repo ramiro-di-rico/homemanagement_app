@@ -18,14 +18,14 @@ class TransactionModel {
       parse(json['transactionType']));
   }  
 
-  Map<String, dynamic> toJson() => 
+  Map toJson() =>
   {
     'id': this.id,
     'accountId': this.accountId,
     'categoryId': this.categoryId,
     'name': this.name,
     'price': this.price,
-    'date': this.date.toString(),
+    'date': this.date.toIso8601String(),
     'transactionType': this.transactionType == TransactionType.Income ? 0 : 1,
   };
 
