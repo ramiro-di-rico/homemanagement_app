@@ -28,7 +28,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TransactionType selectedTransactionType = TransactionType.Income;
   DateTime selectedDate = DateTime.now();
 
-  Function onAdd = null;
+  FloatingActionButton actionButton = null;
 
   @override
   void initState() {
@@ -40,44 +40,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: actionButton,
       appBar: AppBar(
         title: Text('New Transaction'),
       ),
       body: Container(
         child: Column(
           children: [
-            Expanded(
-              flex: 5,
-              child: Column(
-                children: [
-                  buildFirstRow(),
-                  buildSecondRow(),
-                  buildThirdRow(),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: OutlineButton(
-                        onPressed: onAdd,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('Add'),
-                            Icon(Icons.add),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
+            buildFirstRow(),
+            buildSecondRow(),
+            buildThirdRow(),
           ],
         ),
       ),
@@ -195,8 +167,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     var shouldEnable =
         nameController.text.length > 0 && selectedCategory != null && price > 0;
     setState(() {
-      onAdd = shouldEnable ? addTransaction : null;
+      actionButton = shouldEnable ? createFloatingAction() : null;
     });
+  }
+
+  FloatingActionButton createFloatingAction() {
+    return FloatingActionButton(
+      child: Icon(Icons.check),
+      onPressed: addTransaction,
+    );
   }
 
   Future addTransaction() async {}

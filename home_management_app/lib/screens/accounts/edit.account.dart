@@ -24,7 +24,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   List<String> accountTypes = ['Cash', 'Bank Account'];
   List<CurrencyModel> currencies = [];
   bool enableButton = false;
-  Function onSubmitPressed = null;
+  FloatingActionButton onSubmitFloatingButton = null;
 
   @override
   void initState() {
@@ -38,6 +38,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: onSubmitFloatingButton,
       appBar: AppBar(
         title: Text('Edit ${widget.account.name}'),
       ),
@@ -45,67 +46,60 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: accountNameTextField(),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: accountTypeDropDown(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: currencyTypeDropDown(),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: widget.account.measurable,
-                      onChanged: onMeasurableChanged,
-                    ),
-                    Expanded(
-                      child: Text('Is Measurable'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-                flex: this.keyboardFactory.isKeyboardVisible() ? 1 : 5,
-                child: SizedBox()),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: OutlineButton(
-                  onPressed: onSubmitPressed,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [Icon(Icons.check), Text('Submit')],
-                  ),
-                ),
-              ),
-            ),
+            buildFirstRow(),
+            buildSecondRow(),
+            buildThirdRow(),
           ],
         ),
+      ),
+    );
+  }
+
+  Padding buildFirstRow() {
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        keyboardType: TextInputType.name,
+        textAlign: TextAlign.center,
+        controller: controller,
+        decoration:
+            InputFactory.createdRoundedOutLineDecoration('Account Name'),
+      ),
+    );
+  }
+
+  Padding buildSecondRow() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: accountTypeDropDown(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: currencyTypeDropDown(),
+          )
+        ],
+      ),
+    );
+  }
+
+  Padding buildThirdRow() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Checkbox(
+            value: widget.account.measurable,
+            onChanged: onMeasurableChanged,
+          ),
+          Expanded(
+            child: Text('Is Measurable'),
+          ),
+        ],
       ),
     );
   }
@@ -117,19 +111,11 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     super.dispose();
   }
 
-  Widget accountNameTextField() {
-    return TextField(
-      keyboardType: TextInputType.name,
-      textAlign: TextAlign.center,
-      controller: controller,
-      decoration: InputFactory.createdRoundedOutLineDecoration('Account Name'),
-    );
-  }
-
   onTextChanged() {
     setState(() {
       this.enableButton = controller.text.length > 0;
-      this.onSubmitPressed = this.enableButton ? submit : null;
+      this.onSubmitFloatingButton =
+          this.enableButton ? createSubmitButton() : null;
       widget.account.name = controller.text;
     });
   }
@@ -138,7 +124,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     return DropdownComponent(
       items: accountTypes,
       onChanged: onAccountTypeChanged,
-      currentValue: widget.account.accountType == AccountType.Cash ? accountTypes[0] : accountTypes[1],
+      currentValue: widget.account.accountType == AccountType.Cash
+          ? accountTypes[0]
+          : accountTypes[1],
     );
   }
 
@@ -153,13 +141,17 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     return DropdownComponent(
       items: currencies.map((e) => e.name).toList(),
       onChanged: onCurrencyTypeChanged,
-      currentValue: currencies.firstWhere((element) => element.id == widget.account.currencyId).name,
+      currentValue: currencies
+          .firstWhere((element) => element.id == widget.account.currencyId)
+          .name,
     );
   }
 
   onCurrencyTypeChanged(String currency) {
     setState(() {
-      var currency = this.currencies.firstWhere((element) => element.id == widget.account.currencyId);
+      var currency = this
+          .currencies
+          .firstWhere((element) => element.id == widget.account.currencyId);
       this.widget.account.currencyId = currency.id;
     });
   }
@@ -174,4 +166,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     this.accountsRepository.update(widget.account);
     Navigator.pop(context);
   }
+
+  FloatingActionButton createSubmitButton() => FloatingActionButton(
+        onPressed: submit,
+        child: Icon(Icons.check),
+      );
 }

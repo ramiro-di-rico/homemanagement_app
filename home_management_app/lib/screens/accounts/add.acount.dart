@@ -27,7 +27,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   List<String> currencies = [];
   bool enableButton = false;
-  Function onAddPressed = null;
+  FloatingActionButton onSubmitFloatingButton = null;
 
   @override
   void initState() {
@@ -40,6 +40,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: onSubmitFloatingButton,
       appBar: AppBar(
         title: Text('Add Account'),
       ),
@@ -47,88 +48,67 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: accountNameTextField(),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: accountTypeDropDown(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: currencyTypeDropDown(),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: isMeasurable,
-                      onChanged: onMeasurableChanged,
-                    ),
-                    Expanded(
-                      child: Text('Is Measurable'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: this.keyboardFactory.isKeyboardVisible() ? 1 : 5,
-              child: SizedBox()
-            ),
-            Expanded(
-              flex: 1,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: OutlineButton(                  
-                  onPressed: onAddPressed,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add),
-                      Text('Add')
-                    ],
-                  ),
-                ),
-                ),
-              ),
+            buildFirstRow(),
+            buildSecondRow(),
+            buildThirdRow(),
           ],
         ),
       ),
     );
   }
 
-  Widget accountNameTextField() {
-    return TextField(
-        keyboardType: TextInputType.name,
-        textAlign: TextAlign.center,
-        decoration:
-            InputFactory.createdRoundedOutLineDecoration('Account Name'),
-        onChanged: (value){
-          setState(() {
-            this.enableButton = value.length > 0;
-            this.onAddPressed = this.enableButton ? addNewAccount : null;
-            this.accountName = value;
-          });
-        },
+  Padding buildFirstRow() {
+    return Padding(
+        padding: EdgeInsets.all(8),
+        child: TextField(
+          keyboardType: TextInputType.name,
+          textAlign: TextAlign.center,
+          decoration:
+              InputFactory.createdRoundedOutLineDecoration('Account Name'),
+          onChanged: (value) {
+            setState(() {
+              this.enableButton = value.length > 0;
+              this.onSubmitFloatingButton =
+                  this.enableButton ? createSubmitButton() : null;
+              this.accountName = value;
+            });
+          },
+        ));
+  }
+
+  Padding buildSecondRow() {
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: accountTypeDropDown(),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: currencyTypeDropDown(),
+          )
+        ],
+      ),
+    );
+  }
+
+  Padding buildThirdRow() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Checkbox(
+            value: isMeasurable,
+            onChanged: onMeasurableChanged,
+          ),
+          Expanded(
+            child: Text('Is Measurable'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -141,7 +121,8 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   onAccountTypeChanged(String accountType) {
     setState(() {
-      this.accountType = accountType == 'Cash' ? AccountType.Cash : AccountType.BankAccount;
+      this.accountType =
+          accountType == 'Cash' ? AccountType.Cash : AccountType.BankAccount;
     });
   }
 
@@ -164,9 +145,15 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
     });
   }
 
-  void addNewAccount(){
-    AccountModel accountModel = AccountModel(0, this.accountName, 0, this.isMeasurable, this.accountType, this.currencyId, 0);
+  void addNewAccount() {
+    AccountModel accountModel = AccountModel(0, this.accountName, 0,
+        this.isMeasurable, this.accountType, this.currencyId, 0);
     this.accountsRepository.add(accountModel);
     Navigator.pop(context);
   }
+
+  FloatingActionButton createSubmitButton() => FloatingActionButton(
+        onPressed: addNewAccount,
+        child: Icon(Icons.check),
+      );
 }
