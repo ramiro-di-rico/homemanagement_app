@@ -44,7 +44,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, AddTransactionScreen.id),
+        onPressed: () => Navigator.pushNamed(context, AddTransactionScreen.id, arguments: account),
         child: Icon(Icons.add),
       ),
     );

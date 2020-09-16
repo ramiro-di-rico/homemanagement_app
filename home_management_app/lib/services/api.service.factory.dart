@@ -25,7 +25,7 @@ class ApiServiceFactory{
     }
   }
 
-  Future apiPost(String api, String body) async {
+  Future apiPost(String api, dynamic body) async {
     var token = this.authenticationService.getUserToken();
 
     var response = await http.post('http://206.189.239.38:5100/api/$api',

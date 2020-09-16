@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/dropdown.component.dart';
 import 'package:home_management_app/custom/input.factory.dart';
+import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
@@ -22,6 +23,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       GetIt.I<TransactionRepository>();
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TextEditingController nameController = TextEditingController();
+  AccountModel accountModel;
 
   double price = 0;
   CategoryModel selectedCategory;
@@ -39,6 +41,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    accountModel = ModalRoute.of(context).settings.arguments as AccountModel;
+
     return Scaffold(
       floatingActionButton: actionButton,
       appBar: AppBar(
@@ -178,5 +182,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
-  Future addTransaction() async {}
+  Future addTransaction() async {
+    var transactionModel = TransactionModel(0, accountModel.id, selectedCategory.id, nameController.text, price, selectedDate, selectedTransactionType);
+    this.transactionRepository.addNew(transactionModel);
+    Navigator.pop(context);
+  }
 }

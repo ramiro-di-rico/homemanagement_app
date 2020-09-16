@@ -18,6 +18,17 @@ class TransactionModel {
       parse(json['transactionType']));
   }  
 
+  Map<String, dynamic> toJson() => 
+  {
+    'id': this.id,
+    'accountId': this.accountId,
+    'categoryId': this.categoryId,
+    'name': this.name,
+    'price': this.price,
+    'date': this.date.toString(),
+    'transactionType': this.transactionType == TransactionType.Income ? 0 : 1,
+  };
+
   static TransactionType parse(int value) => value == 0 ? TransactionType.Income : TransactionType.Outcome;
 
   static TransactionType parseByName(String value) => value == 'Income' ? TransactionType.Income : TransactionType.Outcome;
