@@ -54,6 +54,12 @@ class _AccountListScreenState extends State<AccountListScreen> {
             title: Text(
               item.name,
             ),
+            trailing: Text(
+              item.balance.toStringAsFixed(0),
+              style: TextStyle(
+                color: item.balance >= 0 ? Colors.greenAccent : Colors.redAccent
+              ),
+            ),
             onTap: () {
               Navigator.pushNamed(context, AccountDetailScren.id,
                   arguments: item);
@@ -83,8 +89,8 @@ class _AccountListScreenState extends State<AccountListScreen> {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
     } catch (ex) {
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to remove ${item.name}')));
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to remove ${item.name}')));
     }
   }
 }

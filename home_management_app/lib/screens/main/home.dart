@@ -65,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: children[bottomBarNavigationIndex],
       floatingActionButton: floatingButtons[bottomBarNavigationIndex],
       bottomNavigationBar: buildBottomNavigationBar(context),
+      floatingActionButtonLocation: bottomBarNavigationIndex == 1 ? FloatingActionButtonLocation.centerFloat : FloatingActionButtonLocation.endFloat
     );
   }
 
