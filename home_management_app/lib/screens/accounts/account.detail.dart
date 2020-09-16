@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
+import 'package:home_management_app/screens/transactions/add.transaction.dart';
 import 'package:home_management_app/screens/transactions/transactions.list.dart';
 
 import 'widgets/account.info.dart';
@@ -43,7 +44,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, AddTransactionScreen.id),
         child: Icon(Icons.add),
       ),
     );

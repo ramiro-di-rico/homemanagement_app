@@ -49,7 +49,8 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                 itemBuilder: (context, index) {
                   var transaction =
                       this.transactionPagingService.transactions[index];
-                  var category = categoryRepository.categories.firstWhere((element) => element.id == transaction.categoryId);
+                  var category = categoryRepository.categories.firstWhere(
+                      (element) => element.id == transaction.categoryId);
 
                   return Container(
                     child: Column(
@@ -75,13 +76,15 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                         Row(
                           children: [
                             Padding(
-                                padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                                child: Text(
-                                    DateFormat.MMMd().format(transaction.date))),
+                              padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                              child: Text(
+                                DateFormat.MMMd().format(transaction.date),
+                              ),
+                            ),
                             Padding(
                               padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
                               child: Chip(
-                                  label: Text(category.name),
+                                label: Text(category.name),
                               ),
                             )
                           ],
@@ -91,13 +94,13 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                   );
                 })
             : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: Text('No transactions to display.'),
-                ),
-              ],
-            ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Text('No transactions to display.'),
+                  ),
+                ],
+              ),
       ),
     );
   }
