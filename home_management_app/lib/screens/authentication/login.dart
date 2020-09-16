@@ -65,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPasswordChanged,
                       FlatButton(
                         shape: CircleBorder(),
-                        child: Icon(Icons.remove_red_eye),
+                        child: Icon(hidePassword ? Icons.visibility : Icons.visibility_off),
                         onPressed: changePasswordVisibility,
                       ),
                       Icon(Icons.vpn_key)),
