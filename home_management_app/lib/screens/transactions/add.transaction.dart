@@ -148,6 +148,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     selectedTransactionType =
                         TransactionModel.parseByName(transactionType);
                   },
+                  currentValue: TransactionModel.getTransactionTypes().last,
                 )),
           ),
         ],
@@ -184,7 +185,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   Future addTransaction() async {
     var transactionModel = TransactionModel(0, accountModel.id, selectedCategory.id, nameController.text, price, selectedDate, selectedTransactionType);
-    this.transactionRepository.addNew(transactionModel);
+    this.transactionRepository.add(transactionModel);
     Navigator.pop(context);
   }
 }

@@ -9,6 +9,7 @@ import 'dart:convert';
 class TransactionService{
   AuthenticationService authenticationService;
   ApiServiceFactory apiServiceFactory;
+  final String apiName = 'transactions';
 
   TransactionService({@required this.authenticationService}){
     this.apiServiceFactory = ApiServiceFactory(authenticationService: this.authenticationService);
@@ -36,6 +37,10 @@ class TransactionService{
 
   Future add(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
-    await apiServiceFactory.apiPost('transactions', body);
+    await apiServiceFactory.apiPost(apiName, body);
+  }
+
+  Future delete(int id) async {
+    await apiServiceFactory.apiDelete(apiName, id.toString());
   }
 }
