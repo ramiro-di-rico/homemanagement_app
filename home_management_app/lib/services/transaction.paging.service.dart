@@ -16,12 +16,12 @@ class TransactionPagingService extends ChangeNotifier {
       {@required this.transactionService,
       @required this.transactionRepository})
   {
-    this.transactionRepository.addListener(clear);
+    this.transactionRepository.addListener(refresh);
   }  
 
-  Future clear() async {
+  Future refresh() async {
     this.transactions.clear();
-    this.transactionRepository.clear();
+    this.transactionRepository.clear(this.currentAccountId);
     await this.loadFirstPage(this.currentAccountId);
   }
 
@@ -51,7 +51,7 @@ class TransactionPagingService extends ChangeNotifier {
 
     if (result.length < this.pageSize) {
       result = await this.transactionService.page(page);
-      //this.transactionRepository.add(result);
+      this.transactionRepository.internalAdd(result);
     }
     return result;
   }

@@ -27,7 +27,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   double price = 0;
   CategoryModel selectedCategory;
-  TransactionType selectedTransactionType = TransactionType.Income;
+  TransactionType selectedTransactionType = TransactionType.Outcome;
   DateTime selectedDate = DateTime.now();
 
   FloatingActionButton actionButton = null;

@@ -4,6 +4,7 @@ import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
+import 'package:home_management_app/services/transaction.paging.service.dart';
 import 'package:intl/intl.dart';
 
 class TransactionListWidget extends StatefulWidget {
@@ -17,6 +18,7 @@ class TransactionListWidget extends StatefulWidget {
 
 class _TransactionListWidgetState extends State<TransactionListWidget> {
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
+  TransactionPagingService transactionPagingService = GetIt.I<TransactionPagingService>();
   TransactionRepository transactionRepository = GetIt.I<TransactionRepository>();
 
   List<TransactionModel> transctions = List<TransactionModel>();
@@ -25,15 +27,15 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   @override
   void initState() {
     scrollController.addListener(onScroll);
-    transactionRepository.addListener(load);
-    transactionRepository.loadFirstPage(widget.accountId);
+    transactionPagingService.addListener(load);
+    transactionPagingService.loadFirstPage(widget.accountId);
     super.initState();
   }
 
   @override
   void dispose() {
     scrollController.removeListener(onScroll);
-    transactionRepository.removeListener(load);
+    transactionPagingService.removeListener(load);
     super.dispose();
   }
 
@@ -42,8 +44,8 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
     return Expanded(
       child: RefreshIndicator(
         onRefresh: () async {
-          transactionRepository.clear();
-          await transactionRepository.loadFirstPage(widget.accountId);
+          transactionPagingService.refresh();
+          await transactionPagingService.loadFirstPage(widget.accountId);
           this.load();
         },
         child: MainCard(
@@ -53,7 +55,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                   itemCount: this.transctions.length,
                   itemBuilder: (context, index) {
                     var transaction =
-                        this.transactionRepository.transactions[index];
+                        this.transactionPagingService.transactions[index];
                     var category = categoryRepository.categories.firstWhere(
                         (element) => element.id == transaction.categoryId);
 
@@ -126,13 +128,13 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   load() {
     setState(() {
       transctions.clear();
-      transctions.addAll(transactionRepository.transactions);
+      transctions.addAll(transactionPagingService.transactions);
     });
   }
 
   nextPage() {
     setState(() {
-      transactionRepository.nextPage();
+      transactionPagingService.nextPage();
       load();
     });
   }
