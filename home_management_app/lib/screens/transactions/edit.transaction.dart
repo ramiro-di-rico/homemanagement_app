@@ -4,49 +4,57 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/dropdown.component.dart';
 import 'package:home_management_app/custom/input.factory.dart';
-import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:intl/intl.dart';
 
-class AddTransactionScreen extends StatefulWidget {
-  static const String id = 'add_transaction_screen';
+class EditTransactionScreen extends StatefulWidget {
+  final TransactionModel transactionModel;
+
+  EditTransactionScreen(this.transactionModel);
 
   @override
-  _AddTransactionScreenState createState() => _AddTransactionScreenState();
+  _EditTransactionScreenState createState() => _EditTransactionScreenState();
 }
 
-class _AddTransactionScreenState extends State<AddTransactionScreen> {
-  TransactionRepository transactionRepository =
+class _EditTransactionScreenState extends State<EditTransactionScreen> {
+   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
-  TextEditingController nameController = TextEditingController();
-  AccountModel accountModel;
-
-  double price = 0;
+  TextEditingController nameController;
+  TextEditingController priceController;
+  double price;
   CategoryModel selectedCategory;
-  TransactionType selectedTransactionType = TransactionType.Outcome;
-  DateTime selectedDate = DateTime.now();
-
   FloatingActionButton actionButton = null;
 
   @override
   void initState() {
     super.initState();
-    selectedCategory = categoryRepository.categories.first;
+    selectedCategory = categoryRepository.categories.firstWhere((element) => widget.transactionModel.categoryId == element.id);
+    nameController = TextEditingController(text: widget.transactionModel.name);
     nameController.addListener(onNameChanged);
+    priceController = TextEditingController(text: widget.transactionModel.price.toString());
+    priceController.addListener(onPriceChanged);
+    price = widget.transactionModel.price;
+  }
+
+  @override
+  void dispose() {
+    this.nameController.removeListener(onNameChanged);
+    this.nameController.dispose();
+    this.priceController.removeListener(onPriceChanged);
+    this.priceController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    accountModel = ModalRoute.of(context).settings.arguments as AccountModel;
-
     return Scaffold(
       floatingActionButton: actionButton,
       appBar: AppBar(
-        title: Text('New Transaction'),
+        title: Text('Edit ${widget.transactionModel.name}'),
       ),
       body: Container(
         child: Column(
@@ -81,14 +89,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             flex: 2,
             child: Padding(
               padding: EdgeInsets.all(10),
-              child: TextField(
+              child: TextField(                
                 keyboardType: TextInputType.number,
                 inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(icon: Icon(Icons.attach_money)),
-                onChanged: (value) {
-                  price = value.length > 0 ? double.parse(value) : 0;
-                  checkIfShouldEnableButton();
-                },
+                controller: priceController,
               ),
             ),
           ),
@@ -109,10 +114,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       lastDate: DateTime(2100));
                 },
                 onChanged: (date) {
-                  selectedDate = date;
+                  widget.transactionModel.date = date;
                 },
                 resetIcon: null,
-                initialValue: DateTime.now(),
+                initialValue: widget.transactionModel.date,
               ),
             ),
           )
@@ -121,7 +126,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
-  Padding buildThirdRow() {
+    Padding buildThirdRow() {
     return Padding(
       padding: EdgeInsets.all(10),
       child: Row(
@@ -137,6 +142,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                         .firstWhere((element) => element.name == categoryName);
                     checkIfShouldEnableButton();
                   },
+                  currentValue: selectedCategory.name,
                 )),
           ),
           Expanded(
@@ -145,10 +151,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 child: DropdownComponent(
                   items: TransactionModel.getTransactionTypes(),
                   onChanged: (transactionType) {
-                    selectedTransactionType =
+                    widget.transactionModel.transactionType =
                         TransactionModel.parseByName(transactionType);
                   },
-                  currentValue: TransactionModel.getTransactionTypes().last,
+                  currentValue: widget.transactionModel.parseTransactionByType(),
                 )),
           ),
         ],
@@ -156,20 +162,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    this.nameController.removeListener(onNameChanged);
-    this.nameController.dispose();
-    super.dispose();
-  }
-
   void onNameChanged() {
     checkIfShouldEnableButton();
   }
 
+  void onPriceChanged(){
+    price = priceController.text.length > 0 ? double.parse(priceController.text) : 0;
+    checkIfShouldEnableButton();
+  }
+
   void checkIfShouldEnableButton() {
-    var shouldEnable =
-        nameController.text.length > 0 && selectedCategory != null && price > 0;
+    var shouldEnable = nameController.text.length > 0 &&
+        selectedCategory != null &&
+        price > 0;
     setState(() {
       actionButton = shouldEnable ? createFloatingAction() : null;
     });
@@ -183,8 +188,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Future addTransaction() async {
-    var transactionModel = TransactionModel(0, accountModel.id, selectedCategory.id, nameController.text, price, selectedDate, selectedTransactionType);
-    this.transactionRepository.add(transactionModel);
+    widget.transactionModel.name = nameController.text;
+    widget.transactionModel.price = this.price;
+    this.transactionRepository.update(widget.transactionModel);
     Navigator.pop(context);
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/custom/main-card.dart';
+import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/services/transaction.paging.service.dart';
 import 'package:intl/intl.dart';
+
+import 'edit.transaction.dart';
 
 class TransactionListWidget extends StatefulWidget {
   final int accountId;
@@ -50,81 +52,93 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
           await transactionPagingService.loadFirstPage(widget.accountId);
           this.load();
         },
-        child: MainCard(
-          child: transctions.length > 0
-              ? ListView.builder(
-                  controller: scrollController,
-                  itemCount: this.transctions.length,
-                  itemBuilder: (context, index) {
-                    var transaction =
-                        this.transactionPagingService.transactions[index];
-                    var category = categoryRepository.categories.firstWhere(
-                        (element) => element.id == transaction.categoryId);
+        child: transctions.length > 0
+            ? ListView.builder(
+                controller: scrollController,
+                itemCount: this.transctions.length,
+                itemBuilder: (context, index) {
+                  var transaction =
+                      this.transactionPagingService.transactions[index];
+                  var category = categoryRepository.categories.firstWhere(
+                      (element) => element.id == transaction.categoryId);
 
-                    return Dismissible(
-                      key: Key(transaction.id.toString()),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        color: Colors.blueAccent,
-                      ),
-                      secondaryBackground: Container(
-                        color: Colors.redAccent,
-                      ),
-                      onDismissed: (direction) => remove(transaction, index),
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(transaction.name),
-                                  Text(
-                                    transaction.price.toStringAsFixed(0),
-                                    style: TextStyle(
-                                        color: transaction.transactionType ==
-                                                TransactionType.Income
-                                            ? Colors.greenAccent
-                                            : Colors.redAccent),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                                  child: Text(
-                                    DateFormat.MMMd()
-                                        .format(transaction.date),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                                  child: Chip(
-                                    label: Text(category.name),
-                                  ),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  })
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Center(
-                      child: Text('No transactions to display.'),
-                    ),
-                  ],
-                ),
+                  return buildDismissible(
+                      transaction, index, context, category);
+                })
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Text('No transactions to display.'),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+
+  Dismissible buildDismissible(TransactionModel transaction, int index,
+      BuildContext context, CategoryModel category) {
+    return Dismissible(
+      key: Key(transaction.id.toString()),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: Colors.blueAccent,
+      ),
+      secondaryBackground: Container(
+        color: Colors.redAccent,
+      ),
+      onDismissed: (direction) => remove(transaction, index),
+      child: ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditTransactionScreen(transaction),
+            ),
+          );
+        },
+        contentPadding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            buildFirstRow(transaction),
+            buildSecondRow(transaction, category)
+          ],
         ),
       ),
+    );
+  }
+
+  Row buildFirstRow(TransactionModel transaction) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(transaction.name),
+        Text(
+          transaction.price.toStringAsFixed(0),
+          style: TextStyle(
+              color: transaction.transactionType == TransactionType.Income
+                  ? Colors.greenAccent
+                  : Colors.redAccent),
+        )
+      ],
+    );
+  }
+
+  Row buildSecondRow(TransactionModel transaction, CategoryModel category) {
+    return Row(
+      children: [
+        Text(
+          DateFormat.MMMd().format(transaction.date),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Chip(
+            label: Text(category.name),
+          ),
+        )
+      ],
     );
   }
 
