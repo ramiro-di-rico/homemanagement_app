@@ -21,6 +21,11 @@ class TransactionRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future update(TransactionModel transactionModel) async {
+    await this.transactionService.update(transactionModel);
+    notifyListeners();
+  }
+
   void internalAdd(List<TransactionModel> result){    
     for (var transaction in result) {
       if(transactions.any((element) => element.id == transaction.id)){

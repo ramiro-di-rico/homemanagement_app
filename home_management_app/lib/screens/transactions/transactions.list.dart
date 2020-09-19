@@ -18,8 +18,10 @@ class TransactionListWidget extends StatefulWidget {
 
 class _TransactionListWidgetState extends State<TransactionListWidget> {
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
-  TransactionPagingService transactionPagingService = GetIt.I<TransactionPagingService>();
-  TransactionRepository transactionRepository = GetIt.I<TransactionRepository>();
+  TransactionPagingService transactionPagingService =
+      GetIt.I<TransactionPagingService>();
+  TransactionRepository transactionRepository =
+      GetIt.I<TransactionRepository>();
 
   List<TransactionModel> transctions = List<TransactionModel>();
   ScrollController scrollController = ScrollController();
@@ -96,7 +98,8 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                                 Padding(
                                   padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
                                   child: Text(
-                                    DateFormat.MMMd().format(transaction.date),
+                                    DateFormat.MMMd()
+                                        .format(transaction.date),
                                   ),
                                 ),
                                 Padding(

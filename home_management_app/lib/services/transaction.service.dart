@@ -43,4 +43,9 @@ class TransactionService{
   Future delete(int id) async {
     await apiServiceFactory.apiDelete(apiName, id.toString());
   }
+
+  Future update(TransactionModel transactionModel) async {
+     var body = json.encode(transactionModel.toJson());
+    await apiServiceFactory.apiPut(apiName, body);
+  }
 }
