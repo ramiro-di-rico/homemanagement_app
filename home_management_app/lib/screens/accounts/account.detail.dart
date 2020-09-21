@@ -16,29 +16,21 @@ class AccountDetailScren extends StatefulWidget {
 
 class _AccountDetailScrenState extends State<AccountDetailScren> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
-  bool edit = false;
   AccountModel account;
-  TextEditingController accountNameController;
-
-  bool visibility = true;
 
   @override
   Widget build(BuildContext context) {
     account = ModalRoute.of(context).settings.arguments as AccountModel;
 
-    accountNameController = TextEditingController(text: this.account.name);
-
     return Scaffold(
       appBar: buildAppBar(),
       body: SafeArea(
         child: Container(
-          child: Center(
-            child: Column(
-              children: [
-                AccountDetailWidget(accountModel: account),
-                TransactionListWidget(account.id)
-              ],
-            ),
+          child: Column(
+            children: [
+              AccountDetailWidget(accountModel: account),
+              TransactionListWidget(account.id)
+            ],
           ),
         ),
       ),

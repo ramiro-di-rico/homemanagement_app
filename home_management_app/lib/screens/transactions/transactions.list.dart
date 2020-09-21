@@ -47,33 +47,36 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   Widget build(BuildContext context) {
     return Expanded(
       child: RefreshIndicator(
-        onRefresh: () async {
-          transactionPagingService.refresh();
-          await transactionPagingService.loadFirstPage(widget.accountId);
-          this.load();
-        },
-        child: transctions.length > 0
-            ? ListView.builder(
-                controller: scrollController,
-                itemCount: this.transctions.length,
-                itemBuilder: (context, index) {
-                  var transaction =
-                      this.transactionPagingService.transactions[index];
-                  var category = categoryRepository.categories.firstWhere(
-                      (element) => element.id == transaction.categoryId);
+          onRefresh: () async {
+            transactionPagingService.refresh();
+            await transactionPagingService.loadFirstPage(widget.accountId);
+            this.load();
+          },
+          child: Card(
+            margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+            child: transctions.length > 0
+                ? ListView.builder(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    controller: scrollController,
+                    itemCount: this.transctions.length,
+                    itemBuilder: (context, index) {
+                      var transaction =
+                          this.transactionPagingService.transactions[index];
+                      var category = categoryRepository.categories.firstWhere(
+                          (element) => element.id == transaction.categoryId);
 
-                  return buildDismissible(
-                      transaction, index, context, category);
-                })
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Text('No transactions to display.'),
+                      return buildDismissible(
+                          transaction, index, context, category);
+                    })
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Text('No transactions to display.'),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-      ),
+          )),
     );
   }
 
@@ -98,7 +101,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
             ),
           );
         },
-        contentPadding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+        contentPadding: EdgeInsets.fromLTRB(10, 0, 10, 10),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

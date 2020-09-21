@@ -51,7 +51,7 @@ void registerServices() {
   });
 
   GetIt.instance.registerFactory(() => MetricService(
-      caching: Caching(),
+      caching: GetIt.I<Caching>(),
       authenticationService: GetIt.I<AuthenticationService>()));
 
   GetIt.instance.registerFactory(() => AccountService(
@@ -81,7 +81,7 @@ void registerServices() {
 
   GetIt.instance.registerFactory(() => CategoryMetricService(
     authenticationService: GetIt.I<AuthenticationService>(),
-    caching: Caching()
+    caching: GetIt.I<Caching>()
   ));
 }
 
