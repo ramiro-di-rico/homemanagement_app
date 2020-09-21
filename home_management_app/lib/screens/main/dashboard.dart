@@ -4,6 +4,7 @@ import 'package:home_management_app/screens/main/widgets/outcome.widget.dart';
 
 import 'widgets/bartchart.sample.dart';
 import 'widgets/chart.sample.dart';
+import 'widgets/most-expensive-categories.widget.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -25,6 +26,14 @@ class _DashboardState extends State<Dashboard> {
                     child: OutcomeWidget()),
               ]
           ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: MostExpensiveCategoriesChart(),
+            ),
+          ),
+          Expanded(
+            child: SizedBox())
           /*Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),

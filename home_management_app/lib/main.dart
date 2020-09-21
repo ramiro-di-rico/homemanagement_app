@@ -13,6 +13,7 @@ import 'services/authentication.service.dart';
 import 'services/account.service.dart';
 import 'services/caching.dart';
 import 'services/category.service.dart';
+import 'services/category.service.metric.dart';
 import 'services/notification.service.dart';
 import 'services/preferences.service.dart';
 import 'services/cryptography.service.dart';
@@ -26,41 +27,110 @@ void main() {
   runApp(MyApp());
 }
 
-void registerDependencies(){
-  CryptographyService cryptographyService = CryptographyService();
-  Caching caching = Caching();
-  var userRepository = UserRepository();
-  AuthenticationService authenticationService = AuthenticationService(cryptographyService: cryptographyService, userRepository: userRepository);
-  AccountService accountService = AccountService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService));
-  var accountRepository = AccountRepository(accountService: accountService);
-  var metricService = MetricService(caching: caching, authenticationService: authenticationService);
-  var currencyService = CurrencyService(authenticationService: authenticationService, apiServiceFactory:  ApiServiceFactory(authenticationService: authenticationService));
-  var currencyRepository = CurrencyRepository(currencyService: currencyService);
-  var preferenceService = PreferenceService(authenticationService: authenticationService,  apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService));
-  var preferencesRepository = PreferencesRepository(preferenceService: preferenceService);
+void registerDependencies() {
+  registerSingletons();
+  registerServices();  
+}
 
-  var notificationService = NotificationService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService));
-  var notificationRepository = NotificationRepository(notificationService: notificationService);
-
-  var transactionService = TransactionService(authenticationService: authenticationService);
-  var transactionRepository = TransactionRepository(transactionService: transactionService);
-
-  var categoryRepository = CategoryRepository(CategoryService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
-
+void registerServices() {
   GetIt.instance.registerFactory(() => CryptographyService());
   GetIt.instance.registerFactory(() => Caching());
-  GetIt.instance.registerFactory(() => metricService);
-  GetIt.instance.registerFactory(() => AccountService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
-  GetIt.instance.registerFactory(() => currencyService);
-  GetIt.instance.registerFactory(() => preferenceService);
-  GetIt.instance.registerFactory(() => notificationService);
-  GetIt.instance.registerFactory(() => TransactionService(authenticationService: authenticationService));
-  GetIt.instance.registerFactory(() => TransactionPagingService(transactionService: transactionService, transactionRepository: transactionRepository));
-  GetIt.instance.registerFactory(() => CategoryService(authenticationService: authenticationService, apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
-  GetIt.instance.registerFactory(() => ApiServiceFactory(authenticationService: authenticationService));
+  GetIt.instance.registerFactory(() => TransactionService(
+      authenticationService: GetIt.I<AuthenticationService>()));
+  GetIt.instance.registerFactory(() {
+    var authenticationService = GetIt.I<AuthenticationService>();
+
+    var transactionService =
+        TransactionService(authenticationService: authenticationService);
+    var transactionRepository =
+        TransactionRepository(transactionService: transactionService);
+
+    return TransactionPagingService(
+        transactionService: transactionService,
+        transactionRepository: transactionRepository);
+  });
+
+  GetIt.instance.registerFactory(() => MetricService(
+      caching: Caching(),
+      authenticationService: GetIt.I<AuthenticationService>()));
+
+  GetIt.instance.registerFactory(() => AccountService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>())));
+  GetIt.instance.registerFactory(() => CategoryService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>())));
+  GetIt.instance.registerFactory(() => ApiServiceFactory(
+      authenticationService: GetIt.I<AuthenticationService>()));
+
+  GetIt.instance.registerFactory(() => CurrencyService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>())));
+  GetIt.instance.registerFactory(() => PreferenceService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>())));
+  GetIt.instance.registerFactory(() => NotificationService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>())));
+
+
+  GetIt.instance.registerFactory(() => CategoryMetricService(
+    authenticationService: GetIt.I<AuthenticationService>(),
+    caching: Caching()
+  ));
+}
+
+void registerSingletons() {
+  CryptographyService cryptographyService = CryptographyService();
+  var userRepository = UserRepository();
+  AuthenticationService authenticationService = AuthenticationService(
+      cryptographyService: cryptographyService, userRepository: userRepository);
+  
+  GetIt.instance.registerSingleton(authenticationService);
+
+  AccountService accountService = AccountService(
+      authenticationService: authenticationService,
+      apiServiceFactory:
+          ApiServiceFactory(authenticationService: authenticationService));
+
+  var accountRepository = AccountRepository(accountService: accountService);
+
+  var currencyRepository = CurrencyRepository(
+      currencyService: CurrencyService(
+          authenticationService: GetIt.I<AuthenticationService>(),
+          apiServiceFactory: ApiServiceFactory(
+              authenticationService: GetIt.I<AuthenticationService>())));
+
+  var preferencesRepository = PreferencesRepository(
+      preferenceService: PreferenceService(
+          authenticationService: GetIt.I<AuthenticationService>(),
+          apiServiceFactory: ApiServiceFactory(
+              authenticationService: GetIt.I<AuthenticationService>())));
+
+  var notificationRepository = NotificationRepository(
+      notificationService: NotificationService(
+          authenticationService: GetIt.I<AuthenticationService>(),
+          apiServiceFactory: ApiServiceFactory(
+              authenticationService: GetIt.I<AuthenticationService>())));
+
+  var transactionService =
+      TransactionService(authenticationService: authenticationService);
+
+  var transactionRepository =
+      TransactionRepository(transactionService: transactionService);
+
+  var categoryRepository = CategoryRepository(CategoryService(
+      authenticationService: authenticationService,
+      apiServiceFactory:
+          ApiServiceFactory(authenticationService: authenticationService)));
+
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
-  GetIt.instance.registerSingleton(authenticationService);
   GetIt.instance.registerSingleton(currencyRepository);
   GetIt.instance.registerSingleton(preferencesRepository);
   GetIt.instance.registerSingleton(notificationRepository);
