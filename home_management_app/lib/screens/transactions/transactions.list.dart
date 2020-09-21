@@ -1,3 +1,4 @@
+import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/category.dart';
@@ -9,10 +10,15 @@ import 'package:intl/intl.dart';
 
 import 'edit.transaction.dart';
 
+class TransactionListController {
+  void Function() showFilters;
+}
+
 class TransactionListWidget extends StatefulWidget {
   final int accountId;
+  final TransactionListController controller;
 
-  TransactionListWidget(this.accountId);
+  TransactionListWidget({@required this.accountId, this.controller});
 
   @override
   _TransactionListWidgetState createState() => _TransactionListWidgetState();
@@ -27,12 +33,22 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
 
   List<TransactionModel> transctions = List<TransactionModel>();
   ScrollController scrollController = ScrollController();
+  GlobalKey<FlipCardState> flipCardKey = GlobalKey<FlipCardState>();
+
+  void showFilters() {
+    print('display filters');
+    flipCardKey.currentState.toggleCard();
+  }
 
   @override
   void initState() {
     scrollController.addListener(onScroll);
     transactionPagingService.addListener(load);
     transactionPagingService.loadFirstPage(widget.accountId);
+
+    if (this.widget.controller != null) {
+      this.widget.controller.showFilters = showFilters;
+    }
     super.initState();
   }
 
@@ -47,36 +63,54 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   Widget build(BuildContext context) {
     return Expanded(
       child: RefreshIndicator(
-          onRefresh: () async {
-            transactionPagingService.refresh();
-            await transactionPagingService.loadFirstPage(widget.accountId);
-            this.load();
-          },
-          child: Card(
-            margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-            child: transctions.length > 0
-                ? ListView.builder(
-                    padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                    controller: scrollController,
-                    itemCount: this.transctions.length,
-                    itemBuilder: (context, index) {
-                      var transaction =
-                          this.transactionPagingService.transactions[index];
-                      var category = categoryRepository.categories.firstWhere(
-                          (element) => element.id == transaction.categoryId);
+        onRefresh: () async {
+          transactionPagingService.refresh();
+          await transactionPagingService.loadFirstPage(widget.accountId);
+          this.load();
+        },
+        child: FlipCard(
+          key: flipCardKey,
+          flipOnTouch: false,
+          back: buildFilteringCard(),
+          front: buildListViewCard(),
+        ),
+      ),
+    );
+  }
 
-                      return buildDismissible(
-                          transaction, index, context, category);
-                    })
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Text('No transactions to display.'),
-                      ),
-                    ],
-                  ),
-          )),
+  Card buildFilteringCard() {
+    return Card(
+      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+      child: Center(
+        child: Text('back'),
+      ),
+    );
+  }
+
+  Card buildListViewCard() {
+    return Card(
+      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+      child: transctions.length > 0
+          ? ListView.builder(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              controller: scrollController,
+              itemCount: this.transctions.length,
+              itemBuilder: (context, index) {
+                var transaction =
+                    this.transactionPagingService.transactions[index];
+                var category = categoryRepository.categories.firstWhere(
+                    (element) => element.id == transaction.categoryId);
+
+                return buildDismissible(transaction, index, context, category);
+              })
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: Text('No transactions to display.'),
+                ),
+              ],
+            ),
     );
   }
 
