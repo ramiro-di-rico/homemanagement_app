@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/account.dart';
+import 'package:home_management_app/models/metrics/account-metrics.dart';
 import 'api.service.factory.dart';
 import 'authentication.service.dart';
 import 'dart:convert';
@@ -29,5 +30,11 @@ class AccountService {
 
   Future delete(AccountModel accountModel) async {
     await this.apiServiceFactory.apiDelete('account', accountModel.id.toString());
+  }
+
+  Future<List<AccountSeries>> getSeriesMetric() async {
+    List<dynamic> list = await this.apiServiceFactory.apiGet('account/v1/avgseries');
+    List<AccountSeries> result = list.map((e) => AccountSeries.fromJson(e)).toList();
+    return result;
   }
 }

@@ -35,6 +35,26 @@ class TransactionService{
     }
   }
 
+  Future<List<TransactionModel>> pageNameFiltering(TransactionPageModel page, String name) async {
+    var token = this.authenticationService.getUserToken();
+
+    var response = await http.get(
+      'http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/filter/byName/$name?currentPage=${page.currentPage}&pageSize=${page.pageCount}',
+        headers: <String, String>{
+          'Authorization': token,
+        }
+      );
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+
+      var result = data.map((e) => TransactionModel.fromJson(e)).toList();
+      return result;
+    } else {
+      throw Exception('Failed to fetch Transactions.');
+    }
+  }
+
   Future add(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPost(apiName, body);

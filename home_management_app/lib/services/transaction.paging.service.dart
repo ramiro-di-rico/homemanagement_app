@@ -11,6 +11,7 @@ class TransactionPagingService extends ChangeNotifier {
   final int pageSize = 20;
   int currentAccountId = 0;
   TransactionPageModel page;
+  String nameFiltering = '';
 
   TransactionPagingService(
       {@required this.transactionService,
@@ -43,16 +44,41 @@ class TransactionPagingService extends ChangeNotifier {
   }
 
   Future<List<TransactionModel>> getPage() async {
-    List<TransactionModel> result = transactionRepository.transactions
-        .where((element) => element.accountId == page.accountId)
+    var query = transactionRepository.transactions
+        .where((element) => element.accountId == page.accountId);
+
+    if(nameFiltering.length > 1){
+      query = query.where((element) => element.name.toLowerCase().contains(nameFiltering.toLowerCase()));
+    }
+
+    List<TransactionModel> result = query
         .take(this.pageSize)
         .skip((this.page.currentPage - 1) * this.pageSize)
         .toList();
 
     if (result.length < this.pageSize) {
-      result = await this.transactionService.page(page);
-      this.transactionRepository.internalAdd(result);
+      if(nameFiltering.length > 1){
+        result = await this.transactionService.pageNameFiltering(page, nameFiltering);
+        this.transactionRepository.internalAdd(result);
+      }else{
+        result = await this.transactionService.page(page);
+        this.transactionRepository.internalAdd(result);
+      }
+      
     }
     return result;
+  }
+
+  Future applyFilterByName(String nameFiltering) async {
+    this.page.currentPage = 1;
+    this.nameFiltering = nameFiltering;
+    transactions.clear();
+    await fetchPage();
+  }
+
+  Future clearFilters() async {
+    this.page.currentPage = 1;
+    this.nameFiltering = '';
+    await this.loadFirstPage(this.currentAccountId);
   }
 }

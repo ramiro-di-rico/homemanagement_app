@@ -30,13 +30,14 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
       GetIt.I<TransactionPagingService>();
   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
+  TextEditingController filteringNameController = TextEditingController();
+  Function applyFilterButton = null;
 
   List<TransactionModel> transctions = List<TransactionModel>();
   ScrollController scrollController = ScrollController();
   GlobalKey<FlipCardState> flipCardKey = GlobalKey<FlipCardState>();
 
   void showFilters() {
-    print('display filters');
     flipCardKey.currentState.toggleCard();
   }
 
@@ -45,6 +46,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
     scrollController.addListener(onScroll);
     transactionPagingService.addListener(load);
     transactionPagingService.loadFirstPage(widget.accountId);
+    filteringNameController.addListener(onFilterNameChanged);
 
     if (this.widget.controller != null) {
       this.widget.controller.showFilters = showFilters;
@@ -56,6 +58,8 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   void dispose() {
     scrollController.removeListener(onScroll);
     transactionPagingService.removeListener(load);
+    filteringNameController.removeListener(onFilterNameChanged);
+    filteringNameController.dispose();
     super.dispose();
   }
 
@@ -81,8 +85,24 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   Card buildFilteringCard() {
     return Card(
       margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-      child: Center(
-        child: Text('back'),
+      child: Column(
+        children: [
+          Container(        
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextField(
+                controller: filteringNameController,
+                decoration: InputDecoration(
+                  hintText: 'Filter by Name',
+                  suffix: FlatButton(
+                    onPressed: applyFilterButton, 
+                    child: Icon(Icons.check), 
+                    shape: CircleBorder())
+                ),
+              ),
+            )
+          ),
+        ],
       ),
     );
   }
@@ -214,5 +234,17 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
       Scaffold.of(context).showSnackBar(
           SnackBar(content: Text('Failed to remove ${item.name}')));
     }
+  }
+
+  void onFilterNameChanged(){
+    setState(() {
+      applyFilterButton = filteringNameController.text.length > 0 ? applyNameFiltering : null;
+    });
+  }
+
+  void applyNameFiltering(){
+    print(filteringNameController.text);
+    transactionPagingService.applyFilterByName(filteringNameController.text);
+    flipCardKey.currentState.toggleCard();
   }
 }

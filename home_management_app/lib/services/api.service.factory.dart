@@ -25,6 +25,24 @@ class ApiServiceFactory{
     }
   }
 
+  Future apiGet(String api) async {
+    var token = this.authenticationService.getUserToken();
+
+    var response = await http.get('http://206.189.239.38:5100/api/$api',
+        headers: <String, String>{
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+    );
+
+    if(response.statusCode != 200){
+      throw Exception('Failed to post to $api');
+    }
+
+    List data = json.decode(response.body);
+    return data;
+  }
+
   Future apiPost(String api, dynamic body) async {
     var token = this.authenticationService.getUserToken();
 

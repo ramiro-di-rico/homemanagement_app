@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/screens/main/widgets/income.widget.dart';
 import 'package:home_management_app/screens/main/widgets/outcome.widget.dart';
 
+import 'widgets/accounts-series-metrics..dart';
 import 'widgets/bartchart.sample.dart';
 import 'widgets/chart.sample.dart';
+import 'widgets/linechart.sample.dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
 class Dashboard extends StatefulWidget {
@@ -33,7 +35,14 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
           Expanded(
-            child: SizedBox())
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: AccountsMetricSeriesWidget(),
+            ),
+          ),
+          /*Expanded(
+            child: LineChartSample2(),
+          )*/
           /*Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),
