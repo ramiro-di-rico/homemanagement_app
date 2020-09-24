@@ -20,6 +20,7 @@ class _AccountsMetricSeriesWidgetState
     extends State<AccountsMetricSeriesWidget> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   List<AccountSeries> series = List<AccountSeries>();
+  Collection<MonthSerie> collection;
 
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _AccountsMetricSeriesWidgetState
     var result = await accountRepository.getSeries();
     setState(() {
       series.addAll(result);
+      collection = Collection(getMonthSeries());
     });
   }
 
@@ -71,7 +73,7 @@ List<Color> gradientColors = [
     return LineChartData(
         backgroundColor: Colors.transparent,
         gridData: FlGridData(
-          show: false,,
+          show: false,
         ),
         borderData: FlBorderData(
             show: false,
@@ -90,13 +92,16 @@ List<Color> gradientColors = [
             },
           ),
           leftTitles: SideTitles(
-            showTitles: false,
+            showTitles: true,
+            margin: 30,
             textStyle: buildAxisTextStyle(),
             getTitles: (value) {
               return calculateYAxisLabel(value);
             },
           ),
         ),
+        minY: 0,
+        maxY: collection.max$1((e) => num.parse(e.average)),
         lineBarsData: series
             .map(
               (e) => LineChartBarData(
@@ -121,21 +126,28 @@ List<Color> gradientColors = [
   }
 
   String calculateYAxisLabel(double value) {
-    var collection = Collection(getMonthSeries());
+    var firstNumber = getFirstPart(value);
 
-    var max = collection.max$1((e) => num.parse(e.average));
-    var min = collection.min$1((element) => num.parse(element.average));
-    var avg = collection.average((element) => num.parse(element.average));
-
-    if (value == min.toDouble()) {
-      return value.toString();
-    } else if (value == avg) {
-      return value.toString();
-    } else if (value == max.toDouble()) {
-      return value.toString();
-    } else {
+    if(firstNumber % 2 == 0){
+      return value.toStringAsFixed(0);
+    }else{
       return '';
     }
+  }
+
+  int getFirstPart(double value){
+    var val = value.toStringAsFixed(0);
+
+    if(val.length < 5){
+      return int.parse(val[0]);
+    }
+
+    if(val.length > 4 && val.length < 6){
+      var part = val.substring(0, 2);
+      return int.parse(part);
+    }
+
+    return 0;
   }
 
   List<MonthSerie> getMonthSeries() {

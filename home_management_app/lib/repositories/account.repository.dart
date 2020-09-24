@@ -11,6 +11,11 @@ class AccountRepository extends ChangeNotifier {
 
   AccountRepository({@required this.accountService});
 
+  Future refresh() async {
+    this.accounts.clear();
+    await load();
+  }
+
   Future load() async {
     var result = await this.accountService.fetchAccounts();
     this.accounts.addAll(result);

@@ -17,66 +17,76 @@ class _AccountListScreenState extends State<AccountListScreen> {
   @override
   void initState() {
     super.initState();
-    refreshAccounts();
-    accountsRepo.addListener(refreshAccounts);
+    load();
+    accountsRepo.addListener(load);
   }
 
   @override
   void dispose() {
-    accountsRepo.removeListener(refreshAccounts);
+    accountsRepo.removeListener(load);
     super.dispose();
   }
 
-  refreshAccounts() {
+  load(){
     setState(() {
       this.accounts = accountsRepo.accounts;
     });
+    
+  }
+
+  Future refreshAccounts() async {
+    await accountsRepo.refresh();
+    load();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: this.accounts.length,
-      itemBuilder: (context, index) {
-        final item = this.accounts[index];
+    return RefreshIndicator(
+      onRefresh: refreshAccounts,
+      child: ListView.builder(
+        itemCount: this.accounts.length,
+        itemBuilder: (context, index) {
+          final item = this.accounts[index];
 
-        return Dismissible(
-          key: Key(item.id.toString()),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            color: Colors.blueAccent,
-          ),
-          secondaryBackground: Container(
-            color: Colors.redAccent,
-          ),
-          onDismissed: (direction) => remove(item, index),
-          child: ListTile(
-            title: Text(
-              item.name,
+          return Dismissible(
+            key: Key(item.id.toString()),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              color: Colors.blueAccent,
             ),
-            trailing: Text(
-              item.balance.toStringAsFixed(0),
-              style: TextStyle(
-                color: item.balance >= 0 ? Colors.greenAccent : Colors.redAccent
+            secondaryBackground: Container(
+              color: Colors.redAccent,
+            ),
+            onDismissed: (direction) => remove(item, index),
+            child: ListTile(
+              title: Text(
+                item.name,
               ),
-            ),
-            onTap: () {
-              Navigator.pushNamed(context, AccountDetailScren.id,
-                  arguments: item);
-            },
-            onLongPress: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditAccountScreen(
-                    account: item,
+              trailing: Text(
+                item.balance.toStringAsFixed(0),
+                style: TextStyle(
+                    color: item.balance >= 0
+                        ? Colors.greenAccent
+                        : Colors.redAccent),
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, AccountDetailScren.id,
+                    arguments: item);
+              },
+              onLongPress: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditAccountScreen(
+                      account: item,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        );
-      },
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 
