@@ -93,7 +93,7 @@ List<Color> gradientColors = [
           ),
           leftTitles: SideTitles(
             showTitles: true,
-            margin: 30,
+            margin: 10,
             textStyle: buildAxisTextStyle(),
             getTitles: (value) {
               return calculateYAxisLabel(value);
@@ -129,7 +129,8 @@ List<Color> gradientColors = [
     var firstNumber = getFirstPart(value);
 
     if(firstNumber % 2 == 0){
-      return value.toStringAsFixed(0);
+      var v = value / 1000;
+      return v.toStringAsFixed(0) + ' k';
     }else{
       return '';
     }
