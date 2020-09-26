@@ -4,9 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/account-metrics.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:intl/intl.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:queries/collections.dart';
-import 'package:queries/queries.dart';
 
 class AccountsMetricSeriesWidget extends StatefulWidget {
   AccountsMetricSeriesWidget({Key key}) : super(key: key);
@@ -21,6 +19,12 @@ class _AccountsMetricSeriesWidgetState
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   List<AccountSeries> series = List<AccountSeries>();
   Collection<MonthSerie> collection;
+  List<Color> lineColors = [
+    Colors.lime[900],
+    Colors.pink[600],
+    Colors.orange[600],
+    Colors.green[600]
+  ];
 
   @override
   void initState() {
@@ -64,7 +68,7 @@ class _AccountsMetricSeriesWidgetState
     ]);
   }
 
-List<Color> gradientColors = [
+  List<Color> gradientColors = [
     const Color(0xff23b6e6),
     const Color(0xff02d39a),
   ];
@@ -76,8 +80,29 @@ List<Color> gradientColors = [
           show: false,
         ),
         borderData: FlBorderData(
-            show: false,
+          show: false,
         ),
+        lineTouchData: LineTouchData(
+            enabled: true,
+            touchTooltipData: LineTouchTooltipData(
+              getTooltipItems: (touchedSpots) {
+                var labels = touchedSpots.map((e) {
+
+                  var serie = series[e.barIndex];
+                  var account = accountRepository.accounts.firstWhere((element) => element.id == serie.accountId);
+
+                  var toolTip = LineTooltipItem(
+                    '${account.name} ${serie.monthSeries[e.spotIndex].average}',
+                    TextStyle(
+                      color: lineColors[e.barIndex]
+                    ),
+                  );
+                  return toolTip;
+                }).toList();
+
+                return labels;
+              },
+            )),
         titlesData: FlTitlesData(
           show: true,
           bottomTitles: SideTitles(
@@ -106,7 +131,7 @@ List<Color> gradientColors = [
             .map(
               (e) => LineChartBarData(
                 isCurved: true,
-                colors: [Colors.greenAccent],
+                colors: [lineColors[series.indexOf(e)]],
                 spots: e.monthSeries
                     .map(
                       (m) =>
@@ -128,22 +153,22 @@ List<Color> gradientColors = [
   String calculateYAxisLabel(double value) {
     var firstNumber = getFirstPart(value);
 
-    if(firstNumber % 2 == 0){
+    if (firstNumber % 2 == 0) {
       var v = value / 1000;
       return v.toStringAsFixed(0) + ' k';
-    }else{
+    } else {
       return '';
     }
   }
 
-  int getFirstPart(double value){
+  int getFirstPart(double value) {
     var val = value.toStringAsFixed(0);
 
-    if(val.length < 5){
+    if (val.length < 5) {
       return int.parse(val[0]);
     }
 
-    if(val.length > 4 && val.length < 6){
+    if (val.length > 4 && val.length < 6) {
       var part = val.substring(0, 2);
       return int.parse(part);
     }

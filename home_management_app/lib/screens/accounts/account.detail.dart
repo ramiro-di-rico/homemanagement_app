@@ -19,13 +19,15 @@ class AccountDetailScren extends StatefulWidget {
 class _AccountDetailScrenState extends State<AccountDetailScren> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   AccountModel account;
-  TransactionListController transactionListController = TransactionListController();
+  TransactionListController transactionListController =
+      TransactionListController();
 
   @override
   Widget build(BuildContext context) {
     account = ModalRoute.of(context).settings.arguments as AccountModel;
 
-    var transactionsListView = TransactionListWidget(accountId: account.id, controller: transactionListController);
+    var transactionsListView = TransactionListWidget(
+        accountId: account.id, controller: transactionListController);
 
     return Scaffold(
       appBar: buildAppBar(),
@@ -44,29 +46,34 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   }
 
   SpeedDial buildSpeedDial(BuildContext context) {
+    var options = List<SpeedDialChild>();
+
+    if (account.measurable) {
+      options.add(SpeedDialChild(
+          child: Icon(OMIcons.barChart),
+          backgroundColor: Colors.red,
+          labelStyle: TextStyle(fontSize: 18.0),
+          onTap: () => print('FIRST CHILD')));
+    }
+
+    options.add(SpeedDialChild(
+        child: Icon(Icons.filter_list),
+        backgroundColor: Colors.blue,
+        labelStyle: TextStyle(fontSize: 18.0),
+        onTap: () => transactionListController.showFilters()));
+
+    options.add(SpeedDialChild(
+      child: Icon(Icons.add),
+      backgroundColor: Colors.green,
+      labelStyle: TextStyle(fontSize: 18.0),
+      onTap: () => Navigator.pushNamed(context, AddTransactionScreen.id,
+          arguments: account),
+    ));
+
     return SpeedDial(
       overlayOpacity: 0.1,
       animatedIcon: AnimatedIcons.menu_close,
-      children: [
-          SpeedDialChild(
-            child: Icon(OMIcons.barChart),
-            backgroundColor: Colors.red,
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => print('FIRST CHILD')
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.filter_list),
-            backgroundColor: Colors.blue,
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => transactionListController.showFilters()
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.add),
-            backgroundColor: Colors.green,
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => Navigator.pushNamed(context, AddTransactionScreen.id, arguments: account),
-          ),
-        ],
+      children: options,
     );
   }
 
