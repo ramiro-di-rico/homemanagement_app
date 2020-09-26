@@ -92,7 +92,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.blueAccent,
                     disabledColor: Colors.grey,
                     padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    shape: RoundedRectangleBorder(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.elliptical(20, 20))
+                    ),
                     child: Icon(Icons.send, color: Colors.white),
                     onPressed: buttonPressed,
                   ),
