@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/components/app-textfield.dart';
 import 'package:home_management_app/custom/components/dropdown.component.dart';
-import 'package:home_management_app/custom/input.factory.dart';
 import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
@@ -59,21 +58,19 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   Padding buildFirstRow() {
     return Padding(
-        padding: EdgeInsets.all(8),
-        child: TextField(
-          keyboardType: TextInputType.name,
-          textAlign: TextAlign.center,
-          decoration:
-              InputFactory.createdRoundedOutLineDecoration('Account Name'),
-          onChanged: (value) {
-            setState(() {
-              this.enableButton = value.length > 0;
-              this.onSubmitFloatingButton =
-                  this.enableButton ? createSubmitButton() : null;
-              this.accountName = value;
-            });
-          },
-        ));
+      padding: EdgeInsets.all(8),
+      child: AppTextField(
+        label: 'Account Name',
+        onTextChanged: (value) {
+          setState(() {
+            this.enableButton = value.length > 0;
+            this.onSubmitFloatingButton =
+                this.enableButton ? createSubmitButton() : null;
+            this.accountName = value;
+          });
+        },
+      )
+    );
   }
 
   Padding buildSecondRow() {

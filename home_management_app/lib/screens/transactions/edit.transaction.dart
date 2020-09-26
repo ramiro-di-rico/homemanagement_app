@@ -2,8 +2,8 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/components/app-textfield.dart';
 import 'package:home_management_app/custom/components/dropdown.component.dart';
-import 'package:home_management_app/custom/input.factory.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
@@ -71,11 +71,9 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   Padding buildFirstRow() {
     return Padding(
       padding: EdgeInsets.all(10),
-      child: TextField(
-        controller: nameController,
-        keyboardType: TextInputType.name,
-        decoration:
-            InputFactory.createdRoundedOutLineDecoration('Transaction Name'),
+      child: AppTextField(
+        editingController: nameController,
+        label: 'Transaction Name',
       ),
     );
   }

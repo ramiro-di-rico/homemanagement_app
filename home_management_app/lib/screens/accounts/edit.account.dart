@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/components/app-textfield.dart';
 import 'package:home_management_app/custom/components/dropdown.component.dart';
-import 'package:home_management_app/custom/input.factory.dart';
 import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/currency.dart';
@@ -58,12 +58,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   Padding buildFirstRow() {
     return Padding(
       padding: EdgeInsets.all(10),
-      child: TextField(
-        keyboardType: TextInputType.name,
-        textAlign: TextAlign.center,
-        controller: controller,
-        decoration:
-            InputFactory.createdRoundedOutLineDecoration('Account Name'),
+      child: AppTextField(
+        label: 'Account Name',
+        editingController: controller,
       ),
     );
   }
