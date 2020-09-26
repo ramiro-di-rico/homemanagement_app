@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool enableButton = false;
   bool isEmailValid = false;
   bool hidePassword = true;
+  bool hideRegistrationLabel = false;
   Function buttonPressed = null;
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
@@ -38,14 +39,14 @@ class _LoginScreenState extends State<LoginScreen> {
     authenticationService.init();
 
     if (authenticationService.canAutoAuthenticate()) {
-      if (!authenticationService.isAuthenticated()){
+      if (!authenticationService.isAuthenticated()) {
         var biometricsEnabled = await auth.canCheckBiometrics;
-        if(biometricsEnabled){
+        if (biometricsEnabled) {
           var biometricAuthenticated = await auth.authenticateWithBiometrics(
-            localizedReason: 'Scan your fingerprint to authenticate',
-            useErrorDialogs: true,
-            stickyAuth: true);
-          if(biometricAuthenticated){
+              localizedReason: 'Scan your fingerprint to authenticate',
+              useErrorDialogs: true,
+              stickyAuth: true);
+          if (biometricAuthenticated) {
             await this.authenticationService.autoAuthenticate();
           }
         }
@@ -56,52 +57,89 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var controls = [
+      buildEmailTextField(),
+      buildPasswordTextFied(),
+      buildSendButton()
+    ];
+
+    if (!keyboardFactory.isKeyboardVisible()) {
+      controls.add(buildDivider());
+      controls.add(buildRegistrationLabel());
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('Sign in'),
       ),
       body: SafeArea(
-        child: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: createTextField('Email', true, false, onEmailChanged,
-                      null, Icon(Icons.email)),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: createTextField(
-                      'Password',
-                      this.passwordFieldEnabled,
-                      hidePassword,
-                      onPasswordChanged,
-                      FlatButton(
-                        shape: CircleBorder(),
-                        child: Icon(hidePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: changePasswordVisibility,
-                      ),
-                      Icon(Icons.vpn_key)),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: FlatButton(
-                    color: Colors.blueAccent,
-                    disabledColor: Colors.grey,
-                    padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.elliptical(20, 20))
-                    ),
-                    child: Icon(Icons.send, color: Colors.white),
-                    onPressed: buttonPressed,
-                  ),
-                )
-              ]),
-        ),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, children: controls),
       ),
+    );
+  }
+
+  Padding buildRegistrationLabel() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: Row(
+        children: [
+          Text('You don' 't have an account yet ?'),
+          FlatButton(
+            onPressed: () {},
+            child: Text('Create one'),
+          )
+        ],
+      ),
+    );
+  }
+
+  Padding buildDivider() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: Divider(
+        thickness: 2,
+      ),
+    );
+  }
+
+  Padding buildSendButton() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: FlatButton(
+        color: Colors.blueAccent,
+        disabledColor: Colors.grey,
+        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.elliptical(20, 20))),
+        child: Icon(Icons.send, color: Colors.white),
+        onPressed: buttonPressed,
+      ),
+    );
+  }
+
+  Padding buildPasswordTextFied() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: createTextField(
+          'Password',
+          this.passwordFieldEnabled,
+          hidePassword,
+          onPasswordChanged,
+          FlatButton(
+            shape: CircleBorder(),
+            child: Icon(hidePassword ? Icons.visibility : Icons.visibility_off),
+            onPressed: changePasswordVisibility,
+          ),
+          Icon(Icons.vpn_key)),
+    );
+  }
+
+  Padding buildEmailTextField() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: createTextField(
+          'Email', true, false, onEmailChanged, null, Icon(Icons.email)),
     );
   }
 
