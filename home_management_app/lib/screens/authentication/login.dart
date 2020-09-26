@@ -35,8 +35,12 @@ class _LoginScreenState extends State<LoginScreen> {
     await userRepository.load();
     authenticationService.init();
 
-    if (authenticationService.isAuthenticated()) {
-      Navigator.popAndPushNamed(context, HomeScreen.id);
+    if (authenticationService.canAutoAuthenticate()) {
+      if (authenticationService.isAuthenticated()) {
+        Navigator.popAndPushNamed(context, HomeScreen.id);
+      }else{
+        await this.authenticationService.autoAuthenticate();
+      }
     }
   }
 
@@ -65,7 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPasswordChanged,
                       FlatButton(
                         shape: CircleBorder(),
-                        child: Icon(hidePassword ? Icons.visibility : Icons.visibility_off),
+                        child: Icon(hidePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: changePasswordVisibility,
                       ),
                       Icon(Icons.vpn_key)),
@@ -89,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void deactivate() {
-    if(keyboardFactory.isKeyboardVisible()){
+    if (keyboardFactory.isKeyboardVisible()) {
       keyboardFactory.unFocusKeyboard();
     }
     super.deactivate();

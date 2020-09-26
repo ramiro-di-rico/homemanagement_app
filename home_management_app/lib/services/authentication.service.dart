@@ -16,14 +16,18 @@ class AuthenticationService {
       {@required this.cryptographyService, this.userRepository});
 
   init() {
-    if (this.userRepository.userModel.expirationDate.isAfter(DateTime.now())) {
-      this.user = this.userRepository.userModel;
-    }
+    this.user = this.userRepository.userModel;
+  }
+
+  bool canAutoAuthenticate(){
+    return user != null;
   }
 
   bool isAuthenticated() {
-    return user != null;
+    return user.expirationDate.isAfter(DateTime.now());
   }
+
+  Future autoAuthenticate() async => await this.authenticate(this.user.email, this.user.password);
 
   String getUserToken() => user.token;
 

@@ -1,6 +1,7 @@
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
@@ -32,6 +33,8 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
       GetIt.I<TransactionRepository>();
   TextEditingController filteringNameController = TextEditingController();
   Function applyFilterButton = null;
+  
+  KeyboardFactory keyboardFactory;
 
   List<TransactionModel> transctions = List<TransactionModel>();
   ScrollController scrollController = ScrollController();
@@ -65,6 +68,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
 
   @override
   Widget build(BuildContext context) {
+    keyboardFactory = KeyboardFactory(context: context);
     return Expanded(
       child: RefreshIndicator(
         onRefresh: () async {
@@ -243,8 +247,8 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   }
 
   void applyNameFiltering(){
-    print(filteringNameController.text);
     transactionPagingService.applyFilterByName(filteringNameController.text);
     flipCardKey.currentState.toggleCard();
+    keyboardFactory.unFocusKeyboard();
   }
 }
