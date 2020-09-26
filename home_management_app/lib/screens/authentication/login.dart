@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/repositories/user.repository.dart';
 import 'package:home_management_app/services/authentication.service.dart';
+import 'package:local_auth/local_auth.dart';
 import '../main/home.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
       GetIt.instance<AuthenticationService>();
   UserRepository userRepository = GetIt.instance<UserRepository>();
   KeyboardFactory keyboardFactory;
+  final LocalAuthentication auth = LocalAuthentication();
 
   void initState() {
     super.initState();
@@ -36,11 +38,19 @@ class _LoginScreenState extends State<LoginScreen> {
     authenticationService.init();
 
     if (authenticationService.canAutoAuthenticate()) {
-      if (authenticationService.isAuthenticated()) {
-        Navigator.popAndPushNamed(context, HomeScreen.id);
-      }else{
-        await this.authenticationService.autoAuthenticate();
+      if (!authenticationService.isAuthenticated()){
+        var biometricsEnabled = await auth.canCheckBiometrics;
+        if(biometricsEnabled){
+          var biometricAuthenticated = await auth.authenticateWithBiometrics(
+            localizedReason: 'Scan your fingerprint to authenticate',
+            useErrorDialogs: true,
+            stickyAuth: true);
+          if(biometricAuthenticated){
+            await this.authenticationService.autoAuthenticate();
+          }
+        }
       }
+      Navigator.popAndPushNamed(context, HomeScreen.id);
     }
   }
 

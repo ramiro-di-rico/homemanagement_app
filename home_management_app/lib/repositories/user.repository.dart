@@ -36,6 +36,7 @@ class UserRepository{
   }
 
   void clear(){
+    this.userModel = null;
     preferences.remove(emailKey);
     preferences.remove(passwordKey);
     preferences.remove(tokenKey);

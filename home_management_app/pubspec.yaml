@@ -21,6 +21,7 @@ dependencies:
   flutter_speed_dial: ^1.2.5
   flip_card: ^0.4.4
   queries: ^0.1.14
+  local_auth: ^0.6.3+2
   
 dev_dependencies:
   flutter_test:
