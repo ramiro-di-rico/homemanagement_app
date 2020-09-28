@@ -10,6 +10,7 @@ class AuthenticationService {
   UserRepository userRepository;
   String url = 'http://206.189.239.38:5300/';
   String authenticateApi = 'api/Authentication/MobileSignIn';
+  String registrationApi = 'api/registration';
   UserModel user;
 
   AuthenticationService(
@@ -48,6 +49,19 @@ class AuthenticationService {
     } else {
       return false;
     }
+  }
+
+  Future<bool> register(String email, String password) async {
+    var pass = await cryptographyService.encryptToAES(password);
+
+    var response = await http.post(this.url + this.registrationApi,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'HomeManagementApp': 'PR0DT0K3N'
+        },
+        body: jsonEncode(<String, String>{'email': email, 'password': pass}));
+
+    return response.statusCode == 200;
   }
 
   void logout() {

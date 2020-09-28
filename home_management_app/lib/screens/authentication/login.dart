@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/components/email-textfield.dart';
+import 'package:home_management_app/custom/components/password-textfield.dart';
 import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/repositories/user.repository.dart';
 import 'package:home_management_app/services/authentication.service.dart';
 import 'package:local_auth/local_auth.dart';
 import '../main/home.dart';
+import 'registration.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -86,7 +89,9 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           Text('You don' 't have an account yet ?'),
           FlatButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, RegistrationScreen.id);
+            },
             child: Text('Create one'),
           )
         ],
@@ -121,25 +126,18 @@ class _LoginScreenState extends State<LoginScreen> {
   Padding buildPasswordTextFied() {
     return Padding(
       padding: EdgeInsets.all(20),
-      child: createTextField(
-          'Password',
-          this.passwordFieldEnabled,
-          hidePassword,
-          onPasswordChanged,
-          FlatButton(
-            shape: CircleBorder(),
-            child: Icon(hidePassword ? Icons.visibility : Icons.visibility_off),
-            onPressed: changePasswordVisibility,
-          ),
-          Icon(Icons.vpn_key)),
+      child: PasswordTextField(
+        onTextChanged: onPasswordChanged,
+        enablePassword: passwordFieldEnabled),
     );
   }
 
   Padding buildEmailTextField() {
     return Padding(
       padding: EdgeInsets.all(20),
-      child: createTextField(
-          'Email', true, false, onEmailChanged, null, Icon(Icons.email)),
+      child: EmailTextField(
+        onTextChanged: onEmailChanged,
+      )
     );
   }
 
@@ -203,23 +201,5 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     Navigator.popAndPushNamed(context, HomeScreen.id);
-  }
-
-  Widget createTextField(String label, bool enabled, bool obscureText,
-      Function(String) onChanged, Widget suffixIcon, Widget prefixIcon) {
-    return TextField(
-      keyboardType: TextInputType.emailAddress,
-      onChanged: onChanged,
-      obscureText: obscureText,
-      enabled: enabled,
-      textAlign: TextAlign.center,
-      decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-          ),
-          suffixIcon: suffixIcon,
-          prefixIcon: prefixIcon,
-          labelText: label),
-    );
   }
 }

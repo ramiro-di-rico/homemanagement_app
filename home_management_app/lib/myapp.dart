@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/screens/accounts/account.detail.dart';
+import 'package:home_management_app/screens/authentication/registration.dart';
 
 import 'screens/accounts/add.acount.dart';
 import 'screens/authentication/login.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       routes: {
         LoginScreen.id: (context) => LoginScreen(),
+        RegistrationScreen.id: (context) => RegistrationScreen(),
         HomeScreen.id: (context) => HomeScreen(),
         AddAccountScreen.id: (context) => AddAccountScreen(),
         AccountDetailScren.id: (context) => AccountDetailScren(),
