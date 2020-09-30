@@ -10,7 +10,7 @@ class IncomeWidget extends StatefulWidget {
 
 class _IncomeWidgetState extends State<IncomeWidget> {
   MetricService metricService = GetIt.instance<MetricService>();
-  int income;
+  int income = 0;
   IconData icon = Icons.trending_flat;
   Color trendColor = Colors.white;
 

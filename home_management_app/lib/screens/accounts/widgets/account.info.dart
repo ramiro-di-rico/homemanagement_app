@@ -28,13 +28,7 @@ class AccountDetailWidget extends StatelessWidget {
               SizedBox(width: 20),
               Text(accountModel.balance.toStringAsFixed(0)),
               SizedBox(width: 20),
-              Icon(
-                  accountModel.balance > 0
-                      ? Icons.trending_up
-                      : Icons.trending_down,
-                  color: accountModel.balance > 0
-                      ? Colors.greenAccent
-                      : Colors.redAccent)
+              buildTrendingIcon()
             ],
           ),
         ),
@@ -50,5 +44,16 @@ class AccountDetailWidget extends StatelessWidget {
             )),
       ]),
     );
+  }
+
+  Icon buildTrendingIcon() {
+
+    if(accountModel.balance == 0) return Icon(Icons.trending_flat);
+
+    if(accountModel.balance > 0) return Icon(Icons.trending_up, color: Colors.greenAccent);
+
+    if(accountModel.balance < 0) return Icon(Icons.trending_down, color: Colors.redAccent); 
+
+    return Icon(Icons.trending_flat);
   }
 }

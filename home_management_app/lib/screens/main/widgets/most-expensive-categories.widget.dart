@@ -36,7 +36,7 @@ class _MostExpensiveCategoriesChartState
   Widget build(BuildContext context) {
     return Container(
         child: Card(
-      child: metric != null
+      child: metric != null && metric.categories.length > 0
           ? Column(
               children: [
                 ListTile(
@@ -51,7 +51,7 @@ class _MostExpensiveCategoriesChartState
                 ),
               ],
             )
-          : Center(child: Text('Empty Metrics')),
+          : Center(child: Text('No Metrics to display.')),
     ));
   }
 

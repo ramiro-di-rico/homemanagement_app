@@ -10,7 +10,7 @@ class OutcomeWidget extends StatefulWidget {
 
 class _OutcomeWidgetState extends State<OutcomeWidget> {
   MetricService metricService = GetIt.instance<MetricService>();
-  int outcome;
+  int outcome = 0;
   Color trendColor = Colors.white;
   IconData icon = Icons.trending_flat;
 
