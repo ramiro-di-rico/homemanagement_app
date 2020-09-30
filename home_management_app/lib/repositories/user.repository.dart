@@ -23,11 +23,10 @@ class UserRepository{
   }
 
   void store(UserModel user){
-    this.userModel = user;
-
     if(preferences.containsKey(emailKey)){
       this.clear();
     }
+    this.userModel = user;
 
     preferences.setString(emailKey, this.userModel.email);
     preferences.setString(passwordKey, this.userModel.password);

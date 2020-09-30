@@ -20,7 +20,7 @@ class AuthenticationService {
     this.user = this.userRepository.userModel;
   }
 
-  bool canAutoAuthenticate(){
+  bool canAutoAuthenticate() {
     return user != null;
   }
 
@@ -28,27 +28,15 @@ class AuthenticationService {
     return user.expirationDate.isAfter(DateTime.now());
   }
 
-  Future autoAuthenticate() async => await this.authenticate(this.user.email, this.user.password);
+  Future autoAuthenticate() async =>
+      await _internalAuthenticate(this.user.email, this.user.password);
 
   String getUserToken() => user.token;
 
   Future<bool> authenticate(String email, String password) async {
     var pass = await cryptographyService.encryptToAES(password);
 
-    var response = await http.post(this.url + this.authenticateApi,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'HomeManagementApp': 'PR0DT0K3N'
-        },
-        body: jsonEncode(<String, String>{'email': email, 'password': pass}));
-
-    if (response.statusCode == 200) {
-      this.user = UserModel.fromJson(json.decode(response.body));
-      this.userRepository.store(this.user);
-      return true;
-    } else {
-      return false;
-    }
+    return await _internalAuthenticate(email, pass);
   }
 
   Future<bool> register(String email, String password) async {
@@ -67,5 +55,22 @@ class AuthenticationService {
   void logout() {
     this.user = null;
     this.userRepository.clear();
+  }
+
+  Future<bool> _internalAuthenticate(String email, String password) async {
+    var response = await http.post(this.url + this.authenticateApi,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'HomeManagementApp': 'PR0DT0K3N'
+        },
+        body: jsonEncode(<String, String>{'email': email, 'password': password}));
+
+    if (response.statusCode == 200) {
+      this.user = UserModel.fromJson(json.decode(response.body));
+      this.userRepository.store(this.user);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
