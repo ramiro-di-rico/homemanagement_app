@@ -80,8 +80,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             child: Padding(
               padding: EdgeInsets.all(10),
               child: TextField(
-                keyboardType: TextInputType.number,
-                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}'))],
                 decoration: InputDecoration(icon: Icon(Icons.attach_money)),
                 onChanged: (value) {
                   price = value.length > 0 ? double.parse(value) : 0;

@@ -177,7 +177,9 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
       children: [
         Text(transaction.name),
         Text(
-          transaction.price.toStringAsFixed(0),
+          transaction.price % 1 == 0 ?
+          transaction.price.toStringAsFixed(0) : 
+          transaction.price.toStringAsFixed(2),
           style: TextStyle(
               color: transaction.transactionType == TransactionType.Income
                   ? Colors.greenAccent

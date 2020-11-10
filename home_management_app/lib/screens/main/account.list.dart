@@ -63,7 +63,9 @@ class _AccountListScreenState extends State<AccountListScreen> {
                 item.name,
               ),
               trailing: Text(
-                item.balance.toStringAsFixed(0),
+                item.balance % 1 == 0 ?
+                item.balance.toStringAsFixed(0) :
+                item.balance.toStringAsFixed(2),
                 style: TextStyle(
                     color: item.balance >= 0
                         ? Colors.greenAccent
