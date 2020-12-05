@@ -55,6 +55,15 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       floatingActionButton: actionButton,
       appBar: AppBar(
         title: Text('Edit ${widget.transactionModel.name}'),
+        actions: [
+          FlatButton.icon(
+            icon: Icon(Icons.copy), 
+            label: Text('Create a Copy'), 
+            onPressed: () { 
+              transactionRepository.add(widget.transactionModel.duplicate());
+              Navigator.pop(context);
+             })
+        ],
       ),
       body: Container(
         child: Column(

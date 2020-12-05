@@ -45,7 +45,7 @@ class AuthenticationService {
     var response = await http.post(this.url + this.registrationApi,
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'HomeManagementApp': 'PR0DT0K3N'
+          'HomeManagementApp': ''
         },
         body: jsonEncode(<String, String>{'email': email, 'password': pass}));
 
@@ -61,7 +61,7 @@ class AuthenticationService {
     var response = await http.post(this.url + this.authenticateApi,
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'HomeManagementApp': 'PR0DT0K3N'
+          'HomeManagementApp': ''
         },
         body: jsonEncode(<String, String>{'email': email, 'password': password}));
 

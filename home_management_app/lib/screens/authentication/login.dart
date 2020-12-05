@@ -143,9 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void deactivate() {
-    if (keyboardFactory.isKeyboardVisible()) {
-      keyboardFactory.unFocusKeyboard();
-    }
+    //if (keyboardFactory.isKeyboardVisible()) {
+    //  keyboardFactory.unFocusKeyboard();
+    //}
     super.deactivate();
   }
 

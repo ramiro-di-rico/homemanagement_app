@@ -5,6 +5,17 @@ class TransactionModel {
   DateTime date;
   TransactionType transactionType;
 
+  TransactionModel duplicate() 
+  {
+     return TransactionModel(0, 
+      this.accountId, 
+      this.categoryId, 
+      this.name, 
+      this.price, 
+      this.date, 
+      this.transactionType);
+  }
+
   TransactionModel(this.id, this.accountId, this.categoryId, this.name, this.price, this.date, this.transactionType);
 
   factory TransactionModel.fromJson(dynamic json){
