@@ -98,7 +98,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
               padding: EdgeInsets.all(10),
               child: TextField(                
                 keyboardType: TextInputType.number,
-                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(icon: Icon(Icons.attach_money)),
                 controller: priceController,
               ),
