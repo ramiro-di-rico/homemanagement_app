@@ -30,7 +30,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   TransactionType selectedTransactionType = TransactionType.Outcome;
   DateTime selectedDate = DateTime.now();
 
-  FloatingActionButton actionButton = null;
+  FloatingActionButton actionButton;
 
   @override
   void initState() {

@@ -26,7 +26,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   List<String> currencies = [];
   bool enableButton = false;
-  FloatingActionButton onSubmitFloatingButton = null;
+  FloatingActionButton onSubmitFloatingButton;
 
   @override
   void initState() {

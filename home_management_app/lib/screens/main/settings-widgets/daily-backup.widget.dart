@@ -38,8 +38,7 @@ class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
             child: Text('Sync Options'),
           ),
           Expanded(
-            child: FlatButton(
-              shape: CircleBorder(),
+            child: TextButton(
               child: Icon(
                 Icons.cloud_download,
                 color: Colors.pinkAccent,

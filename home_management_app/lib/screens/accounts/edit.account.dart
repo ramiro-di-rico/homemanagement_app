@@ -24,7 +24,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   List<String> accountTypes = ['Cash', 'Bank Account'];
   List<CurrencyModel> currencies = [];
   bool enableButton = false;
-  FloatingActionButton onSubmitFloatingButton = null;
+  FloatingActionButton onSubmitFloatingButton;
 
   @override
   void initState() {

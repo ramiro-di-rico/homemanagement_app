@@ -29,8 +29,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
           labelText: 'Password',
-          suffixIcon: FlatButton(
-            shape: CircleBorder(),
+          suffixIcon: TextButton (
             child: Icon(hidePassword ? Icons.visibility : Icons.visibility_off),
             onPressed: changePasswordVisibility,
           ),

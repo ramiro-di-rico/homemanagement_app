@@ -32,8 +32,8 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
   TextEditingController filteringNameController = TextEditingController();
-  Function applyFilterButton = null;
-  
+  Function applyFilterButton;
+
   KeyboardFactory keyboardFactory;
 
   List<TransactionModel> transctions = [];
@@ -91,20 +91,22 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
       margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Column(
         children: [
-          Container(        
+          Container(
             child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: TextField(
-                controller: filteringNameController,
-                decoration: InputDecoration(
-                  hintText: 'Filter by Name',
-                  suffix: FlatButton(
-                    onPressed: applyFilterButton, 
-                    child: Icon(Icons.check), 
-                    shape: CircleBorder())
-                ),
-              ),
-            )
+                padding: EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: filteringNameController,
+                  decoration: InputDecoration(
+                    hintText: 'Filter by Name',
+                    suffix: TextButton(
+                      onPressed: applyFilterButton,
+                      child: Icon(Icons.check),
+                      style: ButtonStyle(
+                          shape: MaterialStateProperty.all<CircleBorder>(
+                              CircleBorder())),
+                    ),
+                  ),
+                )),
           ),
         ],
       ),
@@ -177,9 +179,9 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
       children: [
         Text(transaction.name),
         Text(
-          transaction.price % 1 == 0 ?
-          transaction.price.toStringAsFixed(0) : 
-          transaction.price.toStringAsFixed(2),
+          transaction.price % 1 == 0
+              ? transaction.price.toStringAsFixed(0)
+              : transaction.price.toStringAsFixed(2),
           style: TextStyle(
               color: transaction.transactionType == TransactionType.Income
                   ? Colors.greenAccent
@@ -234,21 +236,22 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   Future remove(item, index) async {
     try {
       this.transactionRepository.remove(item);
-      Scaffold.of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
     } catch (ex) {
-      Scaffold.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to remove ${item.name}')));
     }
   }
 
-  void onFilterNameChanged(){
+  void onFilterNameChanged() {
     setState(() {
-      applyFilterButton = filteringNameController.text.length > 0 ? applyNameFiltering : null;
+      applyFilterButton =
+          filteringNameController.text.length > 0 ? applyNameFiltering : null;
     });
   }
 
-  void applyNameFiltering(){
+  void applyNameFiltering() {
     transactionPagingService.applyFilterByName(filteringNameController.text);
     flipCardKey.currentState.toggleCard();
     keyboardFactory.unFocusKeyboard();

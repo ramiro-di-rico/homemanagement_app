@@ -98,10 +98,10 @@ class _AccountListScreenState extends State<AccountListScreen> {
       setState(() {
         accounts.remove(item);
       });
-      Scaffold.of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
     } catch (ex) {
-      Scaffold.of(context).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to remove ${item.name}')));
     }
   }

@@ -81,15 +81,16 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       items: [
         BottomNavigationBarItem(
-          title: Text('Dashboard'),
+          label: 'Dashboard',
           icon: Icon(Icons.dashboard),          
         ),
         BottomNavigationBarItem(
-          title: Text('Accounts'),
+          label: 'Accounts',
           icon: Icon(Icons.account_balance_wallet),
         ),
         BottomNavigationBarItem(
-            title: Text('Settings'), icon: Icon(Icons.settings))
+          label: 'Settings',
+          icon: Icon(Icons.settings))
       ],
     );
   }
@@ -98,9 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppBar(
       title: Text('Home'),
       actions: [
-        FlatButton(
+        TextButton(
             onPressed: displayNotifications,
-            shape: CircleBorder(),
             child: Icon(hasNotifications
                 ? Icons.notifications
                 : Icons.notifications_none)),
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ? TextDecoration.lineThrough
                                       : TextDecoration.none),
                             ),
-                            trailing: FlatButton(
+                            trailing: TextButton(
                               onPressed: () => dismissNotification(e),
                               child: Icon(Icons.check),
                             ),

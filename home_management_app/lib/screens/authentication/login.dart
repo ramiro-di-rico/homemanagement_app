@@ -24,7 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isEmailValid = false;
   bool hidePassword = true;
   bool hideRegistrationLabel = false;
-  Function buttonPressed = null;
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
   UserRepository userRepository = GetIt.instance<UserRepository>();
@@ -88,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         children: [
           Text('You don' 't have an account yet ?'),
-          FlatButton(
+          TextButton(
             onPressed: () {
               Navigator.pushNamed(context, RegistrationScreen.id);
             },
@@ -111,14 +110,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Padding buildSendButton() {
     return Padding(
       padding: EdgeInsets.all(20),
-      child: FlatButton(
-        color: Colors.blueAccent,
-        disabledColor: Colors.grey,
-        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.elliptical(20, 20))),
+      child: TextButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(this.enableButton ? Colors.blueAccent : Colors.grey),
+          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(20, 10, 20, 10)),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.elliptical(20, 20)),
+            ))
+        ),
         child: Icon(Icons.send, color: Colors.white),
-        onPressed: buttonPressed,
+        onPressed: onButtonPressed,
       ),
     );
   }
@@ -153,7 +155,6 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       this.email = character.trim();
       this.isEmailValid = this.email.contains('@');
-      this.enableButton = this.email.length > 0;
       this.passwordFieldEnabled = this.email.length > 0 && this.isEmailValid;
     });
   }
@@ -162,11 +163,11 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       this.password = character;
       this.enableButton = this.password.length > 0;
-
-      if (this.enableButton) {
-        this.buttonPressed = onButtonPressed;
-      }
     });
+  }
+
+  bool canLogin(){
+    return this.email.length > 0 && this.password.length > 0;
   }
 
   void changePasswordVisibility() {
@@ -176,6 +177,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> onButtonPressed() async {
+    if(!this.canLogin()){
+      return;
+    }
+
     var result = await this
         .authenticationService
         .authenticate(this.email, this.password);
@@ -188,7 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
             return AlertDialog(
               title: Text('Authentication error.'),
               actions: [
-                FlatButton(
+                TextButton(
                   child: Text('ok'),
                   onPressed: () {
                     Navigator.of(context).pop();

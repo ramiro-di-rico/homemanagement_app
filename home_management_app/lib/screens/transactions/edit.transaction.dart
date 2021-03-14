@@ -27,7 +27,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   TextEditingController priceController;
   double price;
   CategoryModel selectedCategory;
-  FloatingActionButton actionButton = null;
+  FloatingActionButton actionButton;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       appBar: AppBar(
         title: Text('Edit ${widget.transactionModel.name}'),
         actions: [
-          FlatButton.icon(
+          TextButton.icon(
             icon: Icon(Icons.copy), 
             label: Text('Create a Copy'), 
             onPressed: () { 

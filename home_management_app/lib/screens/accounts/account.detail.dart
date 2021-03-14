@@ -46,7 +46,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   }
 
   SpeedDial buildSpeedDial(BuildContext context) {
-    var options = [];
+    List<SpeedDialChild> options = [];
 
     if (account.measurable) {
       options.add(SpeedDialChild(
