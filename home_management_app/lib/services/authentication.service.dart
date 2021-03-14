@@ -9,7 +9,7 @@ class AuthenticationService {
   CryptographyService cryptographyService;
   UserRepository userRepository;
   String url = 'http://206.189.239.38:5300/';
-  String authenticateApi = 'api/Authentication/MobileSignIn';
+  String authenticateApi = 'api/Authentication/SignIn';
   String registrationApi = 'api/registration';
   UserModel user;
 
@@ -45,7 +45,7 @@ class AuthenticationService {
     var response = await http.post(this.url + this.registrationApi,
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'HomeManagementApp': ''
+          'HomeManagementApp': 'D3BUGT0K3N'
         },
         body: jsonEncode(<String, String>{'email': email, 'password': pass}));
 
@@ -61,7 +61,7 @@ class AuthenticationService {
     var response = await http.post(this.url + this.authenticateApi,
         headers: <String, String>{
           'Content-Type': 'application/json',
-          'HomeManagementApp': ''
+          'HomeManagementApp': 'D3BUGT0K3N'
         },
         body: jsonEncode(<String, String>{'email': email, 'password': password}));
 
