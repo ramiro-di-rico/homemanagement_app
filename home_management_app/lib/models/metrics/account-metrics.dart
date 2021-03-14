@@ -12,8 +12,11 @@ class AccountSeries{
     var list = json['monthSeries'];
     var series = list.map((e) => MonthSerie.fromJson(e)).toList();
 
+    var index = 0;
     for (var item in series) {
+      item.index = index;
       account.monthSeries.add(item);
+      index++;
     }
     return account;
   }
@@ -22,8 +25,9 @@ class AccountSeries{
 class MonthSerie{
   int month;
   String average;
+  int index;
 
-  MonthSerie(this.month, this.average);
+  MonthSerie(this.month, this.average, {this.index});
 
   factory MonthSerie.fromJson(Map<String, dynamic> json){
     return MonthSerie(

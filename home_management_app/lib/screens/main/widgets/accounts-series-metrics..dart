@@ -135,7 +135,7 @@ class _AccountsMetricSeriesWidgetState
                 spots: e.monthSeries
                     .map(
                       (m) =>
-                          FlSpot(m.month.toDouble(), double.parse(m.average)),
+                          FlSpot(m.index.toDouble(), double.parse(m.average)),
                     )
                     .toList(),
               ),
