@@ -7,7 +7,7 @@ import 'package:home_management_app/services/transaction.service.dart';
 class TransactionPagingService extends ChangeNotifier {
   TransactionService transactionService;
   TransactionRepository transactionRepository;
-  final List<TransactionModel> transactions = List<TransactionModel>();
+  final List<TransactionModel> transactions = [];
   final int pageSize = 20;
   int currentAccountId = 0;
   TransactionPageModel page;

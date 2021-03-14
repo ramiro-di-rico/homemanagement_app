@@ -3,7 +3,7 @@ import 'package:home_management_app/models/transaction.dart';
 class TransactionPageModel {
   int accountId, currentPage, pageCount, totalPages, op;
   String property, filterValue;
-  List<TransactionModel> transactions = List<TransactionModel>();
+  List<TransactionModel> transactions = [];
 
   TransactionPageModel();
 

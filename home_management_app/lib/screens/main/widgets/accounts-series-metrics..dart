@@ -17,7 +17,7 @@ class AccountsMetricSeriesWidget extends StatefulWidget {
 class _AccountsMetricSeriesWidgetState
     extends State<AccountsMetricSeriesWidget> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
-  List<AccountSeries> series = List<AccountSeries>();
+  List<AccountSeries> series = [];
   Collection<MonthSerie> collection;
   List<Color> lineColors = [
     Colors.lime[900],
@@ -177,7 +177,7 @@ class _AccountsMetricSeriesWidgetState
   }
 
   List<MonthSerie> getMonthSeries() {
-    List<MonthSerie> monthSeries = List<MonthSerie>();
+    List<MonthSerie> monthSeries = [];
 
     for (var s in this.series) {
       for (var m in s.monthSeries) {

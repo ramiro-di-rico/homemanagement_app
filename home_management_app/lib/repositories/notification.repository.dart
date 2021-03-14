@@ -4,7 +4,7 @@ import 'package:home_management_app/services/notification.service.dart';
 
 class NotificationRepository extends ChangeNotifier {
   
-  List<NotificationModel> notifications = List<NotificationModel>();
+  List<NotificationModel> notifications = [];
   NotificationService notificationService;
   NotificationRepository({@required this.notificationService});
 

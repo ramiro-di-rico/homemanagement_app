@@ -6,8 +6,8 @@ import 'package:home_management_app/services/account.service.dart';
 class AccountRepository extends ChangeNotifier {
   AccountService accountService;
   String cacheKey = 'accountsKey';
-  final List<AccountModel> accounts = List<AccountModel>();
-  final List<AccountSeries> accountSeries = List<AccountSeries>();
+  final List<AccountModel> accounts = [];
+  final List<AccountSeries> accountSeries = [];
 
   AccountRepository({@required this.accountService});
 

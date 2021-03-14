@@ -56,7 +56,7 @@ class _MostExpensiveCategoriesChartState
   }
 
   List<CategoryMetric> getMetrics() {
-    List<CategoryMetric> result = List<CategoryMetric>();
+    List<CategoryMetric> result = [];
 
     var med = metric.highestValue / 2;
     for (var item in metric.categories) {

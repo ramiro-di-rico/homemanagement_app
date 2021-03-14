@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'settings-widgets/daily-backup.widget.dart';
-import 'settings-widgets/sync-options.widget.dart';
 import 'settings-widgets/two-factor-authentication.widget.dart';
 
 

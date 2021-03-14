@@ -4,8 +4,8 @@ import 'package:home_management_app/services/category.service.dart';
 
 class CategoryRepository extends ChangeNotifier{
   CategoryService categoryService;
-  final List<CategoryModel> categories = List<CategoryModel>();
-  final List<CategoryModel> activeCategories = List<CategoryModel>();
+  final List<CategoryModel> categories = [];
+  final List<CategoryModel> activeCategories = [];
 
   CategoryRepository(this.categoryService);
 

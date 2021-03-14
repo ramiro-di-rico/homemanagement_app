@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Caching{
 
-  List<Cache> store = List<Cache>();
+  List<Cache> store = [];
 
   add(String key, Object value){
     this.remove(key);

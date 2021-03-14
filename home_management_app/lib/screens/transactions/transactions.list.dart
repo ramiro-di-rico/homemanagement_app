@@ -36,7 +36,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   
   KeyboardFactory keyboardFactory;
 
-  List<TransactionModel> transctions = List<TransactionModel>();
+  List<TransactionModel> transctions = [];
   ScrollController scrollController = ScrollController();
   GlobalKey<FlipCardState> flipCardKey = GlobalKey<FlipCardState>();
 

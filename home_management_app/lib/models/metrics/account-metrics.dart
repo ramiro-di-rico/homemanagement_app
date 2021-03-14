@@ -1,7 +1,7 @@
 class AccountSeries{
 
   int accountId;
-  List<MonthSerie> monthSeries = List<MonthSerie>();
+  List<MonthSerie> monthSeries = [];
 
   AccountSeries(this.accountId);
 

@@ -4,7 +4,7 @@ import 'package:home_management_app/services/preferences.service.dart';
 
 class PreferencesRepository extends ChangeNotifier {
   PreferenceService preferenceService;
-  List<PreferenceModel> preferences = List<PreferenceModel>();
+  List<PreferenceModel> preferences = [];
 
   PreferencesRepository(
       {@required this.preferenceService});

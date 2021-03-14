@@ -6,7 +6,7 @@ class CurrencyRepository extends ChangeNotifier{
   @protected  
   CurrencyService currencyService;
   
-  List<CurrencyModel> currencies = List<CurrencyModel>();
+  List<CurrencyModel> currencies = [];
   
   CurrencyRepository({@required this.currencyService});
 

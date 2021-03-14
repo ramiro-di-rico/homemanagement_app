@@ -5,7 +5,7 @@ import 'package:home_management_app/services/transaction.service.dart';
 class TransactionRepository extends ChangeNotifier {
   
   TransactionService transactionService;
-  final List<TransactionModel> transactions = List<TransactionModel>();
+  final List<TransactionModel> transactions = [];
 
   TransactionRepository({@required this.transactionService});
 
