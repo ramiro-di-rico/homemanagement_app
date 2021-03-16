@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 class ApiServiceFactory{
 
   AuthenticationService authenticationService;
+  Uri backendEndpoint = Uri.http('206.189.239.38:5100', 'api/');
 
   ApiServiceFactory(
       {@required this.authenticationService});
@@ -14,7 +15,7 @@ class ApiServiceFactory{
   Future<List> fetchList(String api) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.get('http://206.189.239.38:5100/api/$api',
+    var response = await http.get(backendEndpoint.resolve(api),
         headers: <String, String>{'Authorization': token});
 
     if (response.statusCode == 200) {
@@ -28,7 +29,7 @@ class ApiServiceFactory{
   Future apiGet(String api) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.get('http://206.189.239.38:5100/api/$api',
+    var response = await http.get(backendEndpoint.resolve(api),
         headers: <String, String>{
           'Authorization': token,
           'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ class ApiServiceFactory{
   Future apiPost(String api, dynamic body) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.post('http://206.189.239.38:5100/api/$api',
+    var response = await http.post(backendEndpoint.resolve(api),
         headers: <String, String>{
           'Authorization': token,
           'Content-Type': 'application/json',
@@ -62,7 +63,7 @@ class ApiServiceFactory{
   Future apiPut(String api, String body) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.put('http://206.189.239.38:5100/api/$api',
+    var response = await http.put(backendEndpoint.resolve(api),
         headers: <String, String>{
           'Authorization': token,
           'Content-Type': 'application/json',
@@ -78,7 +79,7 @@ class ApiServiceFactory{
   Future apiDelete(String api, String id) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.delete('http://206.189.239.38:5100/api/$api/$id',
+    var response = await http.delete(backendEndpoint.resolve('$api/$id'),
         headers: <String, String>{
           'Authorization': token,
           'Content-Type': 'application/json',

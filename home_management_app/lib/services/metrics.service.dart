@@ -24,7 +24,7 @@ class MetricService{
     if(this.overall == null){
       var token = this.authenticationService.getUserToken();
 
-      var response = await http.get('http://206.189.239.38:5100/api/account/3/overall',
+      var response = await http.get(Uri.http('206.189.239.38:5100','api/account/3/overall'),
         headers: <String, String>{
           'Authorization': token
         });

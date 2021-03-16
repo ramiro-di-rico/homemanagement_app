@@ -18,8 +18,10 @@ class TransactionService{
   Future<List<TransactionModel>> page(TransactionPageModel page) async {
     var token = this.authenticationService.getUserToken();
 
+    var uri = Uri.parse('http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/page?currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+
     var response = await http.get(
-      'http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/page?currentPage=${page.currentPage}&pageSize=${page.pageCount}',
+      uri,
         headers: <String, String>{
           'Authorization': token,
         }
@@ -38,8 +40,8 @@ class TransactionService{
   Future<List<TransactionModel>> pageNameFiltering(TransactionPageModel page, String name) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.get(
-      'http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/filter/byName/$name?currentPage=${page.currentPage}&pageSize=${page.pageCount}',
+    var uri = Uri.parse('http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/page?currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+    var response = await http.get(uri,
         headers: <String, String>{
           'Authorization': token,
         }

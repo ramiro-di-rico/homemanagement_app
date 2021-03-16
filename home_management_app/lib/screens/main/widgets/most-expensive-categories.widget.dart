@@ -76,7 +76,7 @@ class _MostExpensiveCategoriesChartState
       titlesData: FlTitlesData(
         bottomTitles: SideTitles(
           showTitles: true,
-          textStyle: buildAxisTextStyle(),
+          getTextStyles: buildAxisTextStyle,
           getTitles: (value) {
             var metric = categories[value.toInt()];
             return metric.category.name;
@@ -85,7 +85,7 @@ class _MostExpensiveCategoriesChartState
         leftTitles: SideTitles(
           showTitles: true,
           margin: 40,
-          textStyle: buildAxisTextStyle(),
+          getTextStyles: buildAxisTextStyle,
           reservedSize: 20,
           getTitles: (value) {
             if (value == 0) {
@@ -106,7 +106,7 @@ class _MostExpensiveCategoriesChartState
               x: categories.indexOf(e),
               barRods: [
                 BarChartRodData(
-                    y: e.price.toDouble(), color: Colors.greenAccent)
+                    y: e.price.toDouble(), colors: [Colors.greenAccent])
               ],
             ),
           )
@@ -114,7 +114,7 @@ class _MostExpensiveCategoriesChartState
     );
   }
 
-  TextStyle buildAxisTextStyle() {
+  TextStyle buildAxisTextStyle(double value) {
     return TextStyle(
         color: ThemeData.fallback().colorScheme.secondary,
         fontWeight: FontWeight.bold,

@@ -8,7 +8,7 @@ import 'cryptography.service.dart';
 class AuthenticationService {
   CryptographyService cryptographyService;
   UserRepository userRepository;
-  String url = 'http://206.189.239.38:5300/';
+  String url = '206.189.239.38:5300';
   String authenticateApi = 'api/Authentication/SignIn';
   String registrationApi = 'api/registration';
   UserModel user;
@@ -42,7 +42,7 @@ class AuthenticationService {
   Future<bool> register(String email, String password) async {
     var pass = await cryptographyService.encryptToAES(password);
 
-    var response = await http.post(this.url + this.registrationApi,
+    var response = await http.post(Uri.http(this.url, this.registrationApi),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'HomeManagementApp': 'D3BUGT0K3N'
@@ -58,7 +58,7 @@ class AuthenticationService {
   }
 
   Future<bool> _internalAuthenticate(String email, String password) async {
-    var response = await http.post(this.url + this.authenticateApi,
+    var response = await http.post(Uri.http(this.url, this.authenticateApi),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'HomeManagementApp': 'D3BUGT0K3N'

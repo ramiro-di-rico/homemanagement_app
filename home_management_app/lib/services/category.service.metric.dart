@@ -24,7 +24,7 @@ class CategoryMetricService{
     if(this.categoriesMetric == null){
       var token = this.authenticationService.getUserToken();
 
-      var response = await http.get('http://206.189.239.38:5100/api/account/toptransactions/$month',
+      var response = await http.get(Uri.http('206.189.239.38:5100','api/account/toptransactions/$month'),
         headers: <String, String>{
           'Authorization': token
         });

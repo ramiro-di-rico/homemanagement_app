@@ -108,7 +108,7 @@ class _AccountsMetricSeriesWidgetState
           bottomTitles: SideTitles(
             showTitles: true,
             reservedSize: 20,
-            textStyle: buildAxisTextStyle(),
+            getTextStyles: buildAxisTextStyle,
             getTitles: (value) {
               var now = DateTime.now();
               var date = DateTime(now.year, value.toInt(), now.day);
@@ -119,7 +119,7 @@ class _AccountsMetricSeriesWidgetState
           leftTitles: SideTitles(
             showTitles: true,
             margin: 10,
-            textStyle: buildAxisTextStyle(),
+            getTextStyles: buildAxisTextStyle,
             getTitles: (value) {
               return calculateYAxisLabel(value);
             },
@@ -143,7 +143,7 @@ class _AccountsMetricSeriesWidgetState
             .toList());
   }
 
-  TextStyle buildAxisTextStyle() {
+  TextStyle buildAxisTextStyle(double value) {
     return TextStyle(
         color: ThemeData.fallback().colorScheme.secondary,
         fontWeight: FontWeight.bold,

@@ -44,10 +44,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!authenticationService.isAuthenticated()) {
         var biometricsEnabled = await auth.canCheckBiometrics;
         if (biometricsEnabled) {
-          var biometricAuthenticated = await auth.authenticateWithBiometrics(
+          var biometricAuthenticated = await auth.authenticate(
               localizedReason: 'Scan your fingerprint to authenticate',
               useErrorDialogs: true,
-              stickyAuth: true);
+              stickyAuth: true,
+              biometricOnly: true);
           if (biometricAuthenticated) {
             await this.authenticationService.autoAuthenticate();
           }
