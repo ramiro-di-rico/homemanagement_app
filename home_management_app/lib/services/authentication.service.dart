@@ -8,7 +8,6 @@ import 'cryptography.service.dart';
 class AuthenticationService {
   CryptographyService cryptographyService;
   UserRepository userRepository;
-  //String url = '206.189.239.38:5300';
   String url = 'ramiro-di-rico.dev';
   String authenticateApi = 'identity/api/Authentication/SignIn';
   String registrationApi = 'api/registration';
