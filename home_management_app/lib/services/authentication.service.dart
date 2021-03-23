@@ -8,8 +8,9 @@ import 'cryptography.service.dart';
 class AuthenticationService {
   CryptographyService cryptographyService;
   UserRepository userRepository;
-  String url = '206.189.239.38:5300';
-  String authenticateApi = 'api/Authentication/SignIn';
+  //String url = '206.189.239.38:5300';
+  String url = 'ramiro-di-rico.dev';
+  String authenticateApi = 'identity/api/Authentication/SignIn';
   String registrationApi = 'api/registration';
   UserModel user;
 
@@ -42,7 +43,7 @@ class AuthenticationService {
   Future<bool> register(String email, String password) async {
     var pass = await cryptographyService.encryptToAES(password);
 
-    var response = await http.post(Uri.http(this.url, this.registrationApi),
+    var response = await http.post(Uri.https(this.url, this.registrationApi),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'HomeManagementApp': 'D3BUGT0K3N'
@@ -58,12 +59,13 @@ class AuthenticationService {
   }
 
   Future<bool> _internalAuthenticate(String email, String password) async {
-    var response = await http.post(Uri.http(this.url, this.authenticateApi),
+    var response = await http.post(Uri.https(this.url, this.authenticateApi),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'HomeManagementApp': 'D3BUGT0K3N'
         },
-        body: jsonEncode(<String, String>{'email': email, 'password': password}));
+        body:
+            jsonEncode(<String, String>{'email': email, 'password': password}));
 
     if (response.statusCode == 200) {
       this.user = UserModel.fromJson(json.decode(response.body));

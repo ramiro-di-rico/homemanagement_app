@@ -6,26 +6,25 @@ import 'api.service.factory.dart';
 import 'authentication.service.dart';
 import 'dart:convert';
 
-class TransactionService{
+class TransactionService {
   AuthenticationService authenticationService;
   ApiServiceFactory apiServiceFactory;
   final String apiName = 'transactions';
 
-  TransactionService({@required this.authenticationService}){
-    this.apiServiceFactory = ApiServiceFactory(authenticationService: this.authenticationService);
+  TransactionService({@required this.authenticationService}) {
+    this.apiServiceFactory =
+        ApiServiceFactory(authenticationService: this.authenticationService);
   }
 
   Future<List<TransactionModel>> page(TransactionPageModel page) async {
     var token = this.authenticationService.getUserToken();
 
-    var uri = Uri.parse('http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/page?currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+    var uri = Uri.parse(
+        'https://ramiro-di-rico.dev/homemanagementapi/api/transactions/v1/account/${page.accountId}/page?currentPage=${page.currentPage}&pageSize=${page.pageCount}');
 
-    var response = await http.get(
-      uri,
-        headers: <String, String>{
-          'Authorization': token,
-        }
-      );
+    var response = await http.get(uri, headers: <String, String>{
+      'Authorization': token,
+    });
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
@@ -37,15 +36,15 @@ class TransactionService{
     }
   }
 
-  Future<List<TransactionModel>> pageNameFiltering(TransactionPageModel page, String name) async {
+  Future<List<TransactionModel>> pageNameFiltering(
+      TransactionPageModel page, String name) async {
     var token = this.authenticationService.getUserToken();
 
-    var uri = Uri.parse('http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/page?currentPage=${page.currentPage}&pageSize=${page.pageCount}');
-    var response = await http.get(uri,
-        headers: <String, String>{
-          'Authorization': token,
-        }
-      );
+    var uri = Uri.parse(
+        'http://206.189.239.38:5100/api/transactions/v1/account/${page.accountId}/page?currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+    var response = await http.get(uri, headers: <String, String>{
+      'Authorization': token,
+    });
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
@@ -67,7 +66,7 @@ class TransactionService{
   }
 
   Future update(TransactionModel transactionModel) async {
-     var body = json.encode(transactionModel.toJson());
+    var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(apiName, body);
   }
 }

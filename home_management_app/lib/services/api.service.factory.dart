@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/services/authentication.service.dart';
 import 'package:http/http.dart' as http;
 
-class ApiServiceFactory{
-
+class ApiServiceFactory {
   AuthenticationService authenticationService;
-  Uri backendEndpoint = Uri.http('206.189.239.38:5100', 'api/');
+  Uri backendEndpoint =
+      Uri.https('ramiro-di-rico.dev', 'homemanagementapi/api/');
 
-  ApiServiceFactory(
-      {@required this.authenticationService});
+  ApiServiceFactory({@required this.authenticationService});
 
   Future<List> fetchList(String api) async {
     var token = this.authenticationService.getUserToken();
@@ -29,14 +28,15 @@ class ApiServiceFactory{
   Future apiGet(String api) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.get(backendEndpoint.resolve(api),
-        headers: <String, String>{
-          'Authorization': token,
-          'Content-Type': 'application/json',
-        },
+    var response = await http.get(
+      backendEndpoint.resolve(api),
+      headers: <String, String>{
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
     );
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       throw Exception('Failed to post to $api');
     }
 
@@ -52,10 +52,9 @@ class ApiServiceFactory{
           'Authorization': token,
           'Content-Type': 'application/json',
         },
-        body: body
-    );
+        body: body);
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       throw Exception('Failed to post to $api');
     }
   }
@@ -68,10 +67,9 @@ class ApiServiceFactory{
           'Authorization': token,
           'Content-Type': 'application/json',
         },
-        body: body
-    );
+        body: body);
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       throw Exception('Failed to put to $api');
     }
   }
@@ -79,14 +77,15 @@ class ApiServiceFactory{
   Future apiDelete(String api, String id) async {
     var token = this.authenticationService.getUserToken();
 
-    var response = await http.delete(backendEndpoint.resolve('$api/$id'),
-        headers: <String, String>{
-          'Authorization': token,
-          'Content-Type': 'application/json',
-        },
+    var response = await http.delete(
+      backendEndpoint.resolve('$api/$id'),
+      headers: <String, String>{
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
     );
 
-    if(response.statusCode != 200){
+    if (response.statusCode != 200) {
       throw Exception('Failed to put to $api');
     }
   }
