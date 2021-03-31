@@ -13,6 +13,7 @@ import 'edit.transaction.dart';
 
 class TransactionListController {
   void Function() showFilters;
+  void Function() displayBox;
 }
 
 class TransactionListWidget extends StatefulWidget {
@@ -40,8 +41,16 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   ScrollController scrollController = ScrollController();
   GlobalKey<FlipCardState> flipCardKey = GlobalKey<FlipCardState>();
 
+  bool displayFilteringBox = false;
+
   void showFilters() {
     flipCardKey.currentState.toggleCard();
+  }
+
+  void displayBox() {
+    setState(() {
+      this.displayFilteringBox = !this.displayFilteringBox;
+    });
   }
 
   @override
@@ -53,6 +62,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
 
     if (this.widget.controller != null) {
       this.widget.controller.showFilters = showFilters;
+      this.widget.controller.displayBox = displayBox;
     }
     super.initState();
   }
@@ -69,53 +79,62 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
   @override
   Widget build(BuildContext context) {
     keyboardFactory = KeyboardFactory(context: context);
-    return Expanded(
-      child: RefreshIndicator(
-        onRefresh: () async {
-          transactionPagingService.refresh();
-          await transactionPagingService.loadFirstPage(widget.accountId);
-          this.load();
-        },
-        child: FlipCard(
-          key: flipCardKey,
-          flipOnTouch: false,
-          back: buildFilteringCard(),
-          front: buildListViewCard(),
+    return Column(
+      children: [
+        AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          height: displayFilteringBox
+              ? MediaQuery.of(context).size.height * 0.66
+              : MediaQuery.of(context).size.height * 0.72,
+          child: RefreshIndicator(
+              onRefresh: () async {
+                transactionPagingService.refresh();
+                await transactionPagingService.loadFirstPage(widget.accountId);
+                this.load();
+              },
+              child: buildListViewCard()
+              /*FlipCard(
+              key: flipCardKey,
+              flipOnTouch: false,
+              back: buildFilteringCard(),
+              front: buildListViewCard(),
+            ),*/
+              ),
         ),
-      ),
-    );
-  }
-
-  Card buildFilteringCard() {
-    return Card(
-      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-      child: Column(
-        children: [
-          Container(
+        AnimatedContainer(
             child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: filteringNameController,
-                  decoration: InputDecoration(
-                    hintText: 'Filter by Name',
-                    suffix: TextButton(
-                      onPressed: applyFilterButton,
+              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: TextField(
+                controller: filteringNameController,
+                decoration: InputDecoration(
+                    hintText: 'Filter by name',
+                    prefix: TextButton(
                       child: Icon(Icons.check),
+                      onPressed: () {
+                        setState(() {
+                          transctions.clear();
+                          FocusScope.of(context).unfocus();
+                          transactionPagingService
+                              .applyFilterByName(filteringNameController.text);
+                          displayFilteringBox = false;
+                          filteringNameController.clear();
+                        });
+                      },
                       style: ButtonStyle(
                           shape: MaterialStateProperty.all<CircleBorder>(
                               CircleBorder())),
-                    ),
-                  ),
-                )),
-          ),
-        ],
-      ),
+                    )),
+              ),
+            ),
+            duration: Duration(milliseconds: 500),
+            height: displayFilteringBox ? 55 : 0)
+      ],
     );
   }
 
   Card buildListViewCard() {
     return Card(
-      margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+      margin: EdgeInsets.fromLTRB(10, 5, 10, 0),
       child: transctions.length > 0
           ? ListView.builder(
               padding: EdgeInsets.fromLTRB(0, 10, 0, 0),

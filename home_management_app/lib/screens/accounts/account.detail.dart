@@ -5,6 +5,7 @@ import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/screens/transactions/add.transaction.dart';
 import 'package:home_management_app/screens/transactions/transactions.list.dart';
+import 'package:home_management_app/services/transaction.paging.service.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 
 import 'widgets/account.info.dart';
@@ -21,6 +22,10 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   AccountModel account;
   TransactionListController transactionListController =
       TransactionListController();
+  TransactionPagingService transactionPagingService =
+      GetIt.I<TransactionPagingService>();
+
+  bool displayFilteringBox = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +65,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
         child: Icon(Icons.filter_list),
         backgroundColor: Colors.blue,
         labelStyle: TextStyle(fontSize: 18.0),
-        onTap: () => transactionListController.showFilters()));
+        onTap: () => displayBox()));
 
     options.add(SpeedDialChild(
       child: Icon(Icons.add),
@@ -75,6 +80,13 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       animatedIcon: AnimatedIcons.menu_close,
       children: options,
     );
+  }
+
+  displayBox() {
+    setState(() {
+      //this.displayFilteringBox = !this.displayFilteringBox;
+      this.transactionListController.displayBox.call();
+    });
   }
 
   AppBar buildAppBar() {
