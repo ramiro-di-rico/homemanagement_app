@@ -45,9 +45,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     });
     scrollController.addListener(onScroll);
     transactionPagingService.loadFirstPage(account.id);
-    filteringTextFocusNode.addListener(() {
-      print("loose focus");
-    });
+    filteringTextFocusNode.addListener(() {});
     super.initState();
   }
 
@@ -80,44 +78,43 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
           child: Column(
             children: [
               AccountDetailWidget(accountModel: account),
-              Expanded(
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                height: displayFilteringBox ? 60 : 0,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5),
-                  child: Column(
-                    children: [
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 500),
-                        height: displayFilteringBox ? 60 : 0,
-                        child: Card(
-                          child: TextField(
-                            focusNode: filteringTextFocusNode,
-                            controller: filteringNameController,
-                            decoration: InputDecoration(
-                                hintText: 'Filter by name',
-                                focusedBorder: displayFilteringBox
-                                    ? null
-                                    : InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                prefix: TextButton(
-                                  child: Icon(Icons.check),
-                                  onPressed: () {
-                                    setState(() {
-                                      FocusScope.of(context).unfocus();
-                                      transactionPagingService
-                                          .applyFilterByName(
-                                              filteringNameController.text);
-                                      displayFilteringBox = false;
-                                      filteringNameController.clear();
-                                    });
-                                  },
-                                  style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<
-                                          CircleBorder>(CircleBorder())),
-                                )),
-                          ),
-                        ),
-                      ),
-                      Expanded(
+                  child: Card(
+                    child: TextField(
+                      focusNode: filteringTextFocusNode,
+                      controller: filteringNameController,
+                      decoration: InputDecoration(
+                          hintText: 'Filter by name',
+                          focusedBorder:
+                              displayFilteringBox ? null : InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          prefix: TextButton(
+                            child: Icon(Icons.check),
+                            onPressed: () {
+                              setState(() {
+                                FocusScope.of(context).unfocus();
+                                transactionPagingService.applyFilterByName(
+                                    filteringNameController.text);
+                                displayFilteringBox = false;
+                                filteringNameController.clear();
+                              });
+                            },
+                            style: ButtonStyle(
+                                shape: MaterialStateProperty.all<CircleBorder>(
+                                    CircleBorder())),
+                          )),
+                    ),
+                  ),
+                ),
+              ),
+              transactionPagingService.transactions.length > 0
+                  ? Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
                         child: ListView.builder(
                             controller: scrollController,
                             itemCount: this
@@ -137,11 +134,13 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                                   index: index,
                                   category: category);
                             }),
-                      )
-                    ],
-                  ),
-                ),
-              )
+                      ),
+                    )
+                  : Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
             ],
           ),
         ),
