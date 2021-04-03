@@ -27,11 +27,10 @@ class _AccountListScreenState extends State<AccountListScreen> {
     super.dispose();
   }
 
-  load(){
+  load() {
     setState(() {
       this.accounts = accountsRepo.accounts;
     });
-    
   }
 
   Future refreshAccounts() async {
@@ -63,17 +62,23 @@ class _AccountListScreenState extends State<AccountListScreen> {
                 item.name,
               ),
               trailing: Text(
-                item.balance % 1 == 0 ?
-                item.balance.toStringAsFixed(0) :
-                item.balance.toStringAsFixed(2),
+                item.balance % 1 == 0
+                    ? item.balance.toStringAsFixed(0)
+                    : item.balance.toStringAsFixed(2),
                 style: TextStyle(
                     color: item.balance >= 0
                         ? Colors.greenAccent
                         : Colors.redAccent),
               ),
               onTap: () {
-                Navigator.pushNamed(context, AccountDetailScren.id,
-                    arguments: item);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AccountDetailScren(
+                      account: item,
+                    ),
+                  ),
+                );
               },
               onLongPress: () {
                 Navigator.push(

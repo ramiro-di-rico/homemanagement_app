@@ -10,14 +10,11 @@ class AccountDetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return buildCard();
-  }
-
-  Card buildCard() {
     var currency = GetIt.I<CurrencyRepository>()
         .currencies
         .firstWhere((element) => element.id == accountModel.currencyId);
     return Card(
+      elevation: 5,
       margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Column(children: [
         ListTile(
@@ -34,25 +31,26 @@ class AccountDetailWidget extends StatelessWidget {
         ),
         ListTile(
             title: Row(
-              children: [
-                Text(accountModel.accountTypeToString()),
-                SizedBox(width: 20),
-                Text('Currency:'),
-                SizedBox(width: 20),
-                Text(currency.name)
-              ],
-            )),
+          children: [
+            Text(accountModel.accountTypeToString()),
+            SizedBox(width: 20),
+            Text('Currency:'),
+            SizedBox(width: 20),
+            Text(currency.name)
+          ],
+        )),
       ]),
     );
   }
 
   Icon buildTrendingIcon() {
+    if (accountModel.balance == 0) return Icon(Icons.trending_flat);
 
-    if(accountModel.balance == 0) return Icon(Icons.trending_flat);
+    if (accountModel.balance > 0)
+      return Icon(Icons.trending_up, color: Colors.greenAccent);
 
-    if(accountModel.balance > 0) return Icon(Icons.trending_up, color: Colors.greenAccent);
-
-    if(accountModel.balance < 0) return Icon(Icons.trending_down, color: Colors.redAccent); 
+    if (accountModel.balance < 0)
+      return Icon(Icons.trending_down, color: Colors.redAccent);
 
     return Icon(Icons.trending_flat);
   }
