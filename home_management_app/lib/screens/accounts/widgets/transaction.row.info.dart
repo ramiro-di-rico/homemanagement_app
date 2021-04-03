@@ -52,15 +52,18 @@ class TransactionRowInfo extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(transaction.name),
-                    Text(
-                      transaction.price % 1 == 0
-                          ? transaction.price.toStringAsFixed(0)
-                          : transaction.price.toStringAsFixed(2),
-                      style: TextStyle(
-                          color: transaction.transactionType ==
-                                  TransactionType.Income
-                              ? Colors.greenAccent
-                              : Colors.redAccent),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      child: Text(
+                        transaction.price % 1 == 0
+                            ? transaction.price.toStringAsFixed(0)
+                            : transaction.price.toStringAsFixed(2),
+                        style: TextStyle(
+                            color: transaction.transactionType ==
+                                    TransactionType.Income
+                                ? Colors.greenAccent
+                                : Colors.redAccent),
+                      ),
                     )
                   ],
                 ),
@@ -70,7 +73,7 @@ class TransactionRowInfo extends StatelessWidget {
                       DateFormat.MMMd().format(transaction.date),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      padding: EdgeInsets.symmetric(horizontal: 15),
                       child: Chip(
                         label: Text(category.name),
                       ),
