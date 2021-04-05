@@ -33,13 +33,13 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   TextEditingController filteringNameController = TextEditingController();
   ScrollController scrollController = ScrollController();
   bool displayFilteringBox = false;
+  bool resultsFiltered = false;
   List<TransactionModel> transactions = [];
   FocusNode filteringTextFocusNode = FocusNode();
 
   @override
   void initState() {
     account = widget.account;
-    filteringNameController.addListener(onFilterNameChanged);
     transactionPagingService.addListener(() {
       setState(() {});
     });
@@ -52,7 +52,6 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   @override
   void dispose() {
     scrollController.removeListener(onScroll);
-    filteringNameController.removeListener(onFilterNameChanged);
     filteringNameController.dispose();
     filteringTextFocusNode.dispose();
     super.dispose();
@@ -72,6 +71,20 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
             ],
           ),
         ),
+        actions: [
+          Visibility(
+            visible: resultsFiltered,
+            child: IconButton(
+              icon: Icon(Icons.clear_all),
+              onPressed: () {
+                setState(() {
+                  resultsFiltered = false;
+                  transactionPagingService.refresh();
+                });
+              },
+            ),
+          )
+        ],
       ),
       body: SafeArea(
         child: Container(
@@ -80,9 +93,9 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
               AccountDetailWidget(accountModel: account),
               AnimatedContainer(
                 duration: Duration(milliseconds: 300),
-                height: displayFilteringBox ? 60 : 0,
+                height: displayFilteringBox ? 80 : 0,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                   child: Card(
                     child: TextField(
                       focusNode: filteringTextFocusNode,
@@ -101,6 +114,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                                     filteringNameController.text);
                                 displayFilteringBox = false;
                                 filteringNameController.clear();
+                                resultsFiltered = true;
                               });
                             },
                             style: ButtonStyle(
@@ -203,17 +217,9 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   onScroll() {
     if (scrollController.offset >= scrollController.position.maxScrollExtent &&
         !scrollController.position.outOfRange) {
-      print('reached bottom');
       nextPage();
     }
-
-    if (scrollController.offset <= scrollController.position.minScrollExtent &&
-        !scrollController.position.outOfRange) {
-      print('reached top');
-    }
   }
-
-  void onFilterNameChanged() {}
 
   void applyNameFiltering() {
     transactionPagingService.applyFilterByName(filteringNameController.text);
