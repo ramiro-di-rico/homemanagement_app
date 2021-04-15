@@ -97,30 +97,17 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                   child: Card(
-                    child: TextField(
-                      focusNode: filteringTextFocusNode,
-                      controller: filteringNameController,
-                      decoration: InputDecoration(
-                          hintText: 'Filter by name',
-                          focusedBorder:
-                              displayFilteringBox ? null : InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          prefix: TextButton(
-                            child: Icon(Icons.check),
-                            onPressed: () {
-                              setState(() {
-                                FocusScope.of(context).unfocus();
-                                transactionPagingService.applyFilterByName(
-                                    filteringNameController.text);
-                                displayFilteringBox = false;
-                                filteringNameController.clear();
-                                resultsFiltered = true;
-                              });
-                            },
-                            style: ButtonStyle(
-                                shape: MaterialStateProperty.all<CircleBorder>(
-                                    CircleBorder())),
-                          )),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: TextField(
+                        focusNode: filteringTextFocusNode,
+                        controller: filteringNameController,
+                        decoration: InputDecoration(
+                            hintText: 'Filter by name',
+                            focusedBorder:
+                                displayFilteringBox ? null : InputBorder.none,
+                            enabledBorder: InputBorder.none),
+                      ),
                     ),
                   ),
                 ),
@@ -159,7 +146,20 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
           ),
         ),
       ),
-      floatingActionButton: buildSpeedDial(context),
+      floatingActionButton: displayFilteringBox
+          ? FloatingActionButton(
+              child: Icon(Icons.check),
+              onPressed: () {
+                setState(() {
+                  FocusScope.of(context).unfocus();
+                  transactionPagingService
+                      .applyFilterByName(filteringNameController.text);
+                  displayFilteringBox = false;
+                  filteringNameController.clear();
+                  resultsFiltered = true;
+                });
+              })
+          : buildSpeedDial(context),
     );
   }
 
