@@ -15,14 +15,14 @@ class TransactionPagingService extends ChangeNotifier {
 
   TransactionPagingService(
       {@required this.transactionService,
-      @required this.transactionRepository})
-  {
+      @required this.transactionRepository}) {
     this.transactionRepository.addListener(refresh);
-  }  
+  }
 
   Future refresh() async {
     this.transactions.clear();
     this.transactionRepository.clear(this.currentAccountId);
+    this.clearFilters();
     await this.loadFirstPage(this.currentAccountId);
   }
 
@@ -47,8 +47,9 @@ class TransactionPagingService extends ChangeNotifier {
     var query = transactionRepository.transactions
         .where((element) => element.accountId == page.accountId);
 
-    if(nameFiltering.length > 1){
-      query = query.where((element) => element.name.toLowerCase().contains(nameFiltering.toLowerCase()));
+    if (nameFiltering.length > 1) {
+      query = query.where((element) =>
+          element.name.toLowerCase().contains(nameFiltering.toLowerCase()));
     }
 
     List<TransactionModel> result = query
@@ -57,14 +58,15 @@ class TransactionPagingService extends ChangeNotifier {
         .toList();
 
     if (result.length < this.pageSize) {
-      if(nameFiltering.length > 1){
-        result = await this.transactionService.pageNameFiltering(page, nameFiltering);
+      if (nameFiltering.length > 1) {
+        result = await this
+            .transactionService
+            .pageNameFiltering(page, nameFiltering);
         this.transactionRepository.internalAdd(result);
-      }else{
+      } else {
         result = await this.transactionService.page(page);
         this.transactionRepository.internalAdd(result);
       }
-      
     }
     return result;
   }
