@@ -75,3 +75,4 @@ build/
 /home_management_app/android/app/src/main/AndroidManifest.xml
 /home_management_app/key.properties
 /home_management_app/android/app/build.gradle
+home_management_app/keystore.jks
