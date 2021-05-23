@@ -40,22 +40,23 @@ class _LoginScreenState extends State<LoginScreen> {
     await userRepository.load();
     authenticationService.init();
 
-    if (authenticationService.canAutoAuthenticate()) {
-      if (!authenticationService.isAuthenticated()) {
-        var biometricsEnabled = await auth.canCheckBiometrics;
-        if (biometricsEnabled) {
-          var biometricAuthenticated = await auth.authenticate(
-              localizedReason: 'Scan your fingerprint to authenticate',
-              useErrorDialogs: true,
-              stickyAuth: true,
-              biometricOnly: true);
-          if (biometricAuthenticated) {
-            await this.authenticationService.autoAuthenticate();
+    try {
+      if (authenticationService.canAutoAuthenticate()) {
+        if (!authenticationService.isAuthenticated()) {
+          if (await auth.canCheckBiometrics) {
+            var biometricAuthenticated = await auth.authenticate(
+                localizedReason: 'Scan your fingerprint to authenticate',
+                useErrorDialogs: true,
+                stickyAuth: true,
+                biometricOnly: true);
+            if (biometricAuthenticated) {
+              await this.authenticationService.autoAuthenticate();
+            }
           }
         }
+        Navigator.popAndPushNamed(context, HomeScreen.id);
       }
-      Navigator.popAndPushNamed(context, HomeScreen.id);
-    }
+    } catch (e) {}
   }
 
   @override
@@ -113,13 +114,14 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.all(20),
       child: TextButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(this.enableButton ? Colors.blueAccent : Colors.grey),
-          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.fromLTRB(20, 10, 20, 10)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
+            backgroundColor: MaterialStateProperty.all<Color>(
+                this.enableButton ? Colors.blueAccent : Colors.grey),
+            padding: MaterialStateProperty.all<EdgeInsets>(
+                EdgeInsets.fromLTRB(20, 10, 20, 10)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.elliptical(20, 20)),
-            ))
-        ),
+            ))),
         child: Icon(Icons.send, color: Colors.white),
         onPressed: onButtonPressed,
       ),
@@ -130,18 +132,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return Padding(
       padding: EdgeInsets.all(20),
       child: PasswordTextField(
-        onTextChanged: onPasswordChanged,
-        enablePassword: passwordFieldEnabled),
+          onTextChanged: onPasswordChanged,
+          enablePassword: passwordFieldEnabled),
     );
   }
 
   Padding buildEmailTextField() {
     return Padding(
-      padding: EdgeInsets.all(20),
-      child: EmailTextField(
-        onTextChanged: onEmailChanged,
-      )
-    );
+        padding: EdgeInsets.all(20),
+        child: EmailTextField(
+          onTextChanged: onEmailChanged,
+        ));
   }
 
   @override
@@ -167,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  bool canLogin(){
+  bool canLogin() {
     return this.email.length > 0 && this.password.length > 0;
   }
 
@@ -178,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> onButtonPressed() async {
-    if(!this.canLogin()){
+    if (!this.canLogin()) {
       return;
     }
 

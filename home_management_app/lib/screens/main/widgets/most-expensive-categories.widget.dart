@@ -79,7 +79,10 @@ class _MostExpensiveCategoriesChartState
           getTextStyles: buildAxisTextStyle,
           getTitles: (value) {
             var metric = categories[value.toInt()];
-            return metric.category.name;
+            return metric.category.name.length > 10
+                ? metric.category.name
+                    .substring(0, metric.category.name.indexOf(" "))
+                : metric.category.name;
           },
         ),
         leftTitles: SideTitles(
