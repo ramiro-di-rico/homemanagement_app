@@ -91,27 +91,6 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
           child: Column(
             children: [
               AccountDetailWidget(accountModel: account),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                height: displayFilteringBox ? 80 : 0,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: TextField(
-                        focusNode: filteringTextFocusNode,
-                        controller: filteringNameController,
-                        decoration: InputDecoration(
-                            hintText: 'Filter by name',
-                            focusedBorder:
-                                displayFilteringBox ? null : InputBorder.none,
-                            enabledBorder: InputBorder.none),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               transactionPagingService.transactions.length > 0
                   ? Expanded(
                       child: Padding(
@@ -141,7 +120,28 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                       child: Center(
                         child: CircularProgressIndicator(),
                       ),
-                    )
+                    ),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                height: displayFilteringBox ? 80 : 0,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      child: TextField(
+                        focusNode: filteringTextFocusNode,
+                        controller: filteringNameController,
+                        decoration: InputDecoration(
+                            hintText: 'Filter by name',
+                            focusedBorder:
+                                displayFilteringBox ? null : InputBorder.none,
+                            enabledBorder: InputBorder.none),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

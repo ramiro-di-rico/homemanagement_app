@@ -61,12 +61,13 @@ class _HomeScreenState extends State<HomeScreen> {
     this.addFloatingActions();
 
     return Scaffold(
-      appBar: buildAppBar(),
-      body: children[bottomBarNavigationIndex],
-      floatingActionButton: floatingButtons[bottomBarNavigationIndex],
-      bottomNavigationBar: buildBottomNavigationBar(context),
-      floatingActionButtonLocation: bottomBarNavigationIndex == 1 ? FloatingActionButtonLocation.centerFloat : FloatingActionButtonLocation.endFloat
-    );
+        appBar: buildAppBar(context),
+        body: children[bottomBarNavigationIndex],
+        floatingActionButton: floatingButtons[bottomBarNavigationIndex],
+        bottomNavigationBar: buildBottomNavigationBar(context),
+        floatingActionButtonLocation: bottomBarNavigationIndex == 1
+            ? FloatingActionButtonLocation.centerFloat
+            : FloatingActionButtonLocation.endFloat);
   }
 
   BottomNavigationBar buildBottomNavigationBar(BuildContext context) {
@@ -82,28 +83,28 @@ class _HomeScreenState extends State<HomeScreen> {
       items: [
         BottomNavigationBarItem(
           label: 'Dashboard',
-          icon: Icon(Icons.dashboard),          
+          icon: Icon(Icons.dashboard),
         ),
         BottomNavigationBarItem(
           label: 'Accounts',
           icon: Icon(Icons.account_balance_wallet),
         ),
-        BottomNavigationBarItem(
-          label: 'Settings',
-          icon: Icon(Icons.settings))
+        BottomNavigationBarItem(label: 'Settings', icon: Icon(Icons.settings))
       ],
     );
   }
 
-  AppBar buildAppBar() {
+  AppBar buildAppBar(BuildContext context) {
     return AppBar(
       title: Text('Home'),
       actions: [
         TextButton(
             onPressed: displayNotifications,
-            child: Icon(hasNotifications
-                ? Icons.notifications
-                : Icons.notifications_none)),
+            child: Icon(
+                hasNotifications
+                    ? Icons.notifications
+                    : Icons.notifications_none,
+                color: Theme.of(context).bottomAppBarColor)),
       ],
     );
   }
