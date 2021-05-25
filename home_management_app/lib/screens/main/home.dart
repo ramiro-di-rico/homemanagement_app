@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
     this.addFloatingActions();
 
     return Scaffold(
-        appBar: buildAppBar(context),
+        appBar: buildAppBar(),
         body: children[bottomBarNavigationIndex],
         floatingActionButton: floatingButtons[bottomBarNavigationIndex],
         bottomNavigationBar: buildBottomNavigationBar(context),
@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  AppBar buildAppBar(BuildContext context) {
+  AppBar buildAppBar() {
     return AppBar(
       title: Text('Home'),
       actions: [
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 hasNotifications
                     ? Icons.notifications
                     : Icons.notifications_none,
-                color: Theme.of(context).bottomAppBarColor)),
+                color: Colors.white)),
       ],
     );
   }
