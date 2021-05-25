@@ -87,15 +87,13 @@ class _AccountsMetricSeriesWidgetState
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) {
                 var labels = touchedSpots.map((e) {
-
                   var serie = series[e.barIndex];
-                  var account = accountRepository.accounts.firstWhere((element) => element.id == serie.accountId);
+                  var account = accountRepository.accounts
+                      .firstWhere((element) => element.id == serie.accountId);
 
                   var toolTip = LineTooltipItem(
                     '${account.name} ${serie.monthSeries[e.spotIndex].average}',
-                    TextStyle(
-                      color: lineColors[e.barIndex]
-                    ),
+                    TextStyle(color: lineColors[e.barIndex]),
                   );
                   return toolTip;
                 }).toList();
@@ -151,29 +149,7 @@ class _AccountsMetricSeriesWidgetState
   }
 
   String calculateYAxisLabel(double value) {
-    var firstNumber = getFirstPart(value);
-
-    if (firstNumber % 2 == 0) {
-      var v = value / 1000;
-      return v.toStringAsFixed(0) + ' k';
-    } else {
-      return '';
-    }
-  }
-
-  int getFirstPart(double value) {
-    var val = value.toStringAsFixed(0);
-
-    if (val.length < 5) {
-      return int.parse(val[0]);
-    }
-
-    if (val.length > 4 && val.length < 6) {
-      var part = val.substring(0, 2);
-      return int.parse(part);
-    }
-
-    return 0;
+    return value % 1000.0 == 0 ? (value / 1000).toStringAsFixed(0) + " k" : "";
   }
 
   List<MonthSerie> getMonthSeries() {
