@@ -18,7 +18,7 @@ jobs:
         channel: 'stable' # or: 'beta', 'dev' or 'master'
     - run: flutter pub get
     #- run: flutter test need to include test folder
-    - run: flutter build apk
+    - run: flutter build apk --split-per-abi
     
     # Upload generated apk to the artifacts.
     - uses: actions/upload-artifact@v1
