@@ -34,7 +34,7 @@ jobs:
       working-directory: android
 
     # Build the application.
-    - run: flutter build -v apk --release
+    - run: flutter build -v apk --split-per-abi
     #- run: flutter build apk --split-per-abi
     
     # Upload generated apk to the artifacts.
