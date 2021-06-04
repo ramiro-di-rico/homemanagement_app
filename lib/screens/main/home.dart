@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   AppBar buildAppBar() {
     return AppBar(
-      title: Text('Home'),
+      title: Text('Home Management'),
       actions: [
         TextButton(
             onPressed: displayNotifications,
