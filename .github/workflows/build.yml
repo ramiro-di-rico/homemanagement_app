@@ -19,7 +19,7 @@ jobs:
     - run: flutter pub get
     #- run: flutter test need to include test folder
     - name: Configure Keystore for Android
-      if: matrix.target == 'Android'
+      #if: matrix.target == 'Android'
       run: |
         echo "$PLAY_STORE_UPLOAD_KEY" | base64 --decode > upload-keystore.jks
         echo "storeFile=upload-keystore.jks" >> key.properties
