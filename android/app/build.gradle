@@ -47,7 +47,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("../upload-keystore.jks")
+            storeFile file("../../upload-keystore.jks")
             storePassword = "$System.env.KEYSTORE_KEY_PASSWORD"
             keyAlias = "$System.env.KEYSTORE_KEY_ALIAS"
             keyPassword = "$System.env.KEYSTORE_KEY_PASSWORD"
