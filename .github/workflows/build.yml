@@ -32,15 +32,6 @@ jobs:
         KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
         KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
       working-directory: android
-  
-    - name: Read key.properties
-      id: package
-      uses: juliangruber/read-file-action@v1
-      with:
-        path: ./android/app/upload-keystore.jks
-    - name: Echo upload-keystore.jks
-      run: echo "${{ steps.package.outputs.content }}"
-
 
     # Build the application.
     - run: flutter build -v apk --split-per-abi
