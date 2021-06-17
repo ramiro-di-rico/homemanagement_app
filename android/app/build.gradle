@@ -27,6 +27,12 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+println "==============================Key===Properties===Values============================================="
+println keystoreProperties['keyAlias']
+println keystoreProperties['keyPassword']
+println keystoreProperties['storePassword']
+println "==============================Key===Properties===Values============================================="
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
