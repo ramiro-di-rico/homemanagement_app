@@ -92,14 +92,7 @@ class _TransactionListWidgetState extends State<TransactionListWidget> {
                 await transactionPagingService.loadFirstPage(widget.accountId);
                 this.load();
               },
-              child: buildListViewCard()
-              /*FlipCard(
-              key: flipCardKey,
-              flipOnTouch: false,
-              back: buildFilteringCard(),
-              front: buildListViewCard(),
-            ),*/
-              ),
+              child: buildListViewCard()),
         ),
         AnimatedContainer(
             child: Padding(
