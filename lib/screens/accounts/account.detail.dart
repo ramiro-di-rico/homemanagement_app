@@ -93,27 +93,35 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
               AccountDetailWidget(accountModel: account),
               transactionPagingService.transactions.length > 0
                   ? Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        child: ListView.builder(
-                            controller: scrollController,
-                            itemCount: this
-                                .transactionPagingService
-                                .transactions
-                                .length,
-                            itemBuilder: (context, index) {
-                              var transaction = this
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          transactionPagingService.refresh();
+                          await transactionPagingService
+                              .loadFirstPage(account.id);
+                          transactionPagingService.loadFirstPage(account.id);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: ListView.builder(
+                              controller: scrollController,
+                              itemCount: this
                                   .transactionPagingService
-                                  .transactions[index];
-                              var category = categoryRepository.categories
-                                  .firstWhere((element) =>
-                                      element.id == transaction.categoryId);
+                                  .transactions
+                                  .length,
+                              itemBuilder: (context, index) {
+                                var transaction = this
+                                    .transactionPagingService
+                                    .transactions[index];
+                                var category = categoryRepository.categories
+                                    .firstWhere((element) =>
+                                        element.id == transaction.categoryId);
 
-                              return TransactionRowInfo(
-                                  transaction: transaction,
-                                  index: index,
-                                  category: category);
-                            }),
+                                return TransactionRowInfo(
+                                    transaction: transaction,
+                                    index: index,
+                                    category: category);
+                              }),
+                        ),
                       ),
                     )
                   : Expanded(

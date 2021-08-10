@@ -90,7 +90,7 @@ class TransactionRowInfo extends StatelessWidget {
 
   Future remove(item, index) async {
     try {
-      //this.transactionRepository.remove(item);
+      this.transactionRepository.remove(item);
       /*ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(item.name + ' removed')));*/
     } catch (ex) {
