@@ -1,4 +1,4 @@
-# home_management_app
+# Home Management App
 
 A new Flutter project.
 
