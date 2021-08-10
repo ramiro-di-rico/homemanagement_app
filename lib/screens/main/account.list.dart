@@ -57,39 +57,43 @@ class _AccountListScreenState extends State<AccountListScreen> {
               color: Colors.redAccent,
             ),
             onDismissed: (direction) => remove(item, index),
-            child: ListTile(
-              title: Text(
-                item.name,
-              ),
-              trailing: Text(
-                item.balance % 1 == 0
-                    ? item.balance.toStringAsFixed(0)
-                    : item.balance.toStringAsFixed(2),
-                style: TextStyle(
-                    color: item.balance >= 0
-                        ? Colors.greenAccent
-                        : Colors.redAccent),
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AccountDetailScren(
-                      account: item,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50)),
+              child: ListTile(
+                title: Text(
+                  item.name,
+                ),
+                trailing: Text(
+                  item.balance % 1 == 0
+                      ? item.balance.toStringAsFixed(0)
+                      : item.balance.toStringAsFixed(2),
+                  style: TextStyle(
+                      color: item.balance >= 0
+                          ? Colors.greenAccent
+                          : Colors.redAccent),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AccountDetailScren(
+                        account: item,
+                      ),
                     ),
-                  ),
-                );
-              },
-              onLongPress: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditAccountScreen(
-                      account: item,
+                  );
+                },
+                onLongPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditAccountScreen(
+                        account: item,
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           );
         },
