@@ -86,22 +86,10 @@ class _MostExpensiveCategoriesChartState
           },
         ),
         leftTitles: SideTitles(
-          showTitles: true,
-          margin: 40,
-          getTextStyles: buildAxisTextStyle,
-          reservedSize: 20,
-          getTitles: (value) {
-            if (value == 0) {
-              return '1K';
-            } else if (value == 10000) {
-              return '10K';
-            } else if (value == 20000) {
-              return '20K';
-            } else {
-              return '';
-            }
-          },
-        ),
+            showTitles: true,
+            margin: 40,
+            getTextStyles: buildAxisTextStyle,
+            reservedSize: 20),
       ),
       barGroups: categories
           .map(
