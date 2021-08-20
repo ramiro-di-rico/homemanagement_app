@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   AppBar buildAppBar() {
     return AppBar(
       title: Text('Home Management'),
-      actions: [
+      /*actions: [
         TextButton(
             onPressed: displayNotifications,
             child: Icon(
@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? Icons.notifications
                     : Icons.notifications_none,
                 color: Colors.white)),
-      ],
+      ],*/
     );
   }
 
