@@ -75,6 +75,13 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
       alignment: BarChartAlignment.spaceBetween,
       borderData: FlBorderData(show: false),
       titlesData: FlTitlesData(
+        topTitles: SideTitles(
+            showTitles: true,
+            getTitles: (value) {
+              var metricValue = metric.categories.elementAt(value.floor());
+              return metricValue.price.floor().toString();
+            },
+            getTextStyles: buildAxisTextStyle),
         bottomTitles: SideTitles(
           showTitles: true,
           getTextStyles: buildAxisTextStyle,
@@ -86,11 +93,7 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
                 : metric.category.name;
           },
         ),
-        leftTitles: SideTitles(
-            showTitles: true,
-            margin: 40,
-            getTextStyles: buildAxisTextStyle,
-            reservedSize: 20),
+        leftTitles: SideTitles(showTitles: false),
       ),
       barGroups: categories
           .map(
