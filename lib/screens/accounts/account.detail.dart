@@ -46,6 +46,9 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     scrollController.addListener(onScroll);
     transactionPagingService.loadFirstPage(account.id);
     filteringTextFocusNode.addListener(() {});
+    filteringNameController.addListener(() {
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -155,18 +158,29 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
         ),
       ),
       floatingActionButton: displayFilteringBox
-          ? FloatingActionButton(
-              child: Icon(Icons.check),
-              onPressed: () {
-                setState(() {
-                  FocusScope.of(context).unfocus();
-                  transactionPagingService
-                      .applyFilterByName(filteringNameController.text);
-                  displayFilteringBox = false;
-                  filteringNameController.clear();
-                  resultsFiltered = true;
-                });
-              })
+          ? filteringNameController.text.isEmpty
+              ? FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      FocusScope.of(context).unfocus();
+                      displayFilteringBox = false;
+                      filteringNameController.clear();
+                    });
+                  },
+                  child: Icon(Icons.close),
+                )
+              : FloatingActionButton(
+                  child: Icon(Icons.check),
+                  onPressed: () {
+                    setState(() {
+                      FocusScope.of(context).unfocus();
+                      transactionPagingService
+                          .applyFilterByName(filteringNameController.text);
+                      displayFilteringBox = false;
+                      filteringNameController.clear();
+                      resultsFiltered = true;
+                    });
+                  })
           : buildSpeedDial(context),
     );
   }
