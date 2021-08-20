@@ -10,6 +10,8 @@ import 'package:home_management_app/screens/transactions/add.transaction.dart';
 import 'package:home_management_app/services/transaction.paging.service.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 
+import 'account-metrics.dart';
+import 'widgets/account-app-bar.dart';
 import 'widgets/account.info.dart';
 import 'widgets/transaction.row.info.dart';
 
@@ -63,17 +65,8 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(account.name.length > 15
-                  ? account.name.substring(0, 15) + '...'
-                  : account.name),
-            ],
-          ),
-        ),
+      appBar: AccountAppBar(
+        account: widget.account,
         actions: [
           Visibility(
             visible: resultsFiltered,
@@ -189,11 +182,20 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     List<SpeedDialChild> options = [];
 
     if (account.measurable) {
-      options.add(SpeedDialChild(
-          child: Icon(OMIcons.barChart),
-          backgroundColor: Colors.red,
-          labelStyle: TextStyle(fontSize: 18.0),
-          onTap: () => print('FIRST CHILD')));
+      options.add(
+        SpeedDialChild(
+            child: Icon(OMIcons.barChart),
+            backgroundColor: Colors.red,
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AccountMetrics(
+                      account: account,
+                    ),
+                  ),
+                )),
+      );
     }
 
     options.add(SpeedDialChild(

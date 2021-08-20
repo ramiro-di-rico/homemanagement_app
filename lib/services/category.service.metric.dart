@@ -39,4 +39,30 @@ class CategoryMetricService {
 
     return this.categoriesMetric;
   }
+
+  Future<CategoriesMetric> getMostExpensiveCategoriesByAccount(
+      int accountId, int month) async {
+    //if (this.caching.exists(cacheKey)) {
+    //  return this.caching.fetch(cacheKey) as CategoriesMetric;
+    //}
+
+    if (this.categoriesMetric == null) {
+      var token = this.authenticationService.getUserToken();
+
+      var response = await http.get(
+          Uri.https('ramiro-di-rico.dev',
+              'homemanagementapi/api/account/$accountId/toptransactions/$month'),
+          headers: <String, String>{'Authorization': token});
+
+      if (response.statusCode == 200) {
+        this.categoriesMetric =
+            CategoriesMetric.fromJson(json.decode(response.body));
+        //caching.add(cacheKey, this.categoriesMetric);
+      } else {
+        throw Exception('Failed to fetch Categories Metric by account id.');
+      }
+    }
+
+    return this.categoriesMetric;
+  }
 }
