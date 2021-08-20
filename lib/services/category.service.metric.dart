@@ -40,12 +40,9 @@ class CategoryMetricService {
     return this.categoriesMetric;
   }
 
-  Future<CategoriesMetric> getMostExpensiveCategoriesByAccount(
+  Future<List<CategoryMetric>> getMostExpensiveCategoriesByAccount(
       int accountId, int month) async {
-    //if (this.caching.exists(cacheKey)) {
-    //  return this.caching.fetch(cacheKey) as CategoriesMetric;
-    //}
-
+    List<CategoryMetric> metrics;
     if (this.categoriesMetric == null) {
       var token = this.authenticationService.getUserToken();
 
@@ -55,14 +52,14 @@ class CategoryMetricService {
           headers: <String, String>{'Authorization': token});
 
       if (response.statusCode == 200) {
-        this.categoriesMetric =
-            CategoriesMetric.fromJson(json.decode(response.body));
+        List data = json.decode(response.body);
+        metrics = data.map((e) => CategoryMetric.fromJson(e)).toList();
         //caching.add(cacheKey, this.categoriesMetric);
       } else {
         throw Exception('Failed to fetch Categories Metric by account id.');
       }
     }
 
-    return this.categoriesMetric;
+    return metrics;
   }
 }

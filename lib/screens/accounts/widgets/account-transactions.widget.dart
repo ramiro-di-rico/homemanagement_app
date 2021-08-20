@@ -16,14 +16,15 @@ class AccountTransactionsWidget extends StatefulWidget {
 }
 
 class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
-  CategoriesMetric metric;
+  List<CategoryMetric> metrics;
 
   Future loadMetrics() async {
     var result = await GetIt.I<CategoryMetricService>()
-        .getMostExpensiveCategories(DateTime.now().month);
+        .getMostExpensiveCategoriesByAccount(
+            widget.account.id, DateTime.now().month);
 
     setState(() {
-      metric = result;
+      metrics = result;
     });
   }
 
@@ -37,7 +38,7 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
   Widget build(BuildContext context) {
     return Container(
         child: Card(
-      child: metric != null && metric.categories.length > 0
+      child: metrics != null && metrics.length > 0
           ? Column(
               children: [
                 ListTile(
@@ -56,21 +57,7 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
     ));
   }
 
-  List<CategoryMetric> getMetrics() {
-    List<CategoryMetric> result = [];
-
-    var med = metric.highestValue / 2;
-    for (var item in metric.categories) {
-      if (item.price > med) {
-        result.add(item);
-      }
-    }
-    return result;
-  }
-
   BarChartData buildChart() {
-    var categories = getMetrics();
-
     return BarChartData(
       alignment: BarChartAlignment.spaceBetween,
       borderData: FlBorderData(show: false),
@@ -78,7 +65,7 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
         topTitles: SideTitles(
             showTitles: true,
             getTitles: (value) {
-              var metricValue = metric.categories.elementAt(value.floor());
+              var metricValue = metrics.elementAt(value.floor());
               return metricValue.price.floor().toString();
             },
             getTextStyles: buildAxisTextStyle),
@@ -86,7 +73,7 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
           showTitles: true,
           getTextStyles: buildAxisTextStyle,
           getTitles: (value) {
-            var metric = categories[value.toInt()];
+            var metric = metrics[value.toInt()];
             return metric.category.name.length > 10
                 ? metric.category.name
                     .substring(0, metric.category.name.indexOf(" "))
@@ -95,10 +82,10 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
         ),
         leftTitles: SideTitles(showTitles: false),
       ),
-      barGroups: categories
+      barGroups: metrics
           .map(
             (e) => BarChartGroupData(
-              x: categories.indexOf(e),
+              x: metrics.indexOf(e),
               barRods: [
                 BarChartRodData(
                     y: e.price.toDouble(), colors: [Colors.greenAccent])
