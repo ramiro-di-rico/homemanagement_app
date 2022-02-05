@@ -73,3 +73,10 @@ build/
 /android/key.properties
 /ios/Flutter/flutter_export_environment.sh
 /keystore.jks
+home_management_app/ios/Flutter/flutter_export_environment.sh
+home_management_app/key.properties
+home_management_app/android/app/key.jks
+home_management_app/.flutter-plugins-dependencies
+.flutter-plugins-dependencies
+.flutter-plugins-dependencies
+.flutter-plugins-dependencies
