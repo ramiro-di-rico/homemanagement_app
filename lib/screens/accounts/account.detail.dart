@@ -51,6 +51,16 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     filteringNameController.addListener(() {
       setState(() {});
     });
+    transactionRepository.addListener(() {
+      accountRepository.refresh();
+      transactionPagingService.refresh();
+    });
+    accountRepository.addListener(() {
+      setState(() {
+        account = accountRepository.accounts
+            .firstWhere((element) => element.id == account.id);
+      });
+    });
     super.initState();
   }
 

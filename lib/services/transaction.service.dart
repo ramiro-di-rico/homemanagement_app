@@ -41,7 +41,7 @@ class TransactionService {
     var token = this.authenticationService.getUserToken();
 
     var uri = Uri.parse(
-        'https://ramiro-di-rico.dev/homemanagementapi/api/transactions/v1/account/${page.accountId}/filter/byName/$name?currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+        'https://ramiro-di-rico.dev/homemanagementapi/api/transactions/v1/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
     var response = await http.get(uri, headers: <String, String>{
       'Authorization': token,
     });
