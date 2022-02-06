@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/category.service.metric.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
 
 class MostExpensiveCategoriesChart extends StatefulWidget {
   MostExpensiveCategoriesChart({Key key}) : super(key: key);
@@ -40,7 +39,7 @@ class _MostExpensiveCategoriesChartState
           ? Column(
               children: [
                 ListTile(
-                  leading: Icon(OMIcons.barChart),
+                  leading: Icon(Icons.bar_chart),
                   title: Text('Most expensive categories'),
                 ),
                 Expanded(
@@ -105,7 +104,7 @@ class _MostExpensiveCategoriesChartState
     );
   }
 
-  TextStyle buildAxisTextStyle(double value) {
+  TextStyle buildAxisTextStyle(BuildContext context, double value) {
     return TextStyle(
         color: ThemeData.fallback().colorScheme.secondary,
         fontWeight: FontWeight.bold,

@@ -8,7 +8,6 @@ import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/transactions/add.transaction.dart';
 import 'package:home_management_app/services/transaction.paging.service.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
 
 import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
@@ -194,7 +193,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     if (account.measurable) {
       options.add(
         SpeedDialChild(
-            child: Icon(OMIcons.barChart),
+            child: Icon(Icons.chat_rounded),
             backgroundColor: Colors.red,
             labelStyle: TextStyle(fontSize: 18.0),
             onTap: () => Navigator.push(

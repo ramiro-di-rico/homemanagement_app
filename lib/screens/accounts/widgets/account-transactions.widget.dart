@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/category.service.metric.dart';
-import 'package:outline_material_icons/outline_material_icons.dart';
 
 class AccountTransactionsWidget extends StatefulWidget {
   final AccountModel account;
@@ -42,7 +41,7 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
           ? Column(
               children: [
                 ListTile(
-                  leading: Icon(OMIcons.barChart),
+                  leading: Icon(Icons.bar_chart),
                   title: Text('Most expensive categories'),
                 ),
                 Expanded(
@@ -96,7 +95,7 @@ class _AccountTransactionsWidgetState extends State<AccountTransactionsWidget> {
     );
   }
 
-  TextStyle buildAxisTextStyle(double value) {
+  TextStyle buildAxisTextStyle(BuildContext context, double value) {
     return TextStyle(
         color: ThemeData.fallback().colorScheme.secondary,
         fontWeight: FontWeight.bold,

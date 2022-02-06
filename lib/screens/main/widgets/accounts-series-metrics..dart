@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/account-metrics.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:intl/intl.dart';
-import 'package:queries/collections.dart';
 
 class AccountsMetricSeriesWidget extends StatefulWidget {
   AccountsMetricSeriesWidget({Key key}) : super(key: key);
@@ -18,7 +17,7 @@ class _AccountsMetricSeriesWidgetState
     extends State<AccountsMetricSeriesWidget> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   List<AccountSeries> series = [];
-  Collection<MonthSerie> collection;
+  List<MonthSerie> collection;
   List<Color> lineColors = [
     Colors.lime[900],
     Colors.pink[600],
@@ -36,7 +35,7 @@ class _AccountsMetricSeriesWidgetState
     var result = await accountRepository.getSeries();
     setState(() {
       series.addAll(result);
-      collection = Collection(getMonthSeries());
+      collection = getMonthSeries();
     });
   }
 
@@ -124,7 +123,7 @@ class _AccountsMetricSeriesWidgetState
           ),
         ),
         minY: 0,
-        maxY: collection.max$1((e) => num.parse(e.average)),
+        maxY: maxY(),
         lineBarsData: series
             .map(
               (e) => LineChartBarData(
@@ -141,7 +140,7 @@ class _AccountsMetricSeriesWidgetState
             .toList());
   }
 
-  TextStyle buildAxisTextStyle(double value) {
+  TextStyle buildAxisTextStyle(BuildContext context, double value) {
     return TextStyle(
         color: ThemeData.fallback().colorScheme.secondary,
         fontWeight: FontWeight.bold,
@@ -161,5 +160,13 @@ class _AccountsMetricSeriesWidgetState
       }
     }
     return monthSeries;
+  }
+
+  double maxY() {
+    double value = 0;
+    for (var item in collection) {
+      value += num.parse(item.average);
+    }
+    return value;
   }
 }
