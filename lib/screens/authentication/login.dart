@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isEmailValid = false;
   bool hidePassword = true;
   bool hideRegistrationLabel = false;
+  bool isAuthenticating = false;
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
   UserRepository userRepository = GetIt.instance<UserRepository>();
@@ -64,8 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
     var controls = [
       buildEmailTextField(),
       buildPasswordTextFied(),
-      buildSendButton()
     ];
+
+    if (!isAuthenticating) {
+      controls.add(buildSendButton());
+    } else {
+      var indicator = CircularProgressIndicator();
+      controls.add(Padding(padding: EdgeInsets.all(5), child: indicator));
+    }
 
     if (!keyboardFactory.isKeyboardVisible()) {
       controls.add(buildDivider());
@@ -133,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.all(20),
       child: PasswordTextField(
           onTextChanged: onPasswordChanged,
-          enablePassword: passwordFieldEnabled),
+          enablePassword: passwordFieldEnabled && !isAuthenticating),
     );
   }
 
@@ -142,15 +149,8 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.all(20),
         child: EmailTextField(
           onTextChanged: onEmailChanged,
+          enableEmailField: !isAuthenticating,
         ));
-  }
-
-  @override
-  void deactivate() {
-    //if (keyboardFactory.isKeyboardVisible()) {
-    //  keyboardFactory.unFocusKeyboard();
-    //}
-    super.deactivate();
   }
 
   void onEmailChanged(String character) {
@@ -182,6 +182,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!this.canLogin()) {
       return;
     }
+    setState(() {
+      isAuthenticating = true;
+    });
 
     var result = await this
         .authenticationService
@@ -204,6 +207,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             );
           });
+      setState(() {
+        isAuthenticating = false;
+      });
       return;
     }
 
