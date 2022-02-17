@@ -115,12 +115,15 @@ class _AccountsMetricSeriesWidgetState
           ),
           leftTitles: SideTitles(
             showTitles: true,
-            margin: 10,
+            margin: 20,
+            reservedSize: 40,
             getTextStyles: buildAxisTextStyle,
             getTitles: (value) {
               return calculateYAxisLabel(value);
             },
           ),
+          rightTitles: SideTitles(showTitles: false),
+          topTitles: SideTitles(showTitles: false),
         ),
         minY: 0,
         maxY: maxY(),
