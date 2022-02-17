@@ -29,12 +29,11 @@ void main() {
 
 void registerDependencies() {
   registerSingletons();
-  registerServices();  
+  registerServices();
 }
 
 void registerServices() {
   GetIt.instance.registerFactory(() => CryptographyService());
-  GetIt.instance.registerFactory(() => Caching());
   GetIt.instance.registerFactory(() => TransactionService(
       authenticationService: GetIt.I<AuthenticationService>()));
   GetIt.instance.registerFactory(() {
@@ -78,19 +77,19 @@ void registerServices() {
       apiServiceFactory: ApiServiceFactory(
           authenticationService: GetIt.I<AuthenticationService>())));
 
-
   GetIt.instance.registerFactory(() => CategoryMetricService(
-    authenticationService: GetIt.I<AuthenticationService>(),
-    caching: GetIt.I<Caching>()
-  ));
+      authenticationService: GetIt.I<AuthenticationService>(),
+      caching: GetIt.I<Caching>()));
 }
 
 void registerSingletons() {
+  GetIt.instance.registerSingleton(Caching());
+
   CryptographyService cryptographyService = CryptographyService();
   var userRepository = UserRepository();
   AuthenticationService authenticationService = AuthenticationService(
       cryptographyService: cryptographyService, userRepository: userRepository);
-  
+
   GetIt.instance.registerSingleton(authenticationService);
 
   AccountService accountService = AccountService(
