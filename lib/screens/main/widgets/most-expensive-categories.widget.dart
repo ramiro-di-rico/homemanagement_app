@@ -55,15 +55,8 @@ class _MostExpensiveCategoriesChartState
   }
 
   List<CategoryMetric> getMetrics() {
-    List<CategoryMetric> result = [];
-
-    var med = metric.highestValue / 2;
-    for (var item in metric.categories) {
-      if (item.price > med) {
-        result.add(item);
-      }
-    }
-    return result;
+    metric.categories.sort((a, b) => a.price < b.price ? 1 : 0);
+    return metric.categories.take(3).toList();
   }
 
   BarChartData buildChart() {
@@ -72,6 +65,7 @@ class _MostExpensiveCategoriesChartState
     return BarChartData(
       alignment: BarChartAlignment.spaceBetween,
       borderData: FlBorderData(show: false),
+      gridData: FlGridData(show: false),
       titlesData: FlTitlesData(
         bottomTitles: SideTitles(
           showTitles: true,
@@ -88,7 +82,9 @@ class _MostExpensiveCategoriesChartState
             showTitles: true,
             margin: 40,
             getTextStyles: buildAxisTextStyle,
-            reservedSize: 20),
+            reservedSize: 30),
+        rightTitles: SideTitles(showTitles: false),
+        topTitles: SideTitles(showTitles: false),
       ),
       barGroups: categories
           .map(
