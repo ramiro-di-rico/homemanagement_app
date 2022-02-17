@@ -45,6 +45,8 @@ class _AccountListScreenState extends State<AccountListScreen> {
       child: ListView.builder(
         itemCount: this.accounts.length,
         itemBuilder: (context, index) {
+          if (this.accounts.isEmpty) return Container();
+
           final item = this.accounts[index];
 
           return Dismissible(
