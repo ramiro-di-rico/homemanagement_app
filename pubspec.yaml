@@ -21,6 +21,7 @@ dependencies:
   flip_card: ^0.6.0
   local_auth: ^1.1.10
   package_info: ^2.0.2
+  skeletons: ^0.0.3
   
 dev_dependencies:
   flutter_test:

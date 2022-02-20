@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/account-metrics.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletons/skeletons.dart';
 
 class AccountsMetricSeriesWidget extends StatefulWidget {
   AccountsMetricSeriesWidget({Key key}) : super(key: key);
@@ -24,6 +25,7 @@ class _AccountsMetricSeriesWidgetState
     Colors.orange[600],
     Colors.green[600]
   ];
+  bool loading = false;
 
   @override
   void initState() {
@@ -32,23 +34,21 @@ class _AccountsMetricSeriesWidgetState
   }
 
   Future load() async {
+    setState(() {
+      loading = true;
+    });
     var result = await accountRepository.getSeries();
     setState(() {
       series.addAll(result);
       collection = getMonthSeries();
+      loading = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Card(
-        child: series.length > 0
-            ? buildChartContainer()
-            : Center(
-                child: Text('No Metrics to display.'),
-              ),
-      ),
+      child: Card(child: buildChartContainer()),
     );
   }
 
@@ -59,9 +59,13 @@ class _AccountsMetricSeriesWidgetState
         title: Text('Accounts series'),
       ),
       Expanded(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: LineChart(buildChart()),
+        child: Skeleton(
+          isLoading: loading,
+          skeleton: SkeletonAvatar(),
+          child: Padding(
+            padding: EdgeInsets.all(20),
+            child: LineChart(buildChart()),
+          ),
         ),
       ),
     ]);
@@ -166,6 +170,8 @@ class _AccountsMetricSeriesWidgetState
   }
 
   double maxY() {
+    if (collection == null) return 0;
+
     double value = 0;
     for (var item in collection) {
       value += num.parse(item.average);

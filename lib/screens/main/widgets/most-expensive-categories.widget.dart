@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/category.service.metric.dart';
+import 'package:skeletons/skeletons.dart';
 
 class MostExpensiveCategoriesChart extends StatefulWidget {
   MostExpensiveCategoriesChart({Key key}) : super(key: key);
@@ -15,13 +16,18 @@ class MostExpensiveCategoriesChart extends StatefulWidget {
 class _MostExpensiveCategoriesChartState
     extends State<MostExpensiveCategoriesChart> {
   CategoriesMetric metric;
+  bool loading = false;
 
   Future loadMetrics() async {
+    setState(() {
+      loading = true;
+    });
     var result = await GetIt.I<CategoryMetricService>()
         .getMostExpensiveCategories(DateTime.now().month);
 
     setState(() {
       metric = result;
+      loading = false;
     });
   }
 
@@ -35,26 +41,32 @@ class _MostExpensiveCategoriesChartState
   Widget build(BuildContext context) {
     return Container(
         child: Card(
-      child: metric != null && metric.categories.length > 0
-          ? Column(
-              children: [
-                ListTile(
-                  leading: Icon(Icons.bar_chart),
-                  title: Text('Most expensive categories'),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: BarChart(buildChart()),
-                  ),
-                ),
-              ],
-            )
-          : Center(child: Text('No Metrics to display.')),
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(Icons.bar_chart),
+            title: Text('Most expensive categories'),
+          ),
+          Expanded(
+            child: Skeleton(
+              isLoading: loading,
+              skeleton: SkeletonAvatar(),
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: BarChart(buildChart()),
+              ),
+            ),
+          ),
+        ],
+      ),
     ));
   }
 
   List<CategoryMetric> getMetrics() {
+    if (metric == null) {
+      return List.empty();
+    }
+
     metric.categories.sort((a, b) => a.price < b.price ? 1 : 0);
     return metric.categories.take(3).toList();
   }
