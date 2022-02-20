@@ -6,6 +6,7 @@ import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
+import 'package:home_management_app/screens/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:home_management_app/screens/transactions/add.transaction.dart';
 import 'package:home_management_app/services/transaction.paging.service.dart';
 
@@ -37,6 +38,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   bool resultsFiltered = false;
   List<TransactionModel> transactions = [];
   FocusNode filteringTextFocusNode = FocusNode();
+  bool loading = false;
 
   @override
   void initState() {
@@ -45,7 +47,6 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       setState(() {});
     });
     scrollController.addListener(onScroll);
-    transactionPagingService.loadFirstPage(account.id);
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(() {
       setState(() {});
@@ -60,6 +61,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
             .firstWhere((element) => element.id == account.id);
       });
     });
+    load();
     super.initState();
   }
 
@@ -96,44 +98,44 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
           child: Column(
             children: [
               AccountDetailWidget(accountModel: account),
-              transactionPagingService.transactions.length > 0
-                  ? Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          transactionPagingService.refresh();
-                          await transactionPagingService
-                              .loadFirstPage(account.id);
-                          transactionPagingService.loadFirstPage(account.id);
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: ListView.builder(
-                              controller: scrollController,
-                              itemCount: this
-                                  .transactionPagingService
-                                  .transactions
-                                  .length,
-                              itemBuilder: (context, index) {
-                                var transaction = this
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    transactionPagingService.refresh();
+                    await transactionPagingService.loadFirstPage(account.id);
+                    transactionPagingService.loadFirstPage(account.id);
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: loading
+                            ? this
                                     .transactionPagingService
-                                    .transactions[index];
-                                var category = categoryRepository.categories
-                                    .firstWhere((element) =>
-                                        element.id == transaction.categoryId);
+                                    .transactions
+                                    .length +
+                                this.transactionPagingService.pageSize
+                            : this.transactionPagingService.transactions.length,
+                        itemBuilder: (context, index) {
+                          if (index >=
+                              transactionPagingService.transactions.length) {
+                            return TransactionRowSkeleton();
+                          }
 
-                                return TransactionRowInfo(
-                                    transaction: transaction,
-                                    index: index,
-                                    category: category);
-                              }),
-                        ),
-                      ),
-                    )
-                  : Expanded(
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
+                          var transaction =
+                              this.transactionPagingService.transactions[index];
+                          var category = categoryRepository.categories
+                              .firstWhere((element) =>
+                                  element.id == transaction.categoryId);
+
+                          return TransactionRowInfo(
+                              transaction: transaction,
+                              index: index,
+                              category: category);
+                        }),
+                  ),
+                ),
+              ),
               AnimatedContainer(
                 duration: Duration(milliseconds: 300),
                 height: displayFilteringBox ? 80 : 0,
@@ -226,6 +228,18 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       animatedIcon: AnimatedIcons.menu_close,
       children: options,
     );
+  }
+
+  void load() async {
+    changeLoadingState(true);
+    await transactionPagingService.loadFirstPage(account.id);
+    changeLoadingState(false);
+  }
+
+  void changeLoadingState(bool value) {
+    setState(() {
+      loading = value;
+    });
   }
 
   displayBox() {
