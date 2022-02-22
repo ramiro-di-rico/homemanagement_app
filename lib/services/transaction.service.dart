@@ -23,7 +23,7 @@ class TransactionService {
         'https://ramiro-di-rico.dev/homemanagementapi/api/transactions/v1/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
 
     var response = await http.get(uri, headers: <String, String>{
-      'Authorization': token,
+      'Authorization': 'Bearer $token',
     });
 
     if (response.statusCode == 200) {
@@ -43,7 +43,7 @@ class TransactionService {
     var uri = Uri.parse(
         'https://ramiro-di-rico.dev/homemanagementapi/api/transactions/v1/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
     var response = await http.get(uri, headers: <String, String>{
-      'Authorization': token,
+      'Authorization': 'Bearer $token',
     });
 
     if (response.statusCode == 200) {

@@ -25,7 +25,7 @@ class MetricService {
       var response = await http.get(
           Uri.https(
               'ramiro-di-rico.dev', 'homemanagementapi/api/account/3/overall'),
-          headers: <String, String>{'Authorization': token});
+          headers: <String, String>{'Authorization': 'Bearer $token'});
 
       if (response.statusCode == 200) {
         this.overall = Overall.fromJson(json.decode(response.body));

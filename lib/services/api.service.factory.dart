@@ -15,7 +15,7 @@ class ApiServiceFactory {
     var token = this.authenticationService.getUserToken();
 
     var response = await http.get(backendEndpoint.resolve(api),
-        headers: <String, String>{'Authorization': token});
+        headers: <String, String>{'Authorization': 'Bearer $token'});
 
     if (response.statusCode == 200) {
       List data = json.decode(response.body);
@@ -31,7 +31,7 @@ class ApiServiceFactory {
     var response = await http.get(
       backendEndpoint.resolve(api),
       headers: <String, String>{
-        'Authorization': token,
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
     );
@@ -49,7 +49,7 @@ class ApiServiceFactory {
 
     var response = await http.post(backendEndpoint.resolve(api),
         headers: <String, String>{
-          'Authorization': token,
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: body);
@@ -64,7 +64,7 @@ class ApiServiceFactory {
 
     var response = await http.put(backendEndpoint.resolve(api),
         headers: <String, String>{
-          'Authorization': token,
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
         body: body);
@@ -80,7 +80,7 @@ class ApiServiceFactory {
     var response = await http.delete(
       backendEndpoint.resolve('$api/$id'),
       headers: <String, String>{
-        'Authorization': token,
+        'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
     );
