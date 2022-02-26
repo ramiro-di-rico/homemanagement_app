@@ -61,7 +61,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
             onDismissed: (direction) => remove(item, index),
             child: Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50)),
+                  borderRadius: BorderRadius.circular(15)),
               child: ListTile(
                 title: Text(
                   item.name,
