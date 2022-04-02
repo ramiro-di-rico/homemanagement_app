@@ -34,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
+    this.authenticationService.addListener(successFullAuthentcation);
     loadUser();
   }
 
@@ -42,20 +43,14 @@ class _LoginScreenState extends State<LoginScreen> {
     authenticationService.init();
 
     try {
-      if (authenticationService.canAutoAuthenticate()) {
-        if (!authenticationService.isAuthenticated()) {
-          if (await auth.canCheckBiometrics) {
-            var biometricAuthenticated = await auth.authenticate(
-                localizedReason: 'Scan your fingerprint to authenticate',
-                useErrorDialogs: true,
-                stickyAuth: true,
-                biometricOnly: true);
-            if (biometricAuthenticated) {
-              await this.authenticationService.autoAuthenticate();
-            }
-          }
+      if (!authenticationService.canAutoAuthenticate()) {
+        return;
+      }
+
+      if (!authenticationService.isAuthenticated()) {
+        if (await authenticationService.biometricsEnabled()) {
+          await authenticationService.biometricsAuthenticate();
         }
-        Navigator.popAndPushNamed(context, HomeScreen.id);
       }
     } catch (e) {}
   }
@@ -212,7 +207,9 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       return;
     }
+  }
 
+  void successFullAuthentcation() {
     Navigator.popAndPushNamed(context, HomeScreen.id);
   }
 }
