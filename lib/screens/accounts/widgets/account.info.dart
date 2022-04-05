@@ -18,27 +18,21 @@ class AccountDetailWidget extends StatelessWidget {
       margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Column(children: [
         ListTile(
-          leading: Icon(Icons.attach_money),
+          leading: Icon(accountModel.accountType == AccountType.Cash
+              ? Icons.attach_money
+              : Icons.account_balance),
           title: Row(
             children: [
               Text('Balance'),
               SizedBox(width: 20),
               Text(accountModel.balance.toStringAsFixed(0)),
               SizedBox(width: 20),
+              Text(currency.name),
+              SizedBox(width: 20),
               buildTrendingIcon()
             ],
           ),
         ),
-        ListTile(
-            title: Row(
-          children: [
-            Text(accountModel.accountTypeToString()),
-            SizedBox(width: 20),
-            Text('Currency:'),
-            SizedBox(width: 20),
-            Text(currency.name)
-          ],
-        )),
       ]),
     );
   }
