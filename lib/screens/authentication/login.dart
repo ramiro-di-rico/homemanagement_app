@@ -39,20 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future loadUser() async {
-    await userRepository.load();
-    authenticationService.init();
-
-    try {
-      if (!authenticationService.canAutoAuthenticate()) {
-        return;
-      }
-
-      if (!authenticationService.isAuthenticated()) {
-        if (await authenticationService.biometricsEnabled()) {
-          await authenticationService.biometricsAuthenticate();
-        }
-      }
-    } catch (e) {}
+    await authenticationService.init();
   }
 
   @override

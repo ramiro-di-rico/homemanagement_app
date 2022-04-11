@@ -18,10 +18,19 @@ class AuthenticationService extends ChangeNotifier {
   AuthenticationService(
       {@required this.cryptographyService, this.userRepository});
 
-  init() {
-    this.user = this.userRepository.userModel;
-    this.user.expirationDate =
-        this.user.expirationDate.subtract(Duration(hours: 5));
+  Future init() async {
+    this.user = await this.userRepository.load();
+
+    if (!canAutoAuthenticate()) return;
+
+    if (isAuthenticated()) {
+      notifyListeners();
+      return;
+    }
+
+    if (await biometricsEnabled()) {
+      await biometricsAuthenticate();
+    }
   }
 
   bool canAutoAuthenticate() {

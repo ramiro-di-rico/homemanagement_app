@@ -1,7 +1,7 @@
 import '../models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class UserRepository{
+class UserRepository {
   UserModel userModel;
   String emailKey = 'email';
   String passwordKey = 'password';
@@ -9,21 +9,22 @@ class UserRepository{
   String expirationDateKey = 'expirationDateKey';
   SharedPreferences preferences;
 
-  Future load() async {
+  Future<UserModel> load() async {
     preferences = await SharedPreferences.getInstance();
-    if(preferences.containsKey(emailKey) &&
+    var userInfoAvailable = preferences.containsKey(emailKey) &&
         preferences.containsKey(passwordKey) &&
-        preferences.containsKey(tokenKey)){
-      userModel = new UserModel(
-          preferences.getString(emailKey),
-          preferences.getString(passwordKey),
-          preferences.getString(tokenKey),
-          DateTime.parse(preferences.getString(expirationDateKey)));
-    }
+        preferences.containsKey(tokenKey);
+    return userInfoAvailable
+        ? new UserModel(
+            preferences.getString(emailKey),
+            preferences.getString(passwordKey),
+            preferences.getString(tokenKey),
+            DateTime.parse(preferences.getString(expirationDateKey)))
+        : null;
   }
 
-  void store(UserModel user){
-    if(preferences.containsKey(emailKey)){
+  void store(UserModel user) {
+    if (preferences.containsKey(emailKey)) {
       this.clear();
     }
     this.userModel = user;
@@ -31,13 +32,15 @@ class UserRepository{
     preferences.setString(emailKey, this.userModel.email);
     preferences.setString(passwordKey, this.userModel.password);
     preferences.setString(tokenKey, this.userModel.token);
-    preferences.setString(expirationDateKey, this.userModel.expirationDate.toString());
+    preferences.setString(
+        expirationDateKey, this.userModel.expirationDate.toString());
   }
 
-  void clear(){
+  void clear() {
     this.userModel = null;
     preferences.remove(emailKey);
     preferences.remove(passwordKey);
     preferences.remove(tokenKey);
+    preferences.remove(expirationDateKey);
   }
 }
