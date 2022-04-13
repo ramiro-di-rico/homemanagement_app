@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/screens/main/widgets/income.widget.dart';
 import 'package:home_management_app/screens/main/widgets/outcome.widget.dart';
 import 'widgets/accounts-series-metrics..dart';
+import 'widgets/balances.widget.dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
 class Dashboard extends StatefulWidget {
@@ -14,16 +15,20 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-              children:[
-                Expanded(
-                    child: IncomeWidget()),
-                Expanded(
-                    child: OutcomeWidget()),
-              ]
-          ),
+          Row(children: [
+            SizedBox(
+              height: 130,
+              width: 200,
+              child: Column(
+                children: [
+                  Expanded(child: IncomeWidget()),
+                  Expanded(child: OutcomeWidget())
+                ],
+              ),
+            ),
+            BalanceWidget(),
+          ]),
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),

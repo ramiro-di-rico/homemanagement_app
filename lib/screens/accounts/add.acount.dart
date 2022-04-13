@@ -58,19 +58,18 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   Padding buildFirstRow() {
     return Padding(
-      padding: EdgeInsets.all(8),
-      child: AppTextField(
-        label: 'Account Name',
-        onTextChanged: (value) {
-          setState(() {
-            this.enableButton = value.length > 0;
-            this.onSubmitFloatingButton =
-                this.enableButton ? createSubmitButton() : null;
-            this.accountName = value;
-          });
-        },
-      )
-    );
+        padding: EdgeInsets.all(8),
+        child: AppTextField(
+          label: 'Account Name',
+          onTextChanged: (value) {
+            setState(() {
+              this.enableButton = value.length > 0;
+              this.onSubmitFloatingButton =
+                  this.enableButton ? createSubmitButton() : null;
+              this.accountName = value;
+            });
+          },
+        ));
   }
 
   Padding buildSecondRow() {
@@ -144,7 +143,7 @@ class _AddAccountScreenState extends State<AddAccountScreen> {
 
   void addNewAccount() {
     AccountModel accountModel = AccountModel(0, this.accountName, 0,
-        this.isMeasurable, this.accountType, this.currencyId, 0);
+        this.isMeasurable, this.accountType, this.currencyId, 0, false);
     this.accountsRepository.add(accountModel);
     Navigator.pop(context);
   }

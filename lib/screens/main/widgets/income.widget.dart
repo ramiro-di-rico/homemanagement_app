@@ -11,7 +11,7 @@ class IncomeWidget extends StatefulWidget {
 
 class _IncomeWidgetState extends State<IncomeWidget> {
   MetricService metricService = GetIt.instance<MetricService>();
-  int income = 0;
+  double income = 0;
   IconData icon = Icons.trending_flat;
   Color trendColor = Colors.white;
   bool loading = false;
@@ -52,9 +52,9 @@ class _IncomeWidgetState extends State<IncomeWidget> {
     setState(() {
       loading = true;
     });
-    var result = await this.metricService.getOverall();
+    var result = await this.metricService.getIncomeMetrics();
     setState(() {
-      this.income = result.incomeTransactions;
+      this.income = result.total;
       this.icon = this.income > 0 ? Icons.trending_up : Icons.trending_down;
       this.trendColor = this.income > 0 ? Colors.green[400] : Colors.red[400];
       loading = false;

@@ -11,7 +11,7 @@ class OutcomeWidget extends StatefulWidget {
 
 class _OutcomeWidgetState extends State<OutcomeWidget> {
   MetricService metricService = GetIt.instance<MetricService>();
-  int outcome = 0;
+  double outcome = 0;
   Color trendColor = Colors.white;
   IconData icon = Icons.trending_flat;
   bool loading = false;
@@ -52,9 +52,9 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
     setState(() {
       loading = true;
     });
-    var result = await this.metricService.getOverall();
+    var result = await this.metricService.getOutcomesMetrics();
     setState(() {
-      this.outcome = result.outcomeTransactions;
+      this.outcome = result.total;
       this.icon = this.outcome > 0 ? Icons.trending_up : Icons.trending_down;
       this.trendColor = this.outcome > 0 ? Colors.green[400] : Colors.red[400];
       loading = false;

@@ -13,6 +13,7 @@ class AccountListScreen extends StatefulWidget {
 class _AccountListScreenState extends State<AccountListScreen> {
   List<AccountModel> accounts = [];
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
+  bool showArchive = false;
 
   @override
   void initState() {
