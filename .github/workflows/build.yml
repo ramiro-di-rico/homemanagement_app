@@ -2,7 +2,8 @@ name: Build App
 
 on:
   push:
-    branches: [ master ]
+    tags: 
+      - '*'
     
 jobs:
   build:
