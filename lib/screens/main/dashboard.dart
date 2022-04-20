@@ -16,8 +16,8 @@ class _DashboardState extends State<Dashboard> {
     return Center(
       child: Column(
         children: [
-          Row(children: [
-            SizedBox(
+          /*Row(children: [
+            /*SizedBox(
               height: 130,
               width: 200,
               child: Column(
@@ -26,9 +26,15 @@ class _DashboardState extends State<Dashboard> {
                   Expanded(child: OutcomeWidget())
                 ],
               ),
-            ),
+            ),*/
             BalanceWidget(),
-          ]),
+          ]),*/
+          Row(
+            children: [
+              Expanded(child: IncomeWidget()),
+              Expanded(child: OutcomeWidget())
+            ],
+          ),
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),

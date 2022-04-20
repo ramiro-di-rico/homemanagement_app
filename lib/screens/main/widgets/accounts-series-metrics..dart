@@ -111,8 +111,10 @@ class _AccountsMetricSeriesWidgetState
             reservedSize: 20,
             getTextStyles: buildAxisTextStyle,
             getTitles: (value) {
+              var isInt = value % 1 == 0;
+              if (!isInt) return '';
               var now = DateTime.now();
-              var date = DateTime(now.year, value.toInt(), now.day);
+              var date = DateTime(now.year, value.toInt() + 1, now.day);
               var monthName = DateFormat.MMM().format(date);
               return monthName;
             },
