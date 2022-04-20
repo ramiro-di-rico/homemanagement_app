@@ -17,6 +17,11 @@ jobs:
     - uses: subosito/flutter-action@v1
       with:
         channel: 'stable' # or: 'beta', 'dev' or 'master'
+        
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+      
     - run: flutter pub get
     #- run: flutter test need to include test folder
     - name: Configure Keystore for Android
@@ -35,7 +40,7 @@ jobs:
       working-directory: android
 
     # Build the application.
-    - run: flutter build -v apk --split-per-abi
+    - run: flutter build -v apk --split-per-abi --build-name ${{ steps.get_version.outputs.VERSION }}
     
     # Upload generated apk to the artifacts.
     - uses: actions/upload-artifact@v1
