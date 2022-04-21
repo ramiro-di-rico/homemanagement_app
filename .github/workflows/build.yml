@@ -20,11 +20,11 @@ jobs:
         
     - name: Get build name
       id: build_name
-      run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF##*/} | cut -d '-' -f 1)
+      run: echo ::set-output name=VERSION::$(echo ${{ github.ref_name }} | cut -d '-' -f 1)
 
     - name: Get build number
       id: build_number
-      run: echo ::set-output name=VERSION::$(echo ${GITHUB_REF##*/} | cut -d '-' -f 2)
+      run: echo ::set-output name=VERSION::$(echo ${{ github.ref_name }} | cut -d '-' -f 2)
       
     - run: flutter pub get
     #- run: flutter test need to include test folder
