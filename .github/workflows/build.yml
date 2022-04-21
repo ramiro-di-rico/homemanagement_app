@@ -44,7 +44,7 @@ jobs:
       working-directory: android
 
     # Build the application.
-    - run: flutter build -v apk --split-per-abi --build-name ${{ steps.build_name.outputs.VERSION }} --build-number ${{ steps.build_number.outputs.VERSION }}
+    - run: flutter build -v apk --release --split-per-abi --build-name ${{ steps.build_name.outputs.VERSION }} --build-number ${{ steps.build_number.outputs.VERSION }}
     
     # Upload generated apk to the artifacts.
     - uses: actions/upload-artifact@v1
