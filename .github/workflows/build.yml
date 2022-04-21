@@ -18,9 +18,13 @@ jobs:
       with:
         channel: 'stable' # or: 'beta', 'dev' or 'master'
         
-    - name: Get the version
-      id: get_version
-      run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+    - name: Get build name
+      id: build_name
+      run: echo ::set-output name=VERSION::$(echo github.ref_name | cut -d '-' -f 1)
+
+    - name: Get build number
+      id: build_number
+      run: echo ::set-output name=VERSION::$(echo github.ref_name | cut -d '-' -f 2)
       
     - run: flutter pub get
     #- run: flutter test need to include test folder
@@ -40,7 +44,7 @@ jobs:
       working-directory: android
 
     # Build the application.
-    - run: flutter build -v apk --split-per-abi --build-name ${{ steps.get_version.outputs.VERSION }}
+    - run: flutter build -v apk --split-per-abi --build-name ${{ steps.build_name.outputs.VERSION }} --build-number ${{ steps.build_number.outputs.VERSION }}
     
     # Upload generated apk to the artifacts.
     - uses: actions/upload-artifact@v1
