@@ -10,34 +10,37 @@ class CategoryMetricService {
   AuthenticationService authenticationService;
   Caching caching;
   CategoriesMetric categoriesMetric;
+  List<CategoryMetric> metrics = List.empty(growable: true);
   String cacheKey = 'getMostExpensiveCategories';
 
   CategoryMetricService(
       {@required this.authenticationService, @required this.caching});
 
-  Future<CategoriesMetric> getMostExpensiveCategories(int month) async {
+  Future<List<CategoryMetric>> getMostExpensiveCategories(int month) async {
     if (this.caching.exists(cacheKey)) {
-      return this.caching.fetch(cacheKey) as CategoriesMetric;
+      return this.caching.fetch(cacheKey) as List<CategoryMetric>;
     }
 
-    if (this.categoriesMetric == null) {
+    if (this.metrics.isEmpty) {
       var token = this.authenticationService.getUserToken();
+      final queryParameters = {'month': month.toString(), 'take': '3'};
 
-      var response = await http.get(
-          Uri.https('ramiro-di-rico.dev',
-              'homemanagementapi/api/account/toptransactions/$month'),
+      var uri = Uri.https('ramiro-di-rico.dev',
+          'homemanagementapi/api/account/toptransactions', queryParameters);
+      var response = await http.get(uri,
           headers: <String, String>{'Authorization': 'Bearer $token'});
 
       if (response.statusCode == 200) {
-        this.categoriesMetric =
-            CategoriesMetric.fromJson(json.decode(response.body));
-        caching.add(cacheKey, this.categoriesMetric);
+        List<dynamic> data = json.decode(response.body);
+        var result = data.map((e) => CategoryMetric.fromJson(e)).toList();
+        this.metrics.addAll(result);
+        caching.add(cacheKey, this.metrics);
       } else {
         throw Exception('Failed to fetch Categories Metric.');
       }
     }
 
-    return this.categoriesMetric;
+    return this.metrics;
   }
 
   Future<List<CategoryMetric>> getMostExpensiveCategoriesByAccount(

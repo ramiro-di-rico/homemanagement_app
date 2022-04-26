@@ -1,10 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/models/account-historical.dart';
 import 'package:home_management_app/models/metrics/account-metrics.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
+
+import '../../../services/dashboard.service.dart';
 
 class AccountsMetricSeriesWidget extends StatefulWidget {
   AccountsMetricSeriesWidget({Key key}) : super(key: key);
@@ -17,7 +20,10 @@ class AccountsMetricSeriesWidget extends StatefulWidget {
 class _AccountsMetricSeriesWidgetState
     extends State<AccountsMetricSeriesWidget> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
+  DashboardService dashboardService = GetIt.I<DashboardService>();
+
   List<AccountSeries> series = [];
+  List<AccountHistorical> accountsHistoricalChart = [];
   List<MonthSerie> collection;
   List<Color> lineColors = [
     Colors.lime[900],
@@ -37,10 +43,9 @@ class _AccountsMetricSeriesWidgetState
     setState(() {
       loading = true;
     });
-    var result = await accountRepository.getSeries();
+    var result = await dashboardService.fetchAccountHistoricalChart();
     setState(() {
-      series.addAll(result);
-      collection = getMonthSeries();
+      accountsHistoricalChart = result;
       loading = false;
     });
   }
@@ -64,7 +69,7 @@ class _AccountsMetricSeriesWidgetState
           skeleton: SkeletonAvatar(),
           child: Padding(
             padding: EdgeInsets.all(20),
-            child: LineChart(buildChart()),
+            child: LineChart(loading ? null : buildChart()),
           ),
         ),
       ),
@@ -90,12 +95,12 @@ class _AccountsMetricSeriesWidgetState
             touchTooltipData: LineTouchTooltipData(
               getTooltipItems: (touchedSpots) {
                 var labels = touchedSpots.map((e) {
-                  var serie = series[e.barIndex];
+                  var serie = accountsHistoricalChart[e.barIndex];
                   var account = accountRepository.accounts
-                      .firstWhere((element) => element.id == serie.accountId);
+                      .firstWhere((element) => element.name == serie.account);
 
                   var toolTip = LineTooltipItem(
-                    '${account.name} ${serie.monthSeries[e.spotIndex].average}',
+                    '${account.name} ${serie.evolution[e.spotIndex].balance}',
                     TextStyle(color: lineColors[e.barIndex]),
                   );
                   return toolTip;
@@ -108,7 +113,7 @@ class _AccountsMetricSeriesWidgetState
           show: true,
           bottomTitles: SideTitles(
             showTitles: true,
-            reservedSize: 20,
+            reservedSize: 10,
             getTextStyles: buildAxisTextStyle,
             getTitles: (value) {
               var isInt = value % 1 == 0;
@@ -120,28 +125,24 @@ class _AccountsMetricSeriesWidgetState
             },
           ),
           leftTitles: SideTitles(
-            showTitles: true,
-            margin: 20,
-            reservedSize: 40,
-            getTextStyles: buildAxisTextStyle,
-            getTitles: (value) {
-              return calculateYAxisLabel(value);
-            },
-          ),
+              showTitles: true,
+              margin: 10,
+              reservedSize: 60,
+              getTextStyles: buildAxisTextStyle,
+              interval: calculateInterval()),
           rightTitles: SideTitles(showTitles: false),
           topTitles: SideTitles(showTitles: false),
         ),
-        minY: 0,
+        minY: minY(),
         maxY: maxY(),
-        lineBarsData: series
+        lineBarsData: accountsHistoricalChart
             .map(
               (e) => LineChartBarData(
                 isCurved: true,
-                colors: [lineColors[series.indexOf(e)]],
-                spots: e.monthSeries
+                colors: [lineColors[accountsHistoricalChart.indexOf(e)]],
+                spots: e.evolution
                     .map(
-                      (m) =>
-                          FlSpot(m.index.toDouble(), double.parse(m.average)),
+                      (m) => FlSpot(m.index.toDouble(), m.balance),
                     )
                     .toList(),
               ),
@@ -156,28 +157,36 @@ class _AccountsMetricSeriesWidgetState
         fontSize: 14);
   }
 
-  String calculateYAxisLabel(double value) {
-    return value % 1000.0 == 0 ? (value / 1000).toStringAsFixed(0) + " k" : "";
-  }
-
-  List<MonthSerie> getMonthSeries() {
-    List<MonthSerie> monthSeries = [];
-
-    for (var s in this.series) {
-      for (var m in s.monthSeries) {
-        monthSeries.add(m);
-      }
-    }
-    return monthSeries;
-  }
-
   double maxY() {
-    if (collection == null) return 0;
+    if (accountsHistoricalChart == null) return 0;
 
     double value = 0;
-    for (var item in collection) {
-      value += num.parse(item.average);
+    for (var h in accountsHistoricalChart) {
+      for (var item in h.evolution) {
+        if (item.balance < 0) continue;
+        value += item.balance;
+      }
     }
     return value;
+  }
+
+  double minY() {
+    if (accountsHistoricalChart == null) return 0;
+
+    double value = 0;
+    for (var h in accountsHistoricalChart) {
+      for (var item in h.evolution) {
+        if (item.balance > 0) continue;
+        value += item.balance;
+      }
+    }
+    return value;
+  }
+
+  double calculateInterval() {
+    var max = maxY();
+    var min = minY();
+    var result = (max + min).roundToDouble();
+    return result;
   }
 }

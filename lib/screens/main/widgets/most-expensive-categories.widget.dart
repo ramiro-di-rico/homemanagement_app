@@ -15,7 +15,7 @@ class MostExpensiveCategoriesChart extends StatefulWidget {
 
 class _MostExpensiveCategoriesChartState
     extends State<MostExpensiveCategoriesChart> {
-  CategoriesMetric metric;
+  List<CategoryMetric> metrics = List.empty();
   bool loading = false;
 
   Future loadMetrics() async {
@@ -26,7 +26,7 @@ class _MostExpensiveCategoriesChartState
         .getMostExpensiveCategories(DateTime.now().month);
 
     setState(() {
-      metric = result;
+      metrics = result;
       loading = false;
     });
   }
@@ -62,18 +62,7 @@ class _MostExpensiveCategoriesChartState
     ));
   }
 
-  List<CategoryMetric> getMetrics() {
-    if (metric == null) {
-      return List.empty();
-    }
-
-    metric.categories.sort((a, b) => a.price < b.price ? 1 : 0);
-    return metric.categories.take(3).toList();
-  }
-
   BarChartData buildChart() {
-    var categories = getMetrics();
-
     return BarChartData(
       alignment: BarChartAlignment.spaceBetween,
       borderData: FlBorderData(show: false),
@@ -83,7 +72,7 @@ class _MostExpensiveCategoriesChartState
           showTitles: true,
           getTextStyles: buildAxisTextStyle,
           getTitles: (value) {
-            var metric = categories[value.toInt()];
+            var metric = metrics[value.toInt()];
             return metric.category.name.length > 10
                 ? metric.category.name
                     .substring(0, metric.category.name.indexOf(" "))
@@ -98,10 +87,10 @@ class _MostExpensiveCategoriesChartState
         rightTitles: SideTitles(showTitles: false),
         topTitles: SideTitles(showTitles: false),
       ),
-      barGroups: categories
+      barGroups: metrics
           .map(
             (e) => BarChartGroupData(
-              x: categories.indexOf(e),
+              x: metrics.indexOf(e),
               barRods: [
                 BarChartRodData(
                     y: e.price.toDouble(), colors: [Colors.greenAccent])

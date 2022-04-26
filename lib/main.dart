@@ -14,6 +14,7 @@ import 'services/account.service.dart';
 import 'services/caching.dart';
 import 'services/category.service.dart';
 import 'services/category.service.metric.dart';
+import 'services/dashboard.service.dart';
 import 'services/notification.service.dart';
 import 'services/preferences.service.dart';
 import 'services/cryptography.service.dart';
@@ -73,6 +74,11 @@ void registerServices() {
       apiServiceFactory: ApiServiceFactory(
           authenticationService: GetIt.I<AuthenticationService>())));
   GetIt.instance.registerFactory(() => NotificationService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>())));
+
+  GetIt.instance.registerFactory(() => DashboardService(
       authenticationService: GetIt.I<AuthenticationService>(),
       apiServiceFactory: ApiServiceFactory(
           authenticationService: GetIt.I<AuthenticationService>())));
