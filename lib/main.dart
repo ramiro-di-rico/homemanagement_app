@@ -81,7 +81,8 @@ void registerServices() {
   GetIt.instance.registerFactory(() => DashboardService(
       authenticationService: GetIt.I<AuthenticationService>(),
       apiServiceFactory: ApiServiceFactory(
-          authenticationService: GetIt.I<AuthenticationService>())));
+          authenticationService: GetIt.I<AuthenticationService>()),
+      caching: GetIt.I<Caching>()));
 
   GetIt.instance.registerFactory(() => CategoryMetricService(
       authenticationService: GetIt.I<AuthenticationService>(),
