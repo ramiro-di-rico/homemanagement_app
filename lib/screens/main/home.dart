@@ -25,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
       GetIt.I<AuthenticationService>();
   NotificationRepository notificationRepository =
       GetIt.I<NotificationRepository>();
+  AccountRepository _accountRepository = GetIt.I<AccountRepository>();
+
   List<Widget> children = [
     Dashboard(),
     AccountListScreen(),
@@ -38,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   int bottomBarNavigationIndex = 0;
   bool hasNotifications = false;
+  bool showArchiveAccounts = false;
 
   @override
   void initState() {
@@ -97,15 +100,27 @@ class _HomeScreenState extends State<HomeScreen> {
   AppBar buildAppBar() {
     return AppBar(
       title: Text('Home Management'),
-      /*actions: [
-        TextButton(
+      actions: this.bottomBarNavigationIndex == 1
+          ? [
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showArchiveAccounts = !showArchiveAccounts;
+                      _accountRepository.displayArchive(showArchiveAccounts);
+                    });
+                  },
+                  child: Icon(showArchiveAccounts
+                      ? Icons.visibility_off
+                      : Icons.visibility))
+              /*TextButton(
             onPressed: displayNotifications,
             child: Icon(
                 hasNotifications
                     ? Icons.notifications
                     : Icons.notifications_none,
-                color: Colors.white)),
-      ],*/
+                color: Colors.white)),*/
+            ]
+          : [],
     );
   }
 

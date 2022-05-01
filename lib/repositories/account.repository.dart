@@ -6,8 +6,10 @@ import 'package:home_management_app/services/account.service.dart';
 class AccountRepository extends ChangeNotifier {
   AccountService accountService;
   String cacheKey = 'accountsKey';
+  final List<AccountModel> _internalAccounts = [];
   final List<AccountModel> accounts = [];
   final List<AccountSeries> accountSeries = [];
+  bool showArchive = false;
 
   AccountRepository({@required this.accountService});
 
@@ -16,9 +18,22 @@ class AccountRepository extends ChangeNotifier {
     await load();
   }
 
+  displayArchive(bool show) {
+    showArchive = show;
+    _loadAccounts(_internalAccounts);
+  }
+
   Future load() async {
     var result = await this.accountService.fetchAccounts();
-    this.accounts.addAll(result);
+    this._internalAccounts.addAll(result);
+    _loadAccounts(result);
+  }
+
+  _loadAccounts(List<AccountModel> result) {
+    this.accounts.clear();
+    this.accounts.addAll(showArchive
+        ? _internalAccounts
+        : _internalAccounts.where((element) => !element.archive).toList());
     notifyListeners();
   }
 
