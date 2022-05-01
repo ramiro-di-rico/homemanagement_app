@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account-historical.dart';
-import 'package:home_management_app/models/metrics/account-metrics.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
@@ -22,9 +21,8 @@ class _AccountsMetricSeriesWidgetState
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   DashboardService dashboardService = GetIt.I<DashboardService>();
 
-  List<AccountSeries> series = [];
   List<AccountHistorical> accountsHistoricalChart = [];
-  List<MonthSerie> collection;
+  List<String> months = List.empty(growable: true);
   List<Color> lineColors = [
     Colors.lime[900],
     Colors.pink[600],
@@ -46,6 +44,7 @@ class _AccountsMetricSeriesWidgetState
     var result = await dashboardService.fetchAccountHistoricalChart();
     setState(() {
       accountsHistoricalChart = result;
+      mapMonths();
       loading = false;
     });
   }
@@ -68,7 +67,7 @@ class _AccountsMetricSeriesWidgetState
           isLoading: loading,
           skeleton: SkeletonAvatar(),
           child: Padding(
-            padding: EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(40, 0, 20, 20),
             child: LineChart(loading ? null : buildChart()),
           ),
         ),
@@ -118,10 +117,7 @@ class _AccountsMetricSeriesWidgetState
             getTitles: (value) {
               var isInt = value % 1 == 0;
               if (!isInt) return '';
-              var now = DateTime.now();
-              var date = DateTime(now.year, value.toInt() + 1, now.day);
-              var monthName = DateFormat.MMM().format(date);
-              return monthName;
+              return months[value.toInt()];
             },
           ),
           leftTitles: SideTitles(
@@ -188,5 +184,15 @@ class _AccountsMetricSeriesWidgetState
     var min = minY();
     var result = (max + min).roundToDouble();
     return result;
+  }
+
+  void mapMonths() {
+    months.clear();
+    var account = accountsHistoricalChart
+        .firstWhere((element) => element.evolution.length == 3);
+
+    for (var monthValues in account.evolution) {
+      months.add(monthValues.month);
+    }
   }
 }
