@@ -183,7 +183,7 @@ class _AccountsMetricSeriesWidgetState
     var max = maxY();
     var min = minY();
     var result = (max + min).roundToDouble();
-    return result;
+    return result.abs();
   }
 
   void mapMonths() {
