@@ -24,6 +24,9 @@ class _IncomeWidgetState extends State<IncomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var value = income > 1000 ? income / 1000 : income;
+    var label =
+        income > 1000 ? value.toStringAsFixed(0) + " K" : value.toString();
     return MainCard(
       child: Padding(
         padding: EdgeInsets.all(10),
@@ -35,7 +38,7 @@ class _IncomeWidgetState extends State<IncomeWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Income'),
-                Text(income.toString()),
+                Text(label),
                 Icon(
                   this.icon,
                   color: trendColor,

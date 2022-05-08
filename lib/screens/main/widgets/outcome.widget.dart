@@ -24,6 +24,9 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var value = outcome > 1000 ? outcome / 1000 : outcome;
+    var label =
+        outcome > 1000 ? value.toStringAsFixed(0) + " K" : value.toString();
     return MainCard(
       child: Padding(
         padding: EdgeInsets.all(10),
@@ -35,7 +38,7 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Outcome'),
-                Text(outcome.toString()),
+                Text(label),
                 Icon(
                   this.icon,
                   color: trendColor,
