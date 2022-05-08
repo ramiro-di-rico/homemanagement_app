@@ -52,7 +52,7 @@ class _MostExpensiveCategoriesChartState
               isLoading: loading,
               skeleton: SkeletonAvatar(),
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.fromLTRB(10, 10, 30, 10),
                 child: BarChart(buildChart()),
               ),
             ),
@@ -83,7 +83,7 @@ class _MostExpensiveCategoriesChartState
             showTitles: true,
             margin: 40,
             getTextStyles: buildAxisTextStyle,
-            reservedSize: 30),
+            reservedSize: 50),
         rightTitles: SideTitles(showTitles: false),
         topTitles: SideTitles(showTitles: false),
       ),
