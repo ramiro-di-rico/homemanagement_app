@@ -13,10 +13,7 @@ class AccountRepository extends ChangeNotifier {
 
   AccountRepository({@required this.accountService});
 
-  Future refresh() async {
-    this.accounts.clear();
-    await load();
-  }
+  Future refresh() async => await load();
 
   displayArchive(bool show) {
     showArchive = show;
@@ -25,6 +22,7 @@ class AccountRepository extends ChangeNotifier {
 
   Future load() async {
     var result = await this.accountService.fetchAccounts();
+    this._internalAccounts.clear();
     this._internalAccounts.addAll(result);
     _loadAccounts(result);
   }
