@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
@@ -50,19 +51,27 @@ class _AccountListScreenState extends State<AccountListScreen> {
 
           final item = this.accounts[index];
 
-          return Dismissible(
-            key: Key(item.id.toString()),
-            direction: DismissDirection.endToStart,
-            background: Container(
-              color: Colors.blueAccent,
+          return Slidable(
+            endActionPane: ActionPane(
+              motion: ScrollMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: ((context) => {}),
+                  icon: Icons.edit,
+                  backgroundColor: Colors.lightBlueAccent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                SlidableAction(
+                  onPressed: (context) async => await remove(item, index),
+                  icon: Icons.delete,
+                  backgroundColor: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(10),
+                )
+              ],
             ),
-            secondaryBackground: Container(
-              color: Colors.redAccent,
-            ),
-            onDismissed: (direction) => remove(item, index),
             child: Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15)),
+                  borderRadius: BorderRadius.circular(10)),
               child: ListTile(
                 title: Text(
                   item.name,
