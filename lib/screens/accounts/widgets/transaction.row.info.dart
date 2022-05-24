@@ -33,20 +33,20 @@ class TransactionRowInfo extends StatelessWidget {
               },
               icon: Icons.copy,
               backgroundColor: Colors.lightBlueAccent,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
             ),
             SlidableAction(
               autoClose: true,
               icon: Icons.delete,
               backgroundColor: Colors.redAccent,
-              borderRadius: BorderRadius.circular(20),
-              onPressed: (context) => remove(transaction, index),
+              borderRadius: BorderRadius.circular(10),
+              onPressed: (context) => remove(transaction, index, context),
             ),
           ],
         ),
         child: Card(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           child: Padding(
             padding: EdgeInsets.all(5),
             child: ListTile(
@@ -102,14 +102,12 @@ class TransactionRowInfo extends StatelessWidget {
         closeOnScroll: true);
   }
 
-  Future remove(item, index) async {
+  Future remove(TransactionModel item, int index, BuildContext context) async {
     try {
       this.transactionRepository.remove(item);
-      /*ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(item.name + ' removed')));*/
     } catch (ex) {
-      /*ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to remove ${item.name}')));*/
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to remove ${item.name}')));
     }
   }
 }

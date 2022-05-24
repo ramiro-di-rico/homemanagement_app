@@ -15,6 +15,7 @@ class AccountDetailWidget extends StatelessWidget {
         .firstWhere((element) => element.id == accountModel.currencyId);
     return Card(
       elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
       child: Column(children: [
         ListTile(
