@@ -9,13 +9,13 @@ import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/accounts/widgets/transaction-row-skeleton.dart';
-import 'package:home_management_app/screens/transactions/add.transaction.dart';
 import 'package:home_management_app/services/transaction.paging.service.dart';
 import 'package:intl/intl.dart';
 
 import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
 import 'widgets/account.info.dart';
+import 'widgets/add.transaction.sheet.dart';
 import 'widgets/transaction.row.info.dart';
 
 class AccountDetailScren extends StatefulWidget {
@@ -213,17 +213,18 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     if (account.measurable) {
       options.add(
         SpeedDialChild(
-            child: Icon(Icons.chat_rounded),
-            backgroundColor: Colors.red,
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AccountMetrics(
-                      account: account,
-                    ),
-                  ),
-                )),
+          child: Icon(Icons.chat_rounded),
+          backgroundColor: Colors.red,
+          labelStyle: TextStyle(fontSize: 18.0),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AccountMetrics(
+                account: account,
+              ),
+            ),
+          ),
+        ),
       );
     }
 
@@ -237,8 +238,23 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       child: Icon(Icons.add),
       backgroundColor: Colors.green,
       labelStyle: TextStyle(fontSize: 18.0),
-      onTap: () => Navigator.pushNamed(context, AddTransactionScreen.id,
-          arguments: account),
+      onTap: () {
+        showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled: true,
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(25.0))),
+            builder: (context) {
+              return SizedBox(
+                height: 400,
+                child: AnimatedPadding(
+                    padding: MediaQuery.of(context).viewInsets,
+                    duration: Duration(seconds: 1),
+                    child: AddTransactionSheet(account)),
+              );
+            });
+      },
     ));
 
     return SpeedDial(
