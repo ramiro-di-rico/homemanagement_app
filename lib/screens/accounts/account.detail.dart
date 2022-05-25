@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:get_it/get_it.dart';
+import 'package:grouped_list/grouped_list.dart';
+import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
@@ -9,6 +11,7 @@ import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:home_management_app/screens/transactions/add.transaction.dart';
 import 'package:home_management_app/services/transaction.paging.service.dart';
+import 'package:intl/intl.dart';
 
 import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
@@ -100,39 +103,54 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
               AccountDetailWidget(accountModel: account),
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: () async {
-                    transactionPagingService.refresh();
-                    await transactionPagingService.loadFirstPage(account.id);
-                    transactionPagingService.loadFirstPage(account.id);
-                  },
+                  onRefresh: () async =>
+                      await transactionPagingService.refresh(),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: ListView.builder(
-                        controller: scrollController,
-                        itemCount: loading
-                            ? this
-                                    .transactionPagingService
-                                    .transactions
-                                    .length +
-                                this.transactionPagingService.pageSize
-                            : this.transactionPagingService.transactions.length,
-                        itemBuilder: (context, index) {
-                          if (index >=
-                              transactionPagingService.transactions.length) {
-                            return TransactionRowSkeleton();
-                          }
+                    child: GroupedListView<TransactionModel, DateTime>(
+                      order: GroupedListOrder.DESC,
+                      useStickyGroupSeparators: true,
+                      controller: scrollController,
+                      physics: ScrollPhysics(),
+                      elements: transactionPagingService.transactions,
+                      groupBy: (element) => element.date.toMidnight(),
+                      groupSeparatorBuilder: (element) {
+                        return Container(
+                          height: 50,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:
+                                      Text(DateFormat.MMMd().format(element)),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      itemBuilder: (context, transaction) {
+                        var index = transactionPagingService.transactions
+                            .indexOf(transaction);
+                        if (index >=
+                            transactionPagingService.transactions.length) {
+                          return TransactionRowSkeleton();
+                        }
 
-                          var transaction =
-                              this.transactionPagingService.transactions[index];
-                          var category = categoryRepository.categories
-                              .firstWhere((element) =>
-                                  element.id == transaction.categoryId);
+                        var category = categoryRepository.categories.firstWhere(
+                            (element) => element.id == transaction.categoryId);
 
-                          return TransactionRowInfo(
-                              transaction: transaction,
-                              index: index,
-                              category: category);
-                        }),
+                        return TransactionRowInfo(
+                            transaction: transaction,
+                            index: index,
+                            category: category);
+                      },
+                    ),
                   ),
                 ),
               ),

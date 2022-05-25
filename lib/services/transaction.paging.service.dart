@@ -81,6 +81,5 @@ class TransactionPagingService extends ChangeNotifier {
   Future clearFilters() async {
     this.page.currentPage = 1;
     this.nameFiltering = '';
-    await this.loadFirstPage(this.currentAccountId);
   }
 }

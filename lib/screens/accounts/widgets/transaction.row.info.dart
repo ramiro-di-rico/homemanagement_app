@@ -5,7 +5,6 @@ import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/transactions/edit.transaction.dart';
-import 'package:intl/intl.dart';
 
 class TransactionRowInfo extends StatelessWidget {
   final TransactionModel transaction;
@@ -65,7 +64,15 @@ class TransactionRowInfo extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(transaction.name),
+                      Flexible(
+                        child: Text(
+                          transaction.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Chip(
+                        label: Text(category.name),
+                      ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                         child: Text(
@@ -81,19 +88,6 @@ class TransactionRowInfo extends StatelessWidget {
                       )
                     ],
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        DateFormat.MMMd().format(transaction.date),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15),
-                        child: Chip(
-                          label: Text(category.name),
-                        ),
-                      )
-                    ],
-                  )
                 ],
               ),
             ),
