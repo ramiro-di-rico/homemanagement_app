@@ -10,7 +10,7 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.4
   http: ^0.13.4
-  fl_chart: ^0.41.0
+  fl_chart: ^0.45.0
   encrypt: ^5.0.1
   shared_preferences: ^2.0.13
   get_it: ^7.2.0
