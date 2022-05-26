@@ -35,7 +35,6 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   CategoryModel selectedCategory;
   TransactionType selectedTransactionType = TransactionType.Outcome;
   DateTime selectedDate = DateTime.now();
-
   FloatingActionButton actionButton;
   bool isEditing = false;
 
@@ -44,19 +43,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     super.initState();
     nameController.addListener(onNameChanged);
     selectedCategory = categoryRepository.categories.first;
+    isEditing = widget.transactionModel != null;
 
-    setState(() {
-      if (widget.transactionModel != null) {
-        isEditing = true;
-        price = widget.transactionModel.price;
-        selectedCategory = categoryRepository.categories.firstWhere(
-            (element) => element.id == widget.transactionModel.categoryId);
-        selectedTransactionType = widget.transactionModel.transactionType;
-        selectedDate = widget.transactionModel.date;
-
-        nameController.text = widget.transactionModel.name;
-      }
-    });
+    if (isEditing) {
+      setInitialValues();
+    }
   }
 
   @override
@@ -73,9 +64,114 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     return Container(
       child: Column(
         children: [
-          buildFirstRow(),
-          buildSecondRow(),
-          buildThirdRow(),
+          //first row
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: AppTextField(
+              editingController: nameController,
+              label: 'Transaction Name',
+            ),
+          ),
+          //second row
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: TextField(
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^(\d+)?\.?\d{0,2}'))
+                      ],
+                      decoration:
+                          InputDecoration(icon: Icon(Icons.attach_money)),
+                      onChanged: (value) {
+                        price = value.length > 0 ? double.parse(value) : 0;
+                        onNameChanged();
+                      },
+                      controller: isEditing
+                          ? TextEditingController(text: price.toString())
+                          : null,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: DateTimeField(
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.date_range),
+                      ),
+                      format: DateFormat("dd MMM yyyy"),
+                      onShowPicker: (context, currentValue) {
+                        return showDatePicker(
+                            context: context,
+                            firstDate: DateTime(1900),
+                            initialDate: currentValue ?? DateTime.now(),
+                            lastDate: DateTime(2100));
+                      },
+                      onChanged: (date) {
+                        selectedDate = date;
+                      },
+                      resetIcon: null,
+                      initialValue:
+                          widget.transactionModel?.date ?? DateTime.now(),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+          //third row
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: DropdownComponent(
+                        currentValue: isEditing
+                            ? categoryRepository.categories
+                                .firstWhere((element) =>
+                                    element.id ==
+                                    widget.transactionModel.categoryId)
+                                .name
+                            : "",
+                        items: categoryRepository.categories
+                            .map((e) => e.name)
+                            .toList(),
+                        onChanged: (categoryName) {
+                          selectedCategory = categoryRepository.categories
+                              .firstWhere(
+                                  (element) => element.name == categoryName);
+                          onNameChanged();
+                        },
+                      )),
+                ),
+                Expanded(
+                  child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: DropdownComponent(
+                        items: TransactionModel.getTransactionTypes(),
+                        onChanged: (transactionType) {
+                          selectedTransactionType =
+                              TransactionModel.parseByName(transactionType);
+                        },
+                        currentValue: isEditing
+                            ? widget.transactionModel.transactionType.name
+                            : TransactionModel.getTransactionTypes().last,
+                      )),
+                ),
+              ],
+            ),
+          ),
           SizedBox(
             height: 50,
           ),
@@ -101,104 +197,6 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     );
   }
 
-  Padding buildFirstRow() {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: AppTextField(
-        editingController: nameController,
-        label: 'Transaction Name',
-      ),
-    );
-  }
-
-  Padding buildSecondRow() {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: TextField(
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                      RegExp(r'^(\d+)?\.?\d{0,2}'))
-                ],
-                decoration: InputDecoration(icon: Icon(Icons.attach_money)),
-                onChanged: (value) {
-                  price = value.length > 0 ? double.parse(value) : 0;
-                  onNameChanged();
-                },
-                controller: TextEditingController(text: price.toString()),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: DateTimeField(
-                decoration: InputDecoration(
-                  icon: Icon(Icons.date_range),
-                ),
-                format: DateFormat("dd MMM yyyy"),
-                onShowPicker: (context, currentValue) {
-                  return showDatePicker(
-                      context: context,
-                      firstDate: DateTime(1900),
-                      initialDate: currentValue ?? DateTime.now(),
-                      lastDate: DateTime(2100));
-                },
-                onChanged: (date) {
-                  selectedDate = date;
-                },
-                resetIcon: null,
-                initialValue: DateTime.now(),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Padding buildThirdRow() {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Row(
-        children: [
-          Expanded(
-            child: Padding(
-                padding: EdgeInsets.all(10),
-                child: DropdownComponent(
-                  items:
-                      categoryRepository.categories.map((e) => e.name).toList(),
-                  onChanged: (categoryName) {
-                    selectedCategory = categoryRepository.categories
-                        .firstWhere((element) => element.name == categoryName);
-                    onNameChanged();
-                  },
-                )),
-          ),
-          Expanded(
-            child: Padding(
-                padding: EdgeInsets.all(10),
-                child: DropdownComponent(
-                  items: TransactionModel.getTransactionTypes(),
-                  onChanged: (transactionType) {
-                    selectedTransactionType =
-                        TransactionModel.parseByName(transactionType);
-                  },
-                  currentValue: TransactionModel.getTransactionTypes().last,
-                )),
-          ),
-        ],
-      ),
-    );
-  }
-
   bool enableSubmitButton() {
     return nameController.text.length > 0 &&
         selectedCategory != null &&
@@ -213,6 +211,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
 
   Future addTransaction() async {
     if (isEditing) {
+      widget.transactionModel.name = nameController.text;
+      widget.transactionModel.price = this.price;
+      widget.transactionModel.categoryId = selectedCategory.id;
+      widget.transactionModel.transactionType = selectedTransactionType;
+      this.transactionRepository.update(widget.transactionModel);
     } else {
       var transactionModel = TransactionModel(
           0,
@@ -226,5 +229,15 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     }
 
     Navigator.pop(context);
+  }
+
+  void setInitialValues() {
+    price = widget.transactionModel.price;
+    selectedCategory = categoryRepository.categories.firstWhere(
+        (element) => element.id == widget.transactionModel.categoryId);
+    selectedTransactionType = widget.transactionModel.transactionType;
+    selectedDate = widget.transactionModel.date;
+
+    nameController.text = widget.transactionModel.name;
   }
 }

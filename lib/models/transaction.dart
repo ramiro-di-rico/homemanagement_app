@@ -1,5 +1,6 @@
 class TransactionModel {
-  final int id, accountId, categoryId;
+  final int id;
+  int accountId, categoryId;
   String name;
   double price;
   DateTime date;
