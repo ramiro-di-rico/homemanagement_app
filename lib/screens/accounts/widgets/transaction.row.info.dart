@@ -6,14 +6,20 @@ import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/transactions/edit.transaction.dart';
 
+import '../../../models/account.dart';
+import 'add.transaction.sheet.dart';
+
 class TransactionRowInfo extends StatelessWidget {
   final TransactionModel transaction;
   final int index;
   final CategoryModel category;
+  final AccountModel account;
+
   TransactionRowInfo(
       {@required this.transaction,
       @required this.category,
-      @required this.index});
+      @required this.index,
+      @required this.account});
 
   final TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
@@ -50,12 +56,30 @@ class TransactionRowInfo extends StatelessWidget {
             padding: EdgeInsets.all(5),
             child: ListTile(
               onTap: () {
-                Navigator.push(
+                /*Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => EditTransactionScreen(transaction),
                   ),
-                );
+                );*/
+                showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(25.0))),
+                    builder: (context) {
+                      return SizedBox(
+                        height: 400,
+                        child: AnimatedPadding(
+                            padding: MediaQuery.of(context).viewInsets,
+                            duration: Duration(seconds: 1),
+                            child: AddTransactionSheet(
+                              account,
+                              transactionModel: transaction,
+                            )),
+                      );
+                    });
               },
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               title: Column(

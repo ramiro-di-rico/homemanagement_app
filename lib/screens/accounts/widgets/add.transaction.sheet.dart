@@ -15,7 +15,10 @@ import '../../../repositories/transaction.repository.dart';
 // ignore: must_be_immutable
 class AddTransactionSheet extends StatefulWidget {
   AccountModel _accountModel;
-  AddTransactionSheet(this._accountModel, {Key key}) : super(key: key);
+  TransactionModel transactionModel;
+
+  AddTransactionSheet(this._accountModel, {Key key, this.transactionModel})
+      : super(key: key);
 
   @override
   State<AddTransactionSheet> createState() => _AddTransactionSheetState();
@@ -34,12 +37,26 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   DateTime selectedDate = DateTime.now();
 
   FloatingActionButton actionButton;
+  bool isEditing = false;
 
   @override
   void initState() {
     super.initState();
     nameController.addListener(onNameChanged);
     selectedCategory = categoryRepository.categories.first;
+
+    setState(() {
+      if (widget.transactionModel != null) {
+        isEditing = true;
+        price = widget.transactionModel.price;
+        selectedCategory = categoryRepository.categories.firstWhere(
+            (element) => element.id == widget.transactionModel.categoryId);
+        selectedTransactionType = widget.transactionModel.transactionType;
+        selectedDate = widget.transactionModel.date;
+
+        nameController.text = widget.transactionModel.name;
+      }
+    });
   }
 
   @override
@@ -114,6 +131,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                   price = value.length > 0 ? double.parse(value) : 0;
                   onNameChanged();
                 },
+                controller: TextEditingController(text: price.toString()),
               ),
             ),
           ),
@@ -194,15 +212,19 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   }
 
   Future addTransaction() async {
-    var transactionModel = TransactionModel(
-        0,
-        accountModel.id,
-        selectedCategory.id,
-        nameController.text,
-        price,
-        selectedDate,
-        selectedTransactionType);
-    this.transactionRepository.add(transactionModel);
+    if (isEditing) {
+    } else {
+      var transactionModel = TransactionModel(
+          0,
+          accountModel.id,
+          selectedCategory.id,
+          nameController.text,
+          price,
+          selectedDate,
+          selectedTransactionType);
+      this.transactionRepository.add(transactionModel);
+    }
+
     Navigator.pop(context);
   }
 }

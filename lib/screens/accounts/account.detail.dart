@@ -149,9 +149,11 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                             (element) => element.id == transaction.categoryId);
 
                         return TransactionRowInfo(
-                            transaction: transaction,
-                            index: index,
-                            category: category);
+                          transaction: transaction,
+                          index: index,
+                          category: category,
+                          account: account,
+                        );
                       },
                     ),
                   ),
