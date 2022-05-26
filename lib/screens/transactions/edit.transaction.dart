@@ -20,7 +20,7 @@ class EditTransactionScreen extends StatefulWidget {
 }
 
 class _EditTransactionScreenState extends State<EditTransactionScreen> {
-   TransactionRepository transactionRepository =
+  TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TextEditingController nameController;
@@ -32,10 +32,12 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    selectedCategory = categoryRepository.categories.firstWhere((element) => widget.transactionModel.categoryId == element.id);
+    selectedCategory = categoryRepository.categories.firstWhere(
+        (element) => widget.transactionModel.categoryId == element.id);
     nameController = TextEditingController(text: widget.transactionModel.name);
     nameController.addListener(onNameChanged);
-    priceController = TextEditingController(text: widget.transactionModel.price.toString());
+    priceController =
+        TextEditingController(text: widget.transactionModel.price.toString());
     priceController.addListener(onPriceChanged);
     price = widget.transactionModel.price;
   }
@@ -55,15 +57,6 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
       floatingActionButton: actionButton,
       appBar: AppBar(
         title: Text('Edit ${widget.transactionModel.name}'),
-        actions: [
-          TextButton.icon(
-            icon: Icon(Icons.copy), 
-            label: Text('Create a Copy'), 
-            onPressed: () { 
-              transactionRepository.add(widget.transactionModel.duplicate());
-              Navigator.pop(context);
-             })
-        ],
       ),
       body: Container(
         child: Column(
@@ -96,7 +89,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
             flex: 2,
             child: Padding(
               padding: EdgeInsets.all(10),
-              child: TextField(                
+              child: TextField(
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(icon: Icon(Icons.attach_money)),
@@ -133,7 +126,7 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     );
   }
 
-    Padding buildThirdRow() {
+  Padding buildThirdRow() {
     return Padding(
       padding: EdgeInsets.all(10),
       child: Row(
@@ -161,7 +154,8 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
                     widget.transactionModel.transactionType =
                         TransactionModel.parseByName(transactionType);
                   },
-                  currentValue: widget.transactionModel.parseTransactionByType(),
+                  currentValue:
+                      widget.transactionModel.parseTransactionByType(),
                 )),
           ),
         ],
@@ -173,15 +167,16 @@ class _EditTransactionScreenState extends State<EditTransactionScreen> {
     checkIfShouldEnableButton();
   }
 
-  void onPriceChanged(){
-    price = priceController.text.length > 0 ? double.parse(priceController.text) : 0;
+  void onPriceChanged() {
+    price = priceController.text.length > 0
+        ? double.parse(priceController.text)
+        : 0;
     checkIfShouldEnableButton();
   }
 
   void checkIfShouldEnableButton() {
-    var shouldEnable = nameController.text.length > 0 &&
-        selectedCategory != null &&
-        price > 0;
+    var shouldEnable =
+        nameController.text.length > 0 && selectedCategory != null && price > 0;
     setState(() {
       actionButton = shouldEnable ? createFloatingAction() : null;
     });
