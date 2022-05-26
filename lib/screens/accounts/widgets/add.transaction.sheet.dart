@@ -134,26 +134,24 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
             child: Row(
               children: [
                 Expanded(
-                  child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: DropdownComponent(
-                        currentValue: isEditing
-                            ? categoryRepository.categories
-                                .firstWhere((element) =>
-                                    element.id ==
-                                    widget.transactionModel.categoryId)
-                                .name
-                            : "",
-                        items: categoryRepository.categories
-                            .map((e) => e.name)
-                            .toList(),
-                        onChanged: (categoryName) {
-                          selectedCategory = categoryRepository.categories
-                              .firstWhere(
-                                  (element) => element.name == categoryName);
-                          onNameChanged();
-                        },
-                      )),
+                  child: DropdownComponent(
+                    currentValue: isEditing
+                        ? categoryRepository.categories
+                            .firstWhere((element) =>
+                                element.id ==
+                                widget.transactionModel.categoryId)
+                            .name
+                        : "",
+                    items: categoryRepository.categories
+                        .map((e) => e.name)
+                        .toList(),
+                    onChanged: (categoryName) {
+                      selectedCategory = categoryRepository.categories
+                          .firstWhere(
+                              (element) => element.name == categoryName);
+                      onNameChanged();
+                    },
+                  ),
                 ),
                 Expanded(
                   child: Padding(
