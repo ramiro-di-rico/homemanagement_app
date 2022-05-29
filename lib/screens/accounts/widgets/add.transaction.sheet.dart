@@ -108,6 +108,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                       },
                       onChanged: (date) {
                         transactionModel.date = date;
+                        setState(() {});
                       },
                       resetIcon: null,
                       initialValue: transactionModel.date,
@@ -136,6 +137,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                           .categories
                           .firstWhere((element) => element.name == categoryName)
                           .id;
+                      setState(() {});
                     },
                   ),
                 ),
@@ -147,6 +149,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                           onChanged: (transactionType) {
                             transactionModel.transactionType =
                                 TransactionModel.parseByName(transactionType);
+                            setState(() {});
                           },
                           currentValue: transactionModel.transactionType.name)),
                 ),
@@ -180,11 +183,13 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
 
   void onNameChanged() {
     transactionModel.name = nameController.text;
+    setState(() {});
   }
 
   void onPriceChanged() {
     if (priceController.text.isNotEmpty) {
       transactionModel.price = double.parse(priceController.text);
+      setState(() {});
     }
   }
 

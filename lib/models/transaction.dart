@@ -53,7 +53,7 @@ class TransactionModel {
   String parseTransactionByType() =>
       transactionType == TransactionType.Income ? 'Income' : 'Outcome';
 
-  bool isValid() => name.length > 0 && categoryId > 0 && accountId > 0;
+  bool isValid() => name.length > 3 && categoryId > 0 && accountId > 0;
 }
 
 enum TransactionType { Income, Outcome }
