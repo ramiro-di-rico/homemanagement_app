@@ -6,7 +6,6 @@ import 'screens/accounts/account-metrics.dart';
 import 'screens/accounts/add.acount.dart';
 import 'screens/authentication/login.dart';
 import 'screens/main/home.dart';
-import 'screens/transactions/add.transaction.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -24,7 +23,6 @@ class MyApp extends StatelessWidget {
         HomeScreen.id: (context) => HomeScreen(),
         AddAccountScreen.id: (context) => AddAccountScreen(),
         AccountDetailScren.id: (context) => AccountDetailScren(),
-        AddTransactionScreen.id: (context) => AddTransactionScreen(),
         AccountMetrics.id: (context) => AccountMetrics(),
       },
       initialRoute: LoginScreen.id,

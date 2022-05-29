@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
-import 'package:home_management_app/screens/transactions/edit.transaction.dart';
 
 import '../../../models/account.dart';
 import 'add.transaction.sheet.dart';

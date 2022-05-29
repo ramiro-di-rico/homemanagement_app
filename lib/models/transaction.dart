@@ -1,3 +1,5 @@
+import 'package:home_management_app/extensions/datehelper.dart';
+
 class TransactionModel {
   final int id;
   int accountId, categoryId;
@@ -13,6 +15,10 @@ class TransactionModel {
 
   TransactionModel(this.id, this.accountId, this.categoryId, this.name,
       this.price, this.date, this.transactionType);
+
+  factory TransactionModel.empty(int accountId, int categoryId) =>
+      TransactionModel(0, accountId, categoryId, "", 0, DateTime.now(),
+          TransactionType.Outcome);
 
   factory TransactionModel.fromJson(dynamic json) {
     return TransactionModel(
@@ -46,6 +52,8 @@ class TransactionModel {
 
   String parseTransactionByType() =>
       transactionType == TransactionType.Income ? 'Income' : 'Outcome';
+
+  bool isValid() => name.length > 0 && categoryId > 0 && accountId > 0;
 }
 
 enum TransactionType { Income, Outcome }
