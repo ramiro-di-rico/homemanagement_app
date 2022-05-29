@@ -83,7 +83,7 @@ class _MostExpensiveCategoriesChartState
             showTitles: true,
             margin: 40,
             getTextStyles: buildAxisTextStyle,
-            reservedSize: 50),
+            reservedSize: 60),
         rightTitles: SideTitles(showTitles: false),
         topTitles: SideTitles(showTitles: false),
       ),
