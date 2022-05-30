@@ -48,7 +48,7 @@ class AccountRepository extends ChangeNotifier {
   Future update(AccountModel accountModel) async {
     try {
       await accountService.update(accountModel);
-      notifyListeners();
+      _loadAccounts(accounts);
     } catch (ex) {
       print(ex);
     }

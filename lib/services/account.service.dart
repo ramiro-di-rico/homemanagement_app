@@ -29,12 +29,16 @@ class AccountService {
   }
 
   Future delete(AccountModel accountModel) async {
-    await this.apiServiceFactory.apiDelete('account', accountModel.id.toString());
+    await this
+        .apiServiceFactory
+        .apiDelete('account', accountModel.id.toString());
   }
 
   Future<List<AccountSeries>> getSeriesMetric() async {
-    List<dynamic> list = await this.apiServiceFactory.apiGet('account/v1/avgseries');
-    List<AccountSeries> result = list.map((e) => AccountSeries.fromJson(e)).toList();
+    List<dynamic> list =
+        await this.apiServiceFactory.apiGet('account/v1/avgseries');
+    List<AccountSeries> result =
+        list.map((e) => AccountSeries.fromJson(e)).toList();
     return result;
   }
 }

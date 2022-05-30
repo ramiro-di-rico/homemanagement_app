@@ -8,8 +8,11 @@ import '../../../models/account.dart';
 import '../../../repositories/account.repository.dart';
 import '../../../repositories/currency.repository.dart';
 
+// ignore: must_be_immutable
 class AccountSheet extends StatefulWidget {
-  const AccountSheet({Key key, AccountModel accountModel}) : super(key: key);
+  AccountModel accountModel;
+
+  AccountSheet({Key key, this.accountModel}) : super(key: key);
 
   @override
   State<AccountSheet> createState() => _AccountSheetState();
@@ -18,12 +21,10 @@ class AccountSheet extends StatefulWidget {
 class _AccountSheetState extends State<AccountSheet> {
   AccountRepository accountsRepository = GetIt.instance<AccountRepository>();
   CurrencyRepository currencyRepository = GetIt.I<CurrencyRepository>();
+  TextEditingController _textEditingController = TextEditingController();
   KeyboardFactory keyboardFactory;
-
-  String accountName = '';
-  AccountType accountType;
-  int currencyId;
-  bool isMeasurable = false;
+  AccountModel account;
+  bool isEditMode = false;
 
   List<String> currencies = [];
   bool enableButton = false;
@@ -33,7 +34,25 @@ class _AccountSheetState extends State<AccountSheet> {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
     currencies.addAll(this.currencyRepository.currencies.map((c) => c.name));
-    this.currencyId = this.currencyRepository.currencies.first.id;
+    account = widget.accountModel ??
+        AccountModel.empty(this.currencyRepository.currencies.first.id);
+    isEditMode = widget.accountModel != null;
+    _textEditingController.text = account.name;
+    _textEditingController.addListener(onNameChanged);
+  }
+
+  @override
+  void dispose() {
+    this._textEditingController.removeListener(onNameChanged);
+    this._textEditingController.dispose();
+    super.dispose();
+  }
+
+  void onNameChanged() {
+    setState(() {
+      this.account.name = this._textEditingController.text;
+      this.enableButton = this.account.name.length > 0;
+    });
   }
 
   @override
@@ -46,12 +65,7 @@ class _AccountSheetState extends State<AccountSheet> {
               padding: EdgeInsets.all(8),
               child: AppTextField(
                 label: 'Account Name',
-                onTextChanged: (value) {
-                  setState(() {
-                    this.enableButton = value.length > 0;
-                    this.accountName = value;
-                  });
-                },
+                editingController: _textEditingController,
               )),
           Padding(
             padding: EdgeInsets.all(10),
@@ -60,11 +74,22 @@ class _AccountSheetState extends State<AccountSheet> {
               children: [
                 Padding(
                   padding: EdgeInsets.all(10),
-                  child: accountTypeDropDown(),
+                  child: DropdownComponent(
+                    items: ['Cash', 'Bank Account'],
+                    onChanged: onAccountTypeChanged,
+                    currentValue: account.accountTypeToString(),
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.all(10),
-                  child: currencyTypeDropDown(),
+                  child: DropdownComponent(
+                    items: currencies,
+                    onChanged: onCurrencyTypeChanged,
+                    currentValue: currencyRepository.currencies
+                        .firstWhere(
+                            (element) => element.id == account.currencyId)
+                        .name,
+                  ),
                 )
               ],
             ),
@@ -74,7 +99,7 @@ class _AccountSheetState extends State<AccountSheet> {
             child: Row(
               children: [
                 Checkbox(
-                  value: isMeasurable,
+                  value: account.measurable,
                   onChanged: onMeasurableChanged,
                 ),
                 Expanded(
@@ -83,48 +108,56 @@ class _AccountSheetState extends State<AccountSheet> {
               ],
             ),
           ),
+          SizedBox(
+            height: 50,
+          ),
+          AnimatedOpacity(
+            opacity: account.name.length > 3 ? 1.0 : 0,
+            duration: const Duration(milliseconds: 500),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: ElevatedButton(
+                onPressed: addNewAccount,
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(40),
+                ),
+                child: Icon(
+                  Icons.check,
+                  color: Colors.greenAccent,
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
   }
 
-  Widget accountTypeDropDown() {
-    return DropdownComponent(
-      items: ['Cash', 'Bank Account'],
-      onChanged: onAccountTypeChanged,
-    );
-  }
-
   onAccountTypeChanged(String accountType) {
     setState(() {
-      this.accountType =
+      this.account.accountType =
           accountType == 'Cash' ? AccountType.Cash : AccountType.BankAccount;
     });
   }
 
-  Widget currencyTypeDropDown() {
-    return DropdownComponent(
-      items: currencies,
-      onChanged: onCurrencyTypeChanged,
-    );
-  }
-
   onCurrencyTypeChanged(String currency) {
     setState(() {
-      this.currencyId = this.currencies.indexOf(currency);
+      this.account.currencyId = this.currencies.indexOf(currency);
     });
   }
 
   onMeasurableChanged(bool value) {
     setState(() {
-      this.isMeasurable = value;
+      this.account.measurable = value;
     });
   }
 
   void addNewAccount() {
-    AccountModel accountModel = AccountModel(0, this.accountName, 0,
-        this.isMeasurable, this.accountType, this.currencyId, 0, false);
-    this.accountsRepository.add(accountModel);
+    if (isEditMode) {
+      this.accountsRepository.update(account);
+    } else {
+      this.accountsRepository.add(account);
+    }
     Navigator.pop(context);
   }
 }

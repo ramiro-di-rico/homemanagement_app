@@ -59,12 +59,6 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       accountRepository.refresh();
       transactionPagingService.refresh();
     });
-    accountRepository.addListener(() {
-      setState(() {
-        account = accountRepository.accounts
-            .firstWhere((element) => element.id == account.id);
-      });
-    });
     load();
     super.initState();
   }

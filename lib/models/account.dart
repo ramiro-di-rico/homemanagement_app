@@ -21,6 +21,9 @@ class AccountModel {
         json['archive']);
   }
 
+  factory AccountModel.empty(int currencyId) =>
+      AccountModel(0, "", 0, false, AccountType.Cash, currencyId, 0, false);
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,

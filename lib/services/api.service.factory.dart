@@ -54,7 +54,7 @@ class ApiServiceFactory {
         },
         body: body);
 
-    if (response.statusCode != 200) {
+    if (response.statusCode < 200 || response.statusCode > 299) {
       throw Exception('Failed to post to $api');
     }
   }
@@ -86,7 +86,7 @@ class ApiServiceFactory {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to put to $api');
+      throw Exception('Failed to delete to $api');
     }
   }
 }

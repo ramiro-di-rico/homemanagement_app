@@ -3,7 +3,6 @@ import 'package:home_management_app/screens/accounts/account.detail.dart';
 import 'package:home_management_app/screens/authentication/registration.dart';
 
 import 'screens/accounts/account-metrics.dart';
-import 'screens/accounts/add.acount.dart';
 import 'screens/authentication/login.dart';
 import 'screens/main/home.dart';
 
@@ -21,7 +20,6 @@ class MyApp extends StatelessWidget {
         LoginScreen.id: (context) => LoginScreen(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
         HomeScreen.id: (context) => HomeScreen(),
-        AddAccountScreen.id: (context) => AddAccountScreen(),
         AccountDetailScren.id: (context) => AccountDetailScren(),
         AccountMetrics.id: (context) => AccountMetrics(),
       },

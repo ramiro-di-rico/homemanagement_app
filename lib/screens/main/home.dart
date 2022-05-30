@@ -6,9 +6,9 @@ import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/notification.repository.dart';
 import 'package:home_management_app/repositories/preferences.repository.dart';
 import 'package:home_management_app/repositories/currency.repository.dart';
-import 'package:home_management_app/screens/accounts/add.acount.dart';
 import 'package:home_management_app/screens/authentication/login.dart';
 import 'package:home_management_app/screens/main/settings.dart';
+import 'package:home_management_app/screens/main/widgets/account.sheet.dart';
 import 'package:home_management_app/services/authentication.service.dart';
 import 'account.list.dart';
 import 'dashboard.dart';
@@ -163,7 +163,21 @@ class _HomeScreenState extends State<HomeScreen> {
       FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.pushNamed(context, AddAccountScreen.id);
+          showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.vertical(top: Radius.circular(25.0))),
+              builder: (context) {
+                return SizedBox(
+                  height: 400,
+                  child: AnimatedPadding(
+                      padding: MediaQuery.of(context).viewInsets,
+                      duration: Duration(seconds: 1),
+                      child: AccountSheet()),
+                );
+              });
         },
       ),
       createLogoutButton(),
