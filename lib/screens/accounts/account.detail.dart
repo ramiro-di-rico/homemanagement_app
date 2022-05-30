@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 
 import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
+import 'widgets/account-most-expensive-categories.dart';
 import 'widgets/account.info.dart';
 import 'widgets/add.transaction.sheet.dart';
 import 'widgets/transaction.row.info.dart';

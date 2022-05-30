@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/models/account.dart';
 
 import 'widgets/account-app-bar.dart';
-import 'widgets/account-transactions.widget.dart';
+import 'widgets/account-most-expensive-categories.dart';
 
 class AccountMetrics extends StatefulWidget {
   static const String id = 'account_metrics_screen';
@@ -26,10 +26,8 @@ class _AccountMetricsState extends State<AccountMetrics> {
             children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child:
-                      AccountTransactionsWidget(account: this.widget.account),
-                ),
+                    padding: EdgeInsets.all(10),
+                    child: AccountMostExpensiveCategories(this.widget.account)),
               ),
               Expanded(child: SizedBox()),
             ],

@@ -48,11 +48,14 @@ class CategoryMetricService {
     List<CategoryMetric> metrics;
     if (this.categoriesMetric == null) {
       var token = this.authenticationService.getUserToken();
+      final queryParameters = {'month': month.toString(), 'take': '3'};
 
       var response = await http.get(
-          Uri.https('ramiro-di-rico.dev',
-              'homemanagementapi/api/account/$accountId/toptransactions/$month'),
-          headers: <String, String>{'Authorization': token});
+          Uri.https(
+              'ramiro-di-rico.dev',
+              'homemanagementapi/api/account/$accountId/toptransactions',
+              queryParameters),
+          headers: <String, String>{'Authorization': 'Bearer $token'});
 
       if (response.statusCode == 200) {
         List data = json.decode(response.body);
