@@ -5,6 +5,9 @@ import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/category.service.metric.dart';
 import 'package:skeletons/skeletons.dart';
 
+import '../../../custom/components/dropdown.component.dart';
+import '../../../repositories/account.repository.dart';
+
 class MostExpensiveCategoriesChart extends StatefulWidget {
   MostExpensiveCategoriesChart({Key key}) : super(key: key);
 
@@ -15,15 +18,29 @@ class MostExpensiveCategoriesChart extends StatefulWidget {
 
 class _MostExpensiveCategoriesChartState
     extends State<MostExpensiveCategoriesChart> {
+  AccountRepository accountRepository = GetIt.I<AccountRepository>();
   List<CategoryMetric> metrics = List.empty();
   bool loading = false;
+  List<String> accounts = List.empty(growable: true);
+  String selectedAccount = "All Accounts";
+  String _allAccounts = "All Accounts";
 
   Future loadMetrics() async {
     setState(() {
       loading = true;
     });
-    var result = await GetIt.I<CategoryMetricService>()
-        .getMostExpensiveCategories(DateTime.now().month);
+    var account = !accountRepository.accounts
+            .any((element) => element.name == selectedAccount)
+        ? null
+        : accountRepository.accounts
+            .firstWhere((element) => element.name == selectedAccount);
+
+    var result = account == null
+        ? await GetIt.I<CategoryMetricService>()
+            .getMostExpensiveCategories(DateTime.now().month)
+        : await GetIt.I<CategoryMetricService>()
+            .getMostExpensiveCategoriesByAccount(
+                account.id, DateTime.now().month);
 
     setState(() {
       metrics = result;
@@ -34,6 +51,7 @@ class _MostExpensiveCategoriesChartState
   @override
   void initState() {
     super.initState();
+    accountRepository.addListener(loadAccounts);
     loadMetrics();
   }
 
@@ -46,6 +64,13 @@ class _MostExpensiveCategoriesChartState
           ListTile(
             leading: Icon(Icons.bar_chart),
             title: Text('Most expensive categories'),
+            trailing: DropdownComponent(
+                items: accounts,
+                onChanged: (accountName) async {
+                  selectedAccount = accountName;
+                  await loadMetrics();
+                },
+                currentValue: selectedAccount),
           ),
           Expanded(
             child: Skeleton(
@@ -106,5 +131,11 @@ class _MostExpensiveCategoriesChartState
         color: ThemeData.fallback().colorScheme.secondary,
         fontWeight: FontWeight.bold,
         fontSize: 14);
+  }
+
+  void loadAccounts() {
+    accounts.clear();
+    accounts.add(_allAccounts);
+    accounts.addAll(accountRepository.accounts.map((e) => e.name));
   }
 }
