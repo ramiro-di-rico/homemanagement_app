@@ -47,6 +47,7 @@ class _AccountsMetricSeriesWidgetState
     setState(() {
       loading = true;
     });
+    loadAccounts();
     var result = selectedAccount == _allAccounts
         ? await dashboardService.fetchAccountsHistoricalChart()
         : await dashboardService.fetchAccountHistoricalChart(accountRepository

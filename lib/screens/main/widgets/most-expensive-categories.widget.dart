@@ -29,6 +29,7 @@ class _MostExpensiveCategoriesChartState
     setState(() {
       loading = true;
     });
+    loadAccounts();
     var account = !accountRepository.accounts
             .any((element) => element.name == selectedAccount)
         ? null
