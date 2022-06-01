@@ -14,16 +14,25 @@ class DashboardService {
       @required this.apiServiceFactory,
       @required this.caching});
 
-  Future<List<AccountHistorical>> fetchAccountHistoricalChart() async {
-    if (this.caching.exists('fetchAccountHistoricalChart')) {
-      return this.caching.fetch('fetchAccountHistoricalChart')
+  Future<List<AccountHistorical>> fetchAccountsHistoricalChart() async {
+    if (this.caching.exists('fetchAccountsHistoricalChart')) {
+      return this.caching.fetch('fetchAccountsHistoricalChart')
           as List<AccountHistorical>;
     }
 
     var data =
         await this.apiServiceFactory.fetchList('Dashboard/accounts/historical');
     var result = data.map((e) => AccountHistorical.fromJson(e)).toList();
-    this.caching.add('fetchAccountHistoricalChart', result);
+    this.caching.add('fetchAccountsHistoricalChart', result);
+    return result;
+  }
+
+  Future<List<AccountHistorical>> fetchAccountHistoricalChart(
+      int accountId) async {
+    var data = await this
+        .apiServiceFactory
+        .fetchList('Dashboard/account/$accountId/historical');
+    var result = data.map((e) => AccountHistorical.fromJson(e)).toList();
     return result;
   }
 }

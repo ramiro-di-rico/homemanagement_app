@@ -1,7 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/components/dropdown.component.dart';
 import 'package:home_management_app/models/account-historical.dart';
+import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
@@ -30,10 +32,14 @@ class _AccountsMetricSeriesWidgetState
     Colors.green[600]
   ];
   bool loading = false;
+  List<String> accounts = List.empty(growable: true);
+  String selectedAccount = "All Accounts";
+  String _allAccounts = "All Accounts";
 
   @override
   void initState() {
     super.initState();
+    accountRepository.addListener(loadAccounts);
     load();
   }
 
@@ -41,7 +47,12 @@ class _AccountsMetricSeriesWidgetState
     setState(() {
       loading = true;
     });
-    var result = await dashboardService.fetchAccountHistoricalChart();
+    var result = selectedAccount == _allAccounts
+        ? await dashboardService.fetchAccountsHistoricalChart()
+        : await dashboardService.fetchAccountHistoricalChart(accountRepository
+            .accounts
+            .firstWhere((element) => element.name == selectedAccount)
+            .id);
     setState(() {
       accountsHistoricalChart = result;
       mapMonths();
@@ -61,6 +72,13 @@ class _AccountsMetricSeriesWidgetState
       ListTile(
         leading: Icon(Icons.show_chart),
         title: Text('Accounts series'),
+        trailing: DropdownComponent(
+            items: accounts,
+            onChanged: (accountName) async {
+              selectedAccount = accountName;
+              await load();
+            },
+            currentValue: selectedAccount),
       ),
       Expanded(
         child: Skeleton(
@@ -182,17 +200,27 @@ class _AccountsMetricSeriesWidgetState
   double calculateInterval() {
     var max = maxY();
     var min = minY();
-    var result = (max + min).roundToDouble();
+    var result = (max.abs() + min.abs()).roundToDouble();
     return result.abs();
   }
 
   void mapMonths() {
     months.clear();
-    var account = accountsHistoricalChart
-        .firstWhere((element) => element.evolution.length == 3);
+    var account =
+        accountsHistoricalChart.any((element) => element.evolution.length == 3)
+            ? accountsHistoricalChart
+                .firstWhere((element) => element.evolution.length == 3)
+            : accountsHistoricalChart
+                .firstWhere((element) => element.evolution.length == 2);
 
     for (var monthValues in account.evolution) {
       months.add(monthValues.month);
     }
+  }
+
+  void loadAccounts() {
+    accounts.clear();
+    accounts.add(_allAccounts);
+    accounts.addAll(accountRepository.accounts.map((e) => e.name));
   }
 }
