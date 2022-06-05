@@ -1,14 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/custom/components/dropdown.component.dart';
 import 'package:home_management_app/models/account-historical.dart';
-import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
-import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../../services/dashboard.service.dart';
+import 'chart-options-sheet.dart';
 
 class AccountsMetricSeriesWidget extends StatefulWidget {
   AccountsMetricSeriesWidget({Key key}) : super(key: key);
@@ -26,7 +24,7 @@ class _AccountsMetricSeriesWidgetState
   List<AccountHistorical> accountsHistoricalChart = [];
   List<String> months = List.empty(growable: true);
   List<Color> lineColors = [
-    Colors.lime[900],
+    Colors.lime[600],
     Colors.pink[600],
     Colors.orange[600],
     Colors.green[600]
@@ -35,6 +33,7 @@ class _AccountsMetricSeriesWidgetState
   List<String> accounts = List.empty(growable: true);
   String selectedAccount = "All Accounts";
   String _allAccounts = "All Accounts";
+  int selectedMont = DateTime.now().month;
 
   @override
   void initState() {
@@ -73,13 +72,34 @@ class _AccountsMetricSeriesWidgetState
       ListTile(
         leading: Icon(Icons.show_chart),
         title: Text('Accounts series'),
-        trailing: DropdownComponent(
-            items: accounts,
-            onChanged: (accountName) async {
-              selectedAccount = accountName;
-              await load();
-            },
-            currentValue: selectedAccount),
+        trailing: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(25.0))),
+                builder: (context) {
+                  return SizedBox(
+                    height: 130,
+                    child: AnimatedPadding(
+                        padding: MediaQuery.of(context).viewInsets,
+                        duration: Duration(seconds: 1),
+                        child: ChartOptionsSheet(
+                          selectedAccount,
+                          selectedMont,
+                          (account, month) async {
+                            selectedAccount = account;
+                            selectedMont = month;
+                            await load();
+                          },
+                        )),
+                  );
+                });
+          },
+        ),
       ),
       Expanded(
         child: Skeleton(

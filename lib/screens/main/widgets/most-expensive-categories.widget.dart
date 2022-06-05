@@ -7,6 +7,7 @@ import 'package:skeletons/skeletons.dart';
 
 import '../../../custom/components/dropdown.component.dart';
 import '../../../repositories/account.repository.dart';
+import 'chart-options-sheet.dart';
 
 class MostExpensiveCategoriesChart extends StatefulWidget {
   MostExpensiveCategoriesChart({Key key}) : super(key: key);
@@ -24,6 +25,7 @@ class _MostExpensiveCategoriesChartState
   List<String> accounts = List.empty(growable: true);
   String selectedAccount = "All Accounts";
   String _allAccounts = "All Accounts";
+  int selectedMonth = DateTime.now().month;
 
   Future loadMetrics() async {
     setState(() {
@@ -38,10 +40,9 @@ class _MostExpensiveCategoriesChartState
 
     var result = account == null
         ? await GetIt.I<CategoryMetricService>()
-            .getMostExpensiveCategories(DateTime.now().month)
+            .getMostExpensiveCategories(selectedMonth)
         : await GetIt.I<CategoryMetricService>()
-            .getMostExpensiveCategoriesByAccount(
-                account.id, DateTime.now().month);
+            .getMostExpensiveCategoriesByAccount(account.id, selectedMonth);
 
     setState(() {
       metrics = result;
@@ -64,14 +65,35 @@ class _MostExpensiveCategoriesChartState
         children: [
           ListTile(
             leading: Icon(Icons.bar_chart),
-            title: Text('Most expensive categories'),
-            trailing: DropdownComponent(
-                items: accounts,
-                onChanged: (accountName) async {
-                  selectedAccount = accountName;
-                  await loadMetrics();
-                },
-                currentValue: selectedAccount),
+            title: Text('Categories'),
+            trailing: IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(25.0))),
+                    builder: (context) {
+                      return SizedBox(
+                        height: 130,
+                        child: AnimatedPadding(
+                            padding: MediaQuery.of(context).viewInsets,
+                            duration: Duration(seconds: 1),
+                            child: ChartOptionsSheet(
+                              selectedAccount,
+                              selectedMonth,
+                              (account, month) async {
+                                selectedAccount = account;
+                                selectedMonth = month;
+                                await loadMetrics();
+                              },
+                            )),
+                      );
+                    });
+              },
+            ),
           ),
           Expanded(
             child: Skeleton(
