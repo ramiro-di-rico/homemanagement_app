@@ -40,7 +40,7 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    selectedMonth = widget.selectedMonth;
+    selectedMonth = widget.selectedMonth - 1;
     selectedAccount = widget.selectedAccount;
     accounts.addAll(accountRepository.accounts.map((x) => x.name).toList());
     return Column(children: [
@@ -68,7 +68,7 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: () {
-            widget.onChange.call(selectedAccount, selectedMonth);
+            widget.onChange.call(selectedAccount, selectedMonth + 1);
             Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(

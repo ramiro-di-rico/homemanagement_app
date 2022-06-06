@@ -29,10 +29,15 @@ class DashboardService {
 
   Future<List<AccountHistorical>> fetchAccountHistoricalChart(
       int accountId) async {
+    var key = "fetchAccountsHistoricalChart-$accountId";
+    if (this.caching.exists(key)) {
+      return this.caching.fetch(key) as List<AccountHistorical>;
+    }
     var data = await this
         .apiServiceFactory
         .fetchList('Dashboard/account/$accountId/historical');
     var result = data.map((e) => AccountHistorical.fromJson(e)).toList();
+    this.caching.add(key, result);
     return result;
   }
 }

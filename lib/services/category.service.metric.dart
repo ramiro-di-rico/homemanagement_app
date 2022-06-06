@@ -45,27 +45,28 @@ class CategoryMetricService {
 
   Future<List<CategoryMetric>> getMostExpensiveCategoriesByAccount(
       int accountId, int month) async {
-    List<CategoryMetric> metrics;
-    if (this.categoriesMetric == null) {
-      var token = this.authenticationService.getUserToken();
-      final queryParameters = {'month': month.toString(), 'take': '3'};
-
-      var response = await http.get(
-          Uri.https(
-              'ramiro-di-rico.dev',
-              'homemanagementapi/api/account/$accountId/toptransactions',
-              queryParameters),
-          headers: <String, String>{'Authorization': 'Bearer $token'});
-
-      if (response.statusCode == 200) {
-        List data = json.decode(response.body);
-        metrics = data.map((e) => CategoryMetric.fromJson(e)).toList();
-        //caching.add(cacheKey, this.categoriesMetric);
-      } else {
-        throw Exception('Failed to fetch Categories Metric by account id.');
-      }
+    var key = "getMostExpensiveCategoriesByAccount-$accountId-$month";
+    if (this.caching.exists(key)) {
+      return this.caching.fetch(key) as List<CategoryMetric>;
     }
 
-    return metrics;
+    var token = this.authenticationService.getUserToken();
+    final queryParameters = {'month': month.toString(), 'take': '3'};
+
+    var response = await http.get(
+        Uri.https(
+            'ramiro-di-rico.dev',
+            'homemanagementapi/api/account/$accountId/toptransactions',
+            queryParameters),
+        headers: <String, String>{'Authorization': 'Bearer $token'});
+
+    if (response.statusCode == 200) {
+      List data = json.decode(response.body);
+      var metrics = data.map((e) => CategoryMetric.fromJson(e)).toList();
+      caching.add(key, metrics);
+      return metrics;
+    } else {
+      throw Exception('Failed to fetch Categories Metric by account id.');
+    }
   }
 }
