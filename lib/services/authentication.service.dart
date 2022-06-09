@@ -44,6 +44,10 @@ class AuthenticationService extends ChangeNotifier {
   Future<bool> biometricsEnabled() async => await auth.canCheckBiometrics;
 
   Future biometricsAuthenticate() async {
+    var isSupported = await auth.isDeviceSupported();
+
+    if (!isSupported) return;
+
     var biometricAuthenticated = await auth.authenticate(
         localizedReason: 'Scan your fingerprint to authenticate',
         useErrorDialogs: true,
