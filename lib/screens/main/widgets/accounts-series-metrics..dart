@@ -90,7 +90,8 @@ class _AccountsMetricSeriesWidgetState
                         child: ChartOptionsSheet(
                           selectedAccount,
                           selectedMont,
-                          (account, month) async {
+                          3,
+                          (account, month, value) async {
                             selectedAccount = account;
                             selectedMont = month;
                             await load();

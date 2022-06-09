@@ -5,7 +5,6 @@ import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/category.service.metric.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../../../custom/components/dropdown.component.dart';
 import '../../../repositories/account.repository.dart';
 import 'chart-options-sheet.dart';
 
@@ -26,6 +25,7 @@ class _MostExpensiveCategoriesChartState
   String selectedAccount = "All Accounts";
   String _allAccounts = "All Accounts";
   int selectedMonth = DateTime.now().month;
+  int take = 3;
 
   Future loadMetrics() async {
     setState(() {
@@ -40,12 +40,14 @@ class _MostExpensiveCategoriesChartState
 
     var result = account == null
         ? await GetIt.I<CategoryMetricService>()
-            .getMostExpensiveCategories(selectedMonth)
+            .getMostExpensiveCategories(selectedMonth, take)
         : await GetIt.I<CategoryMetricService>()
-            .getMostExpensiveCategoriesByAccount(account.id, selectedMonth);
+            .getMostExpensiveCategoriesByAccount(
+                account.id, selectedMonth, take);
 
     setState(() {
       metrics = result;
+      metrics.sort((a, b) => a.category.name.compareTo(b.category.name));
       loading = false;
     });
   }
@@ -84,9 +86,11 @@ class _MostExpensiveCategoriesChartState
                             child: ChartOptionsSheet(
                               selectedAccount,
                               selectedMonth,
-                              (account, month) async {
+                              take,
+                              (account, month, value) async {
                                 selectedAccount = account;
                                 selectedMonth = month;
+                                take = value;
                                 await loadMetrics();
                               },
                             )),

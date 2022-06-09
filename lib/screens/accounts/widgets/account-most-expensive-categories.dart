@@ -28,7 +28,7 @@ class _AccountMostExpensiveCategoriesState
     });
     var result = await GetIt.I<CategoryMetricService>()
         .getMostExpensiveCategoriesByAccount(
-            widget.accountModel.id, DateTime.now().month);
+            widget.accountModel.id, DateTime.now().month, 3);
 
     setState(() {
       metrics = result;

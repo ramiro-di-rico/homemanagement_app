@@ -9,8 +9,10 @@ import '../../../repositories/account.repository.dart';
 class ChartOptionsSheet extends StatefulWidget {
   String selectedAccount;
   int selectedMonth;
-  Function(String, int) onChange;
-  ChartOptionsSheet(this.selectedAccount, this.selectedMonth, this.onChange,
+  int take;
+  Function(String, int, int) onChange;
+  ChartOptionsSheet(
+      this.selectedAccount, this.selectedMonth, this.take, this.onChange,
       {Key key})
       : super(key: key);
 
@@ -23,6 +25,7 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
   List<String> accounts = ["All Accounts"];
   String selectedAccount = "All Accounts";
   int selectedMonth = 0;
+  int take = 3;
   List<String> months = [
     DateTime.january.toMonthName(),
     DateTime.february.toMonthName(),
@@ -40,6 +43,7 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    take = widget.take;
     selectedMonth = widget.selectedMonth - 1;
     selectedAccount = widget.selectedAccount;
     accounts.addAll(accountRepository.accounts.map((x) => x.name).toList());
@@ -61,6 +65,12 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
                   selectedMonth = months.indexOf(month);
                 },
                 currentValue: months[selectedMonth]),
+            DropdownComponent(
+                items: ["3", "5", "10"],
+                onChanged: (value) async {
+                  take = int.parse(value);
+                },
+                currentValue: take.toString()),
           ],
         ),
       ),
@@ -68,7 +78,7 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: () {
-            widget.onChange.call(selectedAccount, selectedMonth + 1);
+            widget.onChange.call(selectedAccount, selectedMonth + 1, take);
             Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(

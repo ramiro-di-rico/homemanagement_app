@@ -16,14 +16,19 @@ class CategoryMetricService {
   CategoryMetricService(
       {@required this.authenticationService, @required this.caching});
 
-  Future<List<CategoryMetric>> getMostExpensiveCategories(int month) async {
-    if (this.caching.exists(cacheKey)) {
-      return this.caching.fetch(cacheKey) as List<CategoryMetric>;
+  Future<List<CategoryMetric>> getMostExpensiveCategories(
+      int month, int take) async {
+    var key = "getMostExpensiveCategoriesByAccount-$month-$take";
+    if (this.caching.exists(key)) {
+      return this.caching.fetch(key) as List<CategoryMetric>;
     }
 
     if (this.metrics.isEmpty) {
       var token = this.authenticationService.getUserToken();
-      final queryParameters = {'month': month.toString(), 'take': '3'};
+      final queryParameters = {
+        'month': month.toString(),
+        'take': take.toString()
+      };
 
       var uri = Uri.https('ramiro-di-rico.dev',
           'homemanagementapi/api/account/toptransactions', queryParameters);
@@ -34,7 +39,7 @@ class CategoryMetricService {
         List<dynamic> data = json.decode(response.body);
         var result = data.map((e) => CategoryMetric.fromJson(e)).toList();
         this.metrics.addAll(result);
-        caching.add(cacheKey, this.metrics);
+        caching.add(key, this.metrics);
       } else {
         throw Exception('Failed to fetch Categories Metric.');
       }
@@ -44,14 +49,17 @@ class CategoryMetricService {
   }
 
   Future<List<CategoryMetric>> getMostExpensiveCategoriesByAccount(
-      int accountId, int month) async {
-    var key = "getMostExpensiveCategoriesByAccount-$accountId-$month";
+      int accountId, int month, int take) async {
+    var key = "getMostExpensiveCategoriesByAccount-$accountId-$month-$take";
     if (this.caching.exists(key)) {
       return this.caching.fetch(key) as List<CategoryMetric>;
     }
 
     var token = this.authenticationService.getUserToken();
-    final queryParameters = {'month': month.toString(), 'take': '3'};
+    final queryParameters = {
+      'month': month.toString(),
+      'take': take.toString()
+    };
 
     var response = await http.get(
         Uri.https(
