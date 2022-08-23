@@ -44,95 +44,78 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var controls = [
-      buildEmailTextField(),
-      buildPasswordTextFied(),
-    ];
-
-    if (!isAuthenticating) {
-      controls.add(buildSendButton());
-    } else {
-      var indicator = CircularProgressIndicator();
-      controls.add(Padding(padding: EdgeInsets.all(5), child: indicator));
-    }
-
-    if (!keyboardFactory.isKeyboardVisible()) {
-      controls.add(buildDivider());
-      controls.add(buildRegistrationLabel());
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Sign in'),
       ),
       body: SafeArea(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, children: controls),
-      ),
-    );
-  }
-
-  Padding buildRegistrationLabel() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-      child: Row(
-        children: [
-          Text('You don' 't have an account yet ?'),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, RegistrationScreen.id);
-            },
-            child: Text('Create one'),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Column(
+            children: [
+              Padding(
+                  padding: EdgeInsets.all(20),
+                  child: EmailTextField(
+                    onTextChanged: onEmailChanged,
+                    enableEmailField: !isAuthenticating,
+                  )),
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: PasswordTextField(
+                    onTextChanged: onPasswordChanged,
+                    enablePassword: passwordFieldEnabled && !isAuthenticating),
+              ),
+              isAuthenticating
+                  ? Padding(
+                      padding: EdgeInsets.all(5),
+                      child: CircularProgressIndicator())
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(20),
+                          child: ElevatedButton(
+                            child: Icon(Icons.send, color: Colors.white),
+                            onPressed: onButtonPressed,
+                          ),
+                        ),
+                        ElevatedButton(
+                            onPressed:
+                                authenticationService.biometricsAuthenticate,
+                            child: Icon(Icons.fingerprint))
+                      ],
+                    ),
+            ],
+          ),
+          Column(
+            children: keyboardFactory.isKeyboardVisible()
+                ? []
+                : [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: Divider(
+                        thickness: 2,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: Row(
+                        children: [
+                          Text('You don' 't have an account yet ?'),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                  context, RegistrationScreen.id);
+                            },
+                            child: Text('Create one'),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
           )
-        ],
+        ]),
       ),
     );
-  }
-
-  Padding buildDivider() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-      child: Divider(
-        thickness: 2,
-      ),
-    );
-  }
-
-  Padding buildSendButton() {
-    return Padding(
-      padding: EdgeInsets.all(20),
-      child: TextButton(
-        style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(
-                this.enableButton ? Colors.blueAccent : Colors.grey),
-            padding: MaterialStateProperty.all<EdgeInsets>(
-                EdgeInsets.fromLTRB(20, 10, 20, 10)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.elliptical(20, 20)),
-            ))),
-        child: Icon(Icons.send, color: Colors.white),
-        onPressed: onButtonPressed,
-      ),
-    );
-  }
-
-  Padding buildPasswordTextFied() {
-    return Padding(
-      padding: EdgeInsets.all(20),
-      child: PasswordTextField(
-          onTextChanged: onPasswordChanged,
-          enablePassword: passwordFieldEnabled && !isAuthenticating),
-    );
-  }
-
-  Padding buildEmailTextField() {
-    return Padding(
-        padding: EdgeInsets.all(20),
-        child: EmailTextField(
-          onTextChanged: onEmailChanged,
-          enableEmailField: !isAuthenticating,
-        ));
   }
 
   void onEmailChanged(String character) {
