@@ -79,8 +79,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         ElevatedButton(
-                            onPressed:
-                                authenticationService.biometricsAuthenticate,
+                            onPressed: authenticationService.isBiometricEnabled
+                                ? authenticationService.biometricsAuthenticate
+                                : null,
                             child: Icon(Icons.fingerprint))
                       ],
                     ),

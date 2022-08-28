@@ -14,6 +14,7 @@ class AuthenticationService extends ChangeNotifier {
   String authenticateApi = 'identity/api/Authentication/SignIn';
   String registrationApi = 'api/registration';
   UserModel user;
+  bool isBiometricEnabled = false;
 
   AuthenticationService(
       {@required this.cryptographyService, this.userRepository});
@@ -28,7 +29,9 @@ class AuthenticationService extends ChangeNotifier {
       return;
     }
 
-    if (await biometricsEnabled()) {
+    isBiometricEnabled =
+        await auth.isDeviceSupported() && await auth.canCheckBiometrics;
+    if (isBiometricEnabled) {
       await biometricsAuthenticate();
     }
   }
@@ -41,13 +44,7 @@ class AuthenticationService extends ChangeNotifier {
     return user.expirationDate.isAfter(DateTime.now());
   }
 
-  Future<bool> biometricsEnabled() async => await auth.canCheckBiometrics;
-
   Future biometricsAuthenticate() async {
-    var isSupported = await auth.isDeviceSupported();
-
-    if (!isSupported) return;
-
     var biometricAuthenticated = await auth.authenticate(
         localizedReason: 'Scan your fingerprint to authenticate',
         useErrorDialogs: true,
