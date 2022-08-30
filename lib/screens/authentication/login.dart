@@ -68,22 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? Padding(
                       padding: EdgeInsets.all(5),
                       child: CircularProgressIndicator())
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(20),
-                          child: ElevatedButton(
-                            child: Icon(Icons.send, color: Colors.white),
-                            onPressed: onButtonPressed,
-                          ),
-                        ),
-                        ElevatedButton(
-                            onPressed: authenticationService.isBiometricEnabled
-                                ? authenticationService.biometricsAuthenticate
-                                : null,
-                            child: Icon(Icons.fingerprint))
-                      ],
+                  : ElevatedButton(
+                      child: Icon(Icons.send, color: Colors.white),
+                      onPressed: canLogin() ? onButtonPressed : null,
                     ),
             ],
           ),
