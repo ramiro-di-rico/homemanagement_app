@@ -64,12 +64,4 @@ class AccountRepository extends ChangeNotifier {
       throw ex;
     }
   }
-
-  Future<List<AccountSeries>> getSeries() async {
-    if (accountSeries.length == 0) {
-      var result = await accountService.getSeriesMetric();
-      accountSeries.addAll(result);
-    }
-    return accountSeries;
-  }
 }
