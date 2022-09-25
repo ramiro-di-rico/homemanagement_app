@@ -20,11 +20,9 @@ class PreferenceService {
         headers: <String, String>{'Authorization': 'Bearer $token'});
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> data = json.decode(response.body);
+      List<dynamic> data = json.decode(response.body);
 
-      var result = data.entries
-          .map((e) => PreferenceModel(e.key, e.value.toString()))
-          .toList();
+      var result = data.map((e) => PreferenceModel.fromJson(e)).toList();
       return result;
     } else {
       throw Exception('Failed to fetch Accounts.');

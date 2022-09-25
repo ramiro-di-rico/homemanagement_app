@@ -29,12 +29,14 @@ class _DashboardState extends State<Dashboard> {
             ),*/
             BalanceWidget(),
           ]),*/
+          /*
           Row(
             children: [
               Expanded(child: IncomeWidget()),
               Expanded(child: OutcomeWidget())
             ],
           ),
+          */
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),

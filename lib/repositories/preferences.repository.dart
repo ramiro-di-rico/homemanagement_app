@@ -6,8 +6,7 @@ class PreferencesRepository extends ChangeNotifier {
   PreferenceService preferenceService;
   List<PreferenceModel> preferences = [];
 
-  PreferencesRepository(
-      {@required this.preferenceService});
+  PreferencesRepository({@required this.preferenceService});
 
   Future load() async {
     var result = await this.preferenceService.fetch();
@@ -15,7 +14,10 @@ class PreferencesRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool getDailyBackupValue() => this.preferences.firstWhere((element) => element.name == 'enableDailyBackups').value == 'true';
-
-  
+  bool getDailyBackupValue() =>
+      this
+          .preferences
+          .firstWhere((element) => element.name == 'EnableDailyBackups')
+          .value ==
+      'true';
 }

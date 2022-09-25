@@ -36,9 +36,9 @@ class CategoryMetricService {
           headers: <String, String>{'Authorization': 'Bearer $token'});
 
       if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        var result = data.map((e) => CategoryMetric.fromJson(e)).toList();
-        this.metrics.addAll(result);
+        Map<String, dynamic> data = json.decode(response.body);
+        var result = CategoriesMetric.fromJson(data);
+        this.metrics.addAll(result.categories);
         caching.add(key, this.metrics);
       } else {
         throw Exception('Failed to fetch Categories Metric.');
