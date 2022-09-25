@@ -4,6 +4,7 @@ import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/services/metrics.service.dart';
 import 'package:skeletons/skeletons.dart';
 
+//deprecated
 class IncomeWidget extends StatefulWidget {
   @override
   _IncomeWidgetState createState() => _IncomeWidgetState();
