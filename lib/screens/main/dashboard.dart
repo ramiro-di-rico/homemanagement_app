@@ -16,7 +16,7 @@ class _DashboardState extends State<Dashboard> {
         children: [
           Expanded(
             child: OverviewWidget(),
-            flex: 3,
+            flex: 4,
           ),
           Expanded(
             child: Padding(
