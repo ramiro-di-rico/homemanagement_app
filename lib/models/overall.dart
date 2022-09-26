@@ -10,6 +10,6 @@ class Overall {
 
   factory Overall.fromJson(Map<String, dynamic> json) {
     return Overall(json['totalTransactions'], json['expenseTransactions'],
-        json['incomeTransactions'], json['totalOutcome'], json['totalIncome']);
+        json['incomeTransactions'], json['totalExpense'], json['totalIncome']);
   }
 }

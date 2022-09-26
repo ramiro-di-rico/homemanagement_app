@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/screens/main/widgets/overview-widget.dart';
+import 'package:home_management_app/screens/main/widgets/overview/overview-widget-item.dart';
 import 'widgets/accounts-series-metrics..dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
@@ -16,21 +16,21 @@ class _DashboardState extends State<Dashboard> {
         children: [
           Expanded(
             child: OverviewWidget(),
-            flex: 1,
+            flex: 3,
           ),
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(10),
               child: MostExpensiveCategoriesChart(),
             ),
-            flex: 3,
+            flex: 6,
           ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: AccountsMetricSeriesWidget(),
             ),
-            flex: 3,
+            flex: 6,
           ),
         ],
       ),
