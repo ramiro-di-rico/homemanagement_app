@@ -24,22 +24,15 @@ class CategoryMetricService {
     }
 
     if (this.metrics.isEmpty) {
-      var token = this.authenticationService.getUserToken();
-      final queryParameters = {
-        'month': month.toString(),
-        'take': take.toString()
-      };
-
-      var uri = Uri.https('ramiro-di-rico.dev',
-          'homemanagementapi/api/account/toptransactions', queryParameters);
-      var response = await http.get(uri,
-          headers: <String, String>{'Authorization': 'Bearer $token'});
+      var uri = Uri.https(
+          'ramiro-di-rico.dev',
+          'homemanagementapi/api/account/toptransactions',
+          _getQueryParams(month, take));
+      var response = await http.get(uri, headers: _getAuthHeaders());
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        var result = CategoriesMetric.fromJson(data);
-        this.metrics.addAll(result.categories);
-        caching.add(key, this.metrics);
+        var result = _parseJson(response.body);
+        _cacheResponse(key, result.categories);
       } else {
         throw Exception('Failed to fetch Categories Metric.');
       }
@@ -55,26 +48,38 @@ class CategoryMetricService {
       return this.caching.fetch(key) as List<CategoryMetric>;
     }
 
-    var token = this.authenticationService.getUserToken();
-    final queryParameters = {
-      'month': month.toString(),
-      'take': take.toString()
-    };
-
     var response = await http.get(
         Uri.https(
             'ramiro-di-rico.dev',
             'homemanagementapi/api/account/$accountId/toptransactions',
-            queryParameters),
-        headers: <String, String>{'Authorization': 'Bearer $token'});
+            _getQueryParams(month, take)),
+        headers: _getAuthHeaders());
 
     if (response.statusCode == 200) {
-      List data = json.decode(response.body);
-      var metrics = data.map((e) => CategoryMetric.fromJson(e)).toList();
-      caching.add(key, metrics);
+      var result = _parseJson(response.body);
+      _cacheResponse(key, result.categories);
       return metrics;
     } else {
       throw Exception('Failed to fetch Categories Metric by account id.');
     }
+  }
+
+  CategoriesMetric _parseJson(String body) {
+    Map<String, dynamic> data = json.decode(body);
+    var result = CategoriesMetric.fromJson(data);
+    return result;
+  }
+
+  void _cacheResponse(String key, List<CategoryMetric> categories) {
+    this.metrics.addAll(categories);
+    caching.add(key, this.metrics);
+  }
+
+  Map<String, String> _getQueryParams(int month, int take) =>
+      {'month': month.toString(), 'take': take.toString()};
+
+  Map<String, String> _getAuthHeaders() {
+    var token = this.authenticationService.getUserToken();
+    return {'Authorization': 'Bearer $token'};
   }
 }
