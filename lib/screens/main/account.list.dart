@@ -3,8 +3,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
+import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/accounts/account.detail.dart';
 
+import '../accounts/widgets/add.transaction.sheet.dart';
 import 'widgets/account.sheet.dart';
 
 class AccountListScreen extends StatefulWidget {
@@ -15,6 +17,8 @@ class AccountListScreen extends StatefulWidget {
 class _AccountListScreenState extends State<AccountListScreen> {
   List<AccountModel> accounts = [];
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
+  TransactionRepository transactionsRepo =
+      GetIt.instance<TransactionRepository>();
   bool showArchive = false;
 
   @override
@@ -22,6 +26,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
     super.initState();
     load();
     accountsRepo.addListener(load);
+    transactionsRepo.addListener(refreshAccounts);
   }
 
   @override
@@ -56,6 +61,27 @@ class _AccountListScreenState extends State<AccountListScreen> {
             endActionPane: ActionPane(
               motion: ScrollMotion(),
               children: [
+                SlidableAction(
+                    icon: Icons.add,
+                    backgroundColor: Colors.greenAccent,
+                    borderRadius: BorderRadius.circular(10),
+                    onPressed: (context) {
+                      showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(25.0))),
+                          builder: (context) {
+                            return SizedBox(
+                              height: 400,
+                              child: AnimatedPadding(
+                                  padding: MediaQuery.of(context).viewInsets,
+                                  duration: Duration(seconds: 1),
+                                  child: AddTransactionSheet(item)),
+                            );
+                          });
+                    }),
                 SlidableAction(
                   onPressed: ((context) => {
                         showModalBottomSheet<void>(
@@ -92,7 +118,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
                   icon: Icons.delete,
                   backgroundColor: Colors.redAccent,
                   borderRadius: BorderRadius.circular(10),
-                )
+                ),
               ],
             ),
             child: Card(
