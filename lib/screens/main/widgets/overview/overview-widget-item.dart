@@ -29,70 +29,77 @@ class _OverviewWidgetState extends State<OverviewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return MainCard(
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Card(
+          child: Padding(
+        padding: const EdgeInsets.all(5),
         child: Column(children: [
-      ListTile(leading: Icon(Icons.donut_large), title: Text('Transactions')),
-      Expanded(
-        child: Row(children: [
+          ListTile(
+              leading: Icon(Icons.donut_large), title: Text('Transactions')),
           Expanded(
-            child: Column(
-              children: [
-                Expanded(
-                    child: Skeleton(
-                  isLoading: overall == null,
-                  skeleton: SkeletonAvatar(),
-                  child: PieChart(PieChartData(sections: [
-                    PieChartSectionData(
-                        color: Colors.orange[200],
-                        radius: 30,
-                        title: overall?.incomeTransactions.toString(),
-                        value: overall?.incomeTransactions?.toDouble()),
-                    PieChartSectionData(
-                        color: Colors.teal[200],
-                        radius: 30,
-                        title: overall?.outcomeTransactions.toString(),
-                        value: overall?.outcomeTransactions?.toDouble()),
-                  ])),
-                )),
-                Text('Count'),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(
-                          child: Skeleton(
-                        isLoading: overall == null,
-                        skeleton: SkeletonAvatar(),
-                        child: PieChart(PieChartData(sections: [
-                          PieChartSectionData(
-                              color: Colors.deepPurple[200],
-                              radius: 30,
-                              title: shortenBigNumber
-                                  .shortNumber(overall?.totalIncome),
-                              value: overall?.totalIncome?.toDouble()),
-                          PieChartSectionData(
-                              color: Colors.amber[200],
-                              radius: 30,
-                              title: shortenBigNumber
-                                  .shortNumber(overall?.totalOutcome),
-                              value: overall?.totalOutcome?.toDouble()),
-                        ])),
-                      )),
-                      Text('Amount')
-                    ],
-                  ),
+            child: Row(children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                        child: Skeleton(
+                      isLoading: overall == null,
+                      skeleton: SkeletonAvatar(),
+                      child: PieChart(PieChartData(sections: [
+                        PieChartSectionData(
+                            color: Colors.orange[200],
+                            radius: 30,
+                            title: overall?.incomeTransactions.toString(),
+                            value: overall?.incomeTransactions?.toDouble()),
+                        PieChartSectionData(
+                            color: Colors.teal[200],
+                            radius: 30,
+                            title: overall?.outcomeTransactions.toString(),
+                            value: overall?.outcomeTransactions?.toDouble()),
+                      ])),
+                    )),
+                    Text('Count'),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Expanded(
+                              child: Skeleton(
+                            isLoading: overall == null,
+                            skeleton: SkeletonAvatar(),
+                            child: PieChart(PieChartData(sections: [
+                              PieChartSectionData(
+                                  color: Colors.deepPurple[200],
+                                  radius: 30,
+                                  title: shortenBigNumber
+                                      .shortNumber(overall?.totalIncome),
+                                  value: overall?.totalIncome?.toDouble()),
+                              PieChartSectionData(
+                                  color: Colors.amber[200],
+                                  radius: 30,
+                                  title: shortenBigNumber
+                                      .shortNumber(overall?.totalOutcome),
+                                  value: overall?.totalOutcome?.toDouble()),
+                            ])),
+                          )),
+                          Text('Amount')
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ]),
           )
         ]),
-      )
-    ]));
+      )),
+    );
   }
 
   Future load() async {
