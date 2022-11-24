@@ -48,14 +48,10 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   @override
   void initState() {
     account = widget.account;
-    transactionPagingService.addListener(() {
-      setState(() {});
-    });
+    transactionPagingService.addListener(refreshState);
     scrollController.addListener(onScroll);
     filteringTextFocusNode.addListener(() {});
-    filteringNameController.addListener(() {
-      setState(() {});
-    });
+    filteringNameController.addListener(refreshState);
     transactionRepository.addListener(() {
       accountRepository.refresh();
       transactionPagingService.refresh();
@@ -67,9 +63,15 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   @override
   void dispose() {
     scrollController.removeListener(onScroll);
+    filteringNameController.removeListener(refreshState);
+    transactionPagingService.removeListener(refreshState);
     filteringNameController.dispose();
     filteringTextFocusNode.dispose();
     super.dispose();
+  }
+
+  void refreshState() {
+    setState(() {});
   }
 
   @override
