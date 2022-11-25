@@ -27,7 +27,14 @@ class _AccountsMetricSeriesWidgetState
     Colors.lime[600],
     Colors.pink[600],
     Colors.orange[600],
-    Colors.green[600]
+    Colors.green[600],
+    Colors.purple[600],
+    Colors.blueAccent[600],
+    Colors.amberAccent[600],
+    Colors.deepOrange[600],
+    Colors.red[600],
+    Colors.teal[600],
+    Colors.brown[300]
   ];
   bool loading = false;
   List<String> accounts = List.empty(growable: true);
