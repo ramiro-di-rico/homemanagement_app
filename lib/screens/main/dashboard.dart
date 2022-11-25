@@ -17,8 +17,11 @@ class _DashboardState extends State<Dashboard> {
         child: Column(
           children: [
             Expanded(
-              child: OverviewWidget(),
-              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: OverviewWidget(),
+              ),
+              flex: 5,
             ),
             Expanded(
               child: Padding(
