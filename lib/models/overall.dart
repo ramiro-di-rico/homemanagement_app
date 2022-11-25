@@ -2,8 +2,8 @@ class Overall {
   final int totalTransactions;
   final int outcomeTransactions;
   final int incomeTransactions;
-  final double totalOutcome;
-  final double totalIncome;
+  final int totalOutcome;
+  final int totalIncome;
 
   Overall(this.totalTransactions, this.outcomeTransactions,
       this.incomeTransactions, this.totalOutcome, this.totalIncome);

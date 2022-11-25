@@ -1,11 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/converters/double-shorten-converter.dart';
 import 'package:home_management_app/converters/shorten-big-number.dart';
 import 'package:home_management_app/models/overall.dart';
 import 'package:home_management_app/services/metrics.service.dart';
 import 'package:skeletons/skeletons.dart';
+
+import '../../../../converters/int-shorten-converter.dart';
+import 'indicator.dart';
 
 class OverviewWidget extends StatefulWidget {
   const OverviewWidget({Key key}) : super(key: key);
@@ -18,7 +20,7 @@ class _OverviewWidgetState extends State<OverviewWidget> {
   MetricService _metricService = GetIt.I<MetricService>();
   Overall overall;
   List<PieChartSectionData> pieData = List.empty(growable: true);
-  ShortenBigNumber<double> shortenBigNumber = DoubleShortenConverter();
+  ShortenBigNumber<int> shortenBigNumber = IntShortenConverter();
 
   @override
   void initState() {
@@ -125,47 +127,5 @@ class _OverviewWidgetState extends State<OverviewWidget> {
     setState(() {
       overall = fetchedOverall;
     });
-  }
-}
-
-class Indicator extends StatelessWidget {
-  const Indicator({
-    this.color,
-    this.text,
-    this.isSquare,
-    this.size = 16,
-    this.textColor = const Color(0xff505050),
-  });
-  final Color color;
-  final String text;
-  final bool isSquare;
-  final double size;
-  final Color textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
-            color: color,
-          ),
-        ),
-        const SizedBox(
-          width: 4,
-        ),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        )
-      ],
-    );
   }
 }
