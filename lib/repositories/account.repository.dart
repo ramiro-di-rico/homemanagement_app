@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/metrics/account-metrics.dart';
+import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/account.service.dart';
 
 class AccountRepository extends ChangeNotifier {
@@ -63,5 +64,14 @@ class AccountRepository extends ChangeNotifier {
       print(ex);
       throw ex;
     }
+  }
+
+  updateBalance(int accountId, double value, TransactionType type) {
+    var account =
+        this._internalAccounts.firstWhere((element) => element.id == accountId);
+    account.balance = type == TransactionType.Income
+        ? account.balance + value
+        : account.balance - value;
+    _loadAccounts(_internalAccounts);
   }
 }

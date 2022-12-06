@@ -56,6 +56,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
       accountRepository.refresh();
       transactionPagingService.refresh();
     });
+    accountRepository.addListener(refreshState);
     load();
     super.initState();
   }
@@ -65,6 +66,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     scrollController.removeListener(onScroll);
     filteringNameController.removeListener(refreshState);
     transactionPagingService.removeListener(refreshState);
+    accountRepository.removeListener(refreshState);
     filteringNameController.dispose();
     filteringTextFocusNode.dispose();
     super.dispose();

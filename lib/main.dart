@@ -127,8 +127,9 @@ void registerSingletons() {
   var transactionService =
       TransactionService(authenticationService: authenticationService);
 
-  var transactionRepository =
-      TransactionRepository(transactionService: transactionService);
+  var transactionRepository = TransactionRepository(
+      transactionService: transactionService,
+      accountRepository: accountRepository);
 
   var categoryRepository = CategoryRepository(CategoryService(
       authenticationService: authenticationService,

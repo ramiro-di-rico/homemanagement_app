@@ -26,12 +26,12 @@ class _AccountListScreenState extends State<AccountListScreen> {
     super.initState();
     load();
     accountsRepo.addListener(load);
-    transactionsRepo.addListener(refreshAccounts);
+    //transactionsRepo.addListener(refreshAccounts);
   }
 
   @override
   void dispose() {
-    accountsRepo.removeListener(load);
+    //accountsRepo.removeListener(load);
     super.dispose();
   }
 
