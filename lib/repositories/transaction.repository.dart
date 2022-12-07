@@ -12,8 +12,8 @@ class TransactionRepository extends ChangeNotifier {
       {@required this.transactionService, @required this.accountRepository});
 
   Future add(TransactionModel transaction) async {
-    await this.transactionService.add(transaction);
-    this.transactions.insert(0, transaction);
+    var result = await this.transactionService.add(transaction);
+    this.transactions.insert(0, result);
     this.accountRepository.updateBalance(
         transaction.accountId, transaction.price, transaction.transactionType);
     notifyListeners();

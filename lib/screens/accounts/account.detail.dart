@@ -53,7 +53,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(refreshState);
     transactionRepository.addListener(() {
-      accountRepository.refresh();
+      //accountRepository.refresh();
       transactionPagingService.refresh();
     });
     accountRepository.addListener(refreshState);
