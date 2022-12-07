@@ -39,15 +39,6 @@ void registerServices() {
       authenticationService: GetIt.I<AuthenticationService>()));
   GetIt.instance.registerFactory(() {
     var authenticationService = GetIt.I<AuthenticationService>();
-
-    var transactionService =
-        TransactionService(authenticationService: authenticationService);
-    var transactionRepository =
-        TransactionRepository(transactionService: transactionService);
-
-    return TransactionPagingService(
-        transactionService: transactionService,
-        transactionRepository: transactionRepository);
   });
 
   GetIt.instance.registerFactory(() => MetricService(

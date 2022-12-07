@@ -62,10 +62,10 @@ class TransactionPagingService extends ChangeNotifier {
         result = await this
             .transactionService
             .pageNameFiltering(page, nameFiltering);
-        this.transactionRepository.internalAdd(result);
+        //this.transactionRepository.internalAdd(result);
       } else {
         result = await this.transactionService.page(page);
-        this.transactionRepository.internalAdd(result);
+        //this.transactionRepository.internalAdd(result);
       }
     }
     return result;

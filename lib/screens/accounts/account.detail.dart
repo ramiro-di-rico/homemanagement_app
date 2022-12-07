@@ -10,12 +10,10 @@ import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:home_management_app/repositories/category.repository.dart';
 import 'package:home_management_app/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/accounts/widgets/transaction-row-skeleton.dart';
-import 'package:home_management_app/services/transaction.paging.service.dart';
 import 'package:intl/intl.dart';
 
 import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
-import 'widgets/account-most-expensive-categories.dart';
 import 'widgets/account.info.dart';
 import 'widgets/add.transaction.sheet.dart';
 import 'widgets/transaction.row.info.dart';
@@ -33,8 +31,6 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
-  TransactionPagingService transactionPagingService =
-      GetIt.I<TransactionPagingService>();
   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
   TextEditingController filteringNameController = TextEditingController();
@@ -48,14 +44,14 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   @override
   void initState() {
     account = widget.account;
-    transactionPagingService.addListener(refreshState);
+    transactionRepository.addListener(refreshState);
     scrollController.addListener(onScroll);
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(refreshState);
-    transactionRepository.addListener(() {
-      //accountRepository.refresh();
-      transactionPagingService.refresh();
-    });
+    /*transactionRepository.addListener(() {
+      accountRepository.refresh();
+      transactionRepo.refresh();
+    });*/
     accountRepository.addListener(refreshState);
     load();
     super.initState();
@@ -65,7 +61,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   void dispose() {
     scrollController.removeListener(onScroll);
     filteringNameController.removeListener(refreshState);
-    transactionPagingService.removeListener(refreshState);
+    transactionRepository.removeListener(refreshState);
     accountRepository.removeListener(refreshState);
     filteringNameController.dispose();
     filteringTextFocusNode.dispose();
@@ -92,7 +88,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
               onPressed: () {
                 setState(() {
                   resultsFiltered = false;
-                  transactionPagingService.refresh();
+                  //transactionRepository.refresh();
                 });
               },
             ),
@@ -106,15 +102,14 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
               AccountDetailWidget(accountModel: account),
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: () async =>
-                      await transactionPagingService.refresh(),
+                  onRefresh: () async => await transactionRepository.refresh(),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5),
                     child: GroupedListView<TransactionModel, DateTime>(
                       order: GroupedListOrder.DESC,
                       controller: scrollController,
                       physics: ScrollPhysics(),
-                      elements: transactionPagingService.transactions,
+                      elements: transactionRepository.transactions,
                       groupBy: (element) => element.date.toMidnight(),
                       groupSeparatorBuilder: (element) {
                         return Container(
@@ -137,10 +132,10 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                         );
                       },
                       itemBuilder: (context, transaction) {
-                        var index = transactionPagingService.transactions
+                        var index = transactionRepository.transactions
                             .indexOf(transaction);
                         if (index >=
-                            transactionPagingService.transactions.length) {
+                            transactionRepository.transactions.length) {
                           return TransactionRowSkeleton();
                         }
 
@@ -200,7 +195,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                   onPressed: () {
                     setState(() {
                       FocusScope.of(context).unfocus();
-                      transactionPagingService
+                      transactionRepository
                           .applyFilterByName(filteringNameController.text);
                       displayFilteringBox = false;
                       filteringNameController.clear();
@@ -269,9 +264,12 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   }
 
   void load() async {
-    changeLoadingState(true);
-    await transactionPagingService.loadFirstPage(account.id);
-    changeLoadingState(false);
+    if (!transactionRepository.transactions
+        .any((element) => element.accountId == account.id)) {
+      changeLoadingState(true);
+      await transactionRepository.loadFirstPage(account.id);
+      changeLoadingState(false);
+    }
   }
 
   void changeLoadingState(bool value) {
@@ -295,7 +293,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
 
   nextPage() {
     setState(() {
-      transactionPagingService.nextPage();
+      transactionRepository.nextPage();
     });
   }
 
@@ -307,7 +305,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   }
 
   void applyNameFiltering() {
-    transactionPagingService.applyFilterByName(filteringNameController.text);
+    transactionRepository.applyFilterByName(filteringNameController.text);
   }
 
   Future remove(item, index) async {
