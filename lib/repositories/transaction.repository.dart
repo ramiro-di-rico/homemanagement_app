@@ -21,12 +21,13 @@ class TransactionRepository extends ChangeNotifier {
       {@required this.transactionService, @required this.accountRepository});
 
   Future add(TransactionModel transaction) async {
-    await this.transactionService.add(transaction);
-    var container = accountsContainer
-        .firstWhere((element) => element.account.id == transaction.accountId);
-    container.transactions.insert(0, transaction);
-    this.accountRepository.updateBalance(
-        transaction.accountId, transaction.price, transaction.transactionType);
+    var transactionResult = await this.transactionService.add(transaction);
+    var container = accountsContainer.firstWhere(
+        (element) => element.account.id == transactionResult.accountId);
+    container.transactions.insert(0, transactionResult);
+    mapContainerToTransctions();
+    this.accountRepository.updateBalance(transactionResult.accountId,
+        transactionResult.price, transactionResult.transactionType);
     notifyListeners();
   }
 
@@ -34,7 +35,9 @@ class TransactionRepository extends ChangeNotifier {
     await this.transactionService.delete(transactionModel.id);
     var container = accountsContainer.firstWhere(
         (element) => element.account.id == transactionModel.accountId);
-    container.transactions.insert(0, transactionModel);
+    container.transactions
+        .removeWhere((element) => element.id == transactionModel.id);
+    mapContainerToTransctions();
     this.accountRepository.updateBalance(transactionModel.accountId,
         -transactionModel.price, transactionModel.transactionType);
     notifyListeners();
@@ -42,6 +45,7 @@ class TransactionRepository extends ChangeNotifier {
 
   Future update(TransactionModel transactionModel) async {
     await this.transactionService.update(transactionModel);
+    //add logic to update balance accordingly
     notifyListeners();
   }
 
@@ -122,18 +126,25 @@ class TransactionRepository extends ChangeNotifier {
   }
 
   void populateInternalLists(List<TransactionModel> result) {
-    var container = accountsContainer
-        .firstWhere((element) => element.account.id == page.accountId);
+    var container = _getCurrentContainer();
 
     for (var transaction in result) {
       if (!container.transactions
           .any((element) => element.id == transaction.id)) {
         container.transactions.add(transaction);
       }
+    }
+    mapContainerToTransctions();
+  }
 
-      if (!transactions.any((element) => element.id == transaction.id)) {
-        transactions.add(transaction);
-      }
+  void mapContainerToTransctions() {
+    transactions.clear();
+    var container = _getCurrentContainer();
+    for (var t in container.transactions) {
+      transactions.add(t);
     }
   }
+
+  AccountContainer _getCurrentContainer() => accountsContainer
+      .firstWhere((element) => element.account.id == page.accountId);
 }

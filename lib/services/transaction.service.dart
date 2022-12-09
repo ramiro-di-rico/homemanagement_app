@@ -56,7 +56,7 @@ class TransactionService {
     }
   }
 
-  Future add(TransactionModel transactionModel) async {
+  Future<TransactionModel> add(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
     var result = await apiServiceFactory.postWithReturn(apiName, body);
     return TransactionModel.fromJson(result);
