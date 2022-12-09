@@ -20,7 +20,6 @@ import 'services/preferences.service.dart';
 import 'services/cryptography.service.dart';
 import 'services/currency.service.dart';
 import 'services/metrics.service.dart';
-import 'services/transaction.paging.service.dart';
 import 'services/transaction.service.dart';
 
 void main() {
