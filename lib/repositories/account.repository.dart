@@ -74,4 +74,13 @@ class AccountRepository extends ChangeNotifier {
         : account.balance - value;
     _loadAccounts(_internalAccounts);
   }
+
+  revertBalance(int accountId, double value, TransactionType type) {
+    var account =
+        this._internalAccounts.firstWhere((element) => element.id == accountId);
+    account.balance = type == TransactionType.Income
+        ? account.balance - value
+        : account.balance + value;
+    _loadAccounts(_internalAccounts);
+  }
 }

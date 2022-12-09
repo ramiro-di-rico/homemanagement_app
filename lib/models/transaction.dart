@@ -11,6 +11,11 @@ class TransactionModel {
         this.price, this.date, this.transactionType);
   }
 
+  TransactionModel clone() {
+    return TransactionModel(id, this.accountId, this.categoryId, this.name,
+        this.price, this.date, this.transactionType);
+  }
+
   TransactionModel(this.id, this.accountId, this.categoryId, this.name,
       this.price, this.date, this.transactionType);
 

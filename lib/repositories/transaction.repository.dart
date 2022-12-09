@@ -45,7 +45,18 @@ class TransactionRepository extends ChangeNotifier {
 
   Future update(TransactionModel transactionModel) async {
     await this.transactionService.update(transactionModel);
-    //add logic to update balance accordingly
+    var currentContainer = _getCurrentContainer();
+    var currentTransaction = currentContainer.transactions
+        .firstWhere((x) => x.id == transactionModel.id);
+    this.accountRepository.revertBalance(currentTransaction.accountId,
+        currentTransaction.price, currentTransaction.transactionType);
+    this.accountRepository.updateBalance(transactionModel.accountId,
+        transactionModel.price, transactionModel.transactionType);
+
+    var index = currentContainer.transactions
+        .indexWhere((element) => element.id == transactionModel.id);
+    currentContainer.transactions[index] = transactionModel;
+    mapContainerToTransctions();
     notifyListeners();
   }
 
@@ -141,7 +152,7 @@ class TransactionRepository extends ChangeNotifier {
     transactions.clear();
     var container = _getCurrentContainer();
     for (var t in container.transactions) {
-      transactions.add(t);
+      transactions.add(t.clone());
     }
   }
 
