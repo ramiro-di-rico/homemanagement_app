@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
@@ -48,10 +47,6 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     scrollController.addListener(onScroll);
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(refreshState);
-    /*transactionRepository.addListener(() {
-      accountRepository.refresh();
-      transactionRepo.refresh();
-    });*/
     accountRepository.addListener(refreshState);
     load();
     super.initState();
@@ -74,9 +69,6 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
 
   @override
   Widget build(BuildContext context) {
-    var brightness = SchedulerBinding.instance.window.platformBrightness;
-    bool isDarkMode = brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AccountAppBar(
         account: widget.account,
@@ -212,8 +204,8 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     if (account.measurable) {
       options.add(
         SpeedDialChild(
-          child: Icon(Icons.chat_rounded),
-          backgroundColor: Colors.red,
+          child: Icon(Icons.bar_chart),
+          backgroundColor: Colors.lightBlue,
           labelStyle: TextStyle(fontSize: 18.0),
           onTap: () => Navigator.push(
             context,
@@ -226,13 +218,14 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
         ),
       );
     }
-
+    /* Filtering not working in transaction.repository
+    filtering local by name not working
     options.add(SpeedDialChild(
         child: Icon(Icons.filter_list),
         backgroundColor: Colors.blue,
         labelStyle: TextStyle(fontSize: 18.0),
         onTap: () => displayBox()));
-
+    */
     options.add(SpeedDialChild(
       child: Icon(Icons.add),
       backgroundColor: Colors.green,
