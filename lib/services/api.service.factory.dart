@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -57,6 +58,23 @@ class ApiServiceFactory {
     if (response.statusCode < 200 || response.statusCode > 299) {
       throw Exception('Failed to post to $api');
     }
+  }
+
+  Future<dynamic> postWithReturn(String api, dynamic body) async {
+    var token = this.authenticationService.getUserToken();
+
+    var response = await http.post(backendEndpoint.resolve(api),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: body);
+
+    if (response.statusCode < 200 || response.statusCode > 299) {
+      throw Exception('Failed to post to $api');
+    }
+
+    return json.decode(response.body);
   }
 
   Future apiPut(String api, String body) async {

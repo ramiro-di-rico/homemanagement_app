@@ -20,7 +20,6 @@ import 'services/preferences.service.dart';
 import 'services/cryptography.service.dart';
 import 'services/currency.service.dart';
 import 'services/metrics.service.dart';
-import 'services/transaction.paging.service.dart';
 import 'services/transaction.service.dart';
 
 void main() {
@@ -39,15 +38,6 @@ void registerServices() {
       authenticationService: GetIt.I<AuthenticationService>()));
   GetIt.instance.registerFactory(() {
     var authenticationService = GetIt.I<AuthenticationService>();
-
-    var transactionService =
-        TransactionService(authenticationService: authenticationService);
-    var transactionRepository =
-        TransactionRepository(transactionService: transactionService);
-
-    return TransactionPagingService(
-        transactionService: transactionService,
-        transactionRepository: transactionRepository);
   });
 
   GetIt.instance.registerFactory(() => MetricService(
@@ -127,8 +117,9 @@ void registerSingletons() {
   var transactionService =
       TransactionService(authenticationService: authenticationService);
 
-  var transactionRepository =
-      TransactionRepository(transactionService: transactionService);
+  var transactionRepository = TransactionRepository(
+      transactionService: transactionService,
+      accountRepository: accountRepository);
 
   var categoryRepository = CategoryRepository(CategoryService(
       authenticationService: authenticationService,
