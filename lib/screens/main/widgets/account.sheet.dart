@@ -70,10 +70,23 @@ class _AccountSheetState extends State<AccountSheet> {
           Padding(
             padding: EdgeInsets.all(10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                SizedBox(
+                  width: 150,
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: account.measurable,
+                        onChanged: onMeasurableChanged,
+                      ),
+                      Expanded(
+                        child: Text('Is Measurable'),
+                      ),
+                    ],
+                  ),
+                ),
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: DropdownComponent(
                     items: ['Cash', 'Bank Account'],
                     onChanged: onAccountTypeChanged,
@@ -81,7 +94,7 @@ class _AccountSheetState extends State<AccountSheet> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   child: DropdownComponent(
                     items: currencies,
                     onChanged: onCurrencyTypeChanged,
@@ -94,28 +107,14 @@ class _AccountSheetState extends State<AccountSheet> {
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Checkbox(
-                  value: account.measurable,
-                  onChanged: onMeasurableChanged,
-                ),
-                Expanded(
-                  child: Text('Is Measurable'),
-                ),
-              ],
-            ),
-          ),
           SizedBox(
-            height: 50,
+            height: 10,
           ),
           AnimatedOpacity(
             opacity: account.name.length > 3 ? 1.0 : 0,
             duration: const Duration(milliseconds: 500),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: ElevatedButton(
                 onPressed: addNewAccount,
                 style: ElevatedButton.styleFrom(
