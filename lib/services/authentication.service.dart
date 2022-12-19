@@ -41,7 +41,8 @@ class AuthenticationService extends ChangeNotifier {
   }
 
   bool isAuthenticated() {
-    return user.expirationDate.isAfter(DateTime.now());
+    var currentUtcDate = DateTime.now().toUtc();
+    return user.expirationDate.isAfter(currentUtcDate);
   }
 
   Future biometricsAuthenticate() async {

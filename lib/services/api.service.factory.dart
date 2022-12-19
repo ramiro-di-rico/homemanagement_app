@@ -89,8 +89,8 @@ class ApiServiceFactory {
   }
 
   Future _autoAuthenticateIfNeeded() async {
-    if (authenticationService.isAuthenticated() &&
-        !authenticationService.isAuthenticated()) {
+    if (!authenticationService.isAuthenticated() &&
+        authenticationService.canAutoAuthenticate()) {
       await authenticationService.autoAuthenticate();
     }
   }
