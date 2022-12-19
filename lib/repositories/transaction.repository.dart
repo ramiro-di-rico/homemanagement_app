@@ -21,7 +21,6 @@ class TransactionRepository extends ChangeNotifier {
       {@required this.transactionService, @required this.accountRepository});
 
   Future add(TransactionModel transaction) async {
-    //var transactionResult = await this.transactionService.add(transaction);
     var transactionResult = await this.transactionService.addV2(transaction);
     if (accountsContainer.any((element) =>
         element.account.id == transactionResult.transactionModel.accountId)) {
@@ -31,8 +30,6 @@ class TransactionRepository extends ChangeNotifier {
       mapContainerToTransctions();
     }
 
-    //this.accountRepository.updateBalance(transactionResult.accountId,
-    //    transactionResult.price, transactionResult.transactionType);
     this.accountRepository.setBalance(transactionResult.sourceAccount);
     if (transactionResult.targetAccount != null) {
       this.accountRepository.setBalance(transactionResult.targetAccount);

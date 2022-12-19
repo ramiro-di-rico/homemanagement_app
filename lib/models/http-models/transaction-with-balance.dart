@@ -13,6 +13,8 @@ class TransactionWithBalanceModel {
     return TransactionWithBalanceModel(
         TransactionModel.fromJson(json['transaction']),
         AccountModel.fromJson(json['sourceAccount']),
-        AccountModel.fromJson(json['targetAccount']));
+        json['targetAccount'] != null
+            ? AccountModel.fromJson(json['targetAccount'])
+            : null);
   }
 }
