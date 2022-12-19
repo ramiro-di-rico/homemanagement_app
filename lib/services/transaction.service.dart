@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/models/http-models/transaction-with-balance.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/models/transaction.page.dart';
 import 'package:http/http.dart' as http;
@@ -69,5 +70,12 @@ class TransactionService {
   Future update(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(apiName, body);
+  }
+
+  Future<TransactionWithBalanceModel> addV2(
+      TransactionModel transactionModel) async {
+    var body = json.encode(transactionModel.toJson());
+    var result = await apiServiceFactory.postWithReturn('$apiName/v2', body);
+    return TransactionWithBalanceModel.fromJson(result);
   }
 }
