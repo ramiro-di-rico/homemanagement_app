@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/screens/main/widgets/overview/overview-widget-item.dart';
+import 'package:get_it/get_it.dart';
+import 'package:home_management_app/screens/main/widgets/overview/overview-widget.dart';
+import '../../models/overall.dart';
+import '../../services/metrics.service.dart';
 import 'widgets/accounts-series-metrics..dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
@@ -9,6 +12,15 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  MetricService _metricService = GetIt.I<MetricService>();
+  Overall overall;
+
+  @override
+  void initState() {
+    load();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -19,7 +31,7 @@ class _DashboardState extends State<Dashboard> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(10),
-                child: OverviewWidget(),
+                child: OverviewWidget(overall: overall),
               ),
               flex: 5,
             ),
@@ -41,5 +53,12 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  Future load() async {
+    var fetchedOverall = await _metricService.getOverall();
+    setState(() {
+      overall = fetchedOverall;
+    });
   }
 }
