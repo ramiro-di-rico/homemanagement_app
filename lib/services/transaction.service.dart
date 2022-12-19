@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/models/http-models/transaction-with-balance.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/models/transaction.page.dart';
-import 'package:http/http.dart' as http;
 import 'api.service.factory.dart';
 import 'authentication.service.dart';
 import 'dart:convert';
@@ -17,43 +17,18 @@ class TransactionService {
   }
 
   Future<List<TransactionModel>> page(TransactionPageModel page) async {
-    var token = this.authenticationService.getUserToken();
+    List<dynamic> data = await apiServiceFactory.apiGet(
+        '$apiName/v1/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
 
-    var uri = Uri.parse(
-        'https://ramiro-di-rico.dev/homemanagementapi/api/transactions/v1/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
-
-    var response = await http.get(uri, headers: <String, String>{
-      'Authorization': 'Bearer $token',
-    });
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-
-      var result = data.map((e) => TransactionModel.fromJson(e)).toList();
-      return result;
-    } else {
-      throw Exception('Failed to fetch Transactions.');
-    }
+    return data.map((e) => TransactionModel.fromJson(e)).toList();
   }
 
   Future<List<TransactionModel>> pageNameFiltering(
       TransactionPageModel page, String name) async {
-    var token = this.authenticationService.getUserToken();
+    List<dynamic> data = await apiServiceFactory.apiGet(
+        '$apiName/v1/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
 
-    var uri = Uri.parse(
-        'https://ramiro-di-rico.dev/homemanagementapi/api/transactions/v1/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
-    var response = await http.get(uri, headers: <String, String>{
-      'Authorization': 'Bearer $token',
-    });
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-
-      var result = data.map((e) => TransactionModel.fromJson(e)).toList();
-      return result;
-    } else {
-      throw Exception('Failed to fetch Transactions.');
-    }
+    return data.map((e) => TransactionModel.fromJson(e)).toList();
   }
 
   Future<TransactionModel> add(TransactionModel transactionModel) async {
@@ -69,5 +44,12 @@ class TransactionService {
   Future update(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(apiName, body);
+  }
+
+  Future<TransactionWithBalanceModel> addV2(
+      TransactionModel transactionModel) async {
+    var body = json.encode(transactionModel.toJson());
+    var result = await apiServiceFactory.postWithReturn('$apiName/v2', body);
+    return TransactionWithBalanceModel.fromJson(result);
   }
 }

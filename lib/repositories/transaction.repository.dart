@@ -21,13 +21,19 @@ class TransactionRepository extends ChangeNotifier {
       {@required this.transactionService, @required this.accountRepository});
 
   Future add(TransactionModel transaction) async {
-    var transactionResult = await this.transactionService.add(transaction);
-    var container = accountsContainer.firstWhere(
-        (element) => element.account.id == transactionResult.accountId);
-    container.transactions.insert(0, transactionResult);
-    mapContainerToTransctions();
-    this.accountRepository.updateBalance(transactionResult.accountId,
-        transactionResult.price, transactionResult.transactionType);
+    var transactionResult = await this.transactionService.addV2(transaction);
+    if (accountsContainer.any((element) =>
+        element.account.id == transactionResult.transactionModel.accountId)) {
+      var container = accountsContainer.firstWhere((element) =>
+          element.account.id == transactionResult.transactionModel.accountId);
+      container.transactions.insert(0, transactionResult.transactionModel);
+      mapContainerToTransctions();
+    }
+
+    this.accountRepository.setBalance(transactionResult.sourceAccount);
+    if (transactionResult.targetAccount != null) {
+      this.accountRepository.setBalance(transactionResult.targetAccount);
+    }
     notifyListeners();
   }
 

@@ -1,32 +1,17 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:home_management_app/converters/shorten-big-number.dart';
 import 'package:home_management_app/models/overall.dart';
-import 'package:home_management_app/services/metrics.service.dart';
 import 'package:skeletons/skeletons.dart';
-
 import '../../../../converters/int-shorten-converter.dart';
 import 'indicator.dart';
 
-class OverviewWidget extends StatefulWidget {
-  const OverviewWidget({Key key}) : super(key: key);
+class OverviewWidget extends StatelessWidget {
+  OverviewWidget({Key key, this.overall}) : super(key: key);
 
-  @override
-  State<OverviewWidget> createState() => _OverviewWidgetState();
-}
-
-class _OverviewWidgetState extends State<OverviewWidget> {
-  MetricService _metricService = GetIt.I<MetricService>();
-  Overall overall;
-  List<PieChartSectionData> pieData = List.empty(growable: true);
-  ShortenBigNumber<int> shortenBigNumber = IntShortenConverter();
-
-  @override
-  void initState() {
-    load();
-    super.initState();
-  }
+  final Overall overall;
+  final List<PieChartSectionData> pieData = List.empty(growable: true);
+  final ShortenBigNumber<int> shortenBigNumber = IntShortenConverter();
 
   @override
   Widget build(BuildContext context) {
@@ -120,12 +105,5 @@ class _OverviewWidgetState extends State<OverviewWidget> {
         SizedBox(height: 10),
       ])),
     );
-  }
-
-  Future load() async {
-    var fetchedOverall = await _metricService.getOverall();
-    setState(() {
-      overall = fetchedOverall;
-    });
   }
 }
