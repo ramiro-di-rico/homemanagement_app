@@ -13,10 +13,10 @@ class ApiServiceFactory {
   ApiServiceFactory({@required this.authenticationService});
 
   Future<List> fetchList(String api) async {
-    var token = this.authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
 
-    var response = await http.get(backendEndpoint.resolve(api),
-        headers: <String, String>{'Authorization': 'Bearer $token'});
+    var response =
+        await http.get(backendEndpoint.resolve(api), headers: _getHeaders());
 
     if (response.statusCode == 200) {
       List data = json.decode(response.body);
@@ -27,14 +27,11 @@ class ApiServiceFactory {
   }
 
   Future apiGet(String api) async {
-    var token = this.authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
 
     var response = await http.get(
       backendEndpoint.resolve(api),
-      headers: <String, String>{
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
+      headers: _getHeaders(),
     );
 
     if (response.statusCode != 200) {
@@ -46,14 +43,10 @@ class ApiServiceFactory {
   }
 
   Future apiPost(String api, dynamic body) async {
-    var token = this.authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
 
     var response = await http.post(backendEndpoint.resolve(api),
-        headers: <String, String>{
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: body);
+        headers: _getHeaders(), body: body);
 
     if (response.statusCode < 200 || response.statusCode > 299) {
       throw Exception('Failed to post to $api');
@@ -61,14 +54,10 @@ class ApiServiceFactory {
   }
 
   Future<dynamic> postWithReturn(String api, dynamic body) async {
-    var token = this.authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
 
     var response = await http.post(backendEndpoint.resolve(api),
-        headers: <String, String>{
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: body);
+        headers: _getHeaders(), body: body);
 
     if (response.statusCode < 200 || response.statusCode > 299) {
       throw Exception('Failed to post to $api');
@@ -78,14 +67,10 @@ class ApiServiceFactory {
   }
 
   Future apiPut(String api, String body) async {
-    var token = this.authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
 
     var response = await http.put(backendEndpoint.resolve(api),
-        headers: <String, String>{
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: body);
+        headers: _getHeaders(), body: body);
 
     if (response.statusCode != 200) {
       throw Exception('Failed to put to $api');
@@ -93,18 +78,28 @@ class ApiServiceFactory {
   }
 
   Future apiDelete(String api, String id) async {
-    var token = this.authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
 
-    var response = await http.delete(
-      backendEndpoint.resolve('$api/$id'),
-      headers: <String, String>{
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
+    var response = await http.delete(backendEndpoint.resolve('$api/$id'),
+        headers: _getHeaders());
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete to $api');
     }
+  }
+
+  Future _autoAuthenticateIfNeeded() async {
+    if (authenticationService.isAuthenticated() &&
+        !authenticationService.isAuthenticated()) {
+      await authenticationService.autoAuthenticate();
+    }
+  }
+
+  Map<String, String> _getHeaders() {
+    var token = this.authenticationService.getUserToken();
+    return <String, String>{
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    };
   }
 }
