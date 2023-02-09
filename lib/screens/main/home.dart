@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       BorderRadius.vertical(top: Radius.circular(25.0))),
               builder: (context) {
                 return SizedBox(
-                  height: 400,
+                  height: 250,
                   child: AnimatedPadding(
                       padding: MediaQuery.of(context).viewInsets,
                       duration: Duration(seconds: 1),
