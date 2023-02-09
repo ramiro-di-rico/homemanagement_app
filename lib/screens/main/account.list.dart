@@ -125,8 +125,18 @@ class _AccountListScreenState extends State<AccountListScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               child: ListTile(
-                title: Text(
-                  item.name,
+                title: Hero(
+                  createRectTween: (begin, end) {
+                    var tween = RectTween(begin: begin, end: end);
+                    tween
+                        .chain(CurveTween(curve: Curves.easeIn))
+                        .chain(CurveTween(curve: Curves.easeInOut));
+                    return tween;
+                  },
+                  tag: 'account-' + item.name,
+                  child: Text(
+                    item.name,
+                  ),
                 ),
                 trailing: Text(
                   item.balance % 1 == 0

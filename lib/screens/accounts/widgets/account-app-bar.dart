@@ -15,7 +15,17 @@ class AccountAppBar extends StatelessWidget implements PreferredSizeWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-                child: Text(account.name, overflow: TextOverflow.ellipsis)),
+                child: Hero(
+                    createRectTween: (begin, end) {
+                      var tween = RectTween(begin: begin, end: end);
+                      tween
+                          .chain(CurveTween(curve: Curves.easeIn))
+                          .chain(CurveTween(curve: Curves.easeInOut));
+                      return tween;
+                    },
+                    tag: 'account-' + account.name,
+                    child:
+                        Text(account.name, overflow: TextOverflow.ellipsis))),
           ],
         ),
       ),
