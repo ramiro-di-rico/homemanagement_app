@@ -94,7 +94,9 @@ class AuthenticationService extends ChangeNotifier {
             jsonEncode(<String, String>{'email': email, 'password': password}));
 
     if (response.statusCode == 200) {
-      this.user = UserModel.fromJson(json.decode(response.body));
+      var jsonModel = json.decode(response.body);
+      jsonModel['password'] = password;
+      this.user = UserModel.fromJson(jsonModel);
       this.userRepository.store(this.user);
       this.notifyListeners();
       return true;
@@ -110,7 +112,9 @@ class AuthenticationService extends ChangeNotifier {
             <String, String>{'username': username, 'password': password}));
 
     if (response.statusCode == 200) {
-      this.user = UserModel.fromJson(json.decode(response.body));
+      var jsonModel = json.decode(response.body);
+      jsonModel['password'] = password;
+      this.user = UserModel.fromJson(jsonModel);
       this.userRepository.store(this.user);
       this.notifyListeners();
       return true;

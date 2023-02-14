@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserRepository {
   UserModel userModel;
   String emailKey = 'email';
+  String usernameKey = 'username';
   String passwordKey = 'password';
   String tokenKey = 'token';
   String expirationDateKey = 'expirationDateKey';
@@ -17,6 +18,7 @@ class UserRepository {
     return userInfoAvailable
         ? new UserModel(
             preferences.getString(emailKey),
+            preferences.getString(usernameKey),
             preferences.getString(passwordKey),
             preferences.getString(tokenKey),
             DateTime.parse(preferences.getString(expirationDateKey)))
