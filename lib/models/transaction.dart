@@ -57,6 +57,8 @@ class TransactionModel {
       transactionType == TransactionType.Income ? 'Income' : 'Outcome';
 
   bool isValid() => name.length > 3 && categoryId > 0 && accountId > 0;
+
+  bool isIncome() => transactionType == TransactionType.Income;
 }
 
 enum TransactionType { Income, Outcome }

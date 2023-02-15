@@ -55,12 +55,6 @@ class TransactionRowInfo extends StatelessWidget {
             padding: EdgeInsets.all(5),
             child: ListTile(
               onTap: () {
-                /*Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditTransactionScreen(transaction),
-                  ),
-                );*/
                 showModalBottomSheet<void>(
                     context: context,
                     isScrollControlled: true,
