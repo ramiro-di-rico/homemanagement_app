@@ -12,6 +12,7 @@ class AuthenticationService extends ChangeNotifier {
   final LocalAuthentication auth = LocalAuthentication();
   String url = 'ramiro-di-rico.dev';
   String authenticateApi = 'identity/api/Authentication/SignIn';
+  String authenticateApiV2 = 'identity/api/Authentication/V2/SignIn';
   String registrationApi = 'api/registration';
   UserModel user;
   bool isBiometricEnabled = false;
@@ -57,15 +58,18 @@ class AuthenticationService extends ChangeNotifier {
     }
   }
 
-  Future autoAuthenticate() async =>
-      await _internalAuthenticate(this.user.email, this.user.password);
+  Future autoAuthenticate() async => isEmailAuthenticationType(this.user.email)
+      ? await _internalAuthenticate(this.user.email, this.user.password)
+      : await _internalAuthenticateV2(this.user.email, this.user.password);
 
   String getUserToken() => user.token;
 
   Future<bool> authenticate(String email, String password) async {
     var pass = await cryptographyService.encryptToAES(password);
 
-    return await _internalAuthenticate(email, pass);
+    return isEmailAuthenticationType(email)
+        ? await _internalAuthenticate(email, password)
+        : await _internalAuthenticateV2(email, pass);
   }
 
   Future<bool> register(String email, String password) async {
@@ -90,12 +94,36 @@ class AuthenticationService extends ChangeNotifier {
             jsonEncode(<String, String>{'email': email, 'password': password}));
 
     if (response.statusCode == 200) {
-      this.user = UserModel.fromJson(json.decode(response.body));
+      var jsonModel = json.decode(response.body);
+      jsonModel['password'] = password;
+      this.user = UserModel.fromJson(jsonModel);
       this.userRepository.store(this.user);
       this.notifyListeners();
       return true;
     } else {
       return false;
     }
+  }
+
+  Future<bool> _internalAuthenticateV2(String username, String password) async {
+    var response = await http.post(Uri.https(this.url, this.authenticateApiV2),
+        headers: <String, String>{'Content-Type': 'application/json'},
+        body: jsonEncode(
+            <String, String>{'username': username, 'password': password}));
+
+    if (response.statusCode == 200) {
+      var jsonModel = json.decode(response.body);
+      jsonModel['password'] = password;
+      this.user = UserModel.fromJson(jsonModel);
+      this.userRepository.store(this.user);
+      this.notifyListeners();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  isEmailAuthenticationType(String email) {
+    return email.contains('@');
   }
 }

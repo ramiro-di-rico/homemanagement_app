@@ -97,7 +97,7 @@ class OverviewWidget extends StatelessWidget {
             ),
             Indicator(
               color: Colors.teal[200],
-              text: 'Outcome',
+              text: 'Expense',
               isSquare: true,
             ),
           ],

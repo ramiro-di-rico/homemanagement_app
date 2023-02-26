@@ -22,7 +22,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
-        labelText: 'Email',
+        labelText: 'Email or username',
         prefixIcon: Icon(Icons.email),
       ),
       onChanged: widget.onTextChanged,

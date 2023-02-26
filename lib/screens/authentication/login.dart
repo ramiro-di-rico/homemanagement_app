@@ -21,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   String password = '';
   bool passwordFieldEnabled = false;
   bool enableButton = false;
-  bool isEmailValid = false;
   bool hidePassword = true;
   bool hideRegistrationLabel = false;
   bool isAuthenticating = false;
@@ -109,8 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void onEmailChanged(String character) {
     setState(() {
       this.email = character.trim();
-      this.isEmailValid = this.email.contains('@');
-      this.passwordFieldEnabled = this.email.length > 0 && this.isEmailValid;
+      this.passwordFieldEnabled = this.email.length > 3;
     });
   }
 
