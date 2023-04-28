@@ -9,7 +9,6 @@ import 'dart:convert';
 class TransactionService {
   AuthenticationService authenticationService;
   ApiServiceFactory apiServiceFactory;
-  final String apiName = 'transactions';
   final String v3ApiName = 'transactions/v3';
 
   TransactionService({@required this.authenticationService}) {
@@ -18,18 +17,19 @@ class TransactionService {
   }
 
   Future<List<TransactionModel>> page(TransactionPageModel page) async {
-    List<dynamic> data = await apiServiceFactory.apiGet(
-        '$apiName/v1/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
-
-    return data.map((e) => TransactionModel.fromJson(e)).toList();
+    dynamic data = await apiServiceFactory.apiGet(
+        '$v3ApiName/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+    var pageResult = TransactionPageModel.fromJson(data);
+    return pageResult.items;
   }
 
   Future<List<TransactionModel>> pageNameFiltering(
       TransactionPageModel page, String name) async {
-    List<dynamic> data = await apiServiceFactory.apiGet(
-        '$apiName/v1/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+    dynamic data = await apiServiceFactory.apiGet(
+        '$v3ApiName/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
 
-    return data.map((e) => TransactionModel.fromJson(e)).toList();
+    var pageResult = TransactionPageModel.fromJson(data);
+    return pageResult.items;
   }
 
   Future<TransactionWithBalanceModel> add(
@@ -47,12 +47,5 @@ class TransactionService {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(
         v3ApiName + '/' + transactionModel.id.toString(), body);
-  }
-
-  Future<TransactionWithBalanceModel> addV2(
-      TransactionModel transactionModel) async {
-    var body = json.encode(transactionModel.toJson());
-    var result = await apiServiceFactory.postWithReturn('$apiName/v2', body);
-    return TransactionWithBalanceModel.fromJson(result);
   }
 }

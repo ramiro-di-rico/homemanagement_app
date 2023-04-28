@@ -38,8 +38,7 @@ class ApiServiceFactory {
       throw Exception('Failed to post to $api');
     }
 
-    List data = json.decode(response.body);
-    return data;
+    return json.decode(response.body);
   }
 
   Future apiPost(String api, dynamic body) async {
