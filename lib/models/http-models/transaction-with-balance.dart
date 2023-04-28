@@ -17,4 +17,8 @@ class TransactionWithBalanceModel {
             ? AccountModel.fromJson(json['targetAccount'])
             : null);
   }
+
+  bool isTargetAccountAvailable() {
+    return this.targetAccount != null && this.targetAccount.id > 0;
+  }
 }

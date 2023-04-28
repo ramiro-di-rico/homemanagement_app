@@ -57,7 +57,9 @@ class ApiServiceFactory {
     await _autoAuthenticateIfNeeded();
 
     var response = await http.post(backendEndpoint.resolve(api),
-        headers: _getHeaders(), body: body);
+        headers: _getHeaders(),
+        body: body,
+        encoding: Encoding.getByName('utf-8'));
 
     if (response.statusCode < 200 || response.statusCode > 299) {
       throw Exception('Failed to post to $api');
@@ -100,6 +102,7 @@ class ApiServiceFactory {
     return <String, String>{
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
+      'Accept': 'application/json'
     };
   }
 }

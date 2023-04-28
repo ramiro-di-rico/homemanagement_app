@@ -21,7 +21,7 @@ class TransactionRepository extends ChangeNotifier {
       {@required this.transactionService, @required this.accountRepository});
 
   Future add(TransactionModel transaction) async {
-    var transactionResult = await this.transactionService.addV2(transaction);
+    var transactionResult = await this.transactionService.add(transaction);
     if (accountsContainer.any((element) =>
         element.account.id == transactionResult.transactionModel.accountId)) {
       var container = accountsContainer.firstWhere((element) =>
@@ -31,7 +31,7 @@ class TransactionRepository extends ChangeNotifier {
     }
 
     this.accountRepository.setBalance(transactionResult.sourceAccount);
-    if (transactionResult.targetAccount != null) {
+    if (transactionResult.isTargetAccountAvailable()) {
       this.accountRepository.setBalance(transactionResult.targetAccount);
     }
     notifyListeners();

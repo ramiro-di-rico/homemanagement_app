@@ -10,6 +10,7 @@ class TransactionService {
   AuthenticationService authenticationService;
   ApiServiceFactory apiServiceFactory;
   final String apiName = 'transactions';
+  final String v3ApiName = 'transactions/v3';
 
   TransactionService({@required this.authenticationService}) {
     this.apiServiceFactory =
@@ -31,19 +32,21 @@ class TransactionService {
     return data.map((e) => TransactionModel.fromJson(e)).toList();
   }
 
-  Future<TransactionModel> add(TransactionModel transactionModel) async {
+  Future<TransactionWithBalanceModel> add(
+      TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
-    var result = await apiServiceFactory.postWithReturn(apiName, body);
-    return TransactionModel.fromJson(result);
+    var result = await apiServiceFactory.postWithReturn(v3ApiName, body);
+    return TransactionWithBalanceModel.fromJson(result);
   }
 
   Future delete(int id) async {
-    await apiServiceFactory.apiDelete(apiName, id.toString());
+    await apiServiceFactory.apiDelete(v3ApiName, id.toString());
   }
 
   Future update(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
-    await apiServiceFactory.apiPut(apiName, body);
+    await apiServiceFactory.apiPut(
+        v3ApiName + '/' + transactionModel.id.toString(), body);
   }
 
   Future<TransactionWithBalanceModel> addV2(
