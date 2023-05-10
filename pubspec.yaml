@@ -1,9 +1,9 @@
 name: home_management_app
 description: A new Flutter project.
-version: 1.0.10+10
+version: 1.0.10+11
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
