@@ -14,9 +14,9 @@ import '../../../repositories/transaction.repository.dart';
 // ignore: must_be_immutable
 class AddTransactionSheet extends StatefulWidget {
   AccountModel _accountModel;
-  TransactionModel transactionModel;
+  TransactionModel? transactionModel;
 
-  AddTransactionSheet(this._accountModel, {Key key, this.transactionModel})
+  AddTransactionSheet(this._accountModel, {Key? key, this.transactionModel})
       : super(key: key);
 
   @override
@@ -29,8 +29,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  AccountModel accountModel;
-  TransactionModel transactionModel;
+  AccountModel accountModel = AccountModel.empty(0);
+  TransactionModel transactionModel = TransactionModel.empty(0, 0);
 
   bool isEditing = false;
 
@@ -107,7 +107,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                             lastDate: DateTime(2100));
                       },
                       onChanged: (date) {
-                        transactionModel.date = date;
+                        transactionModel.date = date!;
                         setState(() {});
                       },
                       resetIcon: null,
@@ -195,7 +195,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
 
   Future addTransaction() async {
     if (isEditing) {
-      this.transactionRepository.update(widget.transactionModel);
+      this.transactionRepository.update(widget.transactionModel!);
     } else {
       this.transactionRepository.add(transactionModel);
     }

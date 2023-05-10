@@ -60,7 +60,8 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
     setState(() {
       this.outcome = result.total;
       this.icon = this.outcome > 0 ? Icons.trending_up : Icons.trending_down;
-      this.trendColor = this.outcome > 0 ? Colors.green[400] : Colors.red[400];
+      this.trendColor =
+          this.outcome > 0 ? Colors.green[400]! : Colors.red[400]!;
       loading = false;
     });
   }

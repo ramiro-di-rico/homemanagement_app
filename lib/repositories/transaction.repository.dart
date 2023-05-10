@@ -14,11 +14,11 @@ class TransactionRepository extends ChangeNotifier {
   final List<TransactionModel> transactions = [];
   final int pageSize = 20;
   int currentAccountId = 0;
-  TransactionPageModel page;
+  TransactionPageModel page = TransactionPageModel.newPage(0, 1, 20);
   String nameFiltering = '';
 
   TransactionRepository(
-      {@required this.transactionService, @required this.accountRepository});
+      {required this.transactionService, required this.accountRepository});
 
   Future add(TransactionModel transaction) async {
     var transactionResult = await this.transactionService.add(transaction);
@@ -32,7 +32,7 @@ class TransactionRepository extends ChangeNotifier {
 
     this.accountRepository.setBalance(transactionResult.sourceAccount);
     if (transactionResult.isTargetAccountAvailable()) {
-      this.accountRepository.setBalance(transactionResult.targetAccount);
+      this.accountRepository.setBalance(transactionResult.targetAccount!);
     }
     notifyListeners();
   }

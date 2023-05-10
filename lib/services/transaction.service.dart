@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:home_management_app/models/http-models/transaction-with-balance.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/models/transaction.page.dart';
@@ -8,10 +7,10 @@ import 'dart:convert';
 
 class TransactionService {
   AuthenticationService authenticationService;
-  ApiServiceFactory apiServiceFactory;
+  late ApiServiceFactory apiServiceFactory;
   final String v3ApiName = 'transactions/v3';
 
-  TransactionService({@required this.authenticationService}) {
+  TransactionService({required this.authenticationService}) {
     this.apiServiceFactory =
         ApiServiceFactory(authenticationService: this.authenticationService);
   }

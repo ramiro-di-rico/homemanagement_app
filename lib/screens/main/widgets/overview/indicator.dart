@@ -7,9 +7,9 @@ class Indicator extends StatelessWidget {
     this.isSquare,
     this.size = 16,
   });
-  final Color color;
-  final String text;
-  final bool isSquare;
+  final Color? color;
+  final String? text;
+  final bool? isSquare;
   final double size;
 
   @override
@@ -20,7 +20,7 @@ class Indicator extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            shape: isSquare ? BoxShape.rectangle : BoxShape.circle,
+            shape: isSquare == true ? BoxShape.rectangle : BoxShape.circle,
             color: color,
           ),
         ),
@@ -28,7 +28,7 @@ class Indicator extends StatelessWidget {
           width: 4,
         ),
         Text(
-          text,
+          text ?? '',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,

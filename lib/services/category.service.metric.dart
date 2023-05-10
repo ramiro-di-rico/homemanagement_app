@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/authentication.service.dart';
 import 'package:http/http.dart' as http;
@@ -9,12 +8,12 @@ import 'caching.dart';
 class CategoryMetricService {
   AuthenticationService authenticationService;
   Caching caching;
-  CategoriesMetric categoriesMetric;
+  CategoriesMetric? categoriesMetric;
   List<CategoryMetric> metrics = List.empty(growable: true);
   String cacheKey = 'getMostExpensiveCategories';
 
   CategoryMetricService(
-      {@required this.authenticationService, @required this.caching});
+      {required this.authenticationService, required this.caching});
 
   Future<List<CategoryMetric>> getMostExpensiveCategories(
       int month, int take) async {
@@ -32,7 +31,7 @@ class CategoryMetricService {
 
       if (response.statusCode == 200) {
         var result = _parseJson(response.body);
-        _cacheResponse(key, result.categories);
+        _cacheResponse(key, result.categories!);
       } else {
         throw Exception('Failed to fetch Categories Metric.');
       }
@@ -57,7 +56,7 @@ class CategoryMetricService {
 
     if (response.statusCode == 200) {
       var result = _parseJson(response.body);
-      _cacheResponse(key, result.categories);
+      _cacheResponse(key, result.categories!);
       return metrics;
     } else {
       throw Exception('Failed to fetch Categories Metric by account id.');

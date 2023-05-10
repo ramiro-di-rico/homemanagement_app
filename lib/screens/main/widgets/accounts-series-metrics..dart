@@ -9,7 +9,7 @@ import '../../../services/dashboard.service.dart';
 import 'chart-options-sheet.dart';
 
 class AccountsMetricSeriesWidget extends StatefulWidget {
-  AccountsMetricSeriesWidget({Key key}) : super(key: key);
+  AccountsMetricSeriesWidget({Key? key}) : super(key: key);
 
   @override
   _AccountsMetricSeriesWidgetState createState() =>
@@ -24,17 +24,17 @@ class _AccountsMetricSeriesWidgetState
   List<AccountHistorical> accountsHistoricalChart = [];
   List<String> months = List.empty(growable: true);
   List<Color> lineColors = [
-    Colors.lime[600],
-    Colors.pink[600],
-    Colors.orange[600],
-    Colors.green[600],
-    Colors.purple[600],
-    Colors.blueAccent[600],
-    Colors.amberAccent[600],
-    Colors.deepOrange[600],
-    Colors.red[600],
-    Colors.teal[600],
-    Colors.brown[300]
+    Colors.lime[600]!,
+    Colors.pink[600]!,
+    Colors.orange[600]!,
+    Colors.green[600]!,
+    Colors.purple[600]!,
+    Colors.blueAccent[600]!,
+    Colors.amberAccent[600]!,
+    Colors.deepOrange[600]!,
+    Colors.red[600]!,
+    Colors.teal[600]!,
+    Colors.brown[300]!
   ];
   bool loading = false;
   List<String> accounts = List.empty(growable: true);
@@ -115,7 +115,7 @@ class _AccountsMetricSeriesWidgetState
           skeleton: SkeletonAvatar(),
           child: Padding(
             padding: EdgeInsets.fromLTRB(40, 0, 20, 20),
-            child: LineChart(loading ? null : buildChart()),
+            child: LineChart(buildChart()),
           ),
         ),
       ),
@@ -185,7 +185,7 @@ class _AccountsMetricSeriesWidgetState
                 colors: [lineColors[accountsHistoricalChart.indexOf(e)]],
                 spots: e.evolution
                     .map(
-                      (m) => FlSpot(m.index.toDouble(), m.balance),
+                      (m) => FlSpot(m.index!.toDouble(), m.balance),
                     )
                     .toList(),
               ),
@@ -201,7 +201,7 @@ class _AccountsMetricSeriesWidgetState
   }
 
   double maxY() {
-    if (accountsHistoricalChart == null) return 0;
+    if (accountsHistoricalChart.isEmpty) return 0;
 
     double value = 0;
     for (var h in accountsHistoricalChart) {
@@ -214,7 +214,7 @@ class _AccountsMetricSeriesWidgetState
   }
 
   double minY() {
-    if (accountsHistoricalChart == null) return 0;
+    if (accountsHistoricalChart.isEmpty) return 0;
 
     double value = 0;
     for (var h in accountsHistoricalChart) {

@@ -13,7 +13,7 @@ class ChartOptionsSheet extends StatefulWidget {
   Function(String, int, int) onChange;
   ChartOptionsSheet(
       this.selectedAccount, this.selectedMonth, this.take, this.onChange,
-      {Key key})
+      {Key? key})
       : super(key: key);
 
   @override

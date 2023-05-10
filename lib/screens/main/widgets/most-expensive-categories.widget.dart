@@ -9,7 +9,7 @@ import '../../../repositories/account.repository.dart';
 import 'chart-options-sheet.dart';
 
 class MostExpensiveCategoriesChart extends StatefulWidget {
-  MostExpensiveCategoriesChart({Key key}) : super(key: key);
+  MostExpensiveCategoriesChart({Key? key}) : super(key: key);
 
   @override
   _MostExpensiveCategoriesChartState createState() =>

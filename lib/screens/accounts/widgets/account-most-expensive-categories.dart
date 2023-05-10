@@ -9,7 +9,7 @@ import 'package:home_management_app/models/account.dart';
 // ignore: must_be_immutable
 class AccountMostExpensiveCategories extends StatefulWidget {
   AccountModel accountModel;
-  AccountMostExpensiveCategories(this.accountModel, {Key key})
+  AccountMostExpensiveCategories(this.accountModel, {Key? key})
       : super(key: key);
 
   @override

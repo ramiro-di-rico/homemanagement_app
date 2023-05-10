@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import '../models/account-historical.dart';
 import 'api.service.factory.dart';
 import 'authentication.service.dart';
@@ -10,9 +9,9 @@ class DashboardService {
   Caching caching;
 
   DashboardService(
-      {@required this.authenticationService,
-      @required this.apiServiceFactory,
-      @required this.caching});
+      {required this.authenticationService,
+      required this.apiServiceFactory,
+      required this.caching});
 
   Future<List<AccountHistorical>> fetchAccountsHistoricalChart() async {
     if (this.caching.exists('fetchAccountsHistoricalChart')) {

@@ -7,9 +7,9 @@ import '../../../../converters/int-shorten-converter.dart';
 import 'indicator.dart';
 
 class OverviewWidget extends StatelessWidget {
-  OverviewWidget({Key key, this.overall}) : super(key: key);
+  OverviewWidget({Key? key, this.overall}) : super(key: key);
 
-  final Overall overall;
+  final Overall? overall;
   final List<PieChartSectionData> pieData = List.empty(growable: true);
   final ShortenBigNumber<int> shortenBigNumber = IntShortenConverter();
 
@@ -36,12 +36,12 @@ class OverviewWidget extends StatelessWidget {
                             color: Colors.orange[200],
                             radius: 30,
                             title: overall?.incomeTransactions.toString(),
-                            value: overall?.incomeTransactions?.toDouble()),
+                            value: overall?.incomeTransactions.toDouble()),
                         PieChartSectionData(
                             color: Colors.teal[200],
                             radius: 30,
                             title: overall?.outcomeTransactions.toString(),
-                            value: overall?.outcomeTransactions?.toDouble()),
+                            value: overall?.outcomeTransactions.toDouble()),
                       ],
                     )),
                   )),
@@ -65,14 +65,14 @@ class OverviewWidget extends StatelessWidget {
                                 color: Colors.orange[200],
                                 radius: 30,
                                 title: shortenBigNumber
-                                    .shortNumber(overall?.totalIncome),
-                                value: overall?.totalIncome?.toDouble()),
+                                    .shortNumber(overall!.totalIncome),
+                                value: overall?.totalIncome.toDouble()),
                             PieChartSectionData(
                                 color: Colors.teal[200],
                                 radius: 30,
                                 title: shortenBigNumber
-                                    .shortNumber(overall?.totalOutcome),
-                                value: overall?.totalOutcome?.toDouble()),
+                                    .shortNumber(overall!.totalOutcome),
+                                value: overall?.totalOutcome.toDouble()),
                           ])),
                         )),
                       ],
@@ -88,7 +88,7 @@ class OverviewWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Indicator(
-              color: Colors.orange[200],
+              color: Colors.orange[200]!,
               text: 'Income',
               isSquare: true,
             ),
@@ -96,7 +96,7 @@ class OverviewWidget extends StatelessWidget {
               width: 10,
             ),
             Indicator(
-              color: Colors.teal[200],
+              color: Colors.teal[200]!,
               text: 'Expense',
               isSquare: true,
             ),

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class EmailTextField extends StatefulWidget {
   final Function(String) onTextChanged;
-  final TextEditingController editingController;
+  final TextEditingController? editingController;
   final bool enableEmailField;
 
   EmailTextField(
-      {this.onTextChanged, this.editingController, this.enableEmailField});
+      {required this.onTextChanged,
+      this.editingController,
+      required this.enableEmailField});
 
   @override
   _EmailTextFieldState createState() => _EmailTextFieldState();

@@ -10,7 +10,7 @@ class ApiServiceFactory {
   Uri backendEndpoint =
       Uri.https('ramiro-di-rico.dev', 'homemanagementapi/api/');
 
-  ApiServiceFactory({@required this.authenticationService});
+  ApiServiceFactory({required this.authenticationService});
 
   Future<List> fetchList(String api) async {
     await _autoAuthenticateIfNeeded();

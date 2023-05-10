@@ -9,17 +9,18 @@ class DailyBackupWdiget extends StatefulWidget {
 }
 
 class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
-  PreferencesRepository preferencesRepository = GetIt.I<PreferencesRepository>();
+  PreferencesRepository preferencesRepository =
+      GetIt.I<PreferencesRepository>();
   bool dailyBackupEnabled = false;
 
-  onEnableChanged(bool value) {
+  onEnableChanged(bool? value) {
     setState(() {
-      this.dailyBackupEnabled = value;
+      this.dailyBackupEnabled = value == true;
     });
   }
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     this.dailyBackupEnabled = this.preferencesRepository.getDailyBackupValue();
   }
@@ -27,26 +28,23 @@ class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
   @override
   Widget build(BuildContext context) {
     return MainCard(
-      child: Row(             
-        mainAxisAlignment: MainAxisAlignment.start,   
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Checkbox(
-            value: dailyBackupEnabled, 
+            value: dailyBackupEnabled,
             onChanged: onEnableChanged,
           ),
           Expanded(
             child: Text('Sync Options'),
           ),
           Expanded(
-            child: TextButton(
-              child: Icon(
-                Icons.cloud_download,
-                color: Colors.pinkAccent,
-              ), 
-              onPressed: (){
-
-              })
-          )
+              child: TextButton(
+                  child: Icon(
+                    Icons.cloud_download,
+                    color: Colors.pinkAccent,
+                  ),
+                  onPressed: () {}))
         ],
       ),
     );

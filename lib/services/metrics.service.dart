@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:home_management_app/models/metrics/breakdown.dart';
 import 'package:home_management_app/models/metrics/metric.dart';
 import 'package:home_management_app/models/overall.dart';
@@ -11,10 +10,10 @@ import 'caching.dart';
 class MetricService {
   AuthenticationService authenticationService;
   Caching caching;
-  Overall overall;
+  Overall? overall;
   String cacheKey = 'overall';
 
-  MetricService({@required this.authenticationService, @required this.caching});
+  MetricService({required this.authenticationService, required this.caching});
 
   Future<Overall> getOverall() async {
     if (this.caching.exists(cacheKey)) {
@@ -31,13 +30,13 @@ class MetricService {
 
       if (response.statusCode == 200) {
         this.overall = Overall.fromJson(json.decode(response.body));
-        caching.add(cacheKey, this.overall);
+        caching.add(cacheKey, this.overall!);
       } else {
         throw Exception('Failed to fetch overall.');
       }
     }
 
-    return this.overall;
+    return this.overall!;
   }
 
   Future<Overall> getOverallByAccountId(int accountId) async {
@@ -56,13 +55,13 @@ class MetricService {
 
       if (response.statusCode == 200) {
         this.overall = Overall.fromJson(json.decode(response.body));
-        caching.add(key, this.overall);
+        caching.add(key, this.overall!);
       } else {
         throw Exception('Failed to fetch overall.');
       }
     }
 
-    return this.overall;
+    return this.overall!;
   }
 
   Future<Metric> getIncomeMetrics() async {

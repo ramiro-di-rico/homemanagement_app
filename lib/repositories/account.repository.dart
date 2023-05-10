@@ -12,7 +12,7 @@ class AccountRepository extends ChangeNotifier {
   final List<AccountSeries> accountSeries = [];
   bool showArchive = false;
 
-  AccountRepository({@required this.accountService});
+  AccountRepository({required this.accountService});
 
   Future refresh() async => await load();
 

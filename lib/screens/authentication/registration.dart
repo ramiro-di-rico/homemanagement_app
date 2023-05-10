@@ -56,6 +56,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 padding: EdgeInsets.only(bottom: 10),
                 child: EmailTextField(
                   onTextChanged: onEmailChanged,
+                  enableEmailField: true,
                 ),
               ),
               Padding(
@@ -115,13 +116,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   Color getSliderColor() {
     if (passwordStrength >= 0.4 && passwordStrength < 0.6)
-      return Colors.red[400];
+      return Colors.red[400]!;
 
     if (passwordStrength >= 0.6 && passwordStrength < 0.8)
-      return Colors.green[200];
+      return Colors.green[200]!;
 
     if (passwordStrength >= 0.8 && passwordStrength < 1)
-      return Colors.green[400];
+      return Colors.green[400]!;
 
     if (passwordStrength == 1) return Colors.green;
 

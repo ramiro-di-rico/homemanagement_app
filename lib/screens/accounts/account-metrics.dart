@@ -10,7 +10,7 @@ import 'widgets/account-most-expensive-categories.dart';
 
 class AccountMetrics extends StatefulWidget {
   static const String id = 'account_metrics_screen';
-  final AccountModel account;
+  final AccountModel? account;
   AccountMetrics({this.account});
   @override
   _AccountMetricsState createState() => _AccountMetricsState();
@@ -18,7 +18,7 @@ class AccountMetrics extends StatefulWidget {
 
 class _AccountMetricsState extends State<AccountMetrics> {
   MetricService _metricService = GetIt.I<MetricService>();
-  Overall overall;
+  Overall? overall;
 
   @override
   void initState() {
@@ -40,14 +40,15 @@ class _AccountMetricsState extends State<AccountMetrics> {
               Expanded(
                 child: Padding(
                     padding: EdgeInsets.all(10),
-                    child: AccountMostExpensiveCategories(this.widget.account)),
+                    child:
+                        AccountMostExpensiveCategories(this.widget.account!)),
                 flex: 5,
               ),
               Expanded(child: SizedBox()),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
-                  child: OverviewWidget(overall: overall),
+                  child: OverviewWidget(overall: overall!),
                 ),
                 flex: 5,
               ),
@@ -60,7 +61,7 @@ class _AccountMetricsState extends State<AccountMetrics> {
 
   Future load() async {
     var fetchedOverall =
-        await _metricService.getOverallByAccountId(widget.account.id);
+        await _metricService.getOverallByAccountId(widget.account!.id);
     setState(() {
       overall = fetchedOverall;
     });

@@ -6,7 +6,7 @@ class PreferencesRepository extends ChangeNotifier {
   PreferenceService preferenceService;
   List<PreferenceModel> preferences = [];
 
-  PreferencesRepository({@required this.preferenceService});
+  PreferencesRepository({required this.preferenceService});
 
   Future load() async {
     var result = await this.preferenceService.fetch();

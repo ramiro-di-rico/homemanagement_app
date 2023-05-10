@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
   UserRepository userRepository = GetIt.instance<UserRepository>();
-  KeyboardFactory keyboardFactory;
+  KeyboardFactory? keyboardFactory;
   final LocalAuthentication auth = LocalAuthentication();
 
   void initState() {
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
           Column(
-            children: keyboardFactory.isKeyboardVisible()
+            children: keyboardFactory!.isKeyboardVisible()
                 ? []
                 : [
                     Padding(

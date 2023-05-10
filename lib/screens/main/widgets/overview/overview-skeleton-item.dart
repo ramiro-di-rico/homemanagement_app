@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 
 class OverviewSkeletonItem extends StatelessWidget {
-  const OverviewSkeletonItem({Key key}) : super(key: key);
+  const OverviewSkeletonItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

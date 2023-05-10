@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class PasswordTextField extends StatefulWidget {
   final Function(String) onTextChanged;
-  final TextEditingController editingController;
+  final TextEditingController? editingController;
   final bool enablePassword;
 
   PasswordTextField(
-      {this.onTextChanged, this.editingController, this.enablePassword});
+      {required this.onTextChanged,
+      this.editingController,
+      required this.enablePassword});
 
   @override
   _PasswordTextFieldState createState() => _PasswordTextFieldState();
@@ -29,7 +31,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
             borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
           labelText: 'Password',
-          suffixIcon: TextButton (
+          suffixIcon: TextButton(
             child: Icon(hidePassword ? Icons.visibility : Icons.visibility_off),
             onPressed: changePasswordVisibility,
           ),
