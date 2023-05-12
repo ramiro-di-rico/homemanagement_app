@@ -65,13 +65,13 @@ class OverviewWidget extends StatelessWidget {
                                 color: Colors.orange[200],
                                 radius: 30,
                                 title: shortenBigNumber
-                                    .shortNumber(overall!.totalIncome),
+                                    .shortNumber(overall?.totalIncome ?? 0),
                                 value: overall?.totalIncome.toDouble()),
                             PieChartSectionData(
                                 color: Colors.teal[200],
                                 radius: 30,
                                 title: shortenBigNumber
-                                    .shortNumber(overall!.totalOutcome),
+                                    .shortNumber(overall?.totalOutcome ?? 0),
                                 value: overall?.totalOutcome.toDouble()),
                           ])),
                         )),

@@ -24,17 +24,17 @@ class _AccountsMetricSeriesWidgetState
   List<AccountHistorical> accountsHistoricalChart = [];
   List<String> months = List.empty(growable: true);
   List<Color> lineColors = [
-    Colors.lime[600]!,
-    Colors.pink[600]!,
-    Colors.orange[600]!,
-    Colors.green[600]!,
-    Colors.purple[600]!,
-    Colors.blueAccent[600]!,
-    Colors.amberAccent[600]!,
-    Colors.deepOrange[600]!,
-    Colors.red[600]!,
-    Colors.teal[600]!,
-    Colors.brown[300]!
+    Colors.lime[600] ?? Colors.lime,
+    Colors.pink[600] ?? Colors.pink,
+    Colors.orange[600] ?? Colors.orange,
+    Colors.green[600] ?? Colors.green,
+    Colors.purple[600] ?? Colors.purple,
+    Colors.blueAccent[600] ?? Colors.blueAccent,
+    Colors.amberAccent[600] ?? Colors.amberAccent,
+    Colors.deepOrange[600] ?? Colors.deepOrange,
+    Colors.red[600] ?? Colors.red,
+    Colors.teal[600] ?? Colors.teal,
+    Colors.brown[300] ?? Colors.brown,
   ];
   bool loading = false;
   List<String> accounts = List.empty(growable: true);
@@ -230,7 +230,7 @@ class _AccountsMetricSeriesWidgetState
     var max = maxY();
     var min = minY();
     var result = (max.abs() + min.abs()).roundToDouble();
-    return result.abs();
+    return result == 0.0 ? 1 : result.abs();
   }
 
   void mapMonths() {

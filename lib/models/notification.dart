@@ -4,14 +4,15 @@ class NotificationModel {
   int dueDay;
   bool dismissed;
 
-  NotificationModel(this.id, this.reminderId, this.title, this.description, this.dismissed, this.dueDay);
+  NotificationModel(this.id, this.reminderId, this.title, this.description,
+      this.dismissed, this.dueDay);
 
-  factory NotificationModel.fromJson(Map<String, dynamic> json){
+  factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
       json['id'],
       json['reminderId'],
       json['title'],
-      json['description'],
+      json['description'] ?? '',
       json['dismissed'],
       json['dueDay'],
     );

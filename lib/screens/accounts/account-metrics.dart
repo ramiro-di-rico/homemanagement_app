@@ -48,7 +48,7 @@ class _AccountMetricsState extends State<AccountMetrics> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(10),
-                  child: OverviewWidget(overall: overall!),
+                  child: OverviewWidget(overall: overall),
                 ),
                 flex: 5,
               ),
