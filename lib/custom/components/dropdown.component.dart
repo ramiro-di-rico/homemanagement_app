@@ -28,18 +28,22 @@ class _DropdownComponentState extends State<DropdownComponent> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
-        value: value,
-        items: this
-            .widget
-            .items
-            .map(
-              (e) => DropdownMenuItem<String>(
-                child: Text(e),
-                value: e,
-              ),
-            )
-            .toList(),
-        onChanged: onValueChanged);
+      value: value,
+      items: this
+          .widget
+          .items
+          .map(
+            (e) => DropdownMenuItem<String>(
+              child: Text(e),
+              value: e,
+            ),
+          )
+          .toList(),
+      onChanged: onValueChanged,
+      isExpanded: true,
+      style: TextStyle(
+          color: Colors.black, fontSize: 16, overflow: TextOverflow.ellipsis),
+    );
   }
 
   onValueChanged(String? value) {

@@ -120,7 +120,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
           ),
           //third row
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
               children: [
                 Expanded(
@@ -143,7 +143,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                 ),
                 Expanded(
                   child: Padding(
-                      padding: EdgeInsets.all(10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       child: DropdownComponent(
                           items: TransactionModel.getTransactionTypes(),
                           onChanged: (transactionType) {
