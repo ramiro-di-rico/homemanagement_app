@@ -139,6 +139,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                           .id;
                       setState(() {});
                     },
+                    isExpanded: true,
                   ),
                 ),
                 Expanded(
@@ -146,13 +147,15 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       child: DropdownComponent(
-                          items: TransactionModel.getTransactionTypes(),
-                          onChanged: (transactionType) {
-                            transactionModel.transactionType =
-                                TransactionModel.parseByName(transactionType);
-                            setState(() {});
-                          },
-                          currentValue: transactionModel.transactionType.name)),
+                        items: TransactionModel.getTransactionTypes(),
+                        onChanged: (transactionType) {
+                          transactionModel.transactionType =
+                              TransactionModel.parseByName(transactionType);
+                          setState(() {});
+                        },
+                        currentValue: transactionModel.transactionType.name,
+                        isExpanded: true,
+                      )),
                 ),
               ],
             ),

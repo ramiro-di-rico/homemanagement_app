@@ -4,11 +4,13 @@ class DropdownComponent extends StatefulWidget {
   final List<String> items;
   final Function(String) onChanged;
   final String currentValue;
+  final bool isExpanded;
 
   DropdownComponent(
       {required this.items,
       required this.onChanged,
-      required this.currentValue});
+      required this.currentValue,
+      this.isExpanded = false});
 
   @override
   _DropdownComponentState createState() => _DropdownComponentState();
@@ -40,7 +42,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
           )
           .toList(),
       onChanged: onValueChanged,
-      isExpanded: true,
+      isExpanded: widget.isExpanded,
       style: TextStyle(
           color: Colors.black, fontSize: 16, overflow: TextOverflow.ellipsis),
     );
