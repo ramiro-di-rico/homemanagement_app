@@ -19,6 +19,6 @@ class TransactionWithBalanceModel {
   }
 
   bool isTargetAccountAvailable() {
-    return this.targetAccount!.id > 0;
+    return (this.targetAccount?.id ?? 0) > 0;
   }
 }

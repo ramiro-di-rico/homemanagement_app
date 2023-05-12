@@ -25,5 +25,6 @@ class AppTextField extends TextField {
   get onChanged => onTextChanged;
 
   @override
-  TextEditingController get controller => editingController!;
+  TextEditingController get controller =>
+      editingController ?? TextEditingController();
 }

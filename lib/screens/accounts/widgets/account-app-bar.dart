@@ -15,7 +15,8 @@ class AccountAppBar extends StatelessWidget implements PreferredSizeWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-                child: Text(account!.name, overflow: TextOverflow.ellipsis)),
+                child:
+                    Text(account?.name ?? '', overflow: TextOverflow.ellipsis)),
           ],
         ),
       ),
