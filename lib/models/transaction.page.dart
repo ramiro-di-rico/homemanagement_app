@@ -1,8 +1,8 @@
 import 'package:home_management_app/models/transaction.dart';
 
 class TransactionPageModel {
-  int accountId, currentPage, pageCount, totalPages, op;
-  String property, filterValue;
+  int accountId = 0, currentPage = 1, pageCount = 10, totalPages = 0, op = 0;
+  String property = '', filterValue = '';
   List<TransactionModel> items = [];
 
   TransactionPageModel();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MainCard extends StatelessWidget {
-  MainCard({@required this.child});
+  MainCard({required this.child});
   final Widget child;
 
   @override

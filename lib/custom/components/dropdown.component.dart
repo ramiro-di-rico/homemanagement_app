@@ -1,32 +1,39 @@
 import 'package:flutter/material.dart';
 
 class DropdownComponent extends StatefulWidget {
-
   final List<String> items;
   final Function(String) onChanged;
   final String currentValue;
+  final bool isExpanded;
 
-  DropdownComponent({@required this.items, @required this.onChanged, this.currentValue});
+  DropdownComponent(
+      {required this.items,
+      required this.onChanged,
+      required this.currentValue,
+      this.isExpanded = false});
 
   @override
   _DropdownComponentState createState() => _DropdownComponentState();
 }
 
 class _DropdownComponentState extends State<DropdownComponent> {
-
-  String value;
+  String? value;
 
   @override
   void initState() {
     super.initState();
-    this.value = widget.currentValue != null && widget.currentValue.isNotEmpty ? widget.currentValue : this.widget.items.first;
+    this.value = widget.currentValue.isNotEmpty
+        ? widget.currentValue
+        : this.widget.items.first;
   }
 
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
       value: value,
-      items: this.widget.items
+      items: this
+          .widget
+          .items
           .map(
             (e) => DropdownMenuItem<String>(
               child: Text(e),
@@ -34,13 +41,17 @@ class _DropdownComponentState extends State<DropdownComponent> {
             ),
           )
           .toList(),
-      onChanged: onValueChanged);
+      onChanged: onValueChanged,
+      isExpanded: widget.isExpanded,
+      style: TextStyle(
+          color: Colors.black, fontSize: 16, overflow: TextOverflow.ellipsis),
+    );
   }
 
-  onValueChanged(String value){
+  onValueChanged(String? value) {
     setState(() {
       this.value = value;
-      this.widget.onChanged.call(value);
-    });    
+      this.widget.onChanged.call(value!);
+    });
   }
 }

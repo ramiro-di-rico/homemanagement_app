@@ -10,9 +10,9 @@ import '../../../repositories/currency.repository.dart';
 
 // ignore: must_be_immutable
 class AccountSheet extends StatefulWidget {
-  AccountModel accountModel;
+  AccountModel? accountModel;
 
-  AccountSheet({Key key, this.accountModel}) : super(key: key);
+  AccountSheet({Key? key, this.accountModel}) : super(key: key);
 
   @override
   State<AccountSheet> createState() => _AccountSheetState();
@@ -22,8 +22,8 @@ class _AccountSheetState extends State<AccountSheet> {
   AccountRepository accountsRepository = GetIt.instance<AccountRepository>();
   CurrencyRepository currencyRepository = GetIt.I<CurrencyRepository>();
   TextEditingController _textEditingController = TextEditingController();
-  KeyboardFactory keyboardFactory;
-  AccountModel account;
+  KeyboardFactory? keyboardFactory;
+  late AccountModel account;
   bool isEditMode = false;
 
   List<String> currencies = [];
@@ -145,9 +145,9 @@ class _AccountSheetState extends State<AccountSheet> {
     });
   }
 
-  onMeasurableChanged(bool value) {
+  onMeasurableChanged(bool? value) {
     setState(() {
-      this.account.measurable = value;
+      this.account.measurable = value ?? false;
     });
   }
 

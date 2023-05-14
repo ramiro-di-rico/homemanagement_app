@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/custom/main-card.dart';
 
 class TwoFactorAuthenticationWidget extends StatefulWidget {
-  TwoFactorAuthenticationWidget({Key key}) : super(key: key);
+  TwoFactorAuthenticationWidget({Key? key}) : super(key: key);
 
   @override
-  _TwoFactorAuthenticationWidgetState createState() => _TwoFactorAuthenticationWidgetState();
+  _TwoFactorAuthenticationWidgetState createState() =>
+      _TwoFactorAuthenticationWidgetState();
 }
 
-class _TwoFactorAuthenticationWidgetState extends State<TwoFactorAuthenticationWidget> {
-
+class _TwoFactorAuthenticationWidgetState
+    extends State<TwoFactorAuthenticationWidget> {
   bool twoFactorEnabled = false;
 
-  onChecked(bool value){
+  onChecked(bool? value) {
     setState(() {
-      this.twoFactorEnabled = value;
+      this.twoFactorEnabled = value == true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MainCard(      
+    return MainCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

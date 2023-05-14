@@ -6,7 +6,7 @@ import 'package:home_management_app/repositories/currency.repository.dart';
 class AccountDetailWidget extends StatelessWidget {
   final AccountModel accountModel;
 
-  AccountDetailWidget({@required this.accountModel});
+  AccountDetailWidget({required this.accountModel});
 
   @override
   Widget build(BuildContext context) {

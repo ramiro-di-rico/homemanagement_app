@@ -23,7 +23,7 @@ class AccountHistorical {
 class AccountEvolution {
   String month;
   double balance;
-  int index;
+  int? index;
 
   AccountEvolution(this.month, this.balance, {this.index});
 

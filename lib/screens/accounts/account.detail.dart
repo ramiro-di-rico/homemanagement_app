@@ -19,7 +19,7 @@ import 'widgets/transaction.row.info.dart';
 
 class AccountDetailScren extends StatefulWidget {
   static const String id = 'account_detail_screen';
-  final AccountModel account;
+  final AccountModel? account;
   AccountDetailScren({this.account});
 
   @override
@@ -28,7 +28,7 @@ class AccountDetailScren extends StatefulWidget {
 
 class _AccountDetailScrenState extends State<AccountDetailScren> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
-  AccountModel account;
+  late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
@@ -42,7 +42,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
 
   @override
   void initState() {
-    account = widget.account;
+    account = widget.account!;
     transactionRepository.addListener(refreshState);
     scrollController.addListener(onScroll);
     filteringTextFocusNode.addListener(() {});

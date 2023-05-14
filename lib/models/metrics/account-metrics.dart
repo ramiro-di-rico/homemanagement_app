@@ -1,14 +1,11 @@
-class AccountSeries{
-
+class AccountSeries {
   int accountId;
   List<MonthSerie> monthSeries = [];
 
   AccountSeries(this.accountId);
 
-  factory AccountSeries.fromJson(Map<String, dynamic> json){
-    var account = AccountSeries(
-      json['accountId']
-    );
+  factory AccountSeries.fromJson(Map<String, dynamic> json) {
+    var account = AccountSeries(json['accountId']);
     var list = json['monthSeries'];
     var series = list.map((e) => MonthSerie.fromJson(e)).toList();
 
@@ -22,16 +19,14 @@ class AccountSeries{
   }
 }
 
-class MonthSerie{
+class MonthSerie {
   int month;
   String average;
-  int index;
+  int? index;
 
   MonthSerie(this.month, this.average, {this.index});
 
-  factory MonthSerie.fromJson(Map<String, dynamic> json){
-    return MonthSerie(
-      json['month'], 
-      json['average']);
+  factory MonthSerie.fromJson(Map<String, dynamic> json) {
+    return MonthSerie(json['month'], json['average']);
   }
 }

@@ -14,11 +14,11 @@ class AuthenticationService extends ChangeNotifier {
   String authenticateApi = 'identity/api/Authentication/SignIn';
   String authenticateApiV2 = 'identity/api/Authentication/V2/SignIn';
   String registrationApi = 'api/registration';
-  UserModel user;
+  UserModel? user;
   bool isBiometricEnabled = false;
 
   AuthenticationService(
-      {@required this.cryptographyService, this.userRepository});
+      {required this.cryptographyService, required this.userRepository});
 
   Future init() async {
     this.user = await this.userRepository.load();
@@ -43,7 +43,7 @@ class AuthenticationService extends ChangeNotifier {
 
   bool isAuthenticated() {
     var currentUtcDate = DateTime.now().toUtc();
-    return user.expirationDate.isAfter(currentUtcDate);
+    return user!.expirationDate.isAfter(currentUtcDate);
   }
 
   Future biometricsAuthenticate() async {
@@ -58,11 +58,11 @@ class AuthenticationService extends ChangeNotifier {
     }
   }
 
-  Future autoAuthenticate() async => isEmailAuthenticationType(this.user.email)
-      ? await _internalAuthenticate(this.user.email, this.user.password)
-      : await _internalAuthenticateV2(this.user.email, this.user.password);
+  Future autoAuthenticate() async => isEmailAuthenticationType(this.user!.email)
+      ? await _internalAuthenticate(this.user!.email, this.user!.password)
+      : await _internalAuthenticateV2(this.user!.email, this.user!.password);
 
-  String getUserToken() => user.token;
+  String getUserToken() => user!.token;
 
   Future<bool> authenticate(String email, String password) async {
     var pass = await cryptographyService.encryptToAES(password);
@@ -97,7 +97,7 @@ class AuthenticationService extends ChangeNotifier {
       var jsonModel = json.decode(response.body);
       jsonModel['password'] = password;
       this.user = UserModel.fromJson(jsonModel);
-      this.userRepository.store(this.user);
+      this.userRepository.store(this.user!);
       this.notifyListeners();
       return true;
     } else {
@@ -115,7 +115,7 @@ class AuthenticationService extends ChangeNotifier {
       var jsonModel = json.decode(response.body);
       jsonModel['password'] = password;
       this.user = UserModel.fromJson(jsonModel);
-      this.userRepository.store(this.user);
+      this.userRepository.store(this.user!);
       this.notifyListeners();
       return true;
     } else {

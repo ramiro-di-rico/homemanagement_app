@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:home_management_app/models/account.dart';
 import 'api.service.factory.dart';
 import 'authentication.service.dart';
@@ -9,7 +8,7 @@ class AccountService {
   ApiServiceFactory apiServiceFactory;
 
   AccountService(
-      {@required this.authenticationService, @required this.apiServiceFactory});
+      {required this.authenticationService, required this.apiServiceFactory});
 
   Future<List<AccountModel>> fetchAccounts() async {
     var list = await this.apiServiceFactory.fetchList('account');

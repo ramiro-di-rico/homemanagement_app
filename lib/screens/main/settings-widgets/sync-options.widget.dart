@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/custom/main-card.dart';
 
 class SyncOptionsWidget extends StatefulWidget {
-  SyncOptionsWidget({Key key}) : super(key: key);
+  SyncOptionsWidget({Key? key}) : super(key: key);
 
   @override
   _SyncOptionsWidgetState createState() => _SyncOptionsWidgetState();
@@ -11,9 +11,9 @@ class SyncOptionsWidget extends StatefulWidget {
 class _SyncOptionsWidgetState extends State<SyncOptionsWidget> {
   bool syncEnabled = false;
 
-  onSyncChanged(bool value) {
+  onSyncChanged(bool? value) {
     setState(() {
-      this.syncEnabled = value;
+      this.syncEnabled = value == true;
     });
   }
 

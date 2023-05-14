@@ -4,7 +4,7 @@ import 'package:home_management_app/models/transaction.dart';
 class TransactionWithBalanceModel {
   TransactionModel transactionModel;
   AccountModel sourceAccount;
-  AccountModel targetAccount;
+  AccountModel? targetAccount;
 
   TransactionWithBalanceModel(
       this.transactionModel, this.sourceAccount, this.targetAccount);
@@ -19,6 +19,6 @@ class TransactionWithBalanceModel {
   }
 
   bool isTargetAccountAvailable() {
-    return this.targetAccount != null && this.targetAccount.id > 0;
+    return (this.targetAccount?.id ?? 0) > 0;
   }
 }

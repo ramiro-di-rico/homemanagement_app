@@ -36,9 +36,6 @@ void registerServices() {
   GetIt.instance.registerFactory(() => CryptographyService());
   GetIt.instance.registerFactory(() => TransactionService(
       authenticationService: GetIt.I<AuthenticationService>()));
-  GetIt.instance.registerFactory(() {
-    var authenticationService = GetIt.I<AuthenticationService>();
-  });
 
   GetIt.instance.registerFactory(() => MetricService(
       caching: GetIt.I<Caching>(),

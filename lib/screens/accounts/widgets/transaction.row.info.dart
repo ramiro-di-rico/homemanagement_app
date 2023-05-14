@@ -15,10 +15,10 @@ class TransactionRowInfo extends StatelessWidget {
   final AccountModel account;
 
   TransactionRowInfo(
-      {@required this.transaction,
-      @required this.category,
-      @required this.index,
-      @required this.account});
+      {required this.transaction,
+      required this.category,
+      required this.index,
+      required this.account});
 
   final TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();

@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:home_management_app/models/currency.dart';
 
 import 'api.service.factory.dart';
 import 'authentication.service.dart';
 
-class CurrencyService{
-
+class CurrencyService {
   AuthenticationService authenticationService;
   ApiServiceFactory apiServiceFactory;
 
-  CurrencyService({@required this.authenticationService, @required this.apiServiceFactory});
+  CurrencyService(
+      {required this.authenticationService, required this.apiServiceFactory});
 
   Future<List<CurrencyModel>> fetchCurrencies() async {
     var data = await this.apiServiceFactory.fetchList('currency');

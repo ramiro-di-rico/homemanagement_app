@@ -3,8 +3,8 @@ import 'package:home_management_app/models/account.dart';
 
 class AccountAppBar extends StatelessWidget implements PreferredSizeWidget {
   final AppBar _appBar = new AppBar();
-  final List<Widget> actions;
-  final AccountModel account;
+  final List<Widget>? actions;
+  final AccountModel? account;
   AccountAppBar({this.account, this.actions});
 
   @override
@@ -15,7 +15,8 @@ class AccountAppBar extends StatelessWidget implements PreferredSizeWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-                child: Text(account.name, overflow: TextOverflow.ellipsis)),
+                child:
+                    Text(account?.name ?? '', overflow: TextOverflow.ellipsis)),
           ],
         ),
       ),

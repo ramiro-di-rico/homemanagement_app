@@ -13,7 +13,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   MetricService _metricService = GetIt.I<MetricService>();
-  Overall overall;
+  Overall? overall;
 
   @override
   void initState() {
