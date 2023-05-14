@@ -20,4 +20,9 @@ class PreferencesRepository extends ChangeNotifier {
           .firstWhere((element) => element.name == 'EnableDailyBackups')
           .value ==
       'true';
+
+  String getPreferredCurrency() => this
+      .preferences
+      .firstWhere((element) => element.name == 'PreferredCurrency')
+      .value;
 }

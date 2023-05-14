@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
+import 'settings-widgets/preferred-currency-widget.dart';
 import 'settings-widgets/two-factor-authentication.widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -18,9 +19,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: EdgeInsets.all(10),
             child: DailyBackupWdiget(),
           ),
-          Padding(
+          /*Padding(
             padding: EdgeInsets.all(10),
             child: TwoFactorAuthenticationWidget(),
+          ),*/
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: const PreferredCurreny(),
           ),
           Padding(
             padding: EdgeInsets.all(10),
