@@ -12,9 +12,9 @@ class TransactionWithBalanceModel {
   factory TransactionWithBalanceModel.fromJson(dynamic json) {
     return TransactionWithBalanceModel(
         TransactionModel.fromJson(json['transaction']),
-        AccountModel.fromJson(json['sourceAccount']),
+        AccountModel.nameAndBalance(json['sourceAccount']),
         json['targetAccount'] != null
-            ? AccountModel.fromJson(json['targetAccount'])
+            ? AccountModel.nameAndBalance(json['targetAccount'])
             : null);
   }
 

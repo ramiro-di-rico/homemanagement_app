@@ -21,6 +21,17 @@ class AccountModel {
         json['archive']);
   }
 
+  factory AccountModel.nameAndBalance(Map<String, dynamic> json) =>
+      AccountModel(
+          json['id'],
+          json['name'],
+          double.parse(json['balance'].toString()),
+          false,
+          AccountType.Cash,
+          0,
+          0,
+          false);
+
   factory AccountModel.empty(int currencyId) =>
       AccountModel(0, "", 0, false, AccountType.Cash, currencyId, 0, false);
 
