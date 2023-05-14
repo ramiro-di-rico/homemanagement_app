@@ -60,7 +60,9 @@ class _IncomeWidgetState extends State<IncomeWidget> {
     setState(() {
       this.income = result.total;
       this.icon = this.income > 0 ? Icons.trending_up : Icons.trending_down;
-      this.trendColor = this.income > 0 ? Colors.green[400]! : Colors.red[400]!;
+      this.trendColor = this.income > 0
+          ? Colors.green[400] ?? Colors.green
+          : Colors.red[400] ?? Colors.red;
       loading = false;
     });
   }

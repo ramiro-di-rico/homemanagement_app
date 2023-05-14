@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
           Column(
-            children: keyboardFactory!.isKeyboardVisible()
+            children: keyboardFactory?.isKeyboardVisible() ?? false
                 ? []
                 : [
                     Padding(
