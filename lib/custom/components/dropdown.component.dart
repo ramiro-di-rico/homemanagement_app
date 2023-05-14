@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/extensions/context_extensions.dart';
 
 class DropdownComponent extends StatefulWidget {
   final List<String> items;
@@ -44,7 +45,9 @@ class _DropdownComponentState extends State<DropdownComponent> {
       onChanged: onValueChanged,
       isExpanded: widget.isExpanded,
       style: TextStyle(
-          color: Colors.black, fontSize: 16, overflow: TextOverflow.ellipsis),
+          color: context.isDarkMode() ? Colors.white : Colors.black,
+          fontSize: 16,
+          overflow: TextOverflow.ellipsis),
     );
   }
 
