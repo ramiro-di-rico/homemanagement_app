@@ -1,10 +1,10 @@
 import 'package:home_management_app/models/preference.dart';
+import 'package:home_management_app/services/api-mixin.dart';
 import 'api.service.factory.dart';
 import 'authentication.service.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class PreferenceService {
+class PreferenceService with HttpApiServiceMixin {
   AuthenticationService authenticationService;
   ApiServiceFactory apiServiceFactory;
 
@@ -13,10 +13,7 @@ class PreferenceService {
 
   Future<List<PreferenceModel>> fetch() async {
     var token = this.authenticationService.getUserToken();
-
-    var response = await http.get(
-        Uri.https('ramiro-di-rico.dev', 'homemanagementapi/api/preferences'),
-        headers: <String, String>{'Authorization': 'Bearer $token'});
+    var response = await httpGet(createUri('preferences', null), token);
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);

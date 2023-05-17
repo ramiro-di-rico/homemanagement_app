@@ -1,11 +1,11 @@
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/authentication.service.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'api-mixin.dart';
 import 'caching.dart';
 
-class CategoryMetricService {
+class CategoryMetricService with HttpApiServiceMixin {
   AuthenticationService authenticationService;
   Caching caching;
   CategoriesMetric? categoriesMetric;
@@ -23,11 +23,9 @@ class CategoryMetricService {
     }
 
     if (this.metrics.isEmpty) {
-      var uri = Uri.https(
-          'ramiro-di-rico.dev',
-          'homemanagementapi/api/account/toptransactions',
-          _getQueryParams(month, take));
-      var response = await http.get(uri, headers: _getAuthHeaders());
+      var response = await httpGet(
+          createUri('account/toptransactions', _getQueryParams(month, take)),
+          authenticationService.getUserToken());
 
       if (response.statusCode == 200) {
         var result = _parseJson(response.body);
@@ -47,12 +45,10 @@ class CategoryMetricService {
       return this.caching.fetch(key) as List<CategoryMetric>;
     }
 
-    var response = await http.get(
-        Uri.https(
-            'ramiro-di-rico.dev',
-            'homemanagementapi/api/account/$accountId/toptransactions',
-            _getQueryParams(month, take)),
-        headers: _getAuthHeaders());
+    var response = await httpGet(
+        createUri(
+            'account/$accountId/toptransactions', _getQueryParams(month, take)),
+        authenticationService.getUserToken());
 
     if (response.statusCode == 200) {
       var result = _parseJson(response.body);
@@ -76,9 +72,4 @@ class CategoryMetricService {
 
   Map<String, String> _getQueryParams(int month, int take) =>
       {'month': month.toString(), 'take': take.toString()};
-
-  Map<String, String> _getAuthHeaders() {
-    var token = this.authenticationService.getUserToken();
-    return {'Authorization': 'Bearer $token'};
-  }
 }
