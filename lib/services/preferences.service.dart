@@ -13,7 +13,7 @@ class PreferenceService with HttpApiServiceMixin {
 
   Future<List<PreferenceModel>> fetch() async {
     var token = this.authenticationService.getUserToken();
-    var response = await httpGet(createUri('preferences', null), token);
+    var response = await httpGet(createUri('preferences'), token);
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);

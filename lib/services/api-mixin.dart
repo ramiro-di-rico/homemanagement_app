@@ -5,7 +5,7 @@ mixin HttpApiServiceMixin {
   Uri backendEndpoint =
       Uri.https('ramiro-di-rico.dev', 'homemanagementapi/api/');
 
-  Uri createUri(String api, Map<String, dynamic>? queryParameters) =>
+  Uri createUri(String api, {Map<String, dynamic>? queryParameters}) =>
       backendEndpoint.resolve(api).replace(queryParameters: queryParameters);
 
   Future<Response> httpGet(Uri uri, String token) =>

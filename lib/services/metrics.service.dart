@@ -1,13 +1,13 @@
 import 'package:home_management_app/models/metrics/breakdown.dart';
 import 'package:home_management_app/models/metrics/metric.dart';
 import 'package:home_management_app/models/overall.dart';
+import 'package:home_management_app/services/api-mixin.dart';
 import 'package:home_management_app/services/authentication.service.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'caching.dart';
 
-class MetricService {
+class MetricService with HttpApiServiceMixin {
   AuthenticationService authenticationService;
   Caching caching;
   Overall? overall;
@@ -21,12 +21,8 @@ class MetricService {
     }
 
     if (this.overall == null) {
-      var token = this.authenticationService.getUserToken();
-
-      var response = await http.get(
-          Uri.https(
-              'ramiro-di-rico.dev', 'homemanagementapi/api/account/overall'),
-          headers: <String, String>{'Authorization': 'Bearer $token'});
+      var response = await httpGet(
+          createUri('account/overall'), authenticationService.getUserToken());
 
       if (response.statusCode == 200) {
         this.overall = Overall.fromJson(json.decode(response.body));
@@ -46,12 +42,8 @@ class MetricService {
     }
 
     if (this.overall == null) {
-      var token = this.authenticationService.getUserToken();
-
-      var response = await http.get(
-          Uri.https('ramiro-di-rico.dev',
-              'homemanagementapi/api/account/$accountId/overall'),
-          headers: <String, String>{'Authorization': 'Bearer $token'});
+      var response = await httpGet(createUri('account/$accountId/overall'),
+          authenticationService.getUserToken());
 
       if (response.statusCode == 200) {
         this.overall = Overall.fromJson(json.decode(response.body));
@@ -78,11 +70,8 @@ class MetricService {
       return this.caching.fetch(type) as Metric;
     }
 
-    var token = this.authenticationService.getUserToken();
-
-    var response = await http.get(
-        Uri.https('ramiro-di-rico.dev', "homemanagementapi/api/Account/$type"),
-        headers: <String, String>{'Authorization': 'Bearer $token'});
+    var response = await httpGet(
+        createUri('Account/$type'), authenticationService.getUserToken());
 
     if (response.statusCode == 200) {
       metric = Metric.fromJson(json.decode(response.body));
@@ -98,12 +87,8 @@ class MetricService {
       return this.caching.fetch('getBreakdown') as List<Breakdown>;
     }
 
-    var token = this.authenticationService.getUserToken();
-
-    var response = await http.get(
-        Uri.https(
-            'ramiro-di-rico.dev', "homemanagementapi/api/Account/breakdown"),
-        headers: <String, String>{'Authorization': 'Bearer $token'});
+    var response = await httpGet(
+        createUri('Account/breakdown'), authenticationService.getUserToken());
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);

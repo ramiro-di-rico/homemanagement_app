@@ -24,7 +24,8 @@ class CategoryMetricService with HttpApiServiceMixin {
 
     if (this.metrics.isEmpty) {
       var response = await httpGet(
-          createUri('account/toptransactions', _getQueryParams(month, take)),
+          createUri('account/toptransactions',
+              queryParameters: _getQueryParams(month, take)),
           authenticationService.getUserToken());
 
       if (response.statusCode == 200) {
@@ -46,8 +47,8 @@ class CategoryMetricService with HttpApiServiceMixin {
     }
 
     var response = await httpGet(
-        createUri(
-            'account/$accountId/toptransactions', _getQueryParams(month, take)),
+        createUri('account/$accountId/toptransactions',
+            queryParameters: _getQueryParams(month, take)),
         authenticationService.getUserToken());
 
     if (response.statusCode == 200) {

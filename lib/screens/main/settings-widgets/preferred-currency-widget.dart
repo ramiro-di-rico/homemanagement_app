@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../custom/main-card.dart';
 import '../../../repositories/preferences.repository.dart';
 
 class PreferredCurreny extends StatefulWidget {
@@ -16,7 +17,7 @@ class _PreferredCurrenyState extends State<PreferredCurreny> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return MainCard(
       child: ListTile(
         leading: Text(
           'Preferred Currency',
