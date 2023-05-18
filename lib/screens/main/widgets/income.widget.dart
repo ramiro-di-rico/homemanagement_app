@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
+import 'package:home_management_app/custom/trending-mixin.dart';
 import 'package:home_management_app/services/metrics.service.dart';
 import 'package:skeletons/skeletons.dart';
 
@@ -10,7 +11,7 @@ class IncomeWidget extends StatefulWidget {
   _IncomeWidgetState createState() => _IncomeWidgetState();
 }
 
-class _IncomeWidgetState extends State<IncomeWidget> {
+class _IncomeWidgetState extends State<IncomeWidget> with TrendingMixin {
   MetricService metricService = GetIt.instance<MetricService>();
   double income = 0;
   IconData icon = Icons.trending_flat;
@@ -59,10 +60,8 @@ class _IncomeWidgetState extends State<IncomeWidget> {
     var result = await this.metricService.getIncomeMetrics();
     setState(() {
       this.income = result.total;
-      this.icon = this.income > 0 ? Icons.trending_up : Icons.trending_down;
-      this.trendColor = this.income > 0
-          ? Colors.green[400] ?? Colors.green
-          : Colors.red[400] ?? Colors.red;
+      this.icon = getIcon(this.income);
+      this.trendColor = getColor(this.income);
       loading = false;
     });
   }

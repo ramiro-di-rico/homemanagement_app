@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/trending-mixin.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/repositories/currency.repository.dart';
 
-class AccountDetailWidget extends StatelessWidget {
+class AccountDetailWidget extends StatelessWidget with TrendingMixin {
   final AccountModel accountModel;
 
   AccountDetailWidget({required this.accountModel});
@@ -30,23 +31,11 @@ class AccountDetailWidget extends StatelessWidget {
               SizedBox(width: 20),
               Text(currency.name),
               SizedBox(width: 20),
-              buildTrendingIcon()
+              Icon(getIcon(accountModel.balance))
             ],
           ),
         ),
       ]),
     );
-  }
-
-  Icon buildTrendingIcon() {
-    if (accountModel.balance == 0) return Icon(Icons.trending_flat);
-
-    if (accountModel.balance > 0)
-      return Icon(Icons.trending_up, color: Colors.greenAccent);
-
-    if (accountModel.balance < 0)
-      return Icon(Icons.trending_down, color: Colors.redAccent);
-
-    return Icon(Icons.trending_flat);
   }
 }

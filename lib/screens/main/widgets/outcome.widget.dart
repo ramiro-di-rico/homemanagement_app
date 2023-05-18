@@ -4,13 +4,15 @@ import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/services/metrics.service.dart';
 import 'package:skeletons/skeletons.dart';
 
+import '../../../custom/trending-mixin.dart';
+
 //deprecated
 class OutcomeWidget extends StatefulWidget {
   @override
   _OutcomeWidgetState createState() => _OutcomeWidgetState();
 }
 
-class _OutcomeWidgetState extends State<OutcomeWidget> {
+class _OutcomeWidgetState extends State<OutcomeWidget> with TrendingMixin {
   MetricService metricService = GetIt.instance<MetricService>();
   double outcome = 0;
   Color trendColor = Colors.white;
@@ -59,10 +61,8 @@ class _OutcomeWidgetState extends State<OutcomeWidget> {
     var result = await this.metricService.getOutcomesMetrics();
     setState(() {
       this.outcome = result.total;
-      this.icon = this.outcome > 0 ? Icons.trending_up : Icons.trending_down;
-      this.trendColor = this.outcome > 0
-          ? Colors.green[400] ?? Colors.green
-          : Colors.red[400] ?? Colors.red;
+      this.icon = getIcon(this.outcome);
+      this.trendColor = getColor(this.outcome);
       loading = false;
     });
   }
