@@ -23,28 +23,19 @@ class TransactionRowSkeleton extends StatelessWidget {
                         width: 120,
                         child: SkeletonLine(),
                       ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                        child: Container(
-                          width: 50,
-                          child: SkeletonLine(),
-                        ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
                       Container(
                         width: 50,
                         child: SkeletonLine(),
                       ),
-                      SizedBox(width: 20),
-                      Container(
-                        width: 80,
-                        child: SkeletonLine(),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                        child: Container(
+                          width: 50,
+                          child: SkeletonLine(),
+                        ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

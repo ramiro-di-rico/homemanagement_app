@@ -39,6 +39,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   List<TransactionModel> transactions = [];
   FocusNode filteringTextFocusNode = FocusNode();
   bool loading = false;
+  final String skeletonName = 'skeleton';
 
   @override
   void initState() {
@@ -64,7 +65,9 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
   }
 
   void refreshState() {
-    setState(() {});
+    setState(() {
+      transactions = transactionRepository.transactions;
+    });
   }
 
   @override
@@ -101,7 +104,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                       order: GroupedListOrder.DESC,
                       controller: scrollController,
                       physics: ScrollPhysics(),
-                      elements: transactionRepository.transactions,
+                      elements: transactions,
                       groupBy: (element) => element.date.toMidnight(),
                       groupSeparatorBuilder: (element) {
                         return Container(
@@ -126,8 +129,8 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                       itemBuilder: (context, transaction) {
                         var index = transactionRepository.transactions
                             .indexOf(transaction);
-                        if (index >=
-                            transactionRepository.transactions.length) {
+                        print(index);
+                        if (transaction.name == skeletonName) {
                           return TransactionRowSkeleton();
                         }
 
@@ -260,8 +263,13 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
     if (!transactionRepository.transactions
         .any((element) => element.accountId == account.id)) {
       changeLoadingState(true);
+      setState(() {
+        addSkeletonTransactions();
+      });
       await transactionRepository.loadFirstPage(account.id);
       changeLoadingState(false);
+    } else {
+      refreshState();
     }
   }
 
@@ -286,6 +294,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
 
   nextPage() {
     setState(() {
+      addSkeletonTransactions();
       transactionRepository.nextPage();
     });
   }
@@ -299,6 +308,13 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
 
   void applyNameFiltering() {
     transactionRepository.applyFilterByName(filteringNameController.text);
+  }
+
+  void addSkeletonTransactions() {
+    for (var i = 0; i < 10; i++) {
+      transactions.add(TransactionModel(
+          0, 0, 0, skeletonName, 0, DateTime.now(), TransactionType.Income));
+    }
   }
 
   Future remove(item, index) async {
