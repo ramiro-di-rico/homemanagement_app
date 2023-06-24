@@ -1,20 +1,14 @@
 class NotificationModel {
-  final int id, reminderId;
-  String title, description;
-  int dueDay;
+  final int id;
+  String title;
   bool dismissed;
+  DateTime createdOn;
 
-  NotificationModel(this.id, this.reminderId, this.title, this.description,
-      this.dismissed, this.dueDay);
+  NotificationModel(this.id, this.title, this.dismissed, this.createdOn);
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
+    var createdOn = DateTime.parse(json['createdOn']);
     return NotificationModel(
-      json['id'],
-      json['reminderId'],
-      json['title'],
-      json['description'] ?? '',
-      json['dismissed'],
-      json['dueDay'],
-    );
+        json['id'], json['title'], json['dismissed'], createdOn);
   }
 }
