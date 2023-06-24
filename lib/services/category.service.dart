@@ -10,7 +10,7 @@ class CategoryService {
       {required this.authenticationService, required this.apiServiceFactory});
 
   Future<List<CategoryModel>> fetch() async {
-    var data = await this.apiServiceFactory.fetchList('category');
+    var data = await this.apiServiceFactory.fetchList('category/v3');
     var result = data.map((e) => CategoryModel.fromJson(e)).toList();
     return result;
   }
