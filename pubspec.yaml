@@ -15,7 +15,7 @@ dependencies:
   shared_preferences: ^2.0.13
   get_it: ^7.2.0
   injectable: ^2.3.0
-  intl: ^0.17.0
+  intl: ^0.18.1
   datetime_picker_formfield: ^2.0.0
   flutter_speed_dial: ^7.0.0
   flip_card: ^0.7.0
