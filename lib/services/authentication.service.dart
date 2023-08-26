@@ -47,11 +47,12 @@ class AuthenticationService extends ChangeNotifier {
   }
 
   Future biometricsAuthenticate() async {
+    var authOptions =
+        AuthenticationOptions(stickyAuth: true, biometricOnly: true);
+
     var biometricAuthenticated = await auth.authenticate(
         localizedReason: 'Scan your fingerprint to authenticate',
-        useErrorDialogs: true,
-        stickyAuth: true,
-        biometricOnly: true);
+        options: authOptions);
 
     if (biometricAuthenticated) {
       await this.autoAuthenticate();

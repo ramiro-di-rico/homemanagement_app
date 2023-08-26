@@ -19,7 +19,7 @@ dependencies:
   datetime_picker_formfield: ^2.0.0
   flutter_speed_dial: ^7.0.0
   flip_card: ^0.7.0
-  local_auth: ^1.1.10
+  local_auth: ^2.1.6
   package_info: ^2.0.2
   skeletons: ^0.0.3
   flutter_slidable: ^3.0.0
