@@ -129,7 +129,7 @@ class _AccountDetailScrenState extends State<AccountDetailScren> {
                       itemBuilder: (context, transaction) {
                         var index = transactionRepository.transactions
                             .indexOf(transaction);
-                        print(index);
+
                         if (transaction.name == skeletonName) {
                           return TransactionRowSkeleton();
                         }
