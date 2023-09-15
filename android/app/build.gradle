@@ -22,7 +22,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-/*
+
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -33,10 +33,10 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.setProperty('keyAlias', System.getenv('ALIAS'));
     keystoreProperties.setProperty('storeFile', System.getenv('KEY_PATH'));
 }
- */
+
 
 android {
-    namespace "com.example.sample_flutter_app"
+    namespace "com.example.home_management"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -63,7 +63,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-/*
+
     signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -73,12 +73,14 @@ android {
         }
     }
 
- */
-
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.release
+        }
+        debug{
+            debuggable true
             signingConfig signingConfigs.debug
         }
     }
