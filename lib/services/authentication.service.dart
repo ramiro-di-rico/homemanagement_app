@@ -3,6 +3,7 @@ import 'package:home_management_app/models/user.dart';
 import 'package:home_management_app/repositories/user.repository.dart';
 import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';
+import 'package:logger/logger.dart';
 import 'dart:convert';
 import 'cryptography.service.dart';
 
@@ -16,6 +17,11 @@ class AuthenticationService extends ChangeNotifier {
   String registrationApi = 'api/registration';
   UserModel? user;
   bool isBiometricEnabled = false;
+  final _logger = Logger(
+    filter: null, // Use the default LogFilter (-> only log in debug mode)
+    printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
+    output: null, // Use the default LogOutput (-> send everything to console)
+  );
 
   AuthenticationService(
       {required this.cryptographyService, required this.userRepository});
@@ -54,9 +60,10 @@ class AuthenticationService extends ChangeNotifier {
         localizedReason: 'Scan your fingerprint to authenticate',
         options: authOptions);
 
+    /*
     if (biometricAuthenticated) {
       await this.autoAuthenticate();
-    }
+    }*/
   }
 
   Future autoAuthenticate() async => isEmailAuthenticationType(this.user!.email)
@@ -66,11 +73,17 @@ class AuthenticationService extends ChangeNotifier {
   String getUserToken() => user!.token;
 
   Future<bool> authenticate(String email, String password) async {
-    var pass = await cryptographyService.encryptToAES(password);
+    try {
+      _logger.i('Authenticating...');
+      var pass = await cryptographyService.encryptToAES(password);
 
-    return isEmailAuthenticationType(email)
-        ? await _internalAuthenticate(email, password)
-        : await _internalAuthenticateV2(email, pass);
+      return isEmailAuthenticationType(email)
+          ? await _internalAuthenticate(email, password)
+          : await _internalAuthenticateV2(email, pass);
+    } on Exception catch (e) {
+      _logger.e(e);
+      return false;
+    }
   }
 
   Future<bool> register(String email, String password) async {
