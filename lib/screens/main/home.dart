@@ -53,9 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
     GetIt.I<CategoryRepository>().load();
 
     notificationRepository.addListener(() {
+      /*
       setState(() {
         hasNotifications = this.notificationRepository.notifications.length > 0;
       });
+      */
     });
   }
 

@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
-    this.authenticationService.addListener(successFullAuthentcation);
+    //this.authenticationService.addListener(successFullAuthentcation);
     loadUser();
   }
 
@@ -158,14 +158,17 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             );
           });
-      setState(() {
-        isAuthenticating = false;
-      });
-      return;
+    }
+    setState(() {
+      isAuthenticating = false;
+    });
+
+    if (result){
+      await successFullAuthentcation();
     }
   }
 
-  void successFullAuthentcation() {
-    Navigator.popAndPushNamed(context, HomeScreen.id);
+  Future successFullAuthentcation() async {
+    await Navigator.popAndPushNamed(context, HomeScreen.id);
   }
 }
