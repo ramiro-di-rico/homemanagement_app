@@ -6,6 +6,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
 import 'cryptography.service.dart';
+import 'infra/file_logger_output.dart';
 
 class AuthenticationService extends ChangeNotifier {
   CryptographyService cryptographyService;
@@ -20,7 +21,7 @@ class AuthenticationService extends ChangeNotifier {
   final _logger = Logger(
     filter: null, // Use the default LogFilter (-> only log in debug mode)
     printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
-    output: null, // Use the default LogOutput (-> send everything to console)
+    output: FileLoggerOutput(), // Use the default LogOutput (-> send everything to console)
   );
 
   AuthenticationService(
@@ -60,10 +61,9 @@ class AuthenticationService extends ChangeNotifier {
         localizedReason: 'Scan your fingerprint to authenticate',
         options: authOptions);
 
-    /*
     if (biometricAuthenticated) {
       await this.autoAuthenticate();
-    }*/
+    }
   }
 
   Future autoAuthenticate() async => isEmailAuthenticationType(this.user!.email)
