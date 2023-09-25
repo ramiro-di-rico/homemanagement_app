@@ -11,6 +11,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+
+  int _timesTapped = 0;
+  bool _isDeveloper = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,17 +34,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Padding(
             padding: EdgeInsets.all(10),
-            child: BuildInfoWidget(),
+            child: GestureDetector(
+              onTap: () {
+                _timesTapped++;
+
+                if(_timesTapped > 5){
+                  setState(() {
+                    _isDeveloper = true;
+                  });
+                }
+              },
+                child: BuildInfoWidget()),
           ),
-          Padding(padding: EdgeInsets.all(10), child: ElevatedButton(onPressed: () async {
-            var loggingFile = LoggingFile();
-            try{
-              await loggingFile.moveLoggingFileToDownload();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Log file downloaded')));
-            } catch (e){
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error downloading log file')));
-            }
-          }, child: Text('Download log file')))
+          Padding(
+              padding: EdgeInsets.all(10),
+              child: _isDeveloper ? ElevatedButton(
+                  onPressed: () async {
+                  var loggingFile = LoggingFile();
+                  try{
+                    await loggingFile.moveLoggingFileToDownload();
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Log file downloaded')));
+                  } catch (e){
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error downloading log file')));
+                  }
+                }, child: Text('Download log file'),
+              ) : Container())
         ],
       ),
     );
