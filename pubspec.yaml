@@ -25,6 +25,7 @@ dependencies:
   flutter_slidable: ^3.0.0
   grouped_list: ^5.0.1
   logger: ^2.0.2
+  uuid: ^4.0.0
   
 dev_dependencies:
   flutter_test:

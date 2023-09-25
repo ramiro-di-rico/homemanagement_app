@@ -28,15 +28,19 @@ class AuthenticationService extends ChangeNotifier {
       {required this.cryptographyService, required this.userRepository});
 
   Future init() async {
+    _logger.i('Initializing authentication service...');
     this.user = await this.userRepository.load();
 
+    _logger.i('Checking if can auto authenticate...');
     if (!canAutoAuthenticate()) return;
 
+    _logger.i('Checking if is authenticated...');
     if (isAuthenticated()) {
       notifyListeners();
       return;
     }
 
+    _logger.i('Checking if biometric is enabled...');
     isBiometricEnabled =
         await auth.isDeviceSupported() && await auth.canCheckBiometrics;
     if (isBiometricEnabled) {
@@ -57,6 +61,7 @@ class AuthenticationService extends ChangeNotifier {
     var authOptions =
         AuthenticationOptions(stickyAuth: true, biometricOnly: true);
 
+    _logger.i('Authenticating using biometrics...');
     var biometricAuthenticated = await auth.authenticate(
         localizedReason: 'Scan your fingerprint to authenticate',
         options: authOptions);

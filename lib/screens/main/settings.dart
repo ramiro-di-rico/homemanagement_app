@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/infra/logging_file.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
@@ -30,7 +31,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: EdgeInsets.all(10),
             child: BuildInfoWidget(),
-          )
+          ),
+          Padding(padding: EdgeInsets.all(10), child: ElevatedButton(onPressed: () async {
+            var loggingFile = LoggingFile();
+            try{
+              await loggingFile.moveLoggingFileToDownload();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Log file downloaded')));
+            } catch (e){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error downloading log file')));
+            }
+          }, child: Text('Download log file')))
         ],
       ),
     );
