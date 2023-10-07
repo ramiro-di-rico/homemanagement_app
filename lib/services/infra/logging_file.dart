@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:uuid/uuid.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
@@ -32,5 +33,12 @@ class LoggingFile{
     }
 
     loggerFile.copy(loggerFileDownloadPath);
+  }
+
+  Future<String> readLogFile() async {
+    var loggerFile = await getLatestLoggerFile();
+    var test = await loggerFile.readAsLines(encoding: AsciiCodec());
+    var loggerFileContent = await loggerFile.readAsString(encoding: utf8);
+    return '';
   }
 }

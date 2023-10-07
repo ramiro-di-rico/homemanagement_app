@@ -4,7 +4,7 @@ import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
 import 'package:home_management_app/custom/keyboard.factory.dart';
 import 'package:home_management_app/repositories/user.repository.dart';
-import 'package:home_management_app/services/authentication.service.dart';
+import 'package:home_management_app/services/security/authentication.service.dart';
 import 'package:local_auth/local_auth.dart';
 import '../main/home.dart';
 import 'registration.dart';

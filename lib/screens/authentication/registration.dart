@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
 import 'package:home_management_app/screens/main/home.dart';
-import 'package:home_management_app/services/authentication.service.dart';
+import 'package:home_management_app/services/security/authentication.service.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String id = 'registration_screen';

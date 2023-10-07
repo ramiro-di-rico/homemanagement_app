@@ -1,7 +1,7 @@
 import 'package:home_management_app/models/currency.dart';
 
 import 'api.service.factory.dart';
-import '../authentication.service.dart';
+import '../security/authentication.service.dart';
 
 class CurrencyService {
   AuthenticationService authenticationService;

@@ -1,5 +1,5 @@
 import 'package:home_management_app/models/metrics/categories.metric.dart';
-import 'package:home_management_app/services/authentication.service.dart';
+import 'package:home_management_app/services/security/authentication.service.dart';
 import 'dart:convert';
 
 import 'api-mixin.dart';

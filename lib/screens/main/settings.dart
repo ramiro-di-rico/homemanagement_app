@@ -3,7 +3,6 @@ import '../../services/infra/logging_file.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
-import 'settings-widgets/two-factor-authentication.widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -11,9 +10,16 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-
+  LoggingFile _loggingFile = LoggingFile();
   int _timesTapped = 0;
   bool _isDeveloper = false;
+  String logFileContent = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loggingFile.readLogFile().then((value) => logFileContent = value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,17 +54,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Padding(
               padding: EdgeInsets.all(10),
-              child: _isDeveloper ? ElevatedButton(
-                  onPressed: () async {
-                  var loggingFile = LoggingFile();
-                  try{
-                    await loggingFile.moveLoggingFileToDownload();
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Log file downloaded')));
-                  } catch (e){
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error downloading log file')));
-                  }
-                }, child: Text('Download log file'),
-              ) : Container())
+              child: _isDeveloper
+                ? Text(logFileContent)
+                : Container())
         ],
       ),
     );

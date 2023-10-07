@@ -3,9 +3,9 @@ import 'package:home_management_app/models/user.dart';
 import 'package:home_management_app/repositories/user.repository.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
-import 'endpoints/identity.service.dart';
-import 'infra/cryptography.service.dart';
-import 'infra/file_logger_output.dart';
+import '../endpoints/identity.service.dart';
+import '../infra/cryptography.service.dart';
+import '../infra/file_logger_output.dart';
 
 class AuthenticationService extends ChangeNotifier {
   CryptographyService cryptographyService;

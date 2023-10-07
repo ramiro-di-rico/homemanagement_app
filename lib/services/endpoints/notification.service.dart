@@ -1,5 +1,5 @@
 import 'package:home_management_app/models/notification.dart';
-import 'package:home_management_app/services/authentication.service.dart';
+import 'package:home_management_app/services/security/authentication.service.dart';
 
 import 'api.service.factory.dart';
 

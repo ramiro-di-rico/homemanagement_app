@@ -1,6 +1,6 @@
 import 'package:home_management_app/models/account.dart';
 import 'api.service.factory.dart';
-import '../authentication.service.dart';
+import '../security/authentication.service.dart';
 import 'dart:convert';
 
 class AccountService {
