@@ -9,7 +9,7 @@ import 'repositories/preferences.repository.dart';
 import 'repositories/currency.repository.dart';
 import 'repositories/user.repository.dart';
 import 'services/endpoints/api.service.factory.dart';
-import 'services/authentication.service.dart';
+import 'services/security/authentication.service.dart';
 import 'services/endpoints/account.service.dart';
 import 'services/infra/caching.dart';
 import 'services/endpoints/category.service.dart';
