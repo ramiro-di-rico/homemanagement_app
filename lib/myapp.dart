@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/screens/accounts/account.detail.dart';
 import 'package:home_management_app/screens/authentication/registration.dart';
+import 'package:home_management_app/screens/main/logging_view.dart';
 
 import 'screens/accounts/account-metrics.dart';
 import 'screens/authentication/login.dart';
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.id: (context) => HomeScreen(),
         AccountDetailScren.id: (context) => AccountDetailScren(),
         AccountMetrics.id: (context) => AccountMetrics(),
+        LoggingView.id: (context) => LoggingView(),
       },
       initialRoute: LoginScreen.id,
     );

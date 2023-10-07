@@ -35,10 +35,9 @@ class LoggingFile{
     loggerFile.copy(loggerFileDownloadPath);
   }
 
-  Future<String> readLogFile() async {
+  Future<List<String>> readLogFile() async {
     var loggerFile = await getLatestLoggerFile();
-    var test = await loggerFile.readAsLines(encoding: AsciiCodec());
-    var loggerFileContent = await loggerFile.readAsString(encoding: utf8);
-    return '';
+    var contents = await loggerFile.readAsLines(encoding: utf8);
+    return contents;
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/infra/logging_file.dart';
+import 'package:home_management_app/screens/main/logging_view.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
@@ -10,16 +10,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  LoggingFile _loggingFile = LoggingFile();
   int _timesTapped = 0;
   bool _isDeveloper = false;
-  String logFileContent = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _loggingFile.readLogFile().then((value) => logFileContent = value);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +47,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
               padding: EdgeInsets.all(10),
               child: _isDeveloper
-                ? Text(logFileContent)
+                ? ElevatedButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoggingView(),
+                      ),
+                    );
+                  },
+                  child: Text('View Logs'))
                 : Container())
         ],
       ),

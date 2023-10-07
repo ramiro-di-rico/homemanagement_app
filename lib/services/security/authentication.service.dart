@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/models/user.dart';
 import 'package:home_management_app/repositories/user.repository.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:logger/logger.dart';
 import '../endpoints/identity.service.dart';
 import '../infra/cryptography.service.dart';
-import '../infra/file_logger_output.dart';
+import '../infra/logger_wrapper.dart';
 
 class AuthenticationService extends ChangeNotifier {
   CryptographyService cryptographyService;
@@ -14,11 +13,7 @@ class AuthenticationService extends ChangeNotifier {
   final LocalAuthentication auth = LocalAuthentication();
   UserModel? user;
   bool isBiometricEnabled = false;
-  final _logger = Logger(
-    filter: null,
-    printer: PrettyPrinter(),
-    output: FileLoggerOutput(),
-  );
+  final _logger = LoggerWrapper();
 
   AuthenticationService(
       {required this.cryptographyService, required this.userRepository});
@@ -32,6 +27,7 @@ class AuthenticationService extends ChangeNotifier {
 
     _logger.i('Checking if is authenticated...');
     if (isAuthenticated()) {
+      _logger.i('User is already authenticated');
       notifyListeners();
       return;
     }
@@ -40,8 +36,11 @@ class AuthenticationService extends ChangeNotifier {
     isBiometricEnabled =
         await auth.isDeviceSupported() && await auth.canCheckBiometrics;
     if (isBiometricEnabled) {
+      _logger.i('Biometric is enabled, authenticating...');
       await biometricsAuthenticate();
     }
+
+    _logger.i('Biometrics are not enabled');
   }
 
   bool canAutoAuthenticate() {
@@ -82,6 +81,12 @@ class AuthenticationService extends ChangeNotifier {
           ? await _identityService.internalAuthenticate(email, password)
           : await _identityService.internalAuthenticateV2(email, pass);
 
+      if (user == null) {
+        _logger.i('Authentication failed');
+        return false;
+      }
+
+      _logger.i('Authentication succeeded, storing user');
       this.userRepository.store(user!);
       this.notifyListeners();
       return true;
