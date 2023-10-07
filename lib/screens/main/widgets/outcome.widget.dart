@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
-import 'package:home_management_app/services/metrics.service.dart';
+import 'package:home_management_app/services/endpoints/metrics.service.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../../custom/trending-mixin.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/category.dart';
-import 'package:home_management_app/services/category.service.dart';
+import 'package:home_management_app/services/endpoints/category.service.dart';
 
 class CategoryRepository extends ChangeNotifier {
   CategoryService categoryService;

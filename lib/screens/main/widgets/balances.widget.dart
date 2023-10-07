@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/models/metrics/breakdown.dart';
 
-import '../../../services/metrics.service.dart';
+import '../../../services/endpoints/metrics.service.dart';
 
 class BalanceWidget extends StatefulWidget {
   @override

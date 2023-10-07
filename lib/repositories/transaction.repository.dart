@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
-import 'package:home_management_app/services/transaction.service.dart';
+import 'package:home_management_app/services/endpoints/transaction.service.dart';
 
 import '../models/transaction.page.dart';
 import 'account.container.dart';

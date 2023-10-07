@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/screens/main/widgets/overview/overview-widget.dart';
 import '../../models/overall.dart';
-import '../../services/metrics.service.dart';
+import '../../services/endpoints/metrics.service.dart';
 import 'widgets/accounts-series-metrics..dart';
 import 'widgets/most-expensive-categories.widget.dart';
 

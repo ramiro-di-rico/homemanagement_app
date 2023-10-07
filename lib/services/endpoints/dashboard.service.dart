@@ -1,7 +1,7 @@
-import '../models/account-historical.dart';
+import '../../models/account-historical.dart';
 import 'api.service.factory.dart';
-import 'authentication.service.dart';
-import 'caching.dart';
+import '../authentication.service.dart';
+import '../infra/caching.dart';
 
 class DashboardService {
   AuthenticationService authenticationService;

@@ -5,7 +5,7 @@ import 'package:home_management_app/models/account-historical.dart';
 import 'package:home_management_app/repositories/account.repository.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../../../services/dashboard.service.dart';
+import '../../../services/endpoints/dashboard.service.dart';
 import 'chart-options-sheet.dart';
 
 class AccountsMetricSeriesWidget extends StatefulWidget {

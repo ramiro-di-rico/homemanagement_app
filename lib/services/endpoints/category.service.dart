@@ -1,6 +1,6 @@
 import 'package:home_management_app/models/category.dart';
 import 'api.service.factory.dart';
-import 'authentication.service.dart';
+import '../authentication.service.dart';
 
 class CategoryService {
   AuthenticationService authenticationService;

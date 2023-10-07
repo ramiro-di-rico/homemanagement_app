@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
-import 'cryptography.service.dart';
+import 'infra/cryptography.service.dart';
 import 'infra/file_logger_output.dart';
 
 class AuthenticationService extends ChangeNotifier {

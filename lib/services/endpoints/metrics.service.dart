@@ -1,11 +1,11 @@
 import 'package:home_management_app/models/metrics/breakdown.dart';
 import 'package:home_management_app/models/metrics/metric.dart';
 import 'package:home_management_app/models/overall.dart';
-import 'package:home_management_app/services/api-mixin.dart';
+import 'package:home_management_app/services/endpoints/api-mixin.dart';
 import 'package:home_management_app/services/authentication.service.dart';
 import 'dart:convert';
 
-import 'caching.dart';
+import '../infra/caching.dart';
 
 class MetricService with HttpApiServiceMixin {
   AuthenticationService authenticationService;
