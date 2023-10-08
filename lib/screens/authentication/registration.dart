@@ -5,6 +5,8 @@ import 'package:home_management_app/custom/components/password-textfield.dart';
 import 'package:home_management_app/screens/main/home.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 
+import '../../models/view-models/user-view-model.dart';
+
 class RegistrationScreen extends StatefulWidget {
   static const String id = 'registration_screen';
 
@@ -38,7 +40,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     await authenticationService.register(email, password);
 
                 if (result) {
-                  await authenticationService.authenticate(email, password);
+                  UserViewModel userViewModel = UserViewModel();
+                  userViewModel.email = email;
+                  userViewModel.password = password;
+                  await authenticationService.authenticate(userViewModel);
                   Navigator.pushNamedAndRemoveUntil(
                       context, HomeScreen.id, (route) => false);
                 }
