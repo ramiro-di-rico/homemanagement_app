@@ -34,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future loadUser() async {
     if (await authenticationService.init()) {
-      await successFullAuthentcation();
+      await successFullAuthentication();
     }
   }
 
@@ -129,12 +129,18 @@ class _LoginScreenState extends State<LoginScreen> {
       isAuthenticating = true;
     });
 
-    var result = await this
+    var authenticatedSuccessfully = await this
         .authenticationService
         .authenticate(this.userViewModel);
 
-    if (!result) {
-      showDialog(
+    setState(() {
+      isAuthenticating = false;
+    });
+
+    if (authenticatedSuccessfully){
+      await successFullAuthentication();
+    } else {
+        showDialog(
           context: this.context,
           barrierDismissible: false,
           builder: (BuildContext context) {
@@ -151,16 +157,9 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           });
     }
-    setState(() {
-      isAuthenticating = false;
-    });
-
-    if (result){
-      await successFullAuthentcation();
-    }
   }
 
-  Future successFullAuthentcation() async {
+  Future successFullAuthentication() async {
     await Navigator.popAndPushNamed(context, HomeScreen.id);
   }
 }
