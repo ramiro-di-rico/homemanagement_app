@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account-historical.dart';
-import 'package:home_management_app/repositories/account.repository.dart';
+import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../../services/endpoints/dashboard.service.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/user.dart';
-import 'package:home_management_app/repositories/user.repository.dart';
+import 'package:home_management_app/services/repositories/user.repository.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../models/view-models/user-view-model.dart';
 import '../endpoints/identity.service.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/repositories/transaction.repository.dart';
+import 'package:home_management_app/services/repositories/transaction.repository.dart';
 
 import '../../../models/account.dart';
 import 'add.transaction.sheet.dart';

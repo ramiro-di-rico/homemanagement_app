@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
-import 'package:home_management_app/repositories/preferences.repository.dart';
+import 'package:home_management_app/services/repositories/preferences.repository.dart';
 
 class DailyBackupWdiget extends StatefulWidget {
   @override

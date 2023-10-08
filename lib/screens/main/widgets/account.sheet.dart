@@ -5,8 +5,8 @@ import '../../../custom/components/app-textfield.dart';
 import '../../../custom/components/dropdown.component.dart';
 import '../../../custom/keyboard.factory.dart';
 import '../../../models/account.dart';
-import '../../../repositories/account.repository.dart';
-import '../../../repositories/currency.repository.dart';
+import '../../../services/repositories/account.repository.dart';
+import '../../../services/repositories/currency.repository.dart';
 
 // ignore: must_be_immutable
 class AccountSheet extends StatefulWidget {

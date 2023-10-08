@@ -5,9 +5,9 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/repositories/account.repository.dart';
-import 'package:home_management_app/repositories/category.repository.dart';
-import 'package:home_management_app/repositories/transaction.repository.dart';
+import 'package:home_management_app/services/repositories/account.repository.dart';
+import 'package:home_management_app/services/repositories/category.repository.dart';
+import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:intl/intl.dart';
 

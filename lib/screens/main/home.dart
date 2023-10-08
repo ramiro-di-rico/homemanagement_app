@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/notification.dart';
-import 'package:home_management_app/repositories/account.repository.dart';
-import 'package:home_management_app/repositories/category.repository.dart';
-import 'package:home_management_app/repositories/notification.repository.dart';
-import 'package:home_management_app/repositories/preferences.repository.dart';
-import 'package:home_management_app/repositories/currency.repository.dart';
+import 'package:home_management_app/services/repositories/account.repository.dart';
+import 'package:home_management_app/services/repositories/category.repository.dart';
+import 'package:home_management_app/services/repositories/notification.repository.dart';
+import 'package:home_management_app/services/repositories/preferences.repository.dart';
+import 'package:home_management_app/services/repositories/currency.repository.dart';
 import 'package:home_management_app/screens/authentication/login.dart';
 import 'package:home_management_app/screens/main/settings.dart';
 import 'package:home_management_app/screens/main/widgets/account.sheet.dart';

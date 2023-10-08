@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/trending-mixin.dart';
 import 'package:home_management_app/models/account.dart';
-import 'package:home_management_app/repositories/currency.repository.dart';
+import 'package:home_management_app/services/repositories/currency.repository.dart';
 
 class AccountDetailWidget extends StatelessWidget with TrendingMixin {
   final AccountModel accountModel;
