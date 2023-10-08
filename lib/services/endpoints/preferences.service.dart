@@ -1,7 +1,7 @@
 import 'package:home_management_app/models/preference.dart';
-import 'package:home_management_app/services/api-mixin.dart';
+import 'package:home_management_app/services/endpoints/api-mixin.dart';
 import 'api.service.factory.dart';
-import 'authentication.service.dart';
+import '../security/authentication.service.dart';
 import 'dart:convert';
 
 class PreferenceService with HttpApiServiceMixin {

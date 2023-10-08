@@ -2,7 +2,7 @@ import 'package:home_management_app/models/http-models/transaction-with-balance.
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/models/transaction.page.dart';
 import 'api.service.factory.dart';
-import 'authentication.service.dart';
+import '../security/authentication.service.dart';
 import 'dart:convert';
 
 class TransactionService {

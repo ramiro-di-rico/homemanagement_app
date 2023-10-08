@@ -8,8 +8,8 @@ import '../../../custom/components/app-textfield.dart';
 import '../../../custom/components/dropdown.component.dart';
 import '../../../models/account.dart';
 import '../../../models/transaction.dart';
-import '../../../repositories/category.repository.dart';
-import '../../../repositories/transaction.repository.dart';
+import '../../../services/repositories/category.repository.dart';
+import '../../../services/repositories/transaction.repository.dart';
 
 // ignore: must_be_immutable
 class AddTransactionSheet extends StatefulWidget {

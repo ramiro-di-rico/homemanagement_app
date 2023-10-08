@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/metrics/account-metrics.dart';
 import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/services/account.service.dart';
+import 'package:home_management_app/services/endpoints/account.service.dart';
 
 class AccountRepository extends ChangeNotifier {
   AccountService accountService;

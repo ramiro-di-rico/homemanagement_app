@@ -3,9 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
 import 'package:home_management_app/custom/keyboard.factory.dart';
-import 'package:home_management_app/repositories/user.repository.dart';
-import 'package:home_management_app/services/authentication.service.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:home_management_app/models/user.dart';
+import 'package:home_management_app/services/security/authentication.service.dart';
+import '../../models/view-models/user-view-model.dart';
 import '../main/home.dart';
 import 'registration.dart';
 
@@ -17,28 +17,25 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String email = '';
-  String password = '';
-  bool passwordFieldEnabled = false;
-  bool enableButton = false;
+  UserViewModel userViewModel = UserViewModel();
   bool hidePassword = true;
   bool hideRegistrationLabel = false;
   bool isAuthenticating = false;
+  UserModel user = UserModel('', '', '', '', DateTime.now());
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
-  UserRepository userRepository = GetIt.instance<UserRepository>();
   KeyboardFactory? keyboardFactory;
-  final LocalAuthentication auth = LocalAuthentication();
 
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
-    this.authenticationService.addListener(successFullAuthentcation);
     loadUser();
   }
 
   Future loadUser() async {
-    await authenticationService.init();
+    if (await authenticationService.init()) {
+      await successFullAuthentication();
+    }
   }
 
   @override
@@ -56,12 +53,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: EmailTextField(
                     onTextChanged: onEmailChanged,
                     enableEmailField: !isAuthenticating,
-                  )),
+                  ),
+              ),
               Padding(
                 padding: EdgeInsets.all(20),
                 child: PasswordTextField(
                     onTextChanged: onPasswordChanged,
-                    enablePassword: passwordFieldEnabled && !isAuthenticating),
+                    enablePassword: userViewModel.isEmailValid && !isAuthenticating),
               ),
               isAuthenticating
                   ? Padding(
@@ -69,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: CircularProgressIndicator())
                   : ElevatedButton(
                       child: Icon(Icons.send, color: Colors.white),
-                      onPressed: canLogin() ? onButtonPressed : null,
+                      onPressed: userViewModel.isValid ? onButtonPressed : null,
                     ),
             ],
           ),
@@ -107,20 +105,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void onEmailChanged(String character) {
     setState(() {
-      this.email = character.trim();
-      this.passwordFieldEnabled = this.email.length > 3;
+      this.userViewModel.email = character.trim();
     });
   }
 
   void onPasswordChanged(String character) {
     setState(() {
-      this.password = character;
-      this.enableButton = this.password.length > 0;
+      this.userViewModel.password = character;
     });
-  }
-
-  bool canLogin() {
-    return this.email.length > 0 && this.password.length > 0;
   }
 
   void changePasswordVisibility() {
@@ -130,19 +122,25 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> onButtonPressed() async {
-    if (!this.canLogin()) {
+    if (!this.userViewModel.isValid) {
       return;
     }
     setState(() {
       isAuthenticating = true;
     });
 
-    var result = await this
+    var authenticatedSuccessfully = await this
         .authenticationService
-        .authenticate(this.email, this.password);
+        .authenticate(this.userViewModel);
 
-    if (!result) {
-      showDialog(
+    setState(() {
+      isAuthenticating = false;
+    });
+
+    if (authenticatedSuccessfully){
+      await successFullAuthentication();
+    } else {
+        showDialog(
           context: this.context,
           barrierDismissible: false,
           builder: (BuildContext context) {
@@ -158,14 +156,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             );
           });
-      setState(() {
-        isAuthenticating = false;
-      });
-      return;
     }
   }
 
-  void successFullAuthentcation() {
-    Navigator.popAndPushNamed(context, HomeScreen.id);
+  Future successFullAuthentication() async {
+    await Navigator.popAndPushNamed(context, HomeScreen.id);
   }
 }

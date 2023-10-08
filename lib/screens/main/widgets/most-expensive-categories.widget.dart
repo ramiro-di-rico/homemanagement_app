@@ -2,10 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
-import 'package:home_management_app/services/category.service.metric.dart';
+import 'package:home_management_app/services/endpoints/category.service.metric.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../../../repositories/account.repository.dart';
+import '../../../services/repositories/account.repository.dart';
 import 'chart-options-sheet.dart';
 
 class MostExpensiveCategoriesChart extends StatefulWidget {

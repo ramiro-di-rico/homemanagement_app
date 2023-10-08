@@ -1,3 +1,5 @@
+import 'view-models/user-view-model.dart';
+
 class UserModel {
   final String email, username, password, token;
   DateTime expirationDate;
@@ -8,5 +10,9 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(json['email'], json['username'], json['password'],
         json['token'], DateTime.parse(json['expirationDate']));
+  }
+
+  factory UserModel.fromViewModel(UserViewModel userViewModel) {
+    return UserModel(userViewModel.email, '', userViewModel.password, '', DateTime.now());
   }
 }

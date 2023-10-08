@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
-import 'package:home_management_app/repositories/account.repository.dart';
-import 'package:home_management_app/repositories/transaction.repository.dart';
+import 'package:home_management_app/services/repositories/account.repository.dart';
+import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/accounts/account.detail.dart';
 
 import '../accounts/widgets/add.transaction.sheet.dart';
@@ -141,7 +141,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountDetailScren(
+                      builder: (context) => AccountDetailScreen(
                         account: item,
                       ),
                     ),

@@ -5,9 +5,9 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/repositories/account.repository.dart';
-import 'package:home_management_app/repositories/category.repository.dart';
-import 'package:home_management_app/repositories/transaction.repository.dart';
+import 'package:home_management_app/services/repositories/account.repository.dart';
+import 'package:home_management_app/services/repositories/category.repository.dart';
+import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'package:home_management_app/screens/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:intl/intl.dart';
 
@@ -17,16 +17,16 @@ import 'widgets/account.info.dart';
 import 'widgets/add.transaction.sheet.dart';
 import 'widgets/transaction.row.info.dart';
 
-class AccountDetailScren extends StatefulWidget {
+class AccountDetailScreen extends StatefulWidget {
   static const String id = 'account_detail_screen';
   final AccountModel? account;
-  AccountDetailScren({this.account});
+  AccountDetailScreen({this.account});
 
   @override
-  _AccountDetailScrenState createState() => _AccountDetailScrenState();
+  _AccountDetailScreenState createState() => _AccountDetailScreenState();
 }
 
-class _AccountDetailScrenState extends State<AccountDetailScren> {
+class _AccountDetailScreenState extends State<AccountDetailScreen> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();

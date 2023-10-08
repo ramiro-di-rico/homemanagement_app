@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../custom/main-card.dart';
-import '../../../repositories/preferences.repository.dart';
+import '../../../services/repositories/preferences.repository.dart';
 
 class PreferredCurreny extends StatefulWidget {
   const PreferredCurreny({super.key});

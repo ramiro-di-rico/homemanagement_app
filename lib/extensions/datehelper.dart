@@ -4,6 +4,13 @@ extension DatetimeExtensions on DateTime {
   DateTime toMidnight() {
     return DateTime(this.year, this.month, this.day, 0, 0, 0);
   }
+
+  String getFormattedCurrentDate(){
+    var date = DateTime.now();
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    final formatted = formatter.format(date);
+    return formatted;
+  }
 }
 
 extension DateTimeExtensions on int {

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_management_app/models/preference.dart';
-import 'package:home_management_app/services/preferences.service.dart';
+import 'package:home_management_app/services/endpoints/preferences.service.dart';
 
 class PreferencesRepository extends ChangeNotifier {
   PreferenceService preferenceService;

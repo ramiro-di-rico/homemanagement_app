@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/screens/main/logging_view.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
-import 'settings-widgets/two-factor-authentication.widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -10,6 +10,9 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  int _timesTapped = 0;
+  bool _isDeveloper = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -29,8 +32,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           Padding(
             padding: EdgeInsets.all(10),
-            child: BuildInfoWidget(),
-          )
+            child: GestureDetector(
+              onTap: () {
+                _timesTapped++;
+
+                if(_timesTapped > 5){
+                  setState(() {
+                    _isDeveloper = true;
+                  });
+                }
+              },
+                child: BuildInfoWidget()),
+          ),
+          Padding(
+              padding: EdgeInsets.all(10),
+              child: _isDeveloper
+                ? ElevatedButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoggingView(),
+                      ),
+                    );
+                  },
+                  child: Text('View Logs'))
+                : Container())
         ],
       ),
     );

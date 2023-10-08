@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account.dart';
 
 import '../../models/overall.dart';
-import '../../services/metrics.service.dart';
+import '../../services/endpoints/metrics.service.dart';
 import '../main/widgets/overview/overview-widget.dart';
 import 'widgets/account-app-bar.dart';
 import 'widgets/account-most-expensive-categories.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/models/currency.dart';
-import 'package:home_management_app/services/currency.service.dart';
+import 'package:home_management_app/services/endpoints/currency.service.dart';
 
 class CurrencyRepository extends ChangeNotifier {
   @protected
