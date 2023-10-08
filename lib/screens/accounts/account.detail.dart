@@ -23,10 +23,10 @@ class AccountDetailScren extends StatefulWidget {
   AccountDetailScren({this.account});
 
   @override
-  _AccountDetailScrenState createState() => _AccountDetailScrenState();
+  _AccountDetailScreenState createState() => _AccountDetailScreenState();
 }
 
-class _AccountDetailScrenState extends State<AccountDetailScren> {
+class _AccountDetailScreenState extends State<AccountDetailScren> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
