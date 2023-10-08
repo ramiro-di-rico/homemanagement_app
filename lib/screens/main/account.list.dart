@@ -141,7 +141,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountDetailScren(
+                      builder: (context) => AccountDetailScreen(
                         account: item,
                       ),
                     ),

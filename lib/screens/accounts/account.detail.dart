@@ -17,16 +17,16 @@ import 'widgets/account.info.dart';
 import 'widgets/add.transaction.sheet.dart';
 import 'widgets/transaction.row.info.dart';
 
-class AccountDetailScren extends StatefulWidget {
+class AccountDetailScreen extends StatefulWidget {
   static const String id = 'account_detail_screen';
   final AccountModel? account;
-  AccountDetailScren({this.account});
+  AccountDetailScreen({this.account});
 
   @override
   _AccountDetailScreenState createState() => _AccountDetailScreenState();
 }
 
-class _AccountDetailScreenState extends State<AccountDetailScren> {
+class _AccountDetailScreenState extends State<AccountDetailScreen> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
