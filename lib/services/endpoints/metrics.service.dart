@@ -88,7 +88,7 @@ class MetricService with HttpApiServiceMixin {
     }
 
     var response = await httpGet(
-        createUri('Account/breakdown'), authenticationService.getUserToken());
+        createUri('Account/breakdown?api-version=3'), authenticationService.getUserToken());
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
