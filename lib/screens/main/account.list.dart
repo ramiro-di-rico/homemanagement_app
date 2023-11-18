@@ -58,7 +58,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
           final item = this.accounts[index];
 
           return Slidable(
-            endActionPane: ActionPane(
+            startActionPane: ActionPane(
               motion: ScrollMotion(),
               children: [
                 SlidableAction(
