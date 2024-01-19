@@ -28,6 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void initState() {
     super.initState();
+    authenticationService.addListener((){
+      setAuthenticatingStatus(authenticationService.isAuthenticating);
+    });
     this.keyboardFactory = KeyboardFactory(context: context);
     loadUser();
   }
@@ -125,17 +128,14 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!this.userViewModel.isValid) {
       return;
     }
-    setState(() {
-      isAuthenticating = true;
-    });
+
+    setAuthenticatingStatus(true);
 
     var authenticatedSuccessfully = await this
         .authenticationService
         .authenticate(this.userViewModel);
 
-    setState(() {
-      isAuthenticating = false;
-    });
+    setAuthenticatingStatus(false);
 
     if (authenticatedSuccessfully){
       await successFullAuthentication();
@@ -157,6 +157,12 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           });
     }
+  }
+
+  void setAuthenticatingStatus(bool status) {
+    setState(() {
+      this.isAuthenticating = status;
+    });
   }
 
   Future successFullAuthentication() async {

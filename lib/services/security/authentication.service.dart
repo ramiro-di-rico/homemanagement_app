@@ -19,6 +19,8 @@ class AuthenticationService extends ChangeNotifier {
   AuthenticationService(
       {required CryptographyService cryptographyService, required UserRepository userRepository}) : _userRepository = userRepository, _cryptographyService = cryptographyService;
 
+  bool isAuthenticating = false;
+
   Future<bool> init() async {
     _logger.i('Initializing authentication service...');
     this.user = await this._userRepository.load();
@@ -84,23 +86,28 @@ class AuthenticationService extends ChangeNotifier {
 
   Future<bool> _authenticateImpl(String email, String password) async {
     try {
+      isAuthenticating = true;
+      notifyListeners();
       _logger.i('Authenticating...');
       user = isEmailAuthenticationType(email)
           ? await _identityService.internalAuthenticate(email, password)
         : await _identityService.internalAuthenticateV2(email, password);
 
-    if (user == null) {
-    _logger.i('Authentication failed');
-    return false;
+      if (user == null) {
+      _logger.i('Authentication failed');
+      return false;
     }
-
-    _logger.i('Authentication succeeded, storing user');
-    this._userRepository.store(user!);
-    this.notifyListeners();
-    return true;
+      _logger.i('Authentication succeeded, storing user');
+      this._userRepository.store(user!);
+      this.notifyListeners();
+      return true;
     } on Exception catch (e) {
-    _logger.e(e);
-    return false;
+      _logger.e(e);
+      return false;
+    }
+    finally {
+      isAuthenticating = false;
+      notifyListeners();
     }
   }
 
