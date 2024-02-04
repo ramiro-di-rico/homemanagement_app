@@ -8,7 +8,7 @@ import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:home_management_app/services/repositories/category.repository.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
-import 'package:home_management_app/screens/accounts/widgets/transaction-row-skeleton.dart';
+import 'package:home_management_app/views/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:intl/intl.dart';
 
 import 'account-metrics.dart';

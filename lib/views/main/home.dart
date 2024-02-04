@@ -6,9 +6,9 @@ import 'package:home_management_app/services/repositories/category.repository.da
 import 'package:home_management_app/services/repositories/notification.repository.dart';
 import 'package:home_management_app/services/repositories/preferences.repository.dart';
 import 'package:home_management_app/services/repositories/currency.repository.dart';
-import 'package:home_management_app/screens/authentication/login.dart';
-import 'package:home_management_app/screens/main/settings.dart';
-import 'package:home_management_app/screens/main/widgets/account.sheet.dart';
+import 'package:home_management_app/views/authentication/login.dart';
+import 'package:home_management_app/views/main/settings.dart';
+import 'package:home_management_app/views/main/widgets/account.sheet.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 import 'account.list.dart';
 import 'dashboard.dart';

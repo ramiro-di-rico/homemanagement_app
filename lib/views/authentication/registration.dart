@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
-import 'package:home_management_app/screens/main/home.dart';
+import 'package:home_management_app/views/main/home.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 
 import '../../models/view-models/user-view-model.dart';

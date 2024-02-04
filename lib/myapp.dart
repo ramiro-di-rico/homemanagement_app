@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/screens/accounts/account.detail.dart';
-import 'package:home_management_app/screens/authentication/registration.dart';
-import 'package:home_management_app/screens/main/logging_view.dart';
+import 'package:home_management_app/views/accounts/account.detail.dart';
+import 'package:home_management_app/views/authentication/registration.dart';
+import 'package:home_management_app/views/main/logging_view.dart';
 
-import 'screens/accounts/account-metrics.dart';
-import 'screens/authentication/login.dart';
-import 'screens/main/home.dart';
+import 'views/accounts/account-metrics.dart';
+import 'views/authentication/login.dart';
+import 'views/main/home.dart';
 
 class MyApp extends StatelessWidget {
   @override

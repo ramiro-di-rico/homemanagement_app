@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/screens/main/logging_view.dart';
+import 'package:home_management_app/views/main/logging_view.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';

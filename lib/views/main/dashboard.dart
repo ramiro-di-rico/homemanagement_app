@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/screens/main/widgets/overview/overview-widget.dart';
+import 'package:home_management_app/views/main/widgets/overview/overview-widget.dart';
 import '../../models/overall.dart';
 import '../../services/endpoints/metrics.service.dart';
 import 'widgets/accounts-series-metrics..dart';
