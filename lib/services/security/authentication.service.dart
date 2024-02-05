@@ -7,7 +7,7 @@ import '../endpoints/identity.service.dart';
 import '../infra/cryptography.service.dart';
 import '../infra/logger_wrapper.dart';
 
-class AuthenticationService extends ChangeNotifier {
+class AuthenticationService {
   CryptographyService _cryptographyService;
   UserRepository _userRepository;
   IdentityService _identityService = IdentityService();
@@ -31,7 +31,6 @@ class AuthenticationService extends ChangeNotifier {
     _logger.i('Checking if is authenticated...');
     if (isAuthenticated()) {
       _logger.i('User is already authenticated');
-      notifyListeners();
       return true;
     }
 
@@ -87,7 +86,7 @@ class AuthenticationService extends ChangeNotifier {
   Future<bool> _authenticateImpl(String email, String password) async {
     try {
       isAuthenticating = true;
-      notifyListeners();
+
       _logger.i('Authenticating...');
       user = isEmailAuthenticationType(email)
           ? await _identityService.internalAuthenticate(email, password)
@@ -99,7 +98,6 @@ class AuthenticationService extends ChangeNotifier {
     }
       _logger.i('Authentication succeeded, storing user');
       this._userRepository.store(user!);
-      this.notifyListeners();
       return true;
     } on Exception catch (e) {
       _logger.e(e);
@@ -107,7 +105,6 @@ class AuthenticationService extends ChangeNotifier {
     }
     finally {
       isAuthenticating = false;
-      notifyListeners();
     }
   }
 

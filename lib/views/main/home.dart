@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Icon(Icons.exit_to_app),
       onPressed: () {
         authenticationService.logout();
-        Navigator.popAndPushNamed(this.context, LoginScreen.id);
+        Navigator.popAndPushNamed(this.context, LoginView.id);
       },
     );
   }
