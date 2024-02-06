@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/views/authentication/authentication-controls.dart';
+import 'package:home_management_app/views/authentication/user-controls-mixins/authentication-behavior.dart';
 import 'package:home_management_app/views/authentication/registration.dart';
 
 import '../../custom/components/email-textfield.dart';
 import '../../custom/components/password-textfield.dart';
+import 'user-controls-mixins/email-behavior.dart';
+import 'user-controls-mixins/password-behavior.dart';
 
 class DesktopLoginView extends StatefulWidget {
   const DesktopLoginView({super.key});
@@ -13,7 +15,7 @@ class DesktopLoginView extends StatefulWidget {
 }
 
 class _DesktopLoginViewState extends State<DesktopLoginView>
-    with AuthenticationControls {
+    with AuthenticationBehavior, EmailBehavior, PasswordBehavior {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,14 +55,22 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                     ? Padding(
                         padding: EdgeInsets.all(5),
                         child: CircularProgressIndicator())
-                    : ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(200, 50),
+                    : userViewModel.isPasswordValid
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 50),
+                            ),
+                            child: Icon(Icons.send, color: Colors.white),
+                            onPressed:
+                                userViewModel.isValid ? onButtonPressed : null,
+                          )
+                        : OutlinedButton(
+                            onPressed: null,
+                            child: Icon(Icons.send, color: Colors.white),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 50),
+                              ),
                         ),
-                        child: Icon(Icons.send, color: Colors.white),
-                        onPressed:
-                            userViewModel.isValid ? onButtonPressed : null,
-                      ),
                 SizedBox(height: 20),
                 Padding(
                   padding: EdgeInsets.fromLTRB(20, 0, 20, 0),

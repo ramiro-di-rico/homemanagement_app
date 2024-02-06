@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
 import 'registration.dart';
-import 'authentication-controls.dart';
+import 'user-controls-mixins/authentication-behavior.dart';
+import 'user-controls-mixins/email-behavior.dart';
+import 'user-controls-mixins/password-behavior.dart';
 
 class LoginView extends StatefulWidget {
   static const String id = 'login_screen';
@@ -11,7 +13,7 @@ class LoginView extends StatefulWidget {
   _LoginViewState createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> with AuthenticationControls {
+class _LoginViewState extends State<LoginView> with AuthenticationBehavior, EmailBehavior, PasswordBehavior {
 
   @override
   Widget build(BuildContext context) {

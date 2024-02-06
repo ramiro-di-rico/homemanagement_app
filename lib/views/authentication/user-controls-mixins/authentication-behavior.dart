@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../custom/keyboard.factory.dart';
-import '../../models/view-models/user-view-model.dart';
-import '../../services/security/authentication.service.dart';
-import '../main/home.dart';
+import '../../../custom/keyboard.factory.dart';
+import '../../../models/view-models/user-view-model.dart';
+import '../../../services/security/authentication.service.dart';
+import '../../main/home.dart';
 
-mixin AuthenticationControls<T extends StatefulWidget> on State<T> {
+mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   UserViewModel userViewModel = UserViewModel();
-  bool hidePassword = true;
   bool isAuthenticating = false;
 
   AuthenticationService authenticationService =
@@ -26,24 +25,6 @@ mixin AuthenticationControls<T extends StatefulWidget> on State<T> {
     if (await authenticationService.init()) {
       await successFullAuthentication();
     }
-  }
-
-  void onEmailChanged(String character) {
-    setState(() {
-      this.userViewModel.email = character.trim();
-    });
-  }
-
-  void onPasswordChanged(String character) {
-    setState(() {
-      this.userViewModel.password = character;
-    });
-  }
-
-  void changePasswordVisibility() {
-    setState(() {
-      this.hidePassword = !this.hidePassword;
-    });
   }
 
   void setAuthenticatingStatus(bool status) {

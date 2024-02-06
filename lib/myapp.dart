@@ -114,7 +114,7 @@ class MyApp extends StatelessWidget {
           )),
       themeMode: ThemeMode.system,
       routes: {
-        LoginView.id: (context) => isDesktop ? LoginView() : DesktopLoginView(),
+        LoginView.id: (context) => !isDesktop ? LoginView() : DesktopLoginView(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
         HomeScreen.id: (context) => HomeScreen(),
         AccountDetailScreen.id: (context) => AccountDetailScreen(),
