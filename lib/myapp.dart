@@ -8,6 +8,7 @@ import 'package:home_management_app/views/authentication/registration.dart';
 import 'package:home_management_app/views/main/home-desktop.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
 
+import 'views/accounts/account-detail-desktop.dart';
 import 'views/accounts/account-metrics.dart';
 import 'views/authentication/login.dart';
 import 'views/main/home.dart';
@@ -119,7 +120,7 @@ class MyApp extends StatelessWidget {
         LoginView.id: (context) => !isDesktop ? LoginView() : DesktopLoginView(),
         RegistrationScreen.id: (context) => !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
         HomeScreen.id: (context) => !isDesktop ? HomeScreen() : HomeDesktop(),
-        AccountDetailScreen.id: (context) => AccountDetailScreen(),
+        AccountDetailScreen.id: (context) => !isDesktop ? AccountDetailScreen() : AccountDetailDesktop(),
         AccountMetrics.id: (context) => AccountMetrics(),
         LoggingView.id: (context) => LoggingView(),
       },

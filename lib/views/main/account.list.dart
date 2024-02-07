@@ -139,14 +139,8 @@ class _AccountListScreenState extends State<AccountListScreen> {
                           : Colors.redAccent),
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AccountDetailScreen(
-                        account: item,
-                      ),
-                    ),
-                  );
+                  Navigator.pushNamed(context, AccountDetailScreen.id,
+                      arguments: item);
                 },
               ),
             ),
