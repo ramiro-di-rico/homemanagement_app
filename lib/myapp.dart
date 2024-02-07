@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:home_management_app/views/accounts/account.detail.dart';
 import 'package:home_management_app/views/authentication/login-desktop.dart';
+import 'package:home_management_app/views/authentication/registration-desktop.dart';
 import 'package:home_management_app/views/authentication/registration.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
 
@@ -115,7 +116,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       routes: {
         LoginView.id: (context) => !isDesktop ? LoginView() : DesktopLoginView(),
-        RegistrationScreen.id: (context) => RegistrationScreen(),
+        RegistrationScreen.id: (context) => !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
         HomeScreen.id: (context) => HomeScreen(),
         AccountDetailScreen.id: (context) => AccountDetailScreen(),
         AccountMetrics.id: (context) => AccountMetrics(),
