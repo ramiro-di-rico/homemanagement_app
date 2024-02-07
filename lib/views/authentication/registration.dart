@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
+import 'package:home_management_app/views/authentication/user-controls-mixins/password-strength-behavior.dart';
 import 'package:home_management_app/views/main/home.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 
-import '../../models/view-models/user-view-model.dart';
+import 'user-controls-mixins/email-behavior.dart';
+import 'user-controls-mixins/password-behavior.dart';
 
 class RegistrationScreen extends StatefulWidget {
   static const String id = 'registration_screen';
@@ -14,18 +16,9 @@ class RegistrationScreen extends StatefulWidget {
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> with PasswordBehavior, EmailBehavior, PasswordStrengthBehavior {
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
-
-  String email = '';
-  String password = '';
-  bool enablePassword = false;
-  bool enableButton = false;
-  bool isEmailValid = false;
-  bool hidePassword = true;
-  bool hideRegistrationLabel = false;
-  double passwordStrength = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +30,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ? FloatingActionButton(
               onPressed: () async {
                 var result =
-                    await authenticationService.register(email, password);
+                    await authenticationService.register(userViewModel.email, userViewModel.password);
 
                 if (result) {
-                  UserViewModel userViewModel = UserViewModel();
-                  userViewModel.email = email;
-                  userViewModel.password = password;
                   await authenticationService.authenticate(userViewModel);
                   Navigator.pushNamedAndRemoveUntil(
                       context, HomeScreen.id, (route) => false);
@@ -68,7 +58,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 padding: EdgeInsets.only(bottom: 10),
                 child: PasswordTextField(
                   onTextChanged: onPasswordChanged,
-                  enablePassword: enablePassword,
+                  enablePassword: userViewModel.isEmailValid,
                 ),
               ),
               Padding(
@@ -88,35 +78,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
       ),
     );
-  }
-
-  void onEmailChanged(String character) {
-    setState(() {
-      this.email = character.trim();
-      this.isEmailValid = this.email.contains('@');
-      this.enablePassword = this.email.length > 0 && this.isEmailValid;
-    });
-  }
-
-  void onPasswordChanged(String character) {
-    setState(() {
-      this.password = character;
-      measurePasswordStrength();
-      this.enableButton = this.passwordStrength > 0.6;
-    });
-  }
-
-  void measurePasswordStrength() {
-    passwordStrength = password.length > 6 ? 0.2 : 0.0;
-
-    passwordStrength =
-        passwordStrength + (password.contains(RegExp(r'[0-9]')) ? 0.2 : 0);
-    passwordStrength =
-        passwordStrength + (password.contains(RegExp(r'[a-z]')) ? 0.2 : 0);
-    passwordStrength =
-        passwordStrength + (password.contains(RegExp(r'[A-Z]')) ? 0.2 : 0);
-    passwordStrength = passwordStrength +
-        (password.contains(new RegExp(r'[!@#$%^&*(),.?":{}|<>]')) ? 0.2 : 0);
   }
 
   Color getSliderColor() {
