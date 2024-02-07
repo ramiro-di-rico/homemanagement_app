@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/views/main/account.list.dart';
 
@@ -16,7 +15,6 @@ class HomeDesktop extends StatefulWidget {
 }
 
 class _HomeDesktopState extends State<HomeDesktop> {
-
   @override
   void initState() {
     super.initState();
@@ -36,12 +34,31 @@ class _HomeDesktopState extends State<HomeDesktop> {
         child: SingleChildScrollView(
           child: Container(
             height: 1000,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: Column(
               children: [
-                Expanded(child: Dashboard()),
-                /*Expanded(child: AccountListScreen())*/
-                Expanded(child: AccountListScreen())
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Flexible(flex: 1, child: Dashboard()),
+                    Flexible(
+                        flex: 1,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 10),
+                            Card(
+                              child: ListTile(
+                                  title: Text(
+                                'Accounts',
+                                style: TextStyle(fontSize: 20),
+                              )),
+                            ),
+                            AccountListScreen(),
+                          ],
+                        ))
+                  ],
+                ),
               ],
             ),
           ),
