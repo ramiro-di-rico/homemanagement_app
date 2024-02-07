@@ -26,7 +26,7 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registration'),
+        title: Text('Home Management'),
       ),
       body: SafeArea(
         child: Column(
