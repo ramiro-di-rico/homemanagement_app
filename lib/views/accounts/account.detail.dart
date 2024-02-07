@@ -210,14 +210,8 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
           child: Icon(Icons.bar_chart),
           backgroundColor: Colors.lightBlue,
           labelStyle: TextStyle(fontSize: 18.0),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AccountMetrics(
-                account: account,
-              ),
-            ),
-          ),
+          onTap: () => Navigator.pushNamed(context, AccountMetrics.id,
+              arguments: account)
         ),
       );
     }
