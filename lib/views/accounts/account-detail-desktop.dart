@@ -5,10 +5,13 @@ import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/account.dart';
+import '../../models/overall.dart';
 import '../../models/transaction.dart';
+import '../../services/endpoints/metrics.service.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
+import '../main/widgets/overview/overview-widget.dart';
 import 'account-metrics.dart';
 import 'widgets/account-most-expensive-categories.dart';
 import 'widgets/account.info.dart';
@@ -24,7 +27,9 @@ class AccountDetailDesktop extends StatefulWidget {
 
 class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
   late AccountModel account;
+  Overall? overall;
 
+  MetricService _metricService = GetIt.I<MetricService>();
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TransactionRepository transactionRepository = GetIt.I<TransactionRepository>();
@@ -74,7 +79,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            height: 1000,
+            height: 700,
             child: Column(
               children: [
                 Row(
@@ -93,6 +98,13 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
                               child: AccountMostExpensiveCategories(account),
                             ),
                           ),
+                          Container(
+                            height: 300,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: OverviewWidget(overall: overall),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -179,6 +191,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
         addSkeletonTransactions();
       });
       await transactionRepository.loadFirstPage(account.id);
+      overall = await _metricService.getOverallByAccountId(account.id);
       changeLoadingState(false);
     } else {
       refreshState();
