@@ -115,6 +115,30 @@ class _MostExpensiveCategoriesChartState
   }
 
   BarChartData buildChart() {
+    if(metrics.isEmpty)
+      return BarChartData(
+        alignment: BarChartAlignment.spaceBetween,
+        borderData: FlBorderData(show: false),
+        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(
+          bottomTitles: SideTitles(
+            showTitles: true,
+            getTextStyles: buildAxisTextStyle,
+            getTitles: (value) {
+              return "";
+            },
+          ),
+          leftTitles: SideTitles(
+              showTitles: true,
+              margin: 40,
+              getTextStyles: buildAxisTextStyle,
+              reservedSize: 60),
+          rightTitles: SideTitles(showTitles: false),
+          topTitles: SideTitles(showTitles: false),
+        ),
+        barGroups: [],
+      );
+
     return BarChartData(
       alignment: BarChartAlignment.spaceBetween,
       borderData: FlBorderData(show: false),
@@ -127,7 +151,7 @@ class _MostExpensiveCategoriesChartState
             var metric = metrics[value.toInt()];
             return metric.category.name.length > 10
                 ? metric.category.name
-                    .substring(0, metric.category.name.indexOf(" "))
+                    .substring(0, 10)
                 : metric.category.name;
           },
         ),
@@ -135,8 +159,13 @@ class _MostExpensiveCategoriesChartState
             showTitles: true,
             margin: 40,
             getTextStyles: buildAxisTextStyle,
+            textAlign: TextAlign.right,
             reservedSize: 60),
-        rightTitles: SideTitles(showTitles: false),
+        rightTitles: SideTitles(
+            showTitles: true,
+            margin: 20,
+          getTitles: (value) => "",
+        ),
         topTitles: SideTitles(showTitles: false),
       ),
       barGroups: metrics
