@@ -51,6 +51,7 @@ class _AccountListScreenState extends State<AccountListScreen> {
     return RefreshIndicator(
       onRefresh: refreshAccounts,
       child: ListView.builder(
+        shrinkWrap: true,
         itemCount: this.accounts.length,
         itemBuilder: (context, index) {
           if (this.accounts.isEmpty) return Container();
@@ -138,14 +139,8 @@ class _AccountListScreenState extends State<AccountListScreen> {
                           : Colors.redAccent),
                 ),
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AccountDetailScreen(
-                        account: item,
-                      ),
-                    ),
-                  );
+                  Navigator.pushNamed(context, AccountDetailScreen.id,
+                      arguments: item);
                 },
               ),
             ),

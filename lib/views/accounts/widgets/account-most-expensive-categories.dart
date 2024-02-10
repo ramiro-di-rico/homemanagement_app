@@ -81,16 +81,21 @@ class _AccountMostExpensiveCategoriesState
             var metric = metrics[value.toInt()];
             return metric.category.name.length > 10
                 ? metric.category.name
-                    .substring(0, metric.category.name.indexOf(" "))
+                    .substring(0, 10)
                 : metric.category.name;
           },
         ),
         leftTitles: SideTitles(
             showTitles: true,
+            textAlign: TextAlign.right,
             margin: 40,
             getTextStyles: buildAxisTextStyle,
             reservedSize: 60),
-        rightTitles: SideTitles(showTitles: false),
+        rightTitles: SideTitles(
+            showTitles: true,
+            margin: 20,
+            getTitles: (value) => "",
+        ),
         topTitles: SideTitles(showTitles: false),
       ),
       barGroups: metrics

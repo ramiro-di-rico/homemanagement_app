@@ -19,8 +19,7 @@ import 'widgets/transaction.row.info.dart';
 
 class AccountDetailScreen extends StatefulWidget {
   static const String id = 'account_detail_screen';
-  final AccountModel? account;
-  AccountDetailScreen({this.account});
+  AccountDetailScreen();
 
   @override
   _AccountDetailScreenState createState() => _AccountDetailScreenState();
@@ -43,13 +42,11 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
 
   @override
   void initState() {
-    account = widget.account!;
     transactionRepository.addListener(refreshState);
     scrollController.addListener(onScroll);
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(refreshState);
     accountRepository.addListener(refreshState);
-    load();
     super.initState();
   }
 
@@ -72,9 +69,12 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    account = ModalRoute.of(context)!.settings.arguments as AccountModel;
+    load();
+
     return Scaffold(
       appBar: AccountAppBar(
-        account: widget.account,
+        account: account,
         actions: [
           Visibility(
             visible: resultsFiltered,
@@ -210,14 +210,8 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
           child: Icon(Icons.bar_chart),
           backgroundColor: Colors.lightBlue,
           labelStyle: TextStyle(fontSize: 18.0),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AccountMetrics(
-                account: account,
-              ),
-            ),
-          ),
+          onTap: () => Navigator.pushNamed(context, AccountMetrics.id,
+              arguments: account)
         ),
       );
     }
