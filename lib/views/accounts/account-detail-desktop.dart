@@ -12,7 +12,8 @@ import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
 import '../main/widgets/overview/overview-widget.dart';
-import 'account-metrics.dart';
+import 'account-details-behaviors/account-list-scrolling-behavior.dart';
+import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
 import 'widgets/account-most-expensive-categories.dart';
 import 'widgets/account.info.dart';
 import 'widgets/transaction-row-skeleton.dart';
@@ -25,7 +26,7 @@ class AccountDetailDesktop extends StatefulWidget {
   State<AccountDetailDesktop> createState() => _AccountDetailDesktopState();
 }
 
-class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
+class _AccountDetailDesktopState extends State<AccountDetailDesktop> with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
   late AccountModel account;
   Overall? overall;
 
@@ -33,33 +34,19 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TransactionRepository transactionRepository = GetIt.I<TransactionRepository>();
-  TextEditingController filteringNameController = TextEditingController();
-  ScrollController scrollController = ScrollController();
-  bool displayFilteringBox = false;
-  bool resultsFiltered = false;
   List<TransactionModel> transactions = [];
-  FocusNode filteringTextFocusNode = FocusNode();
-  bool loading = false;
-  final String skeletonName = 'skeleton';
 
   @override
   void initState() {
     transactionRepository.addListener(refreshState);
-    scrollController.addListener(onScroll);
-    filteringTextFocusNode.addListener(() {});
-    filteringNameController.addListener(refreshState);
     accountRepository.addListener(refreshState);
     super.initState();
   }
 
   @override
   void dispose() {
-    scrollController.removeListener(onScroll);
-    filteringNameController.removeListener(refreshState);
     transactionRepository.removeListener(refreshState);
     accountRepository.removeListener(refreshState);
-    filteringNameController.dispose();
-    filteringTextFocusNode.dispose();
     super.dispose();
   }
 
@@ -79,7 +66,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            height: 700,
+            height: 660,
             child: Column(
               children: [
                 Row(
@@ -91,20 +78,24 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           AccountDetailWidget(accountModel: account),
+                          account.measurable ?
                           Container(
                             height: 300,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: AccountMostExpensiveCategories(account),
                             ),
-                          ),
+                          ) :
+                          Container(),
+                          account.measurable ?
                           Container(
                             height: 300,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: OverviewWidget(overall: overall),
                             ),
-                          )
+                          ) :
+                          Container(),
                         ],
                       ),
                     ),
@@ -123,7 +114,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 5),
                             child: SizedBox(
-                              height: 500,
+                              height: 575,
                               child: GroupedListView<TransactionModel, DateTime>(
                                 order: GroupedListOrder.DESC,
                                 controller: scrollController,
@@ -186,22 +177,14 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
   void load() async {
     if (!transactionRepository.transactions
         .any((element) => element.accountId == account.id)) {
-      changeLoadingState(true);
       setState(() {
         addSkeletonTransactions();
       });
       await transactionRepository.loadFirstPage(account.id);
       overall = await _metricService.getOverallByAccountId(account.id);
-      changeLoadingState(false);
     } else {
       refreshState();
     }
-  }
-
-  void changeLoadingState(bool value) {
-    setState(() {
-      loading = value;
-    });
   }
 
   nextPage() {
@@ -209,34 +192,5 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> {
       addSkeletonTransactions();
       transactionRepository.nextPage();
     });
-  }
-
-  onScroll() {
-    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
-        !scrollController.position.outOfRange) {
-      nextPage();
-    }
-  }
-
-  void applyNameFiltering() {
-    transactionRepository.applyFilterByName(filteringNameController.text);
-  }
-
-  void addSkeletonTransactions() {
-    for (var i = 0; i < 10; i++) {
-      transactions.add(TransactionModel(
-          0, 0, 0, skeletonName, 0, DateTime.now(), TransactionType.Income));
-    }
-  }
-
-  Future remove(item, index) async {
-    try {
-      this.transactionRepository.remove(item);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
-    } catch (ex) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to remove ${item.name}')));
-    }
   }
 }

@@ -11,6 +11,8 @@ import 'package:home_management_app/services/repositories/transaction.repository
 import 'package:home_management_app/views/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:intl/intl.dart';
 
+import 'account-details-behaviors/account-list-scrolling-behavior.dart';
+import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
 import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
 import 'widgets/account.info.dart';
@@ -25,25 +27,21 @@ class AccountDetailScreen extends StatefulWidget {
   _AccountDetailScreenState createState() => _AccountDetailScreenState();
 }
 
-class _AccountDetailScreenState extends State<AccountDetailScreen> {
+class _AccountDetailScreenState extends State<AccountDetailScreen> with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
   TextEditingController filteringNameController = TextEditingController();
-  ScrollController scrollController = ScrollController();
   bool displayFilteringBox = false;
   bool resultsFiltered = false;
   List<TransactionModel> transactions = [];
   FocusNode filteringTextFocusNode = FocusNode();
-  bool loading = false;
-  final String skeletonName = 'skeleton';
 
   @override
   void initState() {
     transactionRepository.addListener(refreshState);
-    scrollController.addListener(onScroll);
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(refreshState);
     accountRepository.addListener(refreshState);
@@ -256,21 +254,13 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
   void load() async {
     if (!transactionRepository.transactions
         .any((element) => element.accountId == account.id)) {
-      changeLoadingState(true);
       setState(() {
         addSkeletonTransactions();
       });
       await transactionRepository.loadFirstPage(account.id);
-      changeLoadingState(false);
     } else {
       refreshState();
     }
-  }
-
-  void changeLoadingState(bool value) {
-    setState(() {
-      loading = value;
-    });
   }
 
   displayBox() {
@@ -293,32 +283,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
     });
   }
 
-  onScroll() {
-    if (scrollController.offset >= scrollController.position.maxScrollExtent &&
-        !scrollController.position.outOfRange) {
-      nextPage();
-    }
-  }
-
   void applyNameFiltering() {
     transactionRepository.applyFilterByName(filteringNameController.text);
-  }
-
-  void addSkeletonTransactions() {
-    for (var i = 0; i < 10; i++) {
-      transactions.add(TransactionModel(
-          0, 0, 0, skeletonName, 0, DateTime.now(), TransactionType.Income));
-    }
-  }
-
-  Future remove(item, index) async {
-    try {
-      this.transactionRepository.remove(item);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
-    } catch (ex) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to remove ${item.name}')));
-    }
   }
 }
