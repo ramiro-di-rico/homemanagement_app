@@ -6,6 +6,8 @@ import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import 'dashboard.dart';
+import 'widgets/account-sheet-dektop.dart';
+import 'widgets/account.sheet.dart';
 
 class HomeDesktop extends StatefulWidget {
   const HomeDesktop({super.key});
@@ -49,10 +51,31 @@ class _HomeDesktopState extends State<HomeDesktop> {
                             SizedBox(height: 10),
                             Card(
                               child: ListTile(
-                                  title: Text(
-                                'Accounts',
-                                style: TextStyle(fontSize: 20),
-                              )),
+                                title: Text(
+                                  'Accounts',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                trailing: TextButton(
+                                  onPressed: () {
+                                    showModalBottomSheet<void>(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.vertical(top: Radius.circular(25.0))),
+                                        builder: (context) {
+                                          return SizedBox(
+                                            height: 100,
+                                            child: AnimatedPadding(
+                                                padding: MediaQuery.of(context).viewInsets,
+                                                duration: Duration(seconds: 1),
+                                                child: AccountSheetDesktop()),
+                                          );
+                                        });
+                                  },
+                                  child: Icon(Icons.add),
+                                ),
+                              ),
                             ),
                             AccountListScreen(),
                           ],
