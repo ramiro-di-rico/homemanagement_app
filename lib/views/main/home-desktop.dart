@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/views/authentication/login.dart';
 import 'package:home_management_app/views/main/account.list.dart';
 
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
+import '../../services/security/authentication.service.dart';
 import 'dashboard.dart';
 import 'widgets/account-sheet-dektop.dart';
 import 'widgets/account.sheet.dart';
@@ -31,6 +33,21 @@ class _HomeDesktopState extends State<HomeDesktop> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Management'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings');
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              GetIt.I<AuthenticationService>().logout();
+              Navigator.pushNamed(context, LoginView.id);
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
