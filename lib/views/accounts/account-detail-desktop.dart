@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
+import 'package:home_management_app/views/accounts/widgets/add_transaction_sheet_desktop.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/account.dart';
@@ -108,7 +109,27 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> with Transa
                                 title: Text(
                                   'Transactions',
                                   style: TextStyle(fontSize: 20),
-                                )),
+                                ),
+                              trailing: TextButton(
+                                onPressed: () { showModalBottomSheet<void>(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius.vertical(top: Radius.circular(25.0))),
+                                    builder: (context) {
+                                      return SizedBox(
+                                        height: 100,
+                                        child: AnimatedPadding(
+                                            padding: MediaQuery.of(context).viewInsets,
+                                            duration: Duration(seconds: 1),
+                                            child: AddTransactionSheetDesktop(account)),
+                                      );
+                                    });
+                                  },
+                                child: Icon(Icons.add),
+                              ),
+                            ),
                           ),
                           SizedBox(height: 15),
                           Padding(

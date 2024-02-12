@@ -44,6 +44,7 @@ class _DropdownComponentState extends State<DropdownComponent> {
           .toList(),
       onChanged: onValueChanged,
       isExpanded: widget.isExpanded,
+      itemHeight: 65,
       style: TextStyle(
           color: context.isDarkMode() ? Colors.white : Colors.black,
           fontSize: 16,
