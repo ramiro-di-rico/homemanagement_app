@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import '../../../custom/components/dropdown.component.dart';
 import '../../../models/transaction.dart';
 import '../../../services/repositories/category.repository.dart';
+import '../../../services/repositories/transaction.repository.dart';
 
 class AddTransactionSheetDesktop extends StatefulWidget {
   TransactionModel? transactionModel;
@@ -25,22 +26,40 @@ class AddTransactionSheetDesktop extends StatefulWidget {
 class _AddTransactionSheetDesktopState
     extends State<AddTransactionSheetDesktop> {
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
+  TransactionRepository transactionRepository =
+      GetIt.I<TransactionRepository>();
 
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
 
   TransactionModel transactionModel = TransactionModel.empty(0, 0);
   AccountModel accountModel = AccountModel.empty(0);
+  bool isEditing = false;
 
   @override
-  Widget build(BuildContext context) {
-
+  void initState() {
+    super.initState();
+    isEditing = widget.transactionModel != null;
     accountModel = widget._accountModel;
-
     transactionModel = widget.transactionModel ??
         TransactionModel.empty(
             accountModel.id, categoryRepository.categories.first.id);
+    nameController.addListener(onNameChanged);
+    priceController.addListener(onPriceChanged);
+    nameController.text = transactionModel.name;
+    priceController.text = isEditing ? transactionModel.price.toString() : "";
+  }
 
+  @override
+  void dispose() {
+    this.nameController.removeListener(onNameChanged);
+    priceController.removeListener(onPriceChanged);
+    this.nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -51,6 +70,7 @@ class _AddTransactionSheetDesktopState
             child: AppTextField(
               label: 'Transaction Name',
               editingController: nameController,
+              focus: true,
             ),
           ),
           SizedBox(width: 10),
@@ -127,16 +147,34 @@ class _AddTransactionSheetDesktopState
           SizedBox(
             width: 100,
             child: TextButton(
-              onPressed: () {
-                transactionModel.name = nameController.text;
-                transactionModel.price = double.parse(priceController.text);
-                Navigator.pop(context, transactionModel);
-              },
+              onPressed: addTransaction,
               child: Icon(Icons.check),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void onNameChanged() {
+    transactionModel.name = nameController.text;
+    setState(() {});
+  }
+
+  void onPriceChanged() {
+    if (priceController.text.isNotEmpty) {
+      transactionModel.price = double.parse(priceController.text);
+      setState(() {});
+    }
+  }
+
+  Future addTransaction() async {
+    if (isEditing) {
+      await transactionRepository.update(widget.transactionModel!);
+    } else {
+      await transactionRepository.add(transactionModel);
+    }
+
+    Navigator.pop(context);
   }
 }

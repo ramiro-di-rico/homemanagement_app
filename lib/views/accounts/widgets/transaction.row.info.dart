@@ -70,7 +70,8 @@ class TransactionRowInfo extends StatelessWidget {
                             child: AddTransactionSheet(
                               account,
                               transactionModel: transaction,
-                            )),
+                            ),
+                        ),
                       );
                     });
               },
