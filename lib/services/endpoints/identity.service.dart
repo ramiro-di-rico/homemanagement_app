@@ -7,8 +7,9 @@ import 'dart:convert';
 class IdentityService {
   String url = 'ramiro-di-rico.dev';
   String authenticateApi = 'identity/api/Authentication/SignIn';
-  String authenticateApiV2 = 'identity/api/Authentication/V2/SignIn';
+  String authenticateApiV2 = 'identity/api/Authentication/SignIn';
   String registrationApi = 'api/registration';
+  String twoFactorApi = 'identity/api/Authentication/CompleteTwoFactorAuthenticationSignIn';
   final _logger = LoggerWrapper();
 
   Future<UserModel?> internalAuthenticate(String email, String password) async {
@@ -23,7 +24,11 @@ class IdentityService {
 
   Future<UserModel?> internalAuthenticateV2(String username, String password) async {
     _logger.i('Calling v2 authentication endpoint');
-    var response = await http.post(Uri.https(this.url, this.authenticateApiV2),
+    var queryParameter = {
+      'api-version': '2'
+    };
+
+    var response = await http.post(Uri.https(this.url, this.authenticateApiV2, queryParameter),
         headers: <String, String>{'Content-Type': 'application/json'},
         body: jsonEncode(
             <String, String>{'username': username, 'password': password}));
@@ -50,5 +55,18 @@ class IdentityService {
         body: jsonEncode(<String, String>{'email': email, 'password': password}));
 
     return response.statusCode == 200;
+  }
+
+  Future<UserModel?> completeTwoFactorAuthentication(String username, String code) async {
+    var response = await http.post(Uri.https(this.url, this.twoFactorApi),
+        headers: <String, String>{'Content-Type': 'application/json'},
+        body: jsonEncode(<String, String>{'username': username, 'code': code}));
+
+    if (response.statusCode == 200) {
+      var jsonModel = json.decode(response.body);
+      return UserModel.fromJson(jsonModel);
+    } else {
+      return null;
+    }
   }
 }

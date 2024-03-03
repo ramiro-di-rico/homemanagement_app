@@ -5,6 +5,7 @@ import '../../../custom/keyboard.factory.dart';
 import '../../../models/view-models/user-view-model.dart';
 import '../../../services/security/authentication.service.dart';
 import '../../main/home.dart';
+import '../2fa_view.dart';
 
 mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   UserViewModel userViewModel = UserViewModel();
@@ -44,6 +45,11 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
         await this.authenticationService.authenticate(this.userViewModel);
 
     setAuthenticatingStatus(false);
+
+    if(!authenticatedSuccessfully && this.authenticationService.user!.twoFactorRequired){
+      await Navigator.pushNamed(context, TwoFactorAuthenticationView.id);
+      return;
+    }
 
     if (authenticatedSuccessfully) {
       await successFullAuthentication();

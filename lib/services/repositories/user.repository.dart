@@ -21,7 +21,8 @@ class UserRepository {
             preferences?.getString(usernameKey) ?? '',
             preferences?.getString(passwordKey) ?? '',
             preferences?.getString(tokenKey) ?? '',
-            DateTime.parse(preferences?.getString(expirationDateKey) ?? ''))
+            DateTime.parse(preferences?.getString(expirationDateKey) ?? ''),
+            false)
         : null;
   }
 

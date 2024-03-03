@@ -3,16 +3,22 @@ import 'view-models/user-view-model.dart';
 class UserModel {
   final String email, username, password, token;
   DateTime expirationDate;
+  bool twoFactorRequired;
 
   UserModel(this.email, this.username, this.password, this.token,
-      this.expirationDate);
+      this.expirationDate, this.twoFactorRequired);
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(json['email'], json['username'], json['password'],
-        json['token'], DateTime.parse(json['expirationDate']));
+    var email = json['email'] ?? '';
+    var username = json['username'] ?? '';
+    var password = json['password'] ?? '';
+    var token = json['token'] ?? '';
+    var expirationDate = DateTime.parse(json['expirationDate']);
+    var twoFactorRequired = json['twoFactorRequired'];
+    return UserModel(email, username, password, token, expirationDate, twoFactorRequired);
   }
 
   factory UserModel.fromViewModel(UserViewModel userViewModel) {
-    return UserModel(userViewModel.email, '', userViewModel.password, '', DateTime.now());
+    return UserModel(userViewModel.email, '', userViewModel.password, '', DateTime.now(), false);
   }
 }

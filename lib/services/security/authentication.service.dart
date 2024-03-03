@@ -83,6 +83,17 @@ class AuthenticationService {
     return await _authenticateImpl(userViewModel.email, pass);
   }
 
+  Future<bool> completeTwoFactorAuthentication(String code) async {
+    var result = await _identityService.completeTwoFactorAuthentication(user!.username, code);
+    if (result != null) {
+      user = result;
+      _userRepository.store(user!);
+      return true;
+    }
+
+    return false;
+  }
+
   Future<bool> _authenticateImpl(String email, String password) async {
     try {
       isAuthenticating = true;
@@ -98,7 +109,7 @@ class AuthenticationService {
     }
       _logger.i('Authentication succeeded, storing user');
       this._userRepository.store(user!);
-      return true;
+      return user!.twoFactorRequired == false;
     } on Exception catch (e) {
       _logger.e(e);
       return false;
