@@ -46,7 +46,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
 
     setAuthenticatingStatus(false);
 
-    if(!authenticatedSuccessfully && this.authenticationService.user!.twoFactorRequired){
+    if(!authenticatedSuccessfully && this.authenticationService.user?.twoFactorRequired == true){
       await Navigator.pushNamed(context, TwoFactorAuthenticationView.id);
       return;
     }

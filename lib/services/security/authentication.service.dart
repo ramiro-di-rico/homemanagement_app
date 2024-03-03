@@ -109,7 +109,7 @@ class AuthenticationService {
     }
       _logger.i('Authentication succeeded, storing user');
       this._userRepository.store(user!);
-      return user!.twoFactorRequired == false;
+      return user?.twoFactorRequired == false;
     } on Exception catch (e) {
       _logger.e(e);
       return false;
