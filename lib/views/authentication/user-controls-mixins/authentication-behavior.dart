@@ -76,4 +76,38 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   Future successFullAuthentication() async {
     await Navigator.popAndPushNamed(context, HomeScreen.id);
   }
+  
+  Future autoAuthenticate() async {
+    setAuthenticatingStatus(true);
+
+    var authenticatedSuccessfully = await this.authenticationService.biometricsAuthenticate();
+
+    setAuthenticatingStatus(false);
+
+    if(!authenticatedSuccessfully && this.authenticationService.user?.twoFactorRequired == true){
+      await Navigator.pushNamed(context, TwoFactorAuthenticationView.id);
+      return;
+    }
+
+    if (authenticatedSuccessfully) {
+      await successFullAuthentication();
+    }else{
+      showDialog(
+          context: this.context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Authentication error.'),
+              actions: [
+                TextButton(
+                  child: Text('ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    }
+  }
 }

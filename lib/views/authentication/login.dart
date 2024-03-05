@@ -13,8 +13,8 @@ class LoginView extends StatefulWidget {
   _LoginViewState createState() => _LoginViewState();
 }
 
-class _LoginViewState extends State<LoginView> with AuthenticationBehavior, EmailBehavior, PasswordBehavior {
-
+class _LoginViewState extends State<LoginView>
+    with AuthenticationBehavior, EmailBehavior, PasswordBehavior {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,26 +26,51 @@ class _LoginViewState extends State<LoginView> with AuthenticationBehavior, Emai
           Column(
             children: [
               Padding(
-                  padding: EdgeInsets.all(20),
-                  child: EmailTextField(
-                    onTextChanged: onEmailChanged,
-                    enableEmailField: !isAuthenticating,
-                  ),
+                padding: EdgeInsets.all(20),
+                child: EmailTextField(
+                  onTextChanged: onEmailChanged,
+                  enableEmailField: !isAuthenticating,
+                ),
               ),
               Padding(
                 padding: EdgeInsets.all(20),
                 child: PasswordTextField(
                     onTextChanged: onPasswordChanged,
-                    enablePassword: userViewModel.isEmailValid && !isAuthenticating),
+                    enablePassword:
+                        userViewModel.isEmailValid && !isAuthenticating),
               ),
               isAuthenticating
                   ? Padding(
                       padding: EdgeInsets.all(5),
                       child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      child: Icon(Icons.send, color: Colors.white),
-                      onPressed: userViewModel.isValid ? onButtonPressed : null,
-                    ),
+                  : authenticationService.canAutoAuthenticate()
+                      ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: ElevatedButton(
+                                child: Icon(Icons.send, color: Colors.white),
+                                onPressed: userViewModel.isValid
+                                    ? onButtonPressed
+                                    : null,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: ElevatedButton(
+                                child:
+                                    Icon(Icons.fingerprint, color: Colors.white),
+                                onPressed: autoAuthenticate,
+                              ),
+                            ),
+                          ],
+                        )
+                      : ElevatedButton(
+                          child: Icon(Icons.send, color: Colors.white),
+                          onPressed:
+                              userViewModel.isValid ? onButtonPressed : null,
+                        ),
             ],
           ),
           Column(
