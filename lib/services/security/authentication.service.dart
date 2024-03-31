@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:home_management_app/models/user.dart';
 import 'package:home_management_app/services/repositories/user.repository.dart';
 import 'package:local_auth/local_auth.dart';
@@ -31,6 +30,7 @@ class AuthenticationService {
     _logger.i('Checking if is authenticated...');
     if (isAuthenticated()) {
       _logger.i('User is already authenticated');
+      await refreshToken();
       return true;
     }
 
@@ -65,7 +65,8 @@ class AuthenticationService {
         options: authOptions);
 
     if (biometricAuthenticated) {
-      return await autoAuthenticate();
+      await refreshToken();
+      return true;
     }
 
     return false;
@@ -92,6 +93,14 @@ class AuthenticationService {
     }
 
     return false;
+  }
+
+  Future refreshToken() async {
+    var user = await _identityService.refreshToken(this.user);
+    this.user = user;
+
+    _logger.i('Authentication succeeded, storing user');
+    this._userRepository.store(user!);
   }
 
   Future<bool> _authenticateImpl(String email, String password) async {

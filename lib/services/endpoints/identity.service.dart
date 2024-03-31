@@ -7,8 +7,9 @@ import 'dart:convert';
 class IdentityService {
   String url = 'ramiro-di-rico.dev';
   String authenticateApi = 'identity/api/Authentication/SignIn';
-  String authenticateApiV2 = 'identity/api/Authentication/SignIn';
-  String registrationApi = 'api/registration';
+  String authenticateApiV2 = 'identity/api/Authentication/V2/SignIn';
+  String registrationApi = 'identity/api/registration';
+  String refreshTokenApi = 'identity/api/Authentication/UseRefreshToken';
   String twoFactorApi = 'identity/api/Authentication/CompleteTwoFactorAuthenticationSignIn';
   final _logger = LoggerWrapper();
 
@@ -24,11 +25,9 @@ class IdentityService {
 
   Future<UserModel?> internalAuthenticateV2(String username, String password) async {
     _logger.i('Calling v2 authentication endpoint');
-    var queryParameter = {
-      'api-version': '2'
-    };
-
-    var response = await http.post(Uri.https(this.url, this.authenticateApiV2, queryParameter),
+    var params = <String, String>{'api-version': '2' };
+    var uri = Uri.https(this.url, this.authenticateApi, params);
+    var response = await http.post(uri,
         headers: <String, String>{'Content-Type': 'application/json'},
         body: jsonEncode(
             <String, String>{'username': username, 'password': password}));
@@ -68,5 +67,21 @@ class IdentityService {
     } else {
       return null;
     }
+  }
+
+  Future<UserModel?> refreshToken(UserModel? user) async {
+    _logger.i('Refreshing token');
+    var token = user!.token;
+
+    var response = await http.put(Uri.https(this.url, this.refreshTokenApi),
+        headers: <String, String>
+        {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, String>{'username': user.username, 'refreshToken': user.refreshToken}));
+
+    return _handleAuthResponse(response, user.password);
   }
 }
