@@ -203,6 +203,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> with Transa
       });
       await transactionRepository.loadFirstPage(account.id);
       overall = await _metricService.getOverallByAccountId(account.id);
+      refreshState();
     } else {
       refreshState();
     }

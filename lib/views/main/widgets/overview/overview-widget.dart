@@ -34,10 +34,14 @@ class OverviewWidget extends StatelessWidget {
                         PieChartSectionData(
                             color: Colors.orange[200],
                             radius: 30,
+                            titlePositionPercentageOffset: 2,
+                            showTitle: true,
                             title: overall?.incomeTransactions.toString(),
                             value: overall?.incomeTransactions.toDouble()),
                         PieChartSectionData(
                             color: Colors.teal[200],
+                            titlePositionPercentageOffset: 2,
+                            showTitle: true,
                             radius: 30,
                             title: overall?.outcomeTransactions.toString(),
                             value: overall?.outcomeTransactions.toDouble()),
@@ -57,17 +61,19 @@ class OverviewWidget extends StatelessWidget {
                         SizedBox(height: 10),
                         Expanded(
                             child: Skeletonizer(
-                          enabled: overall == null,
+                          enabled : overall == null,
                           child: PieChart(PieChartData(sections: [
                             PieChartSectionData(
                                 color: Colors.orange[200],
                                 radius: 30,
+                                titlePositionPercentageOffset: 2,
                                 title: shortenBigNumber
                                     .shortNumber(overall?.totalIncome ?? 0),
                                 value: overall?.totalIncome.toDouble()),
                             PieChartSectionData(
                                 color: Colors.teal[200],
                                 radius: 30,
+                                titlePositionPercentageOffset: 2,
                                 title: shortenBigNumber
                                     .shortNumber(overall?.totalOutcome ?? 0),
                                 value: overall?.totalOutcome.toDouble()),

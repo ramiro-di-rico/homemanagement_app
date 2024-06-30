@@ -57,7 +57,7 @@ class _AccountMostExpensiveCategoriesState
                 child: Skeletonizer(
                   enabled: loading,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(10, 10, 30, 10),
+                    padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
                     child: BarChart(buildChart()),
                   ),
                 ),
@@ -74,20 +74,27 @@ class _AccountMostExpensiveCategoriesState
       gridData: FlGridData(show: false),
       titlesData: FlTitlesData(
         bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-          showTitles: true,
-          getTitlesWidget: getTitlesWidget,
-        )),
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 30,
+            getTitlesWidget: (value, metadata) => Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                metrics[value.toInt()].category.name,
+              ),
+            ),
+          ),
+        ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
-            getTitlesWidget: getTitlesWidget,
+            showTitles: true,
+            reservedSize: 60,
+            getTitlesWidget: (value, metadata) => Text(metadata.formattedValue),
           ),
         ),
         rightTitles: AxisTitles(
           sideTitles: SideTitles(
-            getTitlesWidget: (value, title) => const Text(""),
-            showTitles: true,
-            reservedSize: 20
+            showTitles: false,
           ),
         ),
         topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -98,33 +105,13 @@ class _AccountMostExpensiveCategoriesState
               x: metrics.indexOf(e),
               barRods: [
                 BarChartRodData(
-                    fromY: e.price.toDouble(),
-                    toY: 0,
+                  fromY: e.price.toDouble(),
+                  toY: 0,
                 )
               ],
             ),
           )
           .toList(),
     );
-  }
-
-  Widget getTitlesWidget(value, titleMetadata) {
-    var metric = metrics[value.toInt()];
-    return Text(
-      metric.category.name.length > 10
-          ? metric.category.name.substring(0, 10)
-          : metric.category.name,
-      style: TextStyle(
-          color: ThemeData.fallback().colorScheme.secondary,
-          fontWeight: FontWeight.bold,
-          fontSize: 14),
-    );
-  }
-
-  TextStyle buildAxisTextStyle(BuildContext context, double value) {
-    return TextStyle(
-        color: ThemeData.fallback().colorScheme.secondary,
-        fontWeight: FontWeight.bold,
-        fontSize: 14);
   }
 }

@@ -113,7 +113,7 @@ class _AccountsMetricSeriesWidgetState
         child: Skeletonizer(
           enabled: loading,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(40, 0, 20, 20),
+            padding: EdgeInsets.fromLTRB(40, 0, 40, 20),
             child: LineChart(buildChart()),
           ),
         ),
@@ -136,24 +136,24 @@ class _AccountsMetricSeriesWidgetState
           show: false,
         ),
         lineTouchData: LineTouchData(
-            enabled: true,
-            touchTooltipData: LineTouchTooltipData(
-              getTooltipItems: (touchedSpots) {
-                var labels = touchedSpots.map((e) {
-                  var serie = accountsHistoricalChart[e.barIndex];
-                  var account = accountRepository.accounts
-                      .firstWhere((element) => element.name == serie.account);
+          enabled: true,
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (touchedSpots) {
+              var labels = touchedSpots.map((e) {
+                var serie = accountsHistoricalChart[e.barIndex];
+                var account = accountRepository.accounts
+                    .firstWhere((element) => element.name == serie.account);
 
-                  var toolTip = LineTooltipItem(
-                    '${account.name} ${serie.evolution[e.spotIndex].balance}',
-                    TextStyle(color: lineColors[e.barIndex]),
-                  );
-                  return toolTip;
-                }).toList();
+                var toolTip = LineTooltipItem(
+                  '${account.name} ${serie.evolution[e.spotIndex].balance}',
+                  TextStyle(color: lineColors[e.barIndex]),
+                );
+                return toolTip;
+              }).toList();
 
-                return labels;
-              },
-            ),
+              return labels;
+            },
+          ),
         ),
         titlesData: FlTitlesData(
           show: true,
@@ -183,8 +183,12 @@ class _AccountsMetricSeriesWidgetState
               },
             ),
           ),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),),
+          rightTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false,),
+          ),
+          topTitles: AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         minY: minY(),
         maxY: maxY(),

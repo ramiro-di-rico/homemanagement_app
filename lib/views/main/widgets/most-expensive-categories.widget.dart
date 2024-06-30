@@ -103,7 +103,7 @@ class _MostExpensiveCategoriesChartState
             child: Skeletonizer(
               enabled: loading,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(10, 10, 30, 10),
+                padding: EdgeInsets.fromLTRB(10, 10, 40, 10),
                 child: BarChart(buildChart()),
               ),
             ),
