@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class OverviewSkeletonItem extends StatelessWidget {
   const OverviewSkeletonItem({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SkeletonItem(
+    return Skeletonizer(
         child: Row(
       children: [
         SizedBox(
           width: 100,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: SkeletonLine(),
+            child: Container(),
           ),
         ),
         SizedBox(width: 40),
@@ -21,7 +21,7 @@ class OverviewSkeletonItem extends StatelessWidget {
           width: 40,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: SkeletonLine(),
+            child: Container(),
           ),
         ),
       ],

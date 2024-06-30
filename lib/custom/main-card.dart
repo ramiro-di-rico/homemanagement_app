@@ -10,7 +10,7 @@ class MainCard extends StatelessWidget {
       child: this.child,
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Theme.of(context).bottomAppBarColor,
+        color: Theme.of(context).bottomAppBarTheme.color,
         borderRadius: BorderRadius.circular(10),
       ),
     );

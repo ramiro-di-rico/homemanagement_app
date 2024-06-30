@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:home_management_app/converters/shorten-big-number.dart';
 import 'package:home_management_app/models/overall.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../converters/int-shorten-converter.dart';
 import 'indicator.dart';
 
@@ -27,18 +27,21 @@ class OverviewWidget extends StatelessWidget {
                   Text('Count'),
                   SizedBox(height: 10),
                   Expanded(
-                      child: Skeleton(
-                    isLoading: overall == null,
-                    skeleton: SkeletonAvatar(),
+                      child: Skeletonizer(
+                    enabled: overall == null,
                     child: PieChart(PieChartData(
                       sections: [
                         PieChartSectionData(
                             color: Colors.orange[200],
                             radius: 30,
+                            titlePositionPercentageOffset: 2,
+                            showTitle: true,
                             title: overall?.incomeTransactions.toString(),
                             value: overall?.incomeTransactions.toDouble()),
                         PieChartSectionData(
                             color: Colors.teal[200],
+                            titlePositionPercentageOffset: 2,
+                            showTitle: true,
                             radius: 30,
                             title: overall?.outcomeTransactions.toString(),
                             value: overall?.outcomeTransactions.toDouble()),
@@ -57,19 +60,20 @@ class OverviewWidget extends StatelessWidget {
                         Text('Total'),
                         SizedBox(height: 10),
                         Expanded(
-                            child: Skeleton(
-                          isLoading: overall == null,
-                          skeleton: SkeletonAvatar(),
+                            child: Skeletonizer(
+                          enabled : overall == null,
                           child: PieChart(PieChartData(sections: [
                             PieChartSectionData(
                                 color: Colors.orange[200],
                                 radius: 30,
+                                titlePositionPercentageOffset: 2,
                                 title: shortenBigNumber
                                     .shortNumber(overall?.totalIncome ?? 0),
                                 value: overall?.totalIncome.toDouble()),
                             PieChartSectionData(
                                 color: Colors.teal[200],
                                 radius: 30,
+                                titlePositionPercentageOffset: 2,
                                 title: shortenBigNumber
                                     .shortNumber(overall?.totalOutcome ?? 0),
                                 value: overall?.totalOutcome.toDouble()),
