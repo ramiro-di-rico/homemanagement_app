@@ -4,12 +4,14 @@ import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:home_management_app/models/account.dart';
+import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:home_management_app/services/repositories/category.repository.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'package:home_management_app/views/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import 'account-details-behaviors/account-list-scrolling-behavior.dart';
 import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
@@ -27,7 +29,8 @@ class AccountDetailScreen extends StatefulWidget {
   _AccountDetailScreenState createState() => _AccountDetailScreenState();
 }
 
-class _AccountDetailScreenState extends State<AccountDetailScreen> with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
+class _AccountDetailScreenState extends State<AccountDetailScreen>
+    with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
@@ -98,51 +101,69 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> with Transact
                   onRefresh: () async => await transactionRepository.refresh(),
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 5),
-                    child: GroupedListView<TransactionModel, DateTime>(
-                      order: GroupedListOrder.DESC,
-                      controller: scrollController,
-                      physics: ScrollPhysics(),
-                      elements: transactions,
-                      groupBy: (element) => element.date.toMidnight(),
-                      groupSeparatorBuilder: (element) {
-                        return Container(
-                          height: 50,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child:
-                                      Text(DateFormat.MMMd().format(element)),
-                                ),
-                              ),
+                    child: isDisplayingSkeletons()
+                        ? Skeletonizer(
+                            enabled: true,
+                            child: ListView.builder(
+                              itemCount: 10,
+                              itemBuilder: (context, index) {
+                                var transaction = transactions[index];
+                                return TransactionRowInfo(
+                                    transaction: transaction,
+                                    category: CategoryModel.empty(),
+                                    index: index,
+                                    account: account);
+                              },
                             ),
+                          )
+                        : GroupedListView<TransactionModel, DateTime>(
+                            order: GroupedListOrder.DESC,
+                            controller: scrollController,
+                            physics: ScrollPhysics(),
+                            elements: transactions,
+                            groupBy: (element) => element.date.toMidnight(),
+                            groupSeparatorBuilder: (element) {
+                              return Container(
+                                height: 50,
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                            DateFormat.MMMd().format(element)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            itemBuilder: (context, transaction) {
+                              var index = transactionRepository.transactions
+                                  .indexOf(transaction);
+
+                              if (transaction.name == skeletonName) {
+                                return TransactionRowSkeleton();
+                              }
+
+                              var category = categoryRepository.categories
+                                  .firstWhere((element) =>
+                                      element.id == transaction.categoryId);
+
+                              return TransactionRowInfo(
+                                transaction: transaction,
+                                index: index,
+                                category: category,
+                                account: account,
+                              );
+                            },
                           ),
-                        );
-                      },
-                      itemBuilder: (context, transaction) {
-                        var index = transactionRepository.transactions
-                            .indexOf(transaction);
-
-                        if (transaction.name == skeletonName) {
-                          return TransactionRowSkeleton();
-                        }
-
-                        var category = categoryRepository.categories.firstWhere(
-                            (element) => element.id == transaction.categoryId);
-
-                        return TransactionRowInfo(
-                          transaction: transaction,
-                          index: index,
-                          category: category,
-                          account: account,
-                        );
-                      },
-                    ),
                   ),
                 ),
               ),
@@ -205,12 +226,11 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> with Transact
     if (account.measurable) {
       options.add(
         SpeedDialChild(
-          child: Icon(Icons.bar_chart),
-          backgroundColor: Colors.lightBlue,
-          labelStyle: TextStyle(fontSize: 18.0),
-          onTap: () => Navigator.pushNamed(context, AccountMetrics.id,
-              arguments: account)
-        ),
+            child: Icon(Icons.bar_chart),
+            backgroundColor: Colors.lightBlue,
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () => Navigator.pushNamed(context, AccountMetrics.id,
+                arguments: account)),
       );
     }
     /* Filtering not working in transaction.repository

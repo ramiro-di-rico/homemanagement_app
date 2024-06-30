@@ -245,8 +245,4 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
       transactionRepository.nextPage();
     });
   }
-
-  bool isDisplayingSkeletons() {
-    return transactions.any((element) => element.name == skeletonName);
-  }
 }

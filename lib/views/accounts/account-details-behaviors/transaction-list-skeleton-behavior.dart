@@ -10,4 +10,8 @@ mixin class TransactionListSkeletonBehavior {
           0, 0, 0, skeletonName, 99999, DateTime.now(), TransactionType.Income));
     }
   }
+
+  bool isDisplayingSkeletons() {
+    return transactions.any((element) => element.name == skeletonName);
+  }
 }
