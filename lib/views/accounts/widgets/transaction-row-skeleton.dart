@@ -11,6 +11,7 @@ class TransactionRowSkeleton extends StatelessWidget {
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 10),
           title: Skeletonizer(
+            enabled: true,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Column(

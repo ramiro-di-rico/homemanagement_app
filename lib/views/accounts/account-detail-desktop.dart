@@ -4,8 +4,10 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:home_management_app/views/accounts/widgets/add_transaction_sheet_desktop.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../models/account.dart';
+import '../../models/category.dart';
 import '../../models/overall.dart';
 import '../../models/transaction.dart';
 import '../../services/endpoints/metrics.service.dart';
@@ -17,7 +19,6 @@ import 'account-details-behaviors/account-list-scrolling-behavior.dart';
 import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
 import 'widgets/account-most-expensive-categories.dart';
 import 'widgets/account.info.dart';
-import 'widgets/transaction-row-skeleton.dart';
 import 'widgets/transaction.row.info.dart';
 
 class AccountDetailDesktop extends StatefulWidget {
@@ -27,14 +28,16 @@ class AccountDetailDesktop extends StatefulWidget {
   State<AccountDetailDesktop> createState() => _AccountDetailDesktopState();
 }
 
-class _AccountDetailDesktopState extends State<AccountDetailDesktop> with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
+class _AccountDetailDesktopState extends State<AccountDetailDesktop>
+    with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
   late AccountModel account;
   Overall? overall;
 
   MetricService _metricService = GetIt.I<MetricService>();
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
-  TransactionRepository transactionRepository = GetIt.I<TransactionRepository>();
+  TransactionRepository transactionRepository =
+      GetIt.I<TransactionRepository>();
   List<TransactionModel> transactions = [];
 
   @override
@@ -79,24 +82,25 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> with Transa
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           AccountDetailWidget(accountModel: account),
-                          account.measurable ?
-                          Container(
-                            height: 300,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AccountMostExpensiveCategories(account),
-                            ),
-                          ) :
-                          Container(),
-                          account.measurable ?
-                          Container(
-                            height: 300,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: OverviewWidget(overall: overall),
-                            ),
-                          ) :
-                          Container(),
+                          account.measurable
+                              ? Container(
+                                  height: 300,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child:
+                                        AccountMostExpensiveCategories(account),
+                                  ),
+                                )
+                              : Container(),
+                          account.measurable
+                              ? Container(
+                                  height: 300,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: OverviewWidget(overall: overall),
+                                  ),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),
@@ -106,27 +110,30 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> with Transa
                         children: [
                           Card(
                             child: ListTile(
-                                title: Text(
-                                  'Transactions',
-                                  style: TextStyle(fontSize: 20),
-                                ),
+                              title: Text(
+                                'Transactions',
+                                style: TextStyle(fontSize: 20),
+                              ),
                               trailing: TextButton(
-                                onPressed: () { showModalBottomSheet<void>(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                        BorderRadius.vertical(top: Radius.circular(25.0))),
-                                    builder: (context) {
-                                      return SizedBox(
-                                        height: 100,
-                                        child: AnimatedPadding(
-                                            padding: MediaQuery.of(context).viewInsets,
-                                            duration: Duration(seconds: 1),
-                                            child: AddTransactionSheetDesktop(account)),
-                                      );
-                                    });
-                                  },
+                                onPressed: () {
+                                  showModalBottomSheet<void>(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                              top: Radius.circular(25.0))),
+                                      builder: (context) {
+                                        return SizedBox(
+                                          height: 100,
+                                          child: AnimatedPadding(
+                                              padding: MediaQuery.of(context)
+                                                  .viewInsets,
+                                              duration: Duration(seconds: 1),
+                                              child: AddTransactionSheetDesktop(
+                                                  account)),
+                                        );
+                                      });
+                                },
                                 child: Icon(Icons.add),
                               ),
                             ),
@@ -136,50 +143,73 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> with Transa
                             padding: EdgeInsets.symmetric(horizontal: 5),
                             child: SizedBox(
                               height: 575,
-                              child: GroupedListView<TransactionModel, DateTime>(
-                                order: GroupedListOrder.DESC,
-                                controller: scrollController,
-                                physics: ScrollPhysics(),
-                                elements: transactions,
-                                groupBy: (element) => element.date.toMidnight(),
-                                groupSeparatorBuilder: (element) {
-                                  return Container(
-                                    height: 50,
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                                        child: Card(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(DateFormat.MMMd().format(element)),
-                                          ),
-                                        ),
+                              child: isDisplayingSkeletons()
+                                  ? Skeletonizer(
+                                      enabled: true,
+                                      child: ListView.builder(
+                                        itemCount: 10,
+                                        itemBuilder: (context, index) {
+                                          var transaction = transactions[index];
+                                          return TransactionRowInfo(
+                                            transaction: transaction,
+                                            index: index,
+                                            category: CategoryModel.empty(),
+                                            account: account,
+                                          );
+                                        },
                                       ),
+                                    )
+                                  : GroupedListView<TransactionModel, DateTime>(
+                                      order: GroupedListOrder.DESC,
+                                      controller: scrollController,
+                                      physics: ScrollPhysics(),
+                                      elements: transactions,
+                                      groupBy: (element) =>
+                                          element.date.toMidnight(),
+                                      groupSeparatorBuilder: (element) {
+                                        return Container(
+                                          height: 50,
+                                          child: Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      5, 0, 0, 0),
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Text(DateFormat.MMMd()
+                                                      .format(element)),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      itemBuilder: (context, transaction) {
+                                        var index = transactionRepository
+                                            .transactions
+                                            .indexOf(transaction);
+
+                                        var category = categoryRepository
+                                            .categories
+                                            .firstWhere((element) =>
+                                                element.id ==
+                                                transaction.categoryId);
+
+                                        return TransactionRowInfo(
+                                          transaction: transaction,
+                                          index: index,
+                                          category: category,
+                                          account: account,
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                                itemBuilder: (context, transaction) {
-                                  var index = transactionRepository.transactions
-                                      .indexOf(transaction);
-
-                                  if (transaction.name == skeletonName) {
-                                    return TransactionRowSkeleton();
-                                  }
-
-                                  var category = categoryRepository.categories.firstWhere(
-                                          (element) => element.id == transaction.categoryId);
-
-                                  return TransactionRowInfo(
-                                    transaction: transaction,
-                                    index: index,
-                                    category: category,
-                                    account: account,
-                                  );
-                                },
-                              ),
                             ),
                           ),
                         ],
@@ -214,5 +244,9 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop> with Transa
       addSkeletonTransactions();
       transactionRepository.nextPage();
     });
+  }
+
+  bool isDisplayingSkeletons() {
+    return transactions.any((element) => element.name == skeletonName);
   }
 }
