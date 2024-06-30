@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/endpoints/category.service.metric.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../services/repositories/account.repository.dart';
 import 'chart-options-sheet.dart';
@@ -100,9 +100,8 @@ class _MostExpensiveCategoriesChartState
             ),
           ),
           Expanded(
-            child: Skeleton(
-              isLoading: loading,
-              skeleton: SkeletonAvatar(),
+            child: Skeletonizer(
+              enabled: loading,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(10, 10, 30, 10),
                 child: BarChart(buildChart()),
@@ -121,20 +120,18 @@ class _MostExpensiveCategoriesChartState
         borderData: FlBorderData(show: false),
         gridData: FlGridData(show: false),
         titlesData: FlTitlesData(
-          bottomTitles: SideTitles(
-            showTitles: true,
-            getTextStyles: buildAxisTextStyle,
-            getTitles: (value) {
-              return "";
-            },
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: false,
+            )
           ),
-          leftTitles: SideTitles(
-              showTitles: true,
-              margin: 40,
-              getTextStyles: buildAxisTextStyle,
-              reservedSize: 60),
-          rightTitles: SideTitles(showTitles: false),
-          topTitles: SideTitles(showTitles: false),
+          leftTitles: AxisTitles(
+            drawBelowEverything: false,
+            sideTitles: SideTitles(
+              showTitles: false,
+            ),
+          ),
+          show: false
         ),
         barGroups: [],
       );
@@ -144,29 +141,36 @@ class _MostExpensiveCategoriesChartState
       borderData: FlBorderData(show: false),
       gridData: FlGridData(show: false),
       titlesData: FlTitlesData(
-        bottomTitles: SideTitles(
-          showTitles: true,
-          getTextStyles: buildAxisTextStyle,
-          getTitles: (value) {
-            var metric = metrics[value.toInt()];
-            return metric.category.name.length > 10
-                ? metric.category.name
-                    .substring(0, 10)
-                : metric.category.name;
-          },
-        ),
-        leftTitles: SideTitles(
+        show: true,
+        bottomTitles: AxisTitles(
+          axisNameSize: 50,
+          sideTitles: SideTitles(
+            reservedSize: 30,
             showTitles: true,
-            margin: 40,
-            getTextStyles: buildAxisTextStyle,
-            textAlign: TextAlign.right,
-            reservedSize: 60),
-        rightTitles: SideTitles(
-            showTitles: true,
-            margin: 20,
-          getTitles: (value) => "",
+            getTitlesWidget: (value, metadata) {
+              var metric = metrics[value.toInt()];
+              return Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(metric.category.name),
+              );
+            },
+          ),
         ),
-        topTitles: SideTitles(showTitles: false),
+        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),),
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 80,
+            getTitlesWidget: (value, metadata) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 1),
+                child: Text(metadata.formattedValue),
+              );
+            }
+          ),
+
+        )
       ),
       barGroups: metrics
           .map(
@@ -174,7 +178,8 @@ class _MostExpensiveCategoriesChartState
               x: metrics.indexOf(e),
               barRods: [
                 BarChartRodData(
-                    y: e.price.toDouble(), colors: [Colors.greenAccent])
+                    toY: e.price.toDouble(),
+                    fromY: 0)
               ],
             ),
           )

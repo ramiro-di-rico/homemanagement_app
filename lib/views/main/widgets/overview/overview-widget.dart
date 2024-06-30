@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:home_management_app/converters/shorten-big-number.dart';
 import 'package:home_management_app/models/overall.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../converters/int-shorten-converter.dart';
 import 'indicator.dart';
 
@@ -27,9 +27,8 @@ class OverviewWidget extends StatelessWidget {
                   Text('Count'),
                   SizedBox(height: 10),
                   Expanded(
-                      child: Skeleton(
-                    isLoading: overall == null,
-                    skeleton: SkeletonAvatar(),
+                      child: Skeletonizer(
+                    enabled: overall == null,
                     child: PieChart(PieChartData(
                       sections: [
                         PieChartSectionData(
@@ -57,9 +56,8 @@ class OverviewWidget extends StatelessWidget {
                         Text('Total'),
                         SizedBox(height: 10),
                         Expanded(
-                            child: Skeleton(
-                          isLoading: overall == null,
-                          skeleton: SkeletonAvatar(),
+                            child: Skeletonizer(
+                          enabled: overall == null,
                           child: PieChart(PieChartData(sections: [
                             PieChartSectionData(
                                 color: Colors.orange[200],

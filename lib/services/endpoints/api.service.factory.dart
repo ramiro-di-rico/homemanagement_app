@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class ApiServiceFactory {
   AuthenticationService authenticationService;
   Uri backendEndpoint =
-      Uri.https('ramiro-di-rico.dev', 'homemanagementapi/api/');
+      Uri.https('www.ramiro-di-rico.dev', 'homemanagementapi/api/');
 
   ApiServiceFactory({required this.authenticationService});
 

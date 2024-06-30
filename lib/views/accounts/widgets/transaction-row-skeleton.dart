@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class TransactionRowSkeleton extends StatelessWidget {
   @override
@@ -10,7 +10,7 @@ class TransactionRowSkeleton extends StatelessWidget {
         padding: EdgeInsets.all(5),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 10),
-          title: SkeletonItem(
+          title: Skeletonizer(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10),
               child: Column(
@@ -21,17 +21,17 @@ class TransactionRowSkeleton extends StatelessWidget {
                     children: [
                       Container(
                         width: 120,
-                        child: SkeletonLine(),
+                        child: Container(),
                       ),
                       Container(
                         width: 50,
-                        child: SkeletonLine(),
+                        child: Container(),
                       ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                         child: Container(
                           width: 50,
-                          child: SkeletonLine(),
+                          child: Container(),
                         ),
                       ),
                     ],

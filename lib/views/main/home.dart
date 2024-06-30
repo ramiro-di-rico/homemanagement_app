@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
   BottomNavigationBar buildBottomNavigationBar(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: bottomBarNavigationIndex,
-      backgroundColor: Theme.of(context).bottomAppBarColor,
+      backgroundColor: Theme.of(context).bottomAppBarTheme.color,
       selectedItemColor: this.selectedItemsColor[bottomBarNavigationIndex],
       onTap: (index) {
         setState(() {

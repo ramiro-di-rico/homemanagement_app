@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/account-historical.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../services/endpoints/dashboard.service.dart';
 import 'chart-options-sheet.dart';
@@ -110,9 +110,8 @@ class _AccountsMetricSeriesWidgetState
         ),
       ),
       Expanded(
-        child: Skeleton(
-          isLoading: loading,
-          skeleton: SkeletonAvatar(),
+        child: Skeletonizer(
+          enabled: loading,
           child: Padding(
             padding: EdgeInsets.fromLTRB(40, 0, 20, 20),
             child: LineChart(buildChart()),
@@ -154,27 +153,38 @@ class _AccountsMetricSeriesWidgetState
 
                 return labels;
               },
-            )),
+            ),
+        ),
         titlesData: FlTitlesData(
           show: true,
-          bottomTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 10,
-            getTextStyles: buildAxisTextStyle,
-            getTitles: (value) {
-              var isInt = value % 1 == 0;
-              if (!isInt) return '';
-              return months[value.toInt()];
-            },
-          ),
-          leftTitles: SideTitles(
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
               showTitles: true,
-              margin: 10,
+              reservedSize: 30,
+              interval: 1,
+              getTitlesWidget: (value, metadata) {
+                var isInt = value % 1 == 0;
+                if (!isInt) return const Text("");
+                return Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(months[value.toInt()]),
+                );
+              },
+            ),
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
               reservedSize: 60,
-              getTextStyles: buildAxisTextStyle,
-              interval: calculateInterval()),
-          rightTitles: SideTitles(showTitles: false),
-          topTitles: SideTitles(showTitles: false),
+              getTitlesWidget: (value, metadata) {
+                var isInt = value % 1 == 0;
+                if (!isInt) return const Text("");
+                return Text(metadata.formattedValue);
+              },
+            ),
+          ),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false),),
         ),
         minY: minY(),
         maxY: maxY(),
@@ -182,7 +192,6 @@ class _AccountsMetricSeriesWidgetState
             .map(
               (e) => LineChartBarData(
                 isCurved: true,
-                colors: [lineColors[accountsHistoricalChart.indexOf(e)]],
                 spots: e.evolution
                     .map(
                       (m) => FlSpot(m.index!.toDouble(), m.balance),
