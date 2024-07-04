@@ -79,7 +79,7 @@ class _MostExpensiveCategoriesChartState
                             BorderRadius.vertical(top: Radius.circular(25.0))),
                     builder: (context) {
                       return SizedBox(
-                        height: 130,
+                        height: 150,
                         child: AnimatedPadding(
                             padding: MediaQuery.of(context).viewInsets,
                             duration: Duration(seconds: 1),
