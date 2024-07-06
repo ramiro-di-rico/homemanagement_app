@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 jobs:
-  push to registry:
+  push_to_registry:
     name: Build and Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
