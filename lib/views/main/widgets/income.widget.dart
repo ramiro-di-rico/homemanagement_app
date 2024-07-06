@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/custom/trending-mixin.dart';
 import 'package:home_management_app/services/endpoints/metrics.service.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 //deprecated
 class IncomeWidget extends StatefulWidget {
@@ -32,9 +32,8 @@ class _IncomeWidgetState extends State<IncomeWidget> with TrendingMixin {
     return MainCard(
       child: Padding(
         padding: EdgeInsets.all(10),
-        child: Skeleton(
-          isLoading: loading,
-          skeleton: SkeletonLine(),
+        child: Skeletonizer(
+          enabled: loading,
           child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

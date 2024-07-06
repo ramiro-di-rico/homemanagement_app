@@ -7,7 +7,11 @@ mixin class TransactionListSkeletonBehavior {
   void addSkeletonTransactions() {
     for (var i = 0; i < 10; i++) {
       transactions.add(TransactionModel(
-          0, 0, 0, skeletonName, 0, DateTime.now(), TransactionType.Income));
+          0, 0, 0, skeletonName, 99999, DateTime.now(), TransactionType.Income));
     }
+  }
+
+  bool isDisplayingSkeletons() {
+    return transactions.any((element) => element.name == skeletonName);
   }
 }

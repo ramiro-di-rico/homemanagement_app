@@ -15,4 +15,8 @@ class CategoryModel{
       json['isActive']
     );
   }
+
+  factory CategoryModel.empty(){
+    return CategoryModel(0, 0, 'Category Model', '', false, false);
+  }
 }

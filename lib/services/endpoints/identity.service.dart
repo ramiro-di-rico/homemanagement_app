@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class IdentityService {
-  String url = 'ramiro-di-rico.dev';
+  String url = 'www.ramiro-di-rico.dev';
   String authenticateApi = 'identity/api/Authentication/SignIn';
   String authenticateApiV2 = 'identity/api/Authentication/V2/SignIn';
   String registrationApi = 'identity/api/registration';

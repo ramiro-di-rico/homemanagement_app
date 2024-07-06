@@ -5,6 +5,7 @@ import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'package:home_management_app/views/accounts/account.detail.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../accounts/widgets/add.transaction.sheet.dart';
 import 'widgets/account.sheet.dart';

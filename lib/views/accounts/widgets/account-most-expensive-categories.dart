@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/endpoints/category.service.metric.dart';
-import 'package:skeletons/skeletons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:home_management_app/models/account.dart';
 
 // ignore: must_be_immutable
@@ -54,11 +54,10 @@ class _AccountMostExpensiveCategoriesState
                 title: Text('Most expensive categories'),
               ),
               Expanded(
-                child: Skeleton(
-                  isLoading: loading,
-                  skeleton: SkeletonAvatar(),
+                child: Skeletonizer(
+                  enabled: loading,
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(10, 10, 30, 10),
+                    padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
                     child: BarChart(buildChart()),
                   ),
                 ),
@@ -74,29 +73,31 @@ class _AccountMostExpensiveCategoriesState
       borderData: FlBorderData(show: false),
       gridData: FlGridData(show: false),
       titlesData: FlTitlesData(
-        bottomTitles: SideTitles(
-          showTitles: true,
-          getTextStyles: buildAxisTextStyle,
-          getTitles: (value) {
-            var metric = metrics[value.toInt()];
-            return metric.category.name.length > 10
-                ? metric.category.name
-                    .substring(0, 10)
-                : metric.category.name;
-          },
-        ),
-        leftTitles: SideTitles(
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
             showTitles: true,
-            textAlign: TextAlign.right,
-            margin: 40,
-            getTextStyles: buildAxisTextStyle,
-            reservedSize: 60),
-        rightTitles: SideTitles(
-            showTitles: true,
-            margin: 20,
-            getTitles: (value) => "",
+            reservedSize: 30,
+            getTitlesWidget: (value, metadata) => Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                metrics[value.toInt()].category.name,
+              ),
+            ),
+          ),
         ),
-        topTitles: SideTitles(showTitles: false),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 60,
+            getTitlesWidget: (value, metadata) => Text(metadata.formattedValue),
+          ),
+        ),
+        rightTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
       ),
       barGroups: metrics
           .map(
@@ -104,18 +105,13 @@ class _AccountMostExpensiveCategoriesState
               x: metrics.indexOf(e),
               barRods: [
                 BarChartRodData(
-                    y: e.price.toDouble(), colors: [Colors.greenAccent])
+                  fromY: e.price.toDouble(),
+                  toY: 0,
+                )
               ],
             ),
           )
           .toList(),
     );
-  }
-
-  TextStyle buildAxisTextStyle(BuildContext context, double value) {
-    return TextStyle(
-        color: ThemeData.fallback().colorScheme.secondary,
-        fontWeight: FontWeight.bold,
-        fontSize: 14);
   }
 }
