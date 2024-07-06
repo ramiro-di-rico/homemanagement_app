@@ -1,0 +1,53 @@
+name: Build and Deploy to Hetzner
+
+on:
+  push:
+    branches: master
+
+jobs:
+  push to registry:
+    name: Build and Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - 
+        name: Check out the repo
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: thekillingtomato/homemanagement-app:latest
+
+  pull_and_deploy_iamge:
+    name: Pull image from Docker Hub and Deploy on Hetzner
+    runs-on: ubuntu-latest
+    needs: push_to_registry
+    steps:          
+      - name: Pull and Run Docker Image on Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          passphrase: ${{ secrets.HETZNER_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker ps -q --filter ancestor="thekillingtomato/homemanagement-app" | xargs -r docker stop
+            docker pull thekillingtomato/homemanagement-app:latest
+            docker run -d -p 5900:80 thekillingtomato/homemanagement-app:latest
