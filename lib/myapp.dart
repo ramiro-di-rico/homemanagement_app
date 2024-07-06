@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:home_management_app/views/accounts/account.detail.dart';
 import 'package:home_management_app/views/authentication/login-desktop.dart';
@@ -18,7 +16,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    var isDesktop = Platform.isIOS || Platform.isLinux || Platform.isWindows;
+    var screenSize = MediaQuery.of(context).size;
+    var isDesktop = screenSize.width > 720;
 
     return MaterialApp(
       title: 'Home Management',
