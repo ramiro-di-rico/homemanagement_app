@@ -2,7 +2,7 @@ name: Build and Deploy to Hetzner
 
 on:
   push:
-    branches: master
+    branches: [master]
 
 jobs:
   push to registry:
