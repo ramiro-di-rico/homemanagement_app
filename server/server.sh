@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the port
-PORT=5620
+PORT=9000
 
 # Check if the port is in use and release it if necessary.
 echo "Checking if port $PORT is in use..."

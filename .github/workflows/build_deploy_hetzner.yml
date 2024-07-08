@@ -50,4 +50,4 @@ jobs:
           script: |
             docker ps -q --filter ancestor="thekillingtomato/homemanagement-app" | xargs -r docker stop
             docker pull thekillingtomato/homemanagement-app:latest
-            docker run -d -p 5620:80 thekillingtomato/homemanagement-app:latest
+            docker run -d -p 9000:9000 thekillingtomato/homemanagement-app:latest

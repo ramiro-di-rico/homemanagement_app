@@ -29,9 +29,10 @@ RUN flutter config --enable-web
 RUN mkdir /app/
 COPY . /app/
 WORKDIR /app/
-RUN flutter build web --base-href "/homemanagement_app/"
+RUN flutter build web
 
 # Record the exposed port
+# See the port below
 EXPOSE 9000
 
 # make server startup script executable and start the web server
