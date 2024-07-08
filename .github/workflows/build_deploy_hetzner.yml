@@ -48,6 +48,7 @@ jobs:
           passphrase: ${{ secrets.HETZNER_PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            docker ps -q --filter ancestor="thekillingtomato/homemanagement-app" | xargs -r docker stop
+            docker stop home_management_app
+            docker rmi --force thekillingtomato/homemanagement-app:latest
             docker pull thekillingtomato/homemanagement-app:latest
-            docker run -d -p 9000:9000 thekillingtomato/homemanagement-app:latest
+            docker run -d -p 9000:9000 --name home_management_app thekillingtomato/homemanagement-app:latest
