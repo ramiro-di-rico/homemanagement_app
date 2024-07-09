@@ -21,9 +21,11 @@ import 'services/infra/cryptography.service.dart';
 import 'services/endpoints/currency.service.dart';
 import 'services/endpoints/metrics.service.dart';
 import 'services/endpoints/transaction.service.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
   registerDependencies();
+  usePathUrlStrategy();
   runApp(MyApp());
 }
 
