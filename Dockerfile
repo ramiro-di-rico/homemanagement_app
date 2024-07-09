@@ -29,7 +29,7 @@ RUN flutter config --enable-web
 RUN mkdir /app/
 COPY . /app/
 WORKDIR /app/
-RUN flutter build web --release --base-href /homemanagement_app
+RUN flutter build web --release --base-href /homemanagement_app/
 
 # Record the exposed port
 # See the port below
