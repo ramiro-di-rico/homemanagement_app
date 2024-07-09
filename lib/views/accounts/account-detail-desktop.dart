@@ -118,6 +118,10 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
                                 onPressed: () {
                                   showModalBottomSheet<void>(
                                       context: context,
+                                      constraints: BoxConstraints(
+                                          maxHeight: 1000,
+                                          maxWidth: 1200,
+                                      ),
                                       isScrollControlled: true,
                                       shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.vertical(

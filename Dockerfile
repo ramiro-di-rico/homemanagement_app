@@ -34,6 +34,7 @@ RUN flutter build web --release --base-href /homemanagement_app/
 # clean up flutter SDK
 RUN rm -rf /usr/local/flutter
 
+# this line below makes the web app not work
 # clean up app build directory
 #RUN rm -rf /app/build
 

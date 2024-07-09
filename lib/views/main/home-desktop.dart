@@ -9,7 +9,6 @@ import '../../services/repositories/currency.repository.dart';
 import '../../services/security/authentication.service.dart';
 import 'dashboard.dart';
 import 'widgets/account-sheet-dektop.dart';
-import 'widgets/account.sheet.dart';
 
 class HomeDesktop extends StatefulWidget {
   const HomeDesktop({super.key});
@@ -77,6 +76,10 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                     showModalBottomSheet<void>(
                                         context: context,
                                         isScrollControlled: true,
+                                        constraints: BoxConstraints(
+                                          maxHeight: 500,
+                                          maxWidth: 1200,
+                                        ),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                             BorderRadius.vertical(top: Radius.circular(25.0))),

@@ -62,7 +62,7 @@ class _AccountSheetDesktopState extends State<AccountSheetDesktop> {
         children: [
           SizedBox(width: 50),
           SizedBox(
-            width: 400,
+            width: 300,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: AppTextField(

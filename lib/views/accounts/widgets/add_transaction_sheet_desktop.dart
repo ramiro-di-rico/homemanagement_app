@@ -75,7 +75,7 @@ class _AddTransactionSheetDesktopState
           ),
           SizedBox(width: 10),
           SizedBox(
-            width: 120,
+            width: 150,
             child: TextField(
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
@@ -110,7 +110,7 @@ class _AddTransactionSheetDesktopState
           ),
           SizedBox(width: 30),
           SizedBox(
-            width: 100,
+            width: 200,
             child: DropdownComponent(
               currentValue: categoryRepository.categories
                   .firstWhere((element) =>
