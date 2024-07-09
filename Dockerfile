@@ -29,13 +29,13 @@ RUN flutter config --enable-web
 RUN mkdir /app/
 COPY . /app/
 WORKDIR /app/
-RUN flutter build web --base-href /homemanagement_app/
+RUN flutter build web --release --base-href /homemanagement_app/
 
 # clean up flutter SDK
 RUN rm -rf /usr/local/flutter
 
 # clean up app build directory
-RUN rm -rf /app/build
+#RUN rm -rf /app/build
 
 # clean up app .dart_tool directory
 RUN rm -rf /app/.dart_tool
