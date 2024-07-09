@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/views/authentication/login.dart';
+import 'package:home_management_app/views/main/account-list-desktop.dart';
 import 'package:home_management_app/views/main/account.list.dart';
 
 import '../../services/repositories/account.repository.dart';
@@ -97,7 +98,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                 ),
                               ),
                             ),
-                            AccountListScreen(),
+                            AccountListDesktopView(),
                           ],
                         ))
                   ],
