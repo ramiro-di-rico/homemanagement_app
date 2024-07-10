@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/models/metrics/breakdown.dart';
+import 'package:intl/intl.dart';
 
 import '../../../services/endpoints/metrics.service.dart';
 
@@ -22,15 +23,17 @@ class _BalanceWidgetState extends State<BalanceWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: MainCard(
-        child: Column(
-          children: breakdown
-              .map((element) => Container(
-                    child: Text(element.name),
-                  ))
-              .toList(),
-        ),
+    return Card(
+      child: ListView.builder(
+        itemCount: breakdown.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            leading: Text(breakdown[index].name),
+            trailing: Text(convertToCurrency(breakdown[index].value)),
+            leadingAndTrailingTextStyle: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 16),
+          );
+        },
       ),
     );
   }
@@ -40,5 +43,11 @@ class _BalanceWidgetState extends State<BalanceWidget> {
     setState(() {
       breakdown = result;
     });
+  }
+
+  String convertToCurrency(double value) {
+    final numberFormat = new NumberFormat("#,##0", "en_US");
+    var currency = numberFormat.format(value);
+    return currency;
   }
 }

@@ -4,6 +4,7 @@ import 'package:home_management_app/views/main/widgets/overview/overview-widget.
 import '../../models/overall.dart';
 import '../../services/endpoints/metrics.service.dart';
 import 'widgets/accounts-series-metrics..dart';
+import 'widgets/balances.widget.dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
 class Dashboard extends StatefulWidget {
@@ -28,6 +29,13 @@ class _DashboardState extends State<Dashboard> {
         height: 1000,
         child: Column(
           children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: BalanceWidget(),
+              ),
+              flex: 4,
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(10),
