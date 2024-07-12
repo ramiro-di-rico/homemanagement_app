@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:home_management_app/views/accounts/account.detail.dart';
 import 'package:home_management_app/views/authentication/login-desktop.dart';
@@ -6,6 +7,8 @@ import 'package:home_management_app/views/authentication/registration.dart';
 import 'package:home_management_app/views/main/home-desktop.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
 
+import 'services/infra/platform/platform_context.dart';
+import 'services/infra/platform/platform_type.dart';
 import 'views/accounts/account-detail-desktop.dart';
 import 'views/accounts/account-metrics.dart';
 import 'views/authentication/2fa_view.dart';
@@ -13,11 +16,14 @@ import 'views/authentication/login.dart';
 import 'views/main/home.dart';
 
 class MyApp extends StatelessWidget {
+  final PlatformContext _platformContext;
+
+  MyApp(this._platformContext);
+
   @override
   Widget build(BuildContext context) {
-
-    var screenSize = MediaQuery.of(context).size;
-    var isDesktop = screenSize.width > 720;
+    var platformType = _platformContext.getPlatformType();
+    var isDesktop = platformType == PlatformType.Desktop || platformType == PlatformType.Web;
 
     return MaterialApp(
       title: 'Home Management',

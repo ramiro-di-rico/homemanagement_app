@@ -1,22 +1,28 @@
 import 'package:home_management_app/models/user.dart';
+import 'package:home_management_app/services/infra/platform/platform_context.dart';
 import 'package:home_management_app/services/repositories/user.repository.dart';
 import 'package:local_auth/local_auth.dart';
 import '../../models/view-models/user-view-model.dart';
 import '../endpoints/identity.service.dart';
 import '../infra/cryptography.service.dart';
 import '../infra/logger_wrapper.dart';
+import '../infra/platform/platform_type.dart';
 
 class AuthenticationService {
   CryptographyService _cryptographyService;
   UserRepository _userRepository;
   IdentityService _identityService = IdentityService();
+  PlatformContext _platformContext;
   final LocalAuthentication _localAuth = LocalAuthentication();
   bool _isBiometricEnabled = false;
   final _logger = LoggerWrapper();
   UserModel? user;
 
   AuthenticationService(
-      {required CryptographyService cryptographyService, required UserRepository userRepository}) : _userRepository = userRepository, _cryptographyService = cryptographyService;
+      {required CryptographyService cryptographyService, required UserRepository userRepository, required PlatformContext platformContext})
+      : _userRepository = userRepository,
+        _cryptographyService = cryptographyService,
+        _platformContext = platformContext;
 
   bool isAuthenticating = false;
 
@@ -32,6 +38,10 @@ class AuthenticationService {
       _logger.i('User is already authenticated');
       await refreshToken();
       return true;
+    }
+
+    if (_platformContext.getPlatformType() != PlatformType.Mobile) {
+      return false;
     }
 
     _logger.i('Checking if biometric is enabled...');

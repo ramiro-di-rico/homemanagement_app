@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'myapp.dart';
+import 'services/infra/platform/platform_context.dart';
+import 'services/infra/platform/platform_strategy.dart';
 import 'services/repositories/account.repository.dart';
 import 'services/repositories/category.repository.dart';
 import 'services/repositories/notification.repository.dart';
@@ -21,16 +23,16 @@ import 'services/infra/cryptography.service.dart';
 import 'services/endpoints/currency.service.dart';
 import 'services/endpoints/metrics.service.dart';
 import 'services/endpoints/transaction.service.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
-  registerDependencies();
-  usePathUrlStrategy();
-  runApp(MyApp());
+  var platform = PlatformStrategy.createPlatform();
+  platform.initialize();
+  registerDependencies(platform);
+  runApp(MyApp(platform));
 }
 
-void registerDependencies() {
-  registerSingletons();
+void registerDependencies(PlatformContext platform) {
+  registerSingletons(platform);
   registerServices();
 }
 
@@ -78,13 +80,14 @@ void registerServices() {
       caching: GetIt.I<Caching>()));
 }
 
-void registerSingletons() {
+void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(Caching());
 
   CryptographyService cryptographyService = CryptographyService();
   var userRepository = UserRepository();
   AuthenticationService authenticationService = AuthenticationService(
-      cryptographyService: cryptographyService, userRepository: userRepository);
+      cryptographyService: cryptographyService, userRepository: userRepository,
+      platformContext: platformContext);
 
   GetIt.instance.registerSingleton(authenticationService);
 
@@ -125,6 +128,7 @@ void registerSingletons() {
       apiServiceFactory:
           ApiServiceFactory(authenticationService: authenticationService)));
 
+  GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
   GetIt.instance.registerSingleton(currencyRepository);
