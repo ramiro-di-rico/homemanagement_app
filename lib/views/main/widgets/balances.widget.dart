@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/models/metrics/breakdown.dart';
 import 'package:intl/intl.dart';
 
@@ -31,6 +30,7 @@ class _BalanceWidgetState extends State<BalanceWidget> {
             leading: Text(breakdown[index].name),
             trailing: Text(convertToCurrency(breakdown[index].value)),
             leadingAndTrailingTextStyle: TextStyle(
+              color: Theme.of(context).textTheme.labelLarge?.color,
                 fontWeight: FontWeight.bold, fontSize: 16),
           );
         },
