@@ -1,5 +1,6 @@
 enum PlatformType{
   Mobile,
   Desktop,
-  Web
+  Web,
+  WebMobile
 }
