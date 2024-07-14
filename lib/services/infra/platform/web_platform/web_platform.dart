@@ -4,9 +4,16 @@ import 'dart:html' as html;
 import 'package:flutter/widgets.dart';
 import 'package:home_management_app/services/infra/platform/platform_type.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'platform_context.dart';
+import '../platform_context.dart';
+import 'base_web_platform.dart';
 
-class WebPlatform extends PlatformContext {
+class WebPlatform extends BaseWebPlatformContext{
+  PlatformContext createWebPlatform() {
+    return WebPlatformImpl();
+  }
+}
+
+class WebPlatformImpl extends PlatformContext {
   @override
   void initialize() {
     usePathUrlStrategy();
