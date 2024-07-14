@@ -33,4 +33,7 @@ class DesktopPlatform extends PlatformContext {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
+
+  @override
+  bool isDownloadEnabled() => false;
 }

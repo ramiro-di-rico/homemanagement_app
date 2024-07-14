@@ -17,4 +17,7 @@ class MobilePlatform extends PlatformContext {
     // TODO: implement save
     throw UnimplementedError();
   }
+
+  @override
+  bool isDownloadEnabled() => false;
 }

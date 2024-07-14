@@ -19,8 +19,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
   TransactionRepository transactionsRepo =
       GetIt.instance<TransactionRepository>();
-  TransactionService transactionService =
-      GetIt.instance<TransactionService>();
+  TransactionService transactionService = GetIt.instance<TransactionService>();
   PlatformContext platform = GetIt.instance<PlatformContext>();
   bool showArchive = false;
 
@@ -172,15 +171,19 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
                       remove(item, index);
                     },
                   ),
-                  MenuItemButton(
-                    leadingIcon: Icon(Icons.download, color: Colors.blueAccent),
-                    child: Text('Download CSV',
-                        style: TextStyle(color: Colors.blueAccent)),
-                    onPressed: () async {
-                      var csvContent = await transactionService.export(item.id);
-                      platform.saveFile(item.name, "csv", csvContent);
-                    },
-                  ),
+                  platform.isDownloadEnabled()
+                      ? MenuItemButton(
+                          leadingIcon:
+                              Icon(Icons.download, color: Colors.blueAccent),
+                          child: Text('Download CSV',
+                              style: TextStyle(color: Colors.blueAccent)),
+                          onPressed: () async {
+                            var csvContent =
+                                await transactionService.export(item.id);
+                            platform.saveFile(item.name, "csv", csvContent);
+                          },
+                        )
+                      : Container(),
                 ],
                 child: Icon(Icons.more_vert),
               ),

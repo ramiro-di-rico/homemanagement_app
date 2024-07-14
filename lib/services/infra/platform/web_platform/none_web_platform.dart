@@ -36,4 +36,7 @@ class NoneWebPlatformImpl implements PlatformContext {
   void setContext(BuildContext buildingContext) {
     // TODO: implement setContext
   }
+
+  @override
+  bool isDownloadEnabled() => false;
 }

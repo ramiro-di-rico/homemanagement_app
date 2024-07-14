@@ -52,4 +52,7 @@ class WebPlatformImpl extends PlatformContext {
     html.document.body?.children.remove(anchor);
     html.Url.revokeObjectUrl(url);
   }
+
+  @override
+  bool isDownloadEnabled() => true;
 }
