@@ -11,4 +11,6 @@ abstract class PlatformContext{
   void setContext(BuildContext buildingContext) {
     context = buildingContext;
   }
+
+  Future saveFile(String filename, String extension, String value);
 }

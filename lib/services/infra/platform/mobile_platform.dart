@@ -11,4 +11,10 @@ class MobilePlatform extends PlatformContext {
   PlatformType getPlatformType() {
     return PlatformType.Mobile;
   }
+
+  @override
+  Future saveFile(String filename, String extension, String value) {
+    // TODO: implement save
+    throw UnimplementedError();
+  }
 }

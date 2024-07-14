@@ -11,4 +11,10 @@ class DesktopPlatform extends PlatformContext {
   PlatformType getPlatformType() {
     return PlatformType.Desktop;
   }
+
+  @override
+  Future saveFile(String filename, String extension, String value) {
+    // TODO: implement save
+    throw UnimplementedError();
+  }
 }
