@@ -40,6 +40,21 @@ class ApiServiceFactory {
     return json.decode(response.body);
   }
 
+  Future<String> rawApiGet(String api) async {
+    await _autoAuthenticateIfNeeded();
+
+    var response = await http.get(
+      backendEndpoint.resolve(api),
+      headers: _getHeaders(),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to post to $api');
+    }
+
+    return response.body;
+  }
+
   Future apiPost(String api, dynamic body) async {
     await _autoAuthenticateIfNeeded();
 

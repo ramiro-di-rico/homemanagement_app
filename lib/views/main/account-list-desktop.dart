@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/models/account.dart';
-import 'package:home_management_app/services/repositories/account.repository.dart';
-import 'package:home_management_app/services/repositories/transaction.repository.dart';
-import 'package:home_management_app/views/accounts/account.detail.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
-import '../accounts/widgets/add.transaction.sheet.dart';
+import '../../models/account.dart';
+import '../../services/endpoints/transaction.service.dart';
+import '../../services/infra/platform/platform_context.dart';
+import '../../services/repositories/account.repository.dart';
+import '../../services/repositories/transaction.repository.dart';
+import '../accounts/account.detail.dart';
 import '../accounts/widgets/add_transaction_sheet_desktop.dart';
 import 'widgets/account.sheet.dart';
 
@@ -21,6 +19,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
   TransactionRepository transactionsRepo =
       GetIt.instance<TransactionRepository>();
+  TransactionService transactionService = GetIt.instance<TransactionService>();
+  PlatformContext platform = GetIt.instance<PlatformContext>();
   bool showArchive = false;
 
   @override
@@ -89,7 +89,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
                 },
               ),
               trailing: MenuAnchor(
-                builder: (BuildContext context, MenuController controller, Widget? child){
+                builder: (BuildContext context, MenuController controller,
+                    Widget? child) {
                   return IconButton(
                     onPressed: () {
                       if (controller.isOpen) {
@@ -104,35 +105,34 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
                 },
                 menuChildren: [
                   MenuItemButton(
-                    leadingIcon: Icon(Icons.add, color: Colors.greenAccent),
-                    child: Text('Add', style: TextStyle(color: Colors.greenAccent)),
-                    onPressed: () {
-                      showModalBottomSheet<void>(
-                          context: context,
-                          constraints: BoxConstraints(
-                            maxHeight: 1000,
-                            maxWidth: 1200,
-                          ),
-                          isScrollControlled: true,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(25.0))),
-                          builder: (context) {
-                            return SizedBox(
-                              height: 100,
-                              child: AnimatedPadding(
-                                  padding: MediaQuery.of(context)
-                                      .viewInsets,
-                                  duration: Duration(seconds: 1),
-                                  child: AddTransactionSheetDesktop(
-                                      item)),
-                            );
-                          });
-                    }
-                  ),
+                      leadingIcon: Icon(Icons.add, color: Colors.greenAccent),
+                      child: Text('Add',
+                          style: TextStyle(color: Colors.greenAccent)),
+                      onPressed: () {
+                        showModalBottomSheet<void>(
+                            context: context,
+                            constraints: BoxConstraints(
+                              maxHeight: 1000,
+                              maxWidth: 1200,
+                            ),
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(25.0))),
+                            builder: (context) {
+                              return SizedBox(
+                                height: 100,
+                                child: AnimatedPadding(
+                                    padding: MediaQuery.of(context).viewInsets,
+                                    duration: Duration(seconds: 1),
+                                    child: AddTransactionSheetDesktop(item)),
+                              );
+                            });
+                      }),
                   MenuItemButton(
                     leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
-                    child: Text('Edit', style: TextStyle(color: Colors.blueAccent)),
+                    child: Text('Edit',
+                        style: TextStyle(color: Colors.blueAccent)),
                     onPressed: () {
                       showModalBottomSheet<void>(
                           context: context,
@@ -153,19 +153,37 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
                   ),
                   MenuItemButton(
                     leadingIcon: Icon(Icons.archive, color: Colors.pinkAccent),
-                    child: Text(item.archive ? 'Unarchive' : 'Archive', style: TextStyle(color: Colors.pinkAccent)),
+                    child: Text(item.archive ? 'Unarchive' : 'Archive',
+                        style: TextStyle(color: Colors.pinkAccent)),
                     onPressed: () {
                       item.archive = !item.archive;
                       accountsRepo.update(item);
                     },
                   ),
                   MenuItemButton(
-                    leadingIcon: Icon(Icons.delete, color: Colors.redAccent,),
-                    child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                    leadingIcon: Icon(
+                      Icons.delete,
+                      color: Colors.redAccent,
+                    ),
+                    child: Text('Delete',
+                        style: TextStyle(color: Colors.redAccent)),
                     onPressed: () {
                       remove(item, index);
                     },
                   ),
+                  platform.isDownloadEnabled()
+                      ? MenuItemButton(
+                          leadingIcon:
+                              Icon(Icons.download, color: Colors.blueAccent),
+                          child: Text('Download CSV',
+                              style: TextStyle(color: Colors.blueAccent)),
+                          onPressed: () async {
+                            var csvContent =
+                                await transactionService.export(item.id);
+                            platform.saveFile(item.name, "csv", csvContent);
+                          },
+                        )
+                      : Container(),
                 ],
                 child: Icon(Icons.more_vert),
               ),

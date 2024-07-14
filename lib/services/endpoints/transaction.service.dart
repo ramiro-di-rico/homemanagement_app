@@ -1,6 +1,8 @@
-import 'package:home_management_app/models/http-models/transaction-with-balance.dart';
-import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/models/transaction.page.dart';
+import 'dart:typed_data';
+
+import '../../models/http-models/transaction-with-balance.dart';
+import '../../models/transaction.dart';
+import '../../models/transaction.page.dart';
 import 'api.service.factory.dart';
 import '../security/authentication.service.dart';
 import 'dart:convert';
@@ -46,5 +48,10 @@ class TransactionService {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(
         v3ApiName + '/' + transactionModel.id.toString(), body);
+  }
+
+  Future<String> export(int accountId) async {
+    var body = await apiServiceFactory.rawApiGet('$v3ApiName/export?accountId=$accountId');
+    return body;
   }
 }
