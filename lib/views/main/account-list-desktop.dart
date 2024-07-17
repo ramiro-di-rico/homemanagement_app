@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../models/account.dart';
 import '../../services/endpoints/transaction.service.dart';
+import '../../services/infra/error_notifier_service.dart';
 import '../../services/infra/platform/platform_context.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
@@ -21,6 +22,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
       GetIt.instance<TransactionRepository>();
   TransactionService transactionService = GetIt.instance<TransactionService>();
   PlatformContext platform = GetIt.instance<PlatformContext>();
+  ErrorNotifierService errorNotifierService =
+      GetIt.instance<ErrorNotifierService>();
   bool showArchive = false;
 
   @override
@@ -28,12 +31,15 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
     super.initState();
     load();
     accountsRepo.addListener(load);
+    errorNotifierService.addListener(displayError);
     //transactionsRepo.addListener(refreshAccounts);
   }
 
   @override
   void dispose() {
     //accountsRepo.removeListener(load);
+    //transactionsRepo.removeListener(refreshAccounts);
+    errorNotifierService.removeListener(displayError);
     super.dispose();
   }
 
@@ -206,6 +212,16 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
         'Failed to remove ${item.name}',
+        style: TextStyle(color: Colors.redAccent),
+      )));
+    }
+  }
+
+  void displayError() {
+    if (errorNotifierService.hasError) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        errorNotifierService.getError() ?? '',
         style: TextStyle(color: Colors.redAccent),
       )));
     }

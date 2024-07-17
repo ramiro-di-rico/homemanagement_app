@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../custom/keyboard.factory.dart';
 import '../../../models/view-models/user-view-model.dart';
+import '../../../services/infra/error_notifier_service.dart';
 import '../../../services/security/authentication.service.dart';
 import '../../main/home.dart';
 import '../2fa_view.dart';
@@ -10,6 +11,8 @@ import '../2fa_view.dart';
 mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   UserViewModel userViewModel = UserViewModel();
   bool isAuthenticating = false;
+  ErrorNotifierService errorNotifierService =
+      GetIt.instance<ErrorNotifierService>();
 
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
@@ -19,7 +22,13 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
+    errorNotifierService.addListener(displayErrorMessage);
     loadUser();
+  }
+
+  void dispose() {
+    errorNotifierService.removeListener(displayErrorMessage);
+    super.dispose();
   }
 
   Future loadUser() async {
@@ -46,7 +55,8 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
 
     setAuthenticatingStatus(false);
 
-    if(!authenticatedSuccessfully && this.authenticationService.user?.twoFactorRequired == true){
+    if (!authenticatedSuccessfully &&
+        this.authenticationService.user?.twoFactorRequired == true) {
       await Navigator.pushNamed(context, TwoFactorAuthenticationView.id);
       return;
     }
@@ -76,28 +86,52 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   Future successFullAuthentication() async {
     await Navigator.popAndPushNamed(context, HomeScreen.id);
   }
-  
+
   Future autoAuthenticate() async {
     setAuthenticatingStatus(true);
 
-    var authenticatedSuccessfully = await this.authenticationService.biometricsAuthenticate();
+    var authenticatedSuccessfully =
+        await this.authenticationService.biometricsAuthenticate();
 
     setAuthenticatingStatus(false);
 
-    if(!authenticatedSuccessfully && this.authenticationService.user?.twoFactorRequired == true){
+    if (!authenticatedSuccessfully &&
+        this.authenticationService.user?.twoFactorRequired == true) {
       await Navigator.pushNamed(context, TwoFactorAuthenticationView.id);
       return;
     }
 
     if (authenticatedSuccessfully) {
       await successFullAuthentication();
-    }else{
+    } else {
       showDialog(
           context: this.context,
           barrierDismissible: false,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Authentication error.'),
+              actions: [
+                TextButton(
+                  child: Text('ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    }
+  }
+
+  void displayErrorMessage() {
+    if (errorNotifierService.hasError) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error'),
+              content: Text(errorNotifierService.getError() ?? ''),
               actions: [
                 TextButton(
                   child: Text('ok'),

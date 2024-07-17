@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/models/account.dart';
-import 'package:home_management_app/models/metrics/account-metrics.dart';
-import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/services/endpoints/account.service.dart';
+
+import '../../models/account.dart';
+import '../../models/metrics/account-metrics.dart';
+import '../../models/transaction.dart';
+import '../endpoints/account.service.dart';
+import '../infra/error_notifier_service.dart';
 
 class AccountRepository extends ChangeNotifier {
   AccountService accountService;
+  ErrorNotifierService errorNotifierService;
   String cacheKey = 'accountsKey';
   final List<AccountModel> _internalAccounts = [];
   final List<AccountModel> accounts = [];
   final List<AccountSeries> accountSeries = [];
   bool showArchive = false;
 
-  AccountRepository({required this.accountService});
+  AccountRepository({required this.accountService, required this.errorNotifierService});
 
   Future refresh() async => await load();
 
@@ -51,6 +54,7 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
     } catch (ex) {
+      errorNotifierService.notifyError('Failed to update account');
       print(ex);
     }
   }

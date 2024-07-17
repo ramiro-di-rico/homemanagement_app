@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/services/infra/error_notifier_service.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'myapp.dart';
 import 'services/infra/platform/platform_context.dart';
@@ -81,13 +82,15 @@ void registerServices() {
 }
 
 void registerSingletons(PlatformContext platformContext) {
+  var errorNotifierService = ErrorNotifierService();
   GetIt.instance.registerSingleton(Caching());
 
   CryptographyService cryptographyService = CryptographyService();
   var userRepository = UserRepository();
   AuthenticationService authenticationService = AuthenticationService(
       cryptographyService: cryptographyService, userRepository: userRepository,
-      platformContext: platformContext);
+      platformContext: platformContext,
+      errorNotifierService: errorNotifierService);
 
   GetIt.instance.registerSingleton(authenticationService);
 
@@ -96,7 +99,7 @@ void registerSingletons(PlatformContext platformContext) {
       apiServiceFactory:
           ApiServiceFactory(authenticationService: authenticationService));
 
-  var accountRepository = AccountRepository(accountService: accountService);
+  var accountRepository = AccountRepository(accountService: accountService, errorNotifierService: errorNotifierService);
 
   var currencyRepository = CurrencyRepository(
       currencyService: CurrencyService(
@@ -136,4 +139,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(notificationRepository);
   GetIt.instance.registerSingleton(transactionRepository);
   GetIt.instance.registerSingleton(categoryRepository);
+  GetIt.instance.registerSingleton(errorNotifierService);
 }
