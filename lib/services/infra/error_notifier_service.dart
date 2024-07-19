@@ -1,19 +1,21 @@
 import 'package:flutter/cupertino.dart';
 
-class ErrorNotifierService extends ChangeNotifier {
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
+class NotifierService extends ChangeNotifier {
+  String? _message;
+  bool? _isError;
+  String? get errorMessage => _message;
 
-  bool get hasError => _errorMessage != null;
+  bool get hasError => _isError ?? false;
 
-  void notifyError(String message) {
-    _errorMessage = message;
+  void notify(String message, {bool isError = false}) {
+    _message = message;
+    _isError = isError;
     notifyListeners();
   }
 
-  String? getError() {
-    var message = _errorMessage.toString();
-    _errorMessage = null;
+  String? getMessage() {
+    var message = _message.toString();
+    _message = null;
     return message;
   }
 }

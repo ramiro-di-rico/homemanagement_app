@@ -15,7 +15,7 @@ class AuthenticationService {
   IdentityService _identityService = IdentityService();
   PlatformContext _platformContext;
   final LocalAuthentication _localAuth = LocalAuthentication();
-  final ErrorNotifierService _errorNotifierService;
+  final NotifierService _errorNotifierService;
   bool _isBiometricEnabled = false;
   final _logger = LoggerWrapper();
   UserModel? user;
@@ -24,7 +24,7 @@ class AuthenticationService {
       {required CryptographyService cryptographyService,
         required UserRepository userRepository,
         required PlatformContext platformContext,
-        required ErrorNotifierService errorNotifierService})
+        required NotifierService errorNotifierService})
       : _userRepository = userRepository,
         _cryptographyService = cryptographyService,
         _platformContext = platformContext,
@@ -62,7 +62,7 @@ class AuthenticationService {
       _logger.i('Biometrics are not enabled');
       return false;
     } on Exception catch (e) {
-      _errorNotifierService.notifyError('Unable to authenticate');
+      _errorNotifierService.notify('Unable to authenticate');
       return false;
     }
   }

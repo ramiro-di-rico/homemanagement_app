@@ -8,7 +8,7 @@ import '../infra/error_notifier_service.dart';
 
 class AccountRepository extends ChangeNotifier {
   AccountService accountService;
-  ErrorNotifierService errorNotifierService;
+  NotifierService errorNotifierService;
   String cacheKey = 'accountsKey';
   final List<AccountModel> _internalAccounts = [];
   final List<AccountModel> accounts = [];
@@ -54,7 +54,7 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
     } catch (ex) {
-      errorNotifierService.notifyError('Failed to update account');
+      errorNotifierService.notify('Failed to update account');
       print(ex);
     }
   }

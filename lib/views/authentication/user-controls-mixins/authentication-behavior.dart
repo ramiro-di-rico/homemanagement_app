@@ -11,8 +11,8 @@ import '../2fa_view.dart';
 mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   UserViewModel userViewModel = UserViewModel();
   bool isAuthenticating = false;
-  ErrorNotifierService errorNotifierService =
-      GetIt.instance<ErrorNotifierService>();
+  NotifierService errorNotifierService =
+      GetIt.instance<NotifierService>();
 
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
@@ -131,7 +131,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Error'),
-              content: Text(errorNotifierService.getError() ?? ''),
+              content: Text(errorNotifierService.getMessage() ?? ''),
               actions: [
                 TextButton(
                   child: Text('ok'),

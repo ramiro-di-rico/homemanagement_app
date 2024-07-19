@@ -8,6 +8,7 @@ import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
 import '../accounts/account.detail.dart';
 import '../accounts/widgets/add_transaction_sheet_desktop.dart';
+import '../mixins/notifier_mixin.dart';
 import 'widgets/account.sheet.dart';
 
 class AccountListDesktopView extends StatefulWidget {
@@ -15,15 +16,13 @@ class AccountListDesktopView extends StatefulWidget {
   _AccountListDesktopViewState createState() => _AccountListDesktopViewState();
 }
 
-class _AccountListDesktopViewState extends State<AccountListDesktopView> {
+class _AccountListDesktopViewState extends State<AccountListDesktopView> with NotifierMixin {
   List<AccountModel> accounts = [];
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
   TransactionRepository transactionsRepo =
       GetIt.instance<TransactionRepository>();
   TransactionService transactionService = GetIt.instance<TransactionService>();
   PlatformContext platform = GetIt.instance<PlatformContext>();
-  ErrorNotifierService errorNotifierService =
-      GetIt.instance<ErrorNotifierService>();
   bool showArchive = false;
 
   @override
@@ -31,7 +30,6 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
     super.initState();
     load();
     accountsRepo.addListener(load);
-    errorNotifierService.addListener(displayError);
     //transactionsRepo.addListener(refreshAccounts);
   }
 
@@ -39,7 +37,6 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
   void dispose() {
     //accountsRepo.removeListener(load);
     //transactionsRepo.removeListener(refreshAccounts);
-    errorNotifierService.removeListener(displayError);
     super.dispose();
   }
 
@@ -212,16 +209,6 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
         'Failed to remove ${item.name}',
-        style: TextStyle(color: Colors.redAccent),
-      )));
-    }
-  }
-
-  void displayError() {
-    if (errorNotifierService.hasError) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-        errorNotifierService.getError() ?? '',
         style: TextStyle(color: Colors.redAccent),
       )));
     }

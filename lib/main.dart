@@ -82,7 +82,7 @@ void registerServices() {
 }
 
 void registerSingletons(PlatformContext platformContext) {
-  var errorNotifierService = ErrorNotifierService();
+  var errorNotifierService = NotifierService();
   GetIt.instance.registerSingleton(Caching());
 
   CryptographyService cryptographyService = CryptographyService();
@@ -124,7 +124,8 @@ void registerSingletons(PlatformContext platformContext) {
 
   var transactionRepository = TransactionRepository(
       transactionService: transactionService,
-      accountRepository: accountRepository);
+      accountRepository: accountRepository,
+      errorNotifierService: errorNotifierService);
 
   var categoryRepository = CategoryRepository(CategoryService(
       authenticationService: authenticationService,
