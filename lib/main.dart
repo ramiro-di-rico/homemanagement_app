@@ -90,7 +90,7 @@ void registerSingletons(PlatformContext platformContext) {
   AuthenticationService authenticationService = AuthenticationService(
       cryptographyService: cryptographyService, userRepository: userRepository,
       platformContext: platformContext,
-      errorNotifierService: errorNotifierService);
+      notifierService: errorNotifierService);
 
   GetIt.instance.registerSingleton(authenticationService);
 
