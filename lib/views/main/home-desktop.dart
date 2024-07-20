@@ -9,6 +9,7 @@ import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/security/authentication.service.dart';
 import 'dashboard.dart';
+import 'settings.dart';
 import 'widgets/account-sheet-dektop.dart';
 
 class HomeDesktop extends StatefulWidget {
@@ -37,7 +38,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              Navigator.pushNamed(context, '/settings');
+              Navigator.pushNamed(context, SettingsScreen.id);
             },
           ),
           IconButton(
