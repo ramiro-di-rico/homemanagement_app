@@ -3,7 +3,6 @@ import 'package:get_it/get_it.dart';
 
 import '../../../custom/keyboard.factory.dart';
 import '../../../models/view-models/user-view-model.dart';
-import '../../../services/infra/error_notifier_service.dart';
 import '../../../services/security/authentication.service.dart';
 import '../../main/home.dart';
 import '../2fa_view.dart';
@@ -11,8 +10,6 @@ import '../2fa_view.dart';
 mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   UserViewModel userViewModel = UserViewModel();
   bool isAuthenticating = false;
-  NotifierService errorNotifierService =
-      GetIt.instance<NotifierService>();
 
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
@@ -22,12 +19,10 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
-    errorNotifierService.addListener(displayErrorMessage);
     loadUser();
   }
 
   void dispose() {
-    errorNotifierService.removeListener(displayErrorMessage);
     super.dispose();
   }
 
@@ -110,28 +105,6 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Authentication error.'),
-              actions: [
-                TextButton(
-                  child: Text('ok'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          });
-    }
-  }
-
-  void displayErrorMessage() {
-    if (errorNotifierService.hasError) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Error'),
-              content: Text(errorNotifierService.getMessage() ?? ''),
               actions: [
                 TextButton(
                   child: Text('ok'),

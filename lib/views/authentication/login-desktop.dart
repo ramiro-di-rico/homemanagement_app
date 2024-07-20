@@ -4,6 +4,7 @@ import 'package:home_management_app/views/authentication/registration.dart';
 
 import '../../custom/components/email-textfield.dart';
 import '../../custom/components/password-textfield.dart';
+import '../mixins/notifier_mixin.dart';
 import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 
@@ -15,7 +16,7 @@ class DesktopLoginView extends StatefulWidget {
 }
 
 class _DesktopLoginViewState extends State<DesktopLoginView>
-    with AuthenticationBehavior, EmailBehavior, PasswordBehavior {
+    with AuthenticationBehavior, EmailBehavior, PasswordBehavior, NotifierMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

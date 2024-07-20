@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
+import '../mixins/notifier_mixin.dart';
 import 'registration.dart';
 import 'user-controls-mixins/authentication-behavior.dart';
 import 'user-controls-mixins/email-behavior.dart';
@@ -14,7 +15,10 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView>
-    with AuthenticationBehavior, EmailBehavior, PasswordBehavior {
+    with AuthenticationBehavior,
+        EmailBehavior,
+        PasswordBehavior,
+        NotifierMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
