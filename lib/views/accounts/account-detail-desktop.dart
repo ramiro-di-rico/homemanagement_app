@@ -15,6 +15,7 @@ import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
 import '../main/widgets/overview/overview-widget.dart';
+import '../mixins/notifier_mixin.dart';
 import 'account-details-behaviors/account-list-scrolling-behavior.dart';
 import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
 import 'widgets/account-most-expensive-categories.dart';
@@ -29,7 +30,7 @@ class AccountDetailDesktop extends StatefulWidget {
 }
 
 class _AccountDetailDesktopState extends State<AccountDetailDesktop>
-    with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
+    with TransactionListSkeletonBehavior, AccountListScrollingBehavior, NotifierMixin {
   late AccountModel account;
   Overall? overall;
 

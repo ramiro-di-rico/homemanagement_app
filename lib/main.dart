@@ -99,7 +99,7 @@ void registerSingletons(PlatformContext platformContext) {
       apiServiceFactory:
           ApiServiceFactory(authenticationService: authenticationService));
 
-  var accountRepository = AccountRepository(accountService: accountService, errorNotifierService: errorNotifierService);
+  var accountRepository = AccountRepository(accountService: accountService, notifierService: errorNotifierService);
 
   var currencyRepository = CurrencyRepository(
       currencyService: CurrencyService(

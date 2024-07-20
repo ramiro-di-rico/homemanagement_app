@@ -37,7 +37,7 @@ class TransactionRepository extends ChangeNotifier {
       this.accountRepository.setBalance(transactionResult.targetAccount!);
     }
     
-    errorNotifierService.notify('Transaction $transaction.name added successfully');
+    errorNotifierService.notify('Transaction ${transaction.name} added successfully');
     notifyListeners();
   }
 
@@ -51,7 +51,7 @@ class TransactionRepository extends ChangeNotifier {
     this.accountRepository.updateBalance(transactionModel.accountId,
         -transactionModel.price, transactionModel.transactionType);
 
-    errorNotifierService.notify('Transaction $transactionModel.name removed successfully');
+    errorNotifierService.notify('Transaction ${transactionModel.name} removed successfully');
     notifyListeners();
   }
 
@@ -70,7 +70,7 @@ class TransactionRepository extends ChangeNotifier {
     currentContainer.transactions[index] = transactionModel;
     mapContainerToTransctions();
 
-    errorNotifierService.notify('Transaction $transactionModel.name updated successfully');
+    errorNotifierService.notify('Transaction ${transactionModel.name} updated successfully');
     notifyListeners();
   }
 

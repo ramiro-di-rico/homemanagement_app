@@ -17,6 +17,10 @@ mixin NotifierMixin<T extends StatefulWidget> on State<T> {
   }
 
   void displayMessage() {
+    var message = errorNotifierService.getMessage();
+
+    if (message == null || message == "null") return;
+
     if (errorNotifierService.hasError){
       showDialog(
         context: context,
@@ -24,7 +28,7 @@ mixin NotifierMixin<T extends StatefulWidget> on State<T> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Error'),
-            content: Text(errorNotifierService.getMessage() ?? ''),
+            content: Text(message),
             actions: [
               TextButton(
                 child: Text('ok'),
@@ -38,7 +42,7 @@ mixin NotifierMixin<T extends StatefulWidget> on State<T> {
       );
     } else{
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(errorNotifierService.getMessage() ?? '')));
+          .showSnackBar(SnackBar(content: Text(message)));
     }
   }
 }
