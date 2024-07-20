@@ -3,22 +3,23 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
-import 'package:home_management_app/models/account.dart';
-import 'package:home_management_app/models/category.dart';
-import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/services/repositories/account.repository.dart';
-import 'package:home_management_app/services/repositories/category.repository.dart';
-import 'package:home_management_app/services/repositories/transaction.repository.dart';
-import 'package:home_management_app/views/accounts/widgets/transaction-row-skeleton.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../models/account.dart';
+import '../../models/category.dart';
+import '../../models/transaction.dart';
+import '../../services/repositories/account.repository.dart';
+import '../../services/repositories/category.repository.dart';
+import '../../services/repositories/transaction.repository.dart';
+import '../mixins/notifier_mixin.dart';
 import 'account-details-behaviors/account-list-scrolling-behavior.dart';
 import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
 import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
 import 'widgets/account.info.dart';
 import 'widgets/add.transaction.sheet.dart';
+import 'widgets/transaction-row-skeleton.dart';
 import 'widgets/transaction.row.info.dart';
 
 class AccountDetailScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class AccountDetailScreen extends StatefulWidget {
 }
 
 class _AccountDetailScreenState extends State<AccountDetailScreen>
-    with TransactionListSkeletonBehavior, AccountListScrollingBehavior {
+    with TransactionListSkeletonBehavior, AccountListScrollingBehavior, NotifierMixin {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();

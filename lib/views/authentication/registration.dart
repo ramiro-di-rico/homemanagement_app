@@ -6,6 +6,7 @@ import 'package:home_management_app/views/authentication/user-controls-mixins/pa
 import 'package:home_management_app/views/main/home.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 
+import '../mixins/notifier_mixin.dart';
 import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 
@@ -16,7 +17,8 @@ class RegistrationScreen extends StatefulWidget {
   _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> with PasswordBehavior, EmailBehavior, PasswordStrengthBehavior {
+class _RegistrationScreenState extends State<RegistrationScreen>
+    with PasswordBehavior, EmailBehavior, PasswordStrengthBehavior, NotifierMixin {
   AuthenticationService authenticationService =
       GetIt.instance<AuthenticationService>();
 

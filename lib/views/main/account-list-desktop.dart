@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../models/account.dart';
 import '../../services/endpoints/transaction.service.dart';
+import '../../services/infra/error_notifier_service.dart';
 import '../../services/infra/platform/platform_context.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
 import '../accounts/account.detail.dart';
 import '../accounts/widgets/add_transaction_sheet_desktop.dart';
+import '../mixins/notifier_mixin.dart';
 import 'widgets/account.sheet.dart';
 
 class AccountListDesktopView extends StatefulWidget {
@@ -14,7 +16,7 @@ class AccountListDesktopView extends StatefulWidget {
   _AccountListDesktopViewState createState() => _AccountListDesktopViewState();
 }
 
-class _AccountListDesktopViewState extends State<AccountListDesktopView> {
+class _AccountListDesktopViewState extends State<AccountListDesktopView> with NotifierMixin {
   List<AccountModel> accounts = [];
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
   TransactionRepository transactionsRepo =
@@ -28,12 +30,13 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
     super.initState();
     load();
     accountsRepo.addListener(load);
-    //transactionsRepo.addListener(refreshAccounts);
+    transactionsRepo.addListener(refreshAccounts);
   }
 
   @override
   void dispose() {
-    //accountsRepo.removeListener(load);
+    accountsRepo.removeListener(load);
+    transactionsRepo.removeListener(refreshAccounts);
     super.dispose();
   }
 
@@ -156,8 +159,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> {
                     child: Text(item.archive ? 'Unarchive' : 'Archive',
                         style: TextStyle(color: Colors.pinkAccent)),
                     onPressed: () {
-                      item.archive = !item.archive;
-                      accountsRepo.update(item);
+                      accountsRepo.archive(item);
                     },
                   ),
                   MenuItemButton(

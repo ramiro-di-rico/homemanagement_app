@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/models/account.dart';
-import 'package:home_management_app/models/metrics/account-metrics.dart';
-import 'package:home_management_app/models/transaction.dart';
-import 'package:home_management_app/services/endpoints/account.service.dart';
+
+import '../../models/account.dart';
+import '../../models/metrics/account-metrics.dart';
+import '../../models/transaction.dart';
+import '../endpoints/account.service.dart';
+import '../infra/error_notifier_service.dart';
 
 class AccountRepository extends ChangeNotifier {
   AccountService accountService;
+  NotifierService notifierService;
   String cacheKey = 'accountsKey';
   final List<AccountModel> _internalAccounts = [];
   final List<AccountModel> accounts = [];
   final List<AccountSeries> accountSeries = [];
   bool showArchive = false;
 
-  AccountRepository({required this.accountService});
+  AccountRepository({required this.accountService, required this.notifierService});
 
   Future refresh() async => await load();
 
@@ -41,8 +44,10 @@ class AccountRepository extends ChangeNotifier {
       await this.accountService.add(accountModel);
       this.accounts.add(accountModel);
       notifyListeners();
+      notifierService.notify('Account $accountModel.name added successfully');
     } catch (ex) {
       print(ex);
+      notifierService.notify('Failed to add account ${accountModel.name}');
     }
   }
 
@@ -50,7 +55,22 @@ class AccountRepository extends ChangeNotifier {
     try {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
+      notifierService.notify('Account $accountModel.name updated successfully');
     } catch (ex) {
+      notifierService.notify('Failed to update account ${accountModel.name}');
+      print(ex);
+    }
+  }
+
+  Future archive(AccountModel accountModel) async {
+    var archiveLabel = accountModel.archive ? 'archived' : 'unarchived';
+    try {
+      accountModel.archive = !accountModel.archive;
+      await accountService.update(accountModel);
+      _loadAccounts(accounts);
+      notifierService.notify('Account ${accountModel.name} ${archiveLabel} successfully');
+    } catch (ex) {
+      notifierService.notify('Failed to ${archiveLabel} account ${accountModel.name}');
       print(ex);
     }
   }
@@ -60,9 +80,10 @@ class AccountRepository extends ChangeNotifier {
       await this.accountService.delete(accountModel);
       this.accounts.remove(accountModel);
       notifyListeners();
+      notifierService.notify('Account $accountModel.name deleted successfully');
     } catch (ex) {
       print(ex);
-      throw ex;
+      notifierService.notify('Failed to delete account ${accountModel.name}');
     }
   }
 

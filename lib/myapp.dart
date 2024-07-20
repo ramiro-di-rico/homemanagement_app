@@ -5,6 +5,7 @@ import 'package:home_management_app/views/authentication/registration-desktop.da
 import 'package:home_management_app/views/authentication/registration.dart';
 import 'package:home_management_app/views/main/home-desktop.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
+import 'package:home_management_app/views/main/settings.dart';
 
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_type.dart';
@@ -130,6 +131,7 @@ class MyApp extends StatelessWidget {
         AccountMetrics.id: (context) => AccountMetrics(),
         LoggingView.id: (context) => LoggingView(),
         TwoFactorAuthenticationView.id: (context) => TwoFactorAuthenticationView(),
+        SettingsScreen.id: (context) => SettingsScreen(),
       },
       initialRoute: LoginView.id,
     );

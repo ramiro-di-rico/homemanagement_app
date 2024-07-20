@@ -4,11 +4,13 @@ import 'package:home_management_app/services/repositories/account.repository.dar
 import 'package:home_management_app/services/endpoints/transaction.service.dart';
 
 import '../../models/transaction.page.dart';
+import '../infra/error_notifier_service.dart';
 import 'account.container.dart';
 
 class TransactionRepository extends ChangeNotifier {
   TransactionService transactionService;
   AccountRepository accountRepository;
+  NotifierService errorNotifierService;
   List<AccountContainer> accountsContainer = [];
 
   final List<TransactionModel> transactions = [];
@@ -18,7 +20,7 @@ class TransactionRepository extends ChangeNotifier {
   String nameFiltering = '';
 
   TransactionRepository(
-      {required this.transactionService, required this.accountRepository});
+      {required this.transactionService, required this.accountRepository, required this.errorNotifierService});
 
   Future add(TransactionModel transaction) async {
     var transactionResult = await this.transactionService.add(transaction);
@@ -34,6 +36,8 @@ class TransactionRepository extends ChangeNotifier {
     if (transactionResult.isTargetAccountAvailable()) {
       this.accountRepository.setBalance(transactionResult.targetAccount!);
     }
+    
+    errorNotifierService.notify('Transaction ${transaction.name} added successfully');
     notifyListeners();
   }
 
@@ -46,6 +50,8 @@ class TransactionRepository extends ChangeNotifier {
     mapContainerToTransctions();
     this.accountRepository.updateBalance(transactionModel.accountId,
         -transactionModel.price, transactionModel.transactionType);
+
+    errorNotifierService.notify('Transaction ${transactionModel.name} removed successfully');
     notifyListeners();
   }
 
@@ -63,6 +69,8 @@ class TransactionRepository extends ChangeNotifier {
         .indexWhere((element) => element.id == transactionModel.id);
     currentContainer.transactions[index] = transactionModel;
     mapContainerToTransctions();
+
+    errorNotifierService.notify('Transaction ${transactionModel.name} updated successfully');
     notifyListeners();
   }
 

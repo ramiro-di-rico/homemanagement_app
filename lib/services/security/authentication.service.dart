@@ -5,6 +5,7 @@ import 'package:local_auth/local_auth.dart';
 import '../../models/view-models/user-view-model.dart';
 import '../endpoints/identity.service.dart';
 import '../infra/cryptography.service.dart';
+import '../infra/error_notifier_service.dart';
 import '../infra/logger_wrapper.dart';
 import '../infra/platform/platform_type.dart';
 
@@ -14,46 +15,56 @@ class AuthenticationService {
   IdentityService _identityService = IdentityService();
   PlatformContext _platformContext;
   final LocalAuthentication _localAuth = LocalAuthentication();
+  final NotifierService _notifierService;
   bool _isBiometricEnabled = false;
   final _logger = LoggerWrapper();
   UserModel? user;
 
   AuthenticationService(
-      {required CryptographyService cryptographyService, required UserRepository userRepository, required PlatformContext platformContext})
+      {required CryptographyService cryptographyService,
+        required UserRepository userRepository,
+        required PlatformContext platformContext,
+        required NotifierService notifierService})
       : _userRepository = userRepository,
         _cryptographyService = cryptographyService,
-        _platformContext = platformContext;
+        _platformContext = platformContext,
+        _notifierService = notifierService;
 
   bool isAuthenticating = false;
 
   Future<bool> init() async {
-    _logger.i('Initializing authentication service...');
-    this.user = await this._userRepository.load();
+    try {
+      _logger.i('Initializing authentication service...');
+      this.user = await this._userRepository.load();
 
-    _logger.i('Checking if can auto authenticate...');
-    if (!canAutoAuthenticate()) return false;
+      _logger.i('Checking if can auto authenticate...');
+      if (!canAutoAuthenticate()) return false;
 
-    _logger.i('Checking if is authenticated...');
-    if (isAuthenticated()) {
-      _logger.i('User is already authenticated');
-      await refreshToken();
-      return true;
-    }
+      _logger.i('Checking if is authenticated...');
+      if (isAuthenticated()) {
+        _logger.i('User is already authenticated');
+        await refreshToken();
+        return true;
+      }
 
-    if (_platformContext.getPlatformType() != PlatformType.Mobile) {
+      if (_platformContext.getPlatformType() != PlatformType.Mobile) {
+        return false;
+      }
+
+      _logger.i('Checking if biometric is enabled...');
+      _isBiometricEnabled =
+          await _localAuth.isDeviceSupported() && await _localAuth.canCheckBiometrics;
+      if (_isBiometricEnabled) {
+        _logger.i('Biometric is enabled, authenticating...');
+        return await biometricsAuthenticate();
+      }
+
+      _logger.i('Biometrics are not enabled');
+      return false;
+    } on Exception catch (e) {
+      _notifierService.notify('Unable to authenticate');
       return false;
     }
-
-    _logger.i('Checking if biometric is enabled...');
-    _isBiometricEnabled =
-        await _localAuth.isDeviceSupported() && await _localAuth.canCheckBiometrics;
-    if (_isBiometricEnabled) {
-      _logger.i('Biometric is enabled, authenticating...');
-      return await biometricsAuthenticate();
-    }
-
-    _logger.i('Biometrics are not enabled');
-    return false;
   }
 
   bool canAutoAuthenticate() {

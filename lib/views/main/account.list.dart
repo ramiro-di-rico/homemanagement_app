@@ -8,6 +8,7 @@ import 'package:home_management_app/views/accounts/account.detail.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../accounts/widgets/add.transaction.sheet.dart';
+import '../mixins/notifier_mixin.dart';
 import 'widgets/account.sheet.dart';
 
 class AccountListScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class AccountListScreen extends StatefulWidget {
   _AccountListScreenState createState() => _AccountListScreenState();
 }
 
-class _AccountListScreenState extends State<AccountListScreen> {
+class _AccountListScreenState extends State<AccountListScreen> with NotifierMixin {
   List<AccountModel> accounts = [];
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
   TransactionRepository transactionsRepo =

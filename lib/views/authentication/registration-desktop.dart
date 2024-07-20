@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../custom/components/email-textfield.dart';
 import '../../custom/components/password-textfield.dart';
-import '../main/home.dart';
+import '../mixins/notifier_mixin.dart';
 import 'user-controls-mixins/authentication-behavior.dart';
 import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
@@ -21,7 +21,8 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
         AuthenticationBehavior,
         EmailBehavior,
         PasswordBehavior,
-        PasswordStrengthBehavior {
+        PasswordStrengthBehavior,
+        NotifierMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
