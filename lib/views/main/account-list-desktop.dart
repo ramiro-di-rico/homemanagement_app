@@ -159,8 +159,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> with No
                     child: Text(item.archive ? 'Unarchive' : 'Archive',
                         style: TextStyle(color: Colors.pinkAccent)),
                     onPressed: () {
-                      item.archive = !item.archive;
-                      accountsRepo.update(item);
+                      accountsRepo.archive(item);
                     },
                   ),
                   MenuItemButton(

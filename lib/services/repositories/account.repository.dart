@@ -62,6 +62,19 @@ class AccountRepository extends ChangeNotifier {
     }
   }
 
+  Future archive(AccountModel accountModel) async {
+    var archiveLabel = accountModel.archive ? 'archived' : 'unarchived';
+    try {
+      accountModel.archive = !accountModel.archive;
+      await accountService.update(accountModel);
+      _loadAccounts(accounts);
+      notifierService.notify('Account ${accountModel.name} ${archiveLabel} successfully');
+    } catch (ex) {
+      notifierService.notify('Failed to ${archiveLabel} account ${accountModel.name}');
+      print(ex);
+    }
+  }
+
   Future delete(AccountModel accountModel) async {
     try {
       await this.accountService.delete(accountModel);
