@@ -30,13 +30,13 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> with No
     super.initState();
     load();
     accountsRepo.addListener(load);
-    //transactionsRepo.addListener(refreshAccounts);
+    transactionsRepo.addListener(refreshAccounts);
   }
 
   @override
   void dispose() {
-    //accountsRepo.removeListener(load);
-    //transactionsRepo.removeListener(refreshAccounts);
+    accountsRepo.removeListener(load);
+    transactionsRepo.removeListener(refreshAccounts);
     super.dispose();
   }
 
