@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/custom/main-card.dart';
 import 'package:home_management_app/services/repositories/preferences.repository.dart';
 
 class DailyBackupWdiget extends StatefulWidget {
@@ -27,25 +26,14 @@ class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
 
   @override
   Widget build(BuildContext context) {
-    return MainCard(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Checkbox(
-            value: dailyBackupEnabled,
-            onChanged: onEnableChanged,
-          ),
-          Expanded(
-            child: Text('Sync Options'),
-          ),
-          Expanded(
-              child: TextButton(
-                  child: Icon(
-                    Icons.cloud_download,
-                    color: Colors.pinkAccent,
-                  ),
-                  onPressed: () {}))
-        ],
+    return Card(
+      child: ListTile(
+        title: Text('Daily Backup'),
+        subtitle: Text('Backup your data daily'),
+        trailing: Switch(
+          value: dailyBackupEnabled,
+          onChanged: onEnableChanged,
+        ),
       ),
     );
   }
