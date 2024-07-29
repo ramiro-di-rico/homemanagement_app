@@ -14,15 +14,19 @@ class PreferencesRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool getDailyBackupValue() =>
-      this
-          .preferences
-          .firstWhere((element) => element.name == 'EnableDailyBackups')
-          .value ==
-      'true';
+  bool getDailyBackupValue()
+  {
+    if (this.preferences.length == 0) return false;
 
-  String getPreferredCurrency() => this
-      .preferences
-      .firstWhere((element) => element.name == 'PreferredCurrency')
-      .value;
+    var dailyBackupConfig = this.preferences.firstWhere((element) => element.name == 'EnableDailyBackups');
+
+    return dailyBackupConfig.value == 'true';
+  }
+
+  String getPreferredCurrency()
+  {
+    if (this.preferences.length == 0) return '';
+
+    return this.preferences.firstWhere((element) => element.name == 'PreferredCurrency').value;
+  }
 }

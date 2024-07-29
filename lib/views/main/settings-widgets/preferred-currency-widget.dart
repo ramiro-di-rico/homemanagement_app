@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-
-import '../../../custom/main-card.dart';
 import '../../../services/repositories/preferences.repository.dart';
 
-class PreferredCurreny extends StatefulWidget {
-  const PreferredCurreny({super.key});
+class PreferredCurrency extends StatefulWidget {
+  const PreferredCurrency({super.key});
 
   @override
-  State<PreferredCurreny> createState() => _PreferredCurrenyState();
+  State<PreferredCurrency> createState() => _PreferredCurrencyState();
 }
 
-class _PreferredCurrenyState extends State<PreferredCurreny> {
+class _PreferredCurrencyState extends State<PreferredCurrency> {
   PreferencesRepository preferencesRepository =
       GetIt.I<PreferencesRepository>();
 
   @override
   Widget build(BuildContext context) {
-    return MainCard(
+    return Card(
       child: ListTile(
         leading: Text(
           'Preferred Currency',

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/services/repositories/preferences.repository.dart';
 
-class DailyBackupWdiget extends StatefulWidget {
+class DailyBackupWidget extends StatefulWidget {
   @override
-  _DailyBackupWdigetState createState() => _DailyBackupWdigetState();
+  _DailyBackupWidgetState createState() => _DailyBackupWidgetState();
 }
 
-class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
+class _DailyBackupWidgetState extends State<DailyBackupWidget> {
   PreferencesRepository preferencesRepository =
       GetIt.I<PreferencesRepository>();
   bool dailyBackupEnabled = false;
