@@ -19,4 +19,18 @@ class CategoryModel{
   factory CategoryModel.empty(){
     return CategoryModel(0, 0, 'Category Model', '', false, false);
   }
+
+  factory CategoryModel.create(String name){
+    return CategoryModel(0, 0, name, 'empty', false, false);
+  }
+
+  toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'icon': icon,
+      'measurable': measurable,
+      'isActive': isActive
+    };
+  }
 }

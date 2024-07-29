@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/views/main/settings-widgets/add_category_sheet.dart';
 
 import '../../../services/repositories/category.repository.dart';
 
@@ -15,12 +16,24 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> {
   CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
 
   @override
+  void initState() {
+    super.initState();
+    _categoryRepository.addListener(refreshList);
+  }
+
+  @override
+  void dispose() {
+    _categoryRepository.removeListener(refreshList);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Card(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
             child: Row(
                 children: [
                   Text('Active', style: TextStyle(fontSize: 18)),
@@ -31,7 +44,30 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> {
                   Spacer(),
                   IconButton(
                     onPressed: () {
-                      //Navigator.pushNamed(context, '/add-category');
+                      showModalBottomSheet(
+                          context: context,
+                          constraints: BoxConstraints(
+                            maxHeight: 1000,
+                            maxWidth: 500,
+                          ),
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(25.0))),
+                          builder: (context) {
+                            return SizedBox(
+                              height: 100,
+                              child: AnimatedPadding(
+                                padding: EdgeInsets.only(
+                                  bottom: MediaQuery.of(context).viewInsets.bottom
+                                ),
+                                duration: const Duration(milliseconds: 100),
+                                curve: Curves.decelerate,
+                                child: AddCategorySheet()
+                              ),
+                            );
+                          }
+                      );
                     },
                     icon: Icon(Icons.add),
                   ),
@@ -106,5 +142,9 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> {
         ),
       ],
     );
+  }
+
+  void refreshList() {
+    setState(() {});
   }
 }
