@@ -27,12 +27,15 @@ class _DailyBackupWidgetState extends State<DailyBackupWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListTile(
-        title: Text('Daily Backup'),
-        subtitle: Text('Backup your data daily'),
-        trailing: Switch(
-          value: dailyBackupEnabled,
-          onChanged: onEnableChanged,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ListTile(
+          title: Text('Daily Backup'),
+          subtitle: Text('Backup your data daily'),
+          trailing: Switch(
+            value: dailyBackupEnabled,
+            onChanged: onEnableChanged,
+          ),
         ),
       ),
     );
