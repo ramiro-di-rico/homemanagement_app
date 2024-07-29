@@ -101,28 +101,7 @@ class MyApp extends StatelessWidget {
               return null;
             }),
           ),
-          switchTheme: SwitchThemeData(
-            thumbColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
-                return null;
-              }
-              if (states.contains(WidgetState.selected)) {
-                return Colors.pinkAccent;
-              }
-              return null;
-            }),
-            trackColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
-                return null;
-              }
-              if (states.contains(WidgetState.selected)) {
-                return Colors.pinkAccent;
-              }
-              return null;
-            }),
-          )),
+      ),
       themeMode: ThemeMode.system,
       routes: {
         LoginView.id: (context) => !isDesktop ? LoginView() : DesktopLoginView(),
