@@ -1,10 +1,8 @@
-import 'package:home_management_app/models/category.dart';
-import 'package:home_management_app/services/infra/error_notifier_service.dart';
+import '../../models/category.dart';
+import '../infra/error_notifier_service.dart';
 import 'api.service.factory.dart';
 import '../security/authentication.service.dart';
 import 'dart:convert';
-
-import 'notification.service.dart';
 
 class CategoryService {
   AuthenticationService authenticationService;
@@ -29,7 +27,8 @@ class CategoryService {
   }
 
   Future update(CategoryModel category) async {
-    await this.apiServiceFactory.apiPut('category/v3', category.toJson());
+    var updateCategory = UpdateCategoryModel.fromCategoryModel(category);
+    await this.apiServiceFactory.apiPut('category/v3', json.encode(updateCategory));
     notifierService.notify('Category ${category.name} updated');
   }
 

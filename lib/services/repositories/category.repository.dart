@@ -24,10 +24,7 @@ class CategoryRepository extends ChangeNotifier {
   }
 
   Future update(CategoryModel category) async {
-    var updatedCategory = await categoryService.update(category);
-    var index = categories.indexWhere((element) => element.id == category.id);
-    categories[index] = updatedCategory;
-    categories.sort((a, b) => a.name.compareTo(b.name));
+    await categoryService.update(category);
     notifyListeners();
   }
 

@@ -4,6 +4,7 @@ import 'package:home_management_app/views/main/settings-widgets/add_category_she
 
 import '../../../services/repositories/category.repository.dart';
 import '../../mixins/notifier_mixin.dart';
+import 'edit_category_sheet.dart';
 
 class CategoriesListWidget extends StatefulWidget {
   const CategoriesListWidget({super.key});
@@ -13,7 +14,6 @@ class CategoriesListWidget extends StatefulWidget {
 }
 
 class _CategoriesListWidgetState extends State<CategoriesListWidget> with NotifierMixin {
-
   CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
 
   @override
@@ -104,12 +104,38 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                           MenuAnchor(
                               menuChildren: [
                                 MenuItemButton(
-                                  child: Text('Edit'),
+                                  leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
+                                  child: Text('Edit', style: TextStyle(color: Colors.blueAccent)),
                                   onPressed: () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        constraints: BoxConstraints(
+                                          maxHeight: 1000,
+                                          maxWidth: 500,
+                                        ),
+                                        isScrollControlled: true,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.vertical(
+                                                top: Radius.circular(25.0))),
+                                        builder: (context) {
+                                          return SizedBox(
+                                            height: 100,
+                                            child: AnimatedPadding(
+                                              padding: EdgeInsets.only(
+                                                  bottom: MediaQuery.of(context).viewInsets.bottom
+                                              ),
+                                              duration: const Duration(milliseconds: 100),
+                                              curve: Curves.decelerate,
+                                              child: EditCategorySheet(category: category)
+                                            ),
+                                          );
+                                        }
+                                    );
                                   },
                                 ),
                                 MenuItemButton(
-                                  child: Text('Delete'),
+                                  leadingIcon: Icon(Icons.delete, color: Colors.redAccent),
+                                  child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
                                   onPressed: () {
                                     _categoryRepository.delete(_categoryRepository.categories[index]);
                                   },
@@ -126,7 +152,6 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                                   }
                                 },
                                 icon: const Icon(Icons.more_vert),
-                                tooltip: 'Show menu',
                               );
                             },
                           ),
