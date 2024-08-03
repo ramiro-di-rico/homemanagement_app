@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/views/main/settings-widgets/add_category_sheet.dart';
 
+import '../../../extensions/icons_list.dart';
 import '../../../services/repositories/category.repository.dart';
 
 class CategoriesListWidget extends StatefulWidget {
@@ -38,8 +39,10 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> {
                 children: [
                   Text('Active', style: TextStyle(fontSize: 18)),
                   SizedBox(width: 30),
-                  Text('Can be measured', style: TextStyle(fontSize: 18)),
-                  SizedBox(width: 30),
+                  Text('Measurable', style: TextStyle(fontSize: 18)),
+                  SizedBox(width: 10),
+                  Text('Icon', style: TextStyle(fontSize: 18)),
+                  SizedBox(width: 20),
                   Text('Name', style: TextStyle(fontSize: 18)),
                   Spacer(),
                   IconButton(
@@ -90,7 +93,9 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> {
                           Checkbox(value: category.isActive, onChanged: (value) {}),
                           SizedBox(width: 50),
                           Checkbox(value: category.measurable, onChanged: (value) {}),
-                          SizedBox(width: 140),
+                          SizedBox(width: 80),
+                          Icon(IconsList.allIconsMap[category.icon]),
+                          SizedBox(width: 35),
                           Expanded(
                             child: Text(
                                 category.name,
