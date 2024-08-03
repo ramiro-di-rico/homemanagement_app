@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/views/main/settings-widgets/add_category_sheet.dart';
 
 import '../../../services/repositories/category.repository.dart';
+import '../../mixins/notifier_mixin.dart';
 
 class CategoriesListWidget extends StatefulWidget {
   const CategoriesListWidget({super.key});
@@ -11,7 +12,7 @@ class CategoriesListWidget extends StatefulWidget {
   State<CategoriesListWidget> createState() => _CategoriesListWidgetState();
 }
 
-class _CategoriesListWidgetState extends State<CategoriesListWidget> {
+class _CategoriesListWidgetState extends State<CategoriesListWidget> with NotifierMixin {
 
   CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
 
@@ -110,7 +111,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> {
                                 MenuItemButton(
                                   child: Text('Delete'),
                                   onPressed: () {
-                                    //_categoryRepository.delete(_categoryRepository.categories[index]);
+                                    _categoryRepository.delete(_categoryRepository.categories[index]);
                                   },
                                 ),
                               ],
