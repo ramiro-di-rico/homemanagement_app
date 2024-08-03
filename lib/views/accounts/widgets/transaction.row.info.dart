@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/models/category.dart';
+import 'package:home_management_app/models/transaction.dart';
+import 'package:home_management_app/services/repositories/transaction.repository.dart';
 
-import '../../../extensions/icons_list.dart';
 import '../../../models/account.dart';
-import '../../../models/category.dart';
-import '../../../models/transaction.dart';
-import '../../../services/repositories/transaction.repository.dart';
 import 'add.transaction.sheet.dart';
 
 class TransactionRowInfo extends StatelessWidget {
@@ -90,7 +89,7 @@ class TransactionRowInfo extends StatelessWidget {
                         ),
                       ),
                       Chip(
-                        label: Icon(IconsList.allIconsMap[category.icon]),
+                        label: Text(category.name),
                       ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
