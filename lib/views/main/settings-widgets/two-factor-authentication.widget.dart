@@ -21,17 +21,23 @@ class _TwoFactorAuthenticationWidgetState
 
   @override
   Widget build(BuildContext context) {
-    return MainCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Checkbox(value: twoFactorEnabled, onChanged: onChecked),
-              Text('Enable Two Factor Authentication')
-            ],
-          ),
-        ],
+    return Card(
+      child: SizedBox(
+        height: 75,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Checkbox(value: twoFactorEnabled, onChanged: onChecked),
+                  Text('Enable Two Factor Authentication')
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

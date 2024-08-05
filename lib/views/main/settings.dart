@@ -22,7 +22,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           Padding(
             padding: EdgeInsets.all(10),
-            child: DailyBackupWdiget(),
+            child: DailyBackupWidget(),
           ),
           /*Padding(
             padding: EdgeInsets.all(10),
@@ -30,7 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),*/
           Padding(
             padding: EdgeInsets.all(10),
-            child: const PreferredCurreny(),
+            child: const PreferredCurrency(),
           ),
           Padding(
             padding: EdgeInsets.all(10),

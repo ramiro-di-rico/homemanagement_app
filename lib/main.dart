@@ -53,7 +53,8 @@ void registerServices() {
   GetIt.instance.registerFactory(() => CategoryService(
       authenticationService: GetIt.I<AuthenticationService>(),
       apiServiceFactory: ApiServiceFactory(
-          authenticationService: GetIt.I<AuthenticationService>())));
+          authenticationService: GetIt.I<AuthenticationService>()),
+      notifierService: GetIt.I<NotifierService>()));
   GetIt.instance.registerFactory(() => ApiServiceFactory(
       authenticationService: GetIt.I<AuthenticationService>()));
 
@@ -130,7 +131,8 @@ void registerSingletons(PlatformContext platformContext) {
   var categoryRepository = CategoryRepository(CategoryService(
       authenticationService: authenticationService,
       apiServiceFactory:
-          ApiServiceFactory(authenticationService: authenticationService)));
+          ApiServiceFactory(authenticationService: authenticationService),
+      notifierService: errorNotifierService));
 
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
