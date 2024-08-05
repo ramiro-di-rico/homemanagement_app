@@ -28,7 +28,7 @@ class _DailyBackupWidgetState extends State<DailyBackupWidget> {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: ListTile(
           title: Text('Daily Backup'),
           subtitle: Text('Backup your data daily'),

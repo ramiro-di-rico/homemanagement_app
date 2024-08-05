@@ -15,17 +15,23 @@ class _PreferredCurrencyState extends State<PreferredCurrency> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ListTile(
-          leading: Text(
-            'Preferred Currency',
+    return Column(
+      children: [
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Row(
+              children: [
+                Text(
+                  'Preferred Currency',
+                ),
+                Spacer(),
+                Text(preferencesRepository.getPreferredCurrency()),
+              ],
+            ),
           ),
-          title: Text(preferencesRepository.getPreferredCurrency()),
-          titleAlignment: ListTileTitleAlignment.center,
         ),
-      ),
+      ],
     );
   }
 }
