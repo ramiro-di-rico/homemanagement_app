@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/services/repositories/preferences.repository.dart';
+
+import '../../../services/repositories/preferences.repository.dart';
 
 class DailyBackupWidget extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class _DailyBackupWidgetState extends State<DailyBackupWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: ListTile(
           title: Text('Daily Backup'),
-          subtitle: Text('Backup your data daily'),
+          subtitle: Text('A Backup of your data will be send via email on a daily basis'),
           trailing: Switch(
             value: dailyBackupEnabled,
             onChanged: onEnableChanged,

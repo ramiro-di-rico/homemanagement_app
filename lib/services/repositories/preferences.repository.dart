@@ -29,4 +29,11 @@ class PreferencesRepository extends ChangeNotifier {
 
     return this.preferences.firstWhere((element) => element.name == 'PreferredCurrency').value;
   }
+
+  String getCurrentLanguage()
+  {
+    if (this.preferences.length == 0) return '';
+
+    return this.preferences.firstWhere((element) => element.name == 'Language').value;
+  }
 }
