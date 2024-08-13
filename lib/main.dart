@@ -112,7 +112,8 @@ void registerSingletons(PlatformContext platformContext) {
       preferenceService: PreferenceService(
           authenticationService: GetIt.I<AuthenticationService>(),
           apiServiceFactory: ApiServiceFactory(
-              authenticationService: GetIt.I<AuthenticationService>())));
+              authenticationService: GetIt.I<AuthenticationService>())),
+      notifierService: errorNotifierService);
 
   var notificationRepository = NotificationRepository(
       notificationService: NotificationService(

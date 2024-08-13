@@ -1,12 +1,19 @@
-import 'package:flutter/cupertino.dart';
-import 'package:home_management_app/models/preference.dart';
-import 'package:home_management_app/services/endpoints/preferences.service.dart';
+import 'package:flutter/material.dart';
+
+import '../../models/preference.dart';
+import '../endpoints/preferences.service.dart';
+import '../infra/error_notifier_service.dart';
 
 class PreferencesRepository extends ChangeNotifier {
   PreferenceService preferenceService;
-  List<PreferenceModel> preferences = [];
+  NotifierService notifierService;
 
-  PreferencesRepository({required this.preferenceService});
+  List<PreferenceModel> preferences = [];
+  static const String dailyBackup = 'EnableDailyBackups';
+  static const String preferredCurrency = 'PreferredCurrency';
+  static const String language = 'Language';
+
+  PreferencesRepository({required this.preferenceService, required this.notifierService});
 
   Future load() async {
     var result = await this.preferenceService.fetch();
@@ -18,7 +25,7 @@ class PreferencesRepository extends ChangeNotifier {
   {
     if (this.preferences.length == 0) return false;
 
-    var dailyBackupConfig = this.preferences.firstWhere((element) => element.name == 'EnableDailyBackups');
+    var dailyBackupConfig = this.preferences.firstWhere((element) => element.name == dailyBackup);
 
     return dailyBackupConfig.value == 'true';
   }
@@ -34,6 +41,14 @@ class PreferencesRepository extends ChangeNotifier {
   {
     if (this.preferences.length == 0) return '';
 
-    return this.preferences.firstWhere((element) => element.name == 'Language').value;
+    return this.preferences.firstWhere((element) => element.name == language).value;
+  }
+
+  Future update(PreferenceModel preference) async {
+    await this.preferenceService.update(preference);
+    this.preferences.removeWhere((element) => element.name == preference.name);
+    this.preferences.add(preference);
+    this.notifierService.notify('Preference updated');
+    notifyListeners();
   }
 }

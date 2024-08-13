@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../custom/components/dropdown.component.dart';
+import '../../../models/preference.dart';
 import '../../../services/repositories/preferences.repository.dart';
+import '../../mixins/notifier_mixin.dart';
 
 class UserLanguageWidget extends StatefulWidget {
   const UserLanguageWidget({super.key});
@@ -11,10 +13,22 @@ class UserLanguageWidget extends StatefulWidget {
   State<UserLanguageWidget> createState() => _UserLanguageWidgetState();
 }
 
-class _UserLanguageWidgetState extends State<UserLanguageWidget> {
+class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMixin {
   PreferencesRepository preferencesRepository =
   GetIt.I<PreferencesRepository>();
   String selectedLanguage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    preferencesRepository.addListener(loadLanguage);
+  }
+
+  @override
+  void dispose() {
+    preferencesRepository.removeListener(loadLanguage);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +57,13 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> {
   }
 
   onLanguageChanged(String languageChanged) {
-    // add logic to change language
+    preferencesRepository.update(PreferenceModel(PreferencesRepository.language, languageChanged));
+  }
+  
+  void loadLanguage() {
+    var language = preferencesRepository.preferences.firstWhere((element) => element.name == PreferencesRepository.language);
+    setState(() {
+      selectedLanguage = language.value;
+    });
   }
 }

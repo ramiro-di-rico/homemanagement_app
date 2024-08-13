@@ -10,6 +10,9 @@ mixin HttpApiServiceMixin {
 
   Future<Response> httpGet(Uri uri, String token) =>
       http.get(uri, headers: createAuthHeader(token));
+      
+  Future<Response> httpPut(Uri uri, String token, dynamic body) =>
+      http.put(uri, headers: createAuthHeader(token), body: body);
 
   Map<String, String> createAuthHeader(String token) {
     return {'Authorization': 'Bearer $token'};
