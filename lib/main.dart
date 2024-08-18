@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/services/infra/error_notifier_service.dart';
-import 'package:home_management_app/services/repositories/transaction.repository.dart';
 import 'myapp.dart';
+import 'services/endpoints/identity_user_service.dart';
+import 'services/infra/error_notifier_service.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_strategy.dart';
 import 'services/repositories/account.repository.dart';
@@ -10,6 +10,7 @@ import 'services/repositories/category.repository.dart';
 import 'services/repositories/notification.repository.dart';
 import 'services/repositories/preferences.repository.dart';
 import 'services/repositories/currency.repository.dart';
+import 'services/repositories/transaction.repository.dart';
 import 'services/repositories/user.repository.dart';
 import 'services/endpoints/api.service.factory.dart';
 import 'services/security/authentication.service.dart';
@@ -80,6 +81,8 @@ void registerServices() {
   GetIt.instance.registerFactory(() => CategoryMetricService(
       authenticationService: GetIt.I<AuthenticationService>(),
       caching: GetIt.I<Caching>()));
+
+  GetIt.instance.registerFactory(() => IdentityUserService(authenticationService: GetIt.I<AuthenticationService>()));
 }
 
 void registerSingletons(PlatformContext platformContext) {

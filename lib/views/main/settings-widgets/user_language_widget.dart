@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../custom/components/dropdown.component.dart';
-import '../../../models/preference.dart';
-import '../../../services/repositories/preferences.repository.dart';
+import '../../../services/endpoints/identity_user_service.dart';
 import '../../mixins/notifier_mixin.dart';
 
 class UserLanguageWidget extends StatefulWidget {
@@ -14,24 +13,24 @@ class UserLanguageWidget extends StatefulWidget {
 }
 
 class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMixin {
-  PreferencesRepository preferencesRepository =
-  GetIt.I<PreferencesRepository>();
+  IdentityUserService identityUserService = GetIt.I<IdentityUserService>();
   String selectedLanguage = '';
 
   Map<String, String> languages = {
     'English': 'en',
-    'Spanish': 'es',
+    'Spanish': 'es-ar',
   };
 
   @override
   void initState() {
     super.initState();
-    var lang = preferencesRepository.getCurrentLanguage();
-    selectedLanguage = languages.keys.firstWhere((key) => languages[key] == lang);
+    load();
   }
 
   @override
   Widget build(BuildContext context) {
+    // dropdown not being refresh to reflect current language
+    print(selectedLanguage);
     return Column(
       children: [
         Card(
@@ -57,6 +56,13 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
   }
 
   onLanguageChanged(String languageChanged) {
-    preferencesRepository.update(PreferenceModel(PreferencesRepository.language, languageChanged));
+  }
+
+  Future load() async {
+    var model = await identityUserService.getUser();
+    setState(() {
+      selectedLanguage = languages.keys.firstWhere((key) => languages[key] == model.language);
+    });
+    print('Language loaded: $selectedLanguage');
   }
 }
