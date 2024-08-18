@@ -18,15 +18,17 @@ class SettingsDesktopView extends StatefulWidget {
 
 class _SettingsDesktopViewState extends State<SettingsDesktopView> {
   bool _isDeveloper = false;
-  PreferencesRepository preferencesRepository = GetIt.I<PreferencesRepository>();
-  
+  bool _preferencesLoaded = false;
+  PreferencesRepository preferencesRepository =
+      GetIt.I<PreferencesRepository>();
+
   @override
   void initState() {
     super.initState();
     preferencesRepository.addListener(_onPreferencesLoaded);
     preferencesRepository.load();
   }
-  
+
   @override
   void dispose() {
     preferencesRepository.removeListener(_onPreferencesLoaded);
@@ -40,55 +42,62 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
         title: Text('Settings'),
       ),
       body: SafeArea(
-        child: Container(
-          height: 1000,
-          child: Column(
-            children: [
-              Expanded(
-                child: Row(
+        child: !_preferencesLoaded
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Container(
+                height: 1000,
+                child: Column(
                   children: [
                     Expanded(
-                      flex: 1,
-                      child: Column(
+                      child: Row(
                         children: [
-                          DailyBackupWidget(),
-                          PreferredCurrency(),
-                          UserLanguageWidget(),
-                          TwoFactorAuthenticationWidget(),
-                          Padding(
-                            padding: EdgeInsets.all(10),
-                            child: _isDeveloper
-                                ? ElevatedButton(
-                                    onPressed: () async {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => LoggingView(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text('Developer Mode'),
-                                  )
-                                : Container(),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              children: [
+                                DailyBackupWidget(),
+                                PreferredCurrency(),
+                                UserLanguageWidget(),
+                                TwoFactorAuthenticationWidget(),
+                                Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: _isDeveloper
+                                      ? ElevatedButton(
+                                          onPressed: () async {
+                                            await Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LoggingView(),
+                                              ),
+                                            );
+                                          },
+                                          child: Text('Developer Mode'),
+                                        )
+                                      : Container(),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: CategoriesListWidget(),
+                            flex: 1,
                           ),
                         ],
                       ),
                     ),
-                    Expanded(
-                      child: CategoriesListWidget(),
-                      flex: 1,
-                    ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
-  
+
   void _onPreferencesLoaded() {
-    setState(() {});
+    setState(() {
+      _preferencesLoaded = true;
+    });
   }
 }

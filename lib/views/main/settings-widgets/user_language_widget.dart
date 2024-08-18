@@ -18,16 +18,16 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
   GetIt.I<PreferencesRepository>();
   String selectedLanguage = '';
 
+  Map<String, String> languages = {
+    'English': 'en',
+    'Spanish': 'es',
+  };
+
   @override
   void initState() {
     super.initState();
-    preferencesRepository.addListener(loadLanguage);
-  }
-
-  @override
-  void dispose() {
-    preferencesRepository.removeListener(loadLanguage);
-    super.dispose();
+    var lang = preferencesRepository.getCurrentLanguage();
+    selectedLanguage = languages.keys.firstWhere((key) => languages[key] == lang);
   }
 
   @override
@@ -58,12 +58,5 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
 
   onLanguageChanged(String languageChanged) {
     preferencesRepository.update(PreferenceModel(PreferencesRepository.language, languageChanged));
-  }
-  
-  void loadLanguage() {
-    var language = preferencesRepository.preferences.firstWhere((element) => element.name == PreferencesRepository.language);
-    setState(() {
-      selectedLanguage = language.value;
-    });
   }
 }
