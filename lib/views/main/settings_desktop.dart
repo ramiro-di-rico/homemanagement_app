@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/views/main/settings-widgets/user_language_widget.dart';
 
 import '../../services/repositories/preferences.repository.dart';
 import 'logging_view.dart';
@@ -8,6 +7,8 @@ import 'settings-widgets/categories_list_widget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
 import 'settings-widgets/two-factor-authentication.widget.dart';
+import 'settings-widgets/user_info_widget.dart';
+import 'settings-widgets/user_language_widget.dart';
 
 class SettingsDesktopView extends StatefulWidget {
   const SettingsDesktopView({super.key});
@@ -57,10 +58,11 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                             flex: 1,
                             child: Column(
                               children: [
-                                DailyBackupWidget(),
+                                UserInfoWidget(),
                                 PreferredCurrency(),
                                 UserLanguageWidget(),
                                 TwoFactorAuthenticationWidget(),
+                                DailyBackupWidget(),
                                 Padding(
                                   padding: EdgeInsets.all(10),
                                   child: _isDeveloper

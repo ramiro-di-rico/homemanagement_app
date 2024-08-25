@@ -7,6 +7,7 @@ import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_strategy.dart';
 import 'services/repositories/account.repository.dart';
 import 'services/repositories/category.repository.dart';
+import 'services/repositories/identity_user_repository.dart';
 import 'services/repositories/notification.repository.dart';
 import 'services/repositories/preferences.repository.dart';
 import 'services/repositories/currency.repository.dart';
@@ -138,6 +139,9 @@ void registerSingletons(PlatformContext platformContext) {
           ApiServiceFactory(authenticationService: authenticationService),
       notifierService: errorNotifierService));
 
+  var identityUserRepository = IdentityUserRepository(
+      IdentityUserService(authenticationService: authenticationService));
+
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
@@ -147,4 +151,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(transactionRepository);
   GetIt.instance.registerSingleton(categoryRepository);
   GetIt.instance.registerSingleton(errorNotifierService);
+  GetIt.instance.registerSingleton(identityUserRepository);
 }

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/models/notification.dart';
-import 'package:home_management_app/services/repositories/account.repository.dart';
-import 'package:home_management_app/services/repositories/category.repository.dart';
-import 'package:home_management_app/services/repositories/notification.repository.dart';
-import 'package:home_management_app/services/repositories/preferences.repository.dart';
-import 'package:home_management_app/services/repositories/currency.repository.dart';
-import 'package:home_management_app/views/authentication/login.dart';
-import 'package:home_management_app/views/main/settings.dart';
-import 'package:home_management_app/views/main/widgets/account.sheet.dart';
-import 'package:home_management_app/services/security/authentication.service.dart';
+import '../../models/notification.dart';
+import '../../services/repositories/account.repository.dart';
+import '../../services/repositories/category.repository.dart';
+import '../../services/repositories/currency.repository.dart';
+import '../../services/repositories/identity_user_repository.dart';
+import '../../services/repositories/notification.repository.dart';
+import '../../services/repositories/preferences.repository.dart';
+import '../../services/security/authentication.service.dart';
+import '../authentication/login.dart';
 import 'account.list.dart';
 import 'dashboard.dart';
+import 'settings.dart';
+import 'widgets/account.sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = 'home_screen';
@@ -26,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
   NotificationRepository notificationRepository =
       GetIt.I<NotificationRepository>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
+  IdentityUserRepository _identityUserRepository =
+      GetIt.I<IdentityUserRepository>();
 
   List<Widget> children = [
     Dashboard(),
@@ -59,6 +62,8 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       */
     });
+
+  _identityUserRepository.getUser();
   }
 
   @override

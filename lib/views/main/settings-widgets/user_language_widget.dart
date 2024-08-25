@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../custom/components/dropdown.component.dart';
-import '../../../services/endpoints/identity_user_service.dart';
+import '../../../services/repositories/identity_user_repository.dart';
 import '../../mixins/notifier_mixin.dart';
 
 class UserLanguageWidget extends StatefulWidget {
@@ -13,7 +13,7 @@ class UserLanguageWidget extends StatefulWidget {
 }
 
 class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMixin {
-  IdentityUserService identityUserService = GetIt.I<IdentityUserService>();
+  IdentityUserRepository identityUserRepository = GetIt.I<IdentityUserRepository>();
   String selectedLanguage = '';
 
   Map<String, String> languages = {
@@ -59,9 +59,10 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
   }
 
   Future load() async {
-    var model = await identityUserService.getUser();
+    var model = await identityUserRepository.getUser();
+    var language = model?.language ?? 'en';
     setState(() {
-      selectedLanguage = languages.keys.firstWhere((key) => languages[key] == model.language);
+      selectedLanguage = languages.keys.firstWhere((key) => languages[key] == language);
     });
     print('Language loaded: $selectedLanguage');
   }
