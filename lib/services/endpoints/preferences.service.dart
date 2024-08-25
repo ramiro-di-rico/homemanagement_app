@@ -24,4 +24,14 @@ class PreferenceService with HttpApiServiceMixin {
       throw Exception('Failed to fetch Accounts.');
     }
   }
+
+  Future update(PreferenceModel preference) async {
+    var token = this.authenticationService.getUserToken();
+    var response = await httpPut(
+        createUri('preferences/v3'), token, jsonEncode(preference));
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update preference.');
+    }
+  }
 }

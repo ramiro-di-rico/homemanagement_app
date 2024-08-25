@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/custom/main-card.dart';
-import 'package:home_management_app/services/repositories/preferences.repository.dart';
 
-class DailyBackupWdiget extends StatefulWidget {
+import '../../../services/repositories/preferences.repository.dart';
+
+class DailyBackupWidget extends StatefulWidget {
   @override
-  _DailyBackupWdigetState createState() => _DailyBackupWdigetState();
+  _DailyBackupWidgetState createState() => _DailyBackupWidgetState();
 }
 
-class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
+class _DailyBackupWidgetState extends State<DailyBackupWidget> {
   PreferencesRepository preferencesRepository =
       GetIt.I<PreferencesRepository>();
   bool dailyBackupEnabled = false;
@@ -27,25 +27,17 @@ class _DailyBackupWdigetState extends State<DailyBackupWdiget> {
 
   @override
   Widget build(BuildContext context) {
-    return MainCard(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Checkbox(
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: ListTile(
+          title: Text('Daily Backup'),
+          subtitle: Text('A Backup of your data will be send via email on a daily basis'),
+          trailing: Switch(
             value: dailyBackupEnabled,
             onChanged: onEnableChanged,
           ),
-          Expanded(
-            child: Text('Sync Options'),
-          ),
-          Expanded(
-              child: TextButton(
-                  child: Icon(
-                    Icons.cloud_download,
-                    color: Colors.pinkAccent,
-                  ),
-                  onPressed: () {}))
-        ],
+        ),
       ),
     );
   }
