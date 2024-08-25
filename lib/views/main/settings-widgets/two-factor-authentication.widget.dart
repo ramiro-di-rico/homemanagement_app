@@ -28,12 +28,10 @@ class _TwoFactorAuthenticationWidgetState
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Checkbox(value: twoFactorEnabled, onChanged: onChecked),
-                  Text('Enable Two Factor Authentication')
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: ListTile(
+                title: Text('Enable Two Factor Authentication'),
+                trailing: Switch(value: twoFactorEnabled, onChanged: onChecked),
               ),
             ),
           ],
