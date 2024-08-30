@@ -33,6 +33,33 @@ class TransactionService {
     return pageResult.items;
   }
 
+  Future<List<TransactionModel>> filter(int currentPage, int pageSize,
+      List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate) async {
+
+    var queryFilter = 'currentPage=${currentPage}&pageSize=${pageSize}';
+
+    if (accountIds != null) {
+      queryFilter = 'accountIds=' + accountIds.join('&accountIds=');
+    }
+
+    if (name != null) {
+      queryFilter += '&name=$name';
+    }
+
+    if (startDate != null) {
+      queryFilter += '&startDate=${startDate.toUtc().toIso8601String()}';
+    }
+
+    if (endDate != null) {
+      queryFilter += '&endDate=${endDate.toUtc().toIso8601String()}';
+    }
+
+    dynamic data = await apiServiceFactory.apiGet(
+        '$v3ApiName/filter?${queryFilter}');
+    var pageResult = TransactionPageModel.fromJson(data);
+    return pageResult.items;
+  }
+
   Future<TransactionWithBalanceModel> add(
       TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
