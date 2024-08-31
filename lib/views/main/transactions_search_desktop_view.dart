@@ -5,8 +5,10 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:intl/intl.dart';
 
+import '../../models/account.dart';
 import '../../models/transaction.dart';
 import '../../services/endpoints/transaction.service.dart';
+import '../../services/repositories/account.repository.dart';
 import '../accounts/account-details-behaviors/account-list-scrolling-behavior.dart';
 
 class TransactionsSearchDesktopView extends StatefulWidget {
@@ -26,10 +28,12 @@ class _TransactionsSearchDesktopViewState
   List<TransactionModel> _transactions = List.empty(growable: true);
 
   TransactionService _transactionService = GetIt.I<TransactionService>();
+  AccountRepository _accountRepository = GetIt.I<AccountRepository>();
 
   TextEditingController _nameTextEditingController = TextEditingController();
   DateTime? _startDate = null;
   DateTime? _endDate = null;
+  List<DropdownAccountSelection> _accountsSelection = List.empty(growable: true);
 
   int _amountOfFilters = 0;
   List<IconData> _filteringNumber = [
@@ -47,83 +51,90 @@ class _TransactionsSearchDesktopViewState
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _accountsSelection = _accountRepository.accounts.map((e) => DropdownAccountSelection(e, false)).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Search transactions'),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  setState(() {
-                    _filtering = false;
-                    _transactions.clear();
-                    _nameTextEditingController.clear();
-                    _startDate = null;
-                    _endDate = null;
-                  });
-                },
-                icon: Icon(Icons.filter_alt_off),
-                tooltip: 'Clear filters'),
-            IconButton(
+      appBar: AppBar(
+        title: Text('Search transactions'),
+        actions: [
+          IconButton(
               onPressed: () {
-                displayFilteringOptions();
+                setState(() {
+                  _filtering = false;
+                  _transactions.clear();
+                  _nameTextEditingController.clear();
+                  _startDate = null;
+                  _endDate = null;
+                });
               },
-              icon: Icon(_filtering
-                  ? _filteringNumber.elementAt(_amountOfFilters)
-                  : Icons.filter_alt_outlined),
-              tooltip: 'Filter transactions',
-            )
-          ],
-        ),
-        body: Container(
-          child: !_filtering
-              ? Center(child: Text('Filtering transactions...'))
-              : GroupedListView<TransactionModel, DateTime>(
-                  order: GroupedListOrder.DESC,
-                  controller: scrollController,
-                  physics: ScrollPhysics(),
-                  elements: _transactions,
-                  groupBy: (element) => element.date.toMidnight(),
-                  groupSeparatorBuilder: (element) {
-                    return Container(
-                      height: 50,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(DateFormat.MMMd().format(element)),
-                            ),
+              icon: Icon(Icons.filter_alt_off),
+              tooltip: 'Clear filters'),
+          IconButton(
+            onPressed: () {
+              displayFilteringOptions();
+            },
+            icon: Icon(_filtering
+                ? _filteringNumber.elementAt(_amountOfFilters)
+                : Icons.filter_alt_outlined),
+            tooltip: 'Filter transactions',
+          )
+        ],
+      ),
+      body: Container(
+        child: !_filtering
+            ? Center(child: Text('Filtering transactions...'))
+            : GroupedListView<TransactionModel, DateTime>(
+                order: GroupedListOrder.DESC,
+                controller: scrollController,
+                physics: ScrollPhysics(),
+                elements: _transactions,
+                groupBy: (element) => element.date.toMidnight(),
+                groupSeparatorBuilder: (element) {
+                  return Container(
+                    height: 50,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(DateFormat.MMMd().format(element)),
                           ),
                         ),
                       ),
-                    );
-                  },
-                  itemBuilder: (context, transaction) {
-                    return Card(
-                      child: Row(
-                        children: [
-                          SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(transaction.name),
-                                Text(transaction.price.toString()),
-                              ],
-                            ),
+                    ),
+                  );
+                },
+                itemBuilder: (context, transaction) {
+                  return Card(
+                    child: Row(
+                      children: [
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(transaction.name),
+                              Text(transaction.price.toString()),
+                            ],
                           ),
-                          Text(transaction.price.toString()),
-                          SizedBox(width: 20),
-                        ],
-                      ),
-                    );
-                  }),
-        ));
+                        ),
+                        Text(transaction.price.toString()),
+                        SizedBox(width: 20),
+                      ],
+                    ),
+                  );
+                }),
+      ),
+    );
   }
 
   void displayFilteringOptions() {
@@ -222,6 +233,26 @@ class _TransactionsSearchDesktopViewState
                             initialValue: _endDate,
                           ),
                         ),
+                        SizedBox(width: 20),
+                        DropdownButton(
+                          hint: Text('Select an account'),
+                          items: _accountsSelection
+                              .map(
+                                (e) => DropdownMenuItem(
+                                  child: Row(
+                                    children: [
+                                      e.checkbox,
+                                      Text(e.account.name),
+                                    ],
+                                  ),
+                                  value: e.account.id,
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (accountId) {
+                            print(accountId);
+                          },
+                        )
                       ],
                     ),
                   ],
@@ -262,5 +293,19 @@ class _TransactionsSearchDesktopViewState
   @override
   void nextPage() {
     // TODO: implement nextPage
+  }
+}
+
+class DropdownAccountSelection{
+  final AccountModel account;
+  bool isSelected;
+  late Checkbox checkbox;
+
+  DropdownAccountSelection(this.account, this.isSelected){
+    checkbox = Checkbox(
+        value: isSelected,
+        onChanged: (value) {
+      isSelected = value == true;
+    });
   }
 }
