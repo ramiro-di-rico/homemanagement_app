@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 
 import '../../models/account.dart';
 import '../../models/transaction.dart';
-import '../../services/endpoints/transaction.service.dart';
 import '../../services/repositories/account.repository.dart';
+import '../../services/transaction_paging_service.dart';
 import '../accounts/account-details-behaviors/account-list-scrolling-behavior.dart';
 
 class TransactionsSearchDesktopView extends StatefulWidget {
@@ -24,18 +24,15 @@ class TransactionsSearchDesktopView extends StatefulWidget {
 class _TransactionsSearchDesktopViewState
     extends State<TransactionsSearchDesktopView>
     with AccountListScrollingBehavior {
-  bool _filtering = false;
-  List<TransactionModel> _transactions = List.empty(growable: true);
 
-  TransactionService _transactionService = GetIt.I<TransactionService>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
+  TransactionPagingService _transactionPagingService = GetIt.I<TransactionPagingService>();
 
   TextEditingController _nameTextEditingController = TextEditingController();
   DateTime? _startDate = null;
   DateTime? _endDate = null;
   List<DropdownAccountSelection> _accountsSelection = List.empty(growable: true);
 
-  int _amountOfFilters = 0;
   List<IconData> _filteringNumber = [
     Icons.filter_alt,
     Icons.filter_1,
@@ -54,6 +51,17 @@ class _TransactionsSearchDesktopViewState
   void initState() {
     super.initState();
     _accountsSelection = _accountRepository.accounts.map((e) => DropdownAccountSelection(e, false)).toList();
+    _transactionPagingService.addListener(refreshList);
+  }
+
+  void refreshList() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _transactionPagingService.removeListener(refreshList);
+    super.dispose();
   }
 
   @override
@@ -65,8 +73,8 @@ class _TransactionsSearchDesktopViewState
           IconButton(
               onPressed: () {
                 setState(() {
-                  _filtering = false;
-                  _transactions.clear();
+                  _transactionPagingService.filtering = false;
+                  _transactionPagingService.transactions.clear();
                   _nameTextEditingController.clear();
                   _startDate = null;
                   _endDate = null;
@@ -78,21 +86,21 @@ class _TransactionsSearchDesktopViewState
             onPressed: () {
               displayFilteringOptions();
             },
-            icon: Icon(_filtering
-                ? _filteringNumber.elementAt(_amountOfFilters)
+            icon: Icon(_transactionPagingService.filtering
+                ? _filteringNumber.elementAt(_transactionPagingService.selectedFilters)
                 : Icons.filter_alt_outlined),
             tooltip: 'Filter transactions',
           )
         ],
       ),
       body: Container(
-        child: !_filtering
+        child: !_transactionPagingService.filtering
             ? Center(child: Text('Filtering transactions...'))
             : GroupedListView<TransactionModel, DateTime>(
                 order: GroupedListOrder.DESC,
                 controller: scrollController,
                 physics: ScrollPhysics(),
-                elements: _transactions,
+                elements: _transactionPagingService.transactions,
                 groupBy: (element) => element.date.toMidnight(),
                 groupSeparatorBuilder: (element) {
                   return Container(
@@ -171,14 +179,11 @@ class _TransactionsSearchDesktopViewState
                           ),
                         ),
                         SizedBox(width: 20),
-                        // create a category dropdown component that somehow output the selected item
                         SizedBox(width: 20),
                         ElevatedButton(
                           onPressed: () {
-                            setState(() {
-                              doFiltering();
-                              Navigator.pop(context);
-                            });
+                            doFiltering();
+                            Navigator.pop(context);
                           },
                           child: Text('Filter'),
                         ),
@@ -262,27 +267,8 @@ class _TransactionsSearchDesktopViewState
   }
 
   Future doFiltering() async {
-    var result = await _transactionService.filter(
-        1, 10, null, _nameTextEditingController.text, _startDate, _endDate);
-
-    calculateAmountOfFilters();
-    setState(() {
-      _filtering = true;
-      _transactions = result;
-    });
-  }
-
-  void calculateAmountOfFilters() {
-    _amountOfFilters = 0;
-    if (_nameTextEditingController.text.isNotEmpty) {
-      _amountOfFilters++;
-    }
-    if (_startDate != null) {
-      _amountOfFilters++;
-    }
-    if (_endDate != null) {
-      _amountOfFilters++;
-    }
+    await _transactionPagingService.performSearch(TransactionSearchOptions(
+        _nameTextEditingController.text, _startDate, _endDate, _accountsSelection));
   }
 
   @override
