@@ -85,9 +85,6 @@ void registerServices() {
       caching: GetIt.I<Caching>()));
 
   GetIt.instance.registerFactory(() => IdentityUserService(authenticationService: GetIt.I<AuthenticationService>()));
-
-  GetIt.instance.registerFactory(() => TransactionPagingService(
-      GetIt.I<AccountRepository>(), GetIt.I<TransactionService>()));
 }
 
 void registerSingletons(PlatformContext platformContext) {
@@ -146,6 +143,9 @@ void registerSingletons(PlatformContext platformContext) {
   var identityUserRepository = IdentityUserRepository(
       IdentityUserService(authenticationService: authenticationService));
 
+  var transactionPagingService = TransactionPagingService(
+      accountRepository, transactionService);
+
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
@@ -156,4 +156,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(categoryRepository);
   GetIt.instance.registerSingleton(errorNotifierService);
   GetIt.instance.registerSingleton(identityUserRepository);
+  GetIt.instance.registerSingleton(transactionPagingService);
 }

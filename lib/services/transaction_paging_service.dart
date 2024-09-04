@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import '../models/transaction.dart';
-import '../views/main/transactions_search_desktop_view.dart';
+import '../views/main/widgets/transaction_search_filtering_options.dart';
 import 'endpoints/transaction.service.dart';
 import 'repositories/account.repository.dart';
 
@@ -17,36 +17,42 @@ class TransactionPagingService extends ChangeNotifier  {
   int selectedFilters = 0;
   List<TransactionModel> transactions = List.empty(growable: true);
 
-  Future performSearch(TransactionSearchOptions searchOptions) async {
+  String? name = null;
+  DateTime? startDate = null;
+  DateTime? endDate = null;
+  List<DropdownAccountSelection> accountsSelection = List.empty(growable: true);
+
+  Future performSearch() async {
     filtering = true;
-    _calculateAmountOfFilters(searchOptions);
+    _calculateAmountOfFilters();
 
     transactions = await _transactionService.filter(
-        1, 10, null, searchOptions.name, searchOptions.startDate, searchOptions.endDate);
+        1, 10, null, name, startDate, endDate);
 
     notifyListeners();
   }
 
+  void clearFilters() {
+    name = null;
+    startDate = null;
+    endDate = null;
+    accountsSelection.forEach((element) {
+      element.isSelected = false;
+    });
+    filtering = false;
+    notifyListeners();
+  }
 
-  void _calculateAmountOfFilters(TransactionSearchOptions searchOptions) {
+  void _calculateAmountOfFilters() {
     selectedFilters = 0;
-    if (searchOptions.name?.isNotEmpty == true) {
+    if (name?.isNotEmpty == true) {
       selectedFilters++;
     }
-    if (searchOptions.startDate != null) {
+    if (startDate != null) {
       selectedFilters++;
     }
-    if (searchOptions.endDate != null) {
+    if (endDate != null) {
       selectedFilters++;
     }
   }
-}
-
-class TransactionSearchOptions{
-  String? name;
-  DateTime? startDate;
-  DateTime? endDate;
-  List<DropdownAccountSelection> accountsSelection;
-
-  TransactionSearchOptions(this.name, this.startDate, this.endDate, this.accountsSelection);
 }
