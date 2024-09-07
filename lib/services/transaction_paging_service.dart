@@ -12,6 +12,7 @@ class TransactionPagingService extends ChangeNotifier  {
   TransactionPagingService(this._accountRepository, this._transactionService);
 
   bool filtering = false;
+  bool loading = false;
   int currentPage = 1;
   int pageSize = 10;
   int selectedFilters = 0;
@@ -24,11 +25,14 @@ class TransactionPagingService extends ChangeNotifier  {
 
   Future performSearch() async {
     filtering = true;
+    loading = true;
     _calculateAmountOfFilters();
+    notifyListeners();
 
     transactions = await _transactionService.filter(
         1, 10, null, name, startDate, endDate);
 
+    loading = false;
     notifyListeners();
   }
 
