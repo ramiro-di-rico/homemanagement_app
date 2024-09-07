@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/account.dart';
+import '../../../models/transaction.dart';
 import '../../../services/repositories/account.repository.dart';
 import '../../../services/transaction_paging_service.dart';
 
@@ -127,8 +128,45 @@ class _TransactionSearchFilteringOptionsWidgetState extends State<TransactionSea
                         element.isSelected = element.account.id == accountId;
                       });
                     });
+                    showDialog(
+                        context: this.context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('TODO modal for selecting multiple accounts'),
+                            actions: [
+                              TextButton(
+                                child: Text('ok'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              )
+                            ],
+                          );
+                        });
                   },
-                )
+                ),
+                SizedBox(width: 20),
+                DropdownButton<String>(
+                  value: _transactionPagingService.transactionType == null
+                      ? 'Select'
+                      : _transactionPagingService.transactionType == TransactionType.Income ? 'Income' : 'Outcome',
+                  items: ['Select', 'Outcome', 'Income'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue == 'Select') {
+                        _transactionPagingService.transactionType = null;
+                        return;
+                      }
+                      _transactionPagingService.transactionType = newValue == 'Income' ? TransactionType.Income : TransactionType.Outcome;
+                    });
+                  },
+                ),
               ],
             ),
           ],

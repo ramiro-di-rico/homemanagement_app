@@ -22,6 +22,7 @@ class TransactionPagingService extends ChangeNotifier  {
   DateTime? startDate = null;
   DateTime? endDate = null;
   List<DropdownAccountSelection> accountsSelection = List.empty(growable: true);
+  TransactionType? transactionType = null;
 
   Future performSearch() async {
     filtering = true;
@@ -30,7 +31,7 @@ class TransactionPagingService extends ChangeNotifier  {
     notifyListeners();
 
     transactions = await _transactionService.filter(
-        1, 10, null, name, startDate, endDate);
+        1, 10, null, name, startDate, endDate, transactionType);
 
     loading = false;
     notifyListeners();
@@ -43,6 +44,7 @@ class TransactionPagingService extends ChangeNotifier  {
     accountsSelection.forEach((element) {
       element.isSelected = false;
     });
+    transactionType = null;
     filtering = false;
     notifyListeners();
   }
@@ -56,6 +58,9 @@ class TransactionPagingService extends ChangeNotifier  {
       selectedFilters++;
     }
     if (endDate != null) {
+      selectedFilters++;
+    }
+    if (transactionType != null) {
       selectedFilters++;
     }
   }

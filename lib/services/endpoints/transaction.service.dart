@@ -34,7 +34,7 @@ class TransactionService {
   }
 
   Future<List<TransactionModel>> filter(int currentPage, int pageSize,
-      List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate) async {
+      List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate, TransactionType? transactionType) async {
 
     var queryFilter = 'currentPage=${currentPage}&pageSize=${pageSize}';
 
@@ -52,6 +52,10 @@ class TransactionService {
 
     if (endDate != null) {
       queryFilter += '&endDate=${endDate.toUtc().toIso8601String()}';
+    }
+
+    if (transactionType != null) {
+      queryFilter += '&transactionType=${transactionType == TransactionType.Income ? 0 : 1}';
     }
 
     dynamic data = await apiServiceFactory.apiGet(
