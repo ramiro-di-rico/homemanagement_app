@@ -50,6 +50,6 @@ jobs:
           script: |
             docker stop home_management_app
             docker rm home_management_app
-            docker rmi --force thekillingtomato/homemanagement-app:latest
+            docker rmi --force thekillingtomato/homemanagement-app
             docker pull thekillingtomato/homemanagement-app:latest
-            docker run -d -p 9000:9000 --name home_management_app thekillingtomato/homemanagement-app:latest
+            docker run -d -p 9000:80 --name home_management_app thekillingtomato/homemanagement-app:latest
