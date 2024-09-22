@@ -82,7 +82,7 @@ class _TransactionsSearchDesktopViewState
       ),
       body: Container(
         child: !_transactionPagingService.filtering
-            ? Center(child: Text('Filtering transactions...'))
+            ? Center(child: Text('Select a filter to display transactions'))
             : _transactionPagingService.loading
             ? Center(child: CircularProgressIndicator())
             : GroupedListView<TransactionModel, DateTime>(
