@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:home_management_app/models/account.dart';
 
 import '../models/transaction.dart';
 import '../views/main/widgets/transaction_search_filtering_options.dart';
@@ -8,8 +9,7 @@ import 'repositories/account.repository.dart';
 class TransactionPagingService extends ChangeNotifier  {
 
   TransactionService _transactionService;
-  AccountRepository _accountRepository;
-  TransactionPagingService(this._accountRepository, this._transactionService);
+  TransactionPagingService(this._transactionService);
 
   bool filtering = false;
   bool loading = false;
@@ -17,11 +17,11 @@ class TransactionPagingService extends ChangeNotifier  {
   int pageSize = 10;
   int selectedFilters = 0;
   List<TransactionModel> transactions = List.empty(growable: true);
+  List<AccountModel> selectedAccounts = List.empty(growable: true);
 
   String? name = null;
   DateTime? startDate = null;
   DateTime? endDate = null;
-  List<DropdownAccountSelection> accountsSelection = List.empty(growable: true);
   TransactionType? transactionType = null;
 
   Future performSearch() async {
@@ -37,13 +37,15 @@ class TransactionPagingService extends ChangeNotifier  {
     notifyListeners();
   }
 
+  void dispatchRefresh() {
+    notifyListeners();
+  }
+
   void clearFilters() {
     name = null;
     startDate = null;
     endDate = null;
-    accountsSelection.forEach((element) {
-      element.isSelected = false;
-    });
+    selectedAccounts.clear();
     transactionType = null;
     filtering = false;
     notifyListeners();

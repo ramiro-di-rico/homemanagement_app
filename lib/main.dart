@@ -143,8 +143,7 @@ void registerSingletons(PlatformContext platformContext) {
   var identityUserRepository = IdentityUserRepository(
       IdentityUserService(authenticationService: authenticationService));
 
-  var transactionPagingService = TransactionPagingService(
-      accountRepository, transactionService);
+  var transactionPagingService = TransactionPagingService(transactionService);
 
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);

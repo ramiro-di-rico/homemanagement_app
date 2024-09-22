@@ -145,7 +145,7 @@ class _TransactionsSearchDesktopViewState
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
         builder: (context) {
-          return TransactionSearchFilteringOptionsWidget();
+          return TransactionSearchFilteringOptionsSheet();
         });
   }
 

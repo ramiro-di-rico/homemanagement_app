@@ -1,6 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/views/main/widgets/account_dialog_selection.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/account.dart';
@@ -8,27 +9,36 @@ import '../../../models/transaction.dart';
 import '../../../services/repositories/account.repository.dart';
 import '../../../services/transaction_paging_service.dart';
 
-class TransactionSearchFilteringOptionsWidget extends StatefulWidget {
+class TransactionSearchFilteringOptionsSheet extends StatefulWidget {
 
   @override
-  _TransactionSearchFilteringOptionsWidgetState createState() => _TransactionSearchFilteringOptionsWidgetState();
+  _TransactionSearchFilteringOptionsSheetState createState() => _TransactionSearchFilteringOptionsSheetState();
 }
 
-class _TransactionSearchFilteringOptionsWidgetState extends State<TransactionSearchFilteringOptionsWidget> {
+class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSearchFilteringOptionsSheet> {
   TransactionPagingService _transactionPagingService = GetIt.I<TransactionPagingService>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
 
   TextEditingController _nameTextEditingController = TextEditingController();
+  TextEditingController _selectedAccountsTextEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _transactionPagingService.accountsSelection = _accountRepository.accounts.map((e) => DropdownAccountSelection(e, false)).toList();
     _nameTextEditingController.text = _transactionPagingService.name ?? '';
+    _transactionPagingService.addListener(refresh);
+  }
+
+  @override
+  void dispose() {
+    _transactionPagingService.removeListener(refresh);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _selectedAccountsTextEditingController.text = _transactionPagingService.selectedAccounts.map((account) => account.name).join(', ');
+
     return SizedBox(
       height: 200,
       child: AnimatedPadding(
@@ -113,38 +123,26 @@ class _TransactionSearchFilteringOptionsWidgetState extends State<TransactionSea
                   ),
                 ),
                 SizedBox(width: 20),
-                DropdownButton(
-                  hint: Text('Select an account'),
-                  items: _transactionPagingService.accountsSelection
-                      .map(
-                        (e) => DropdownMenuItem(
-                      child: Text(e.account.name, style: TextStyle(backgroundColor: e.isSelected ? Colors.blue : Colors.transparent)),
-                      value: e.account.id,
+                SizedBox(
+                  width: 320,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                          context: this.context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AccountDialogSelection();
+                          });
+                    },
+                    child: TextField(
+                      enabled: false,
+                      controller: _selectedAccountsTextEditingController,
+                      decoration: InputDecoration(
+                        labelText: 'Select accounts',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                  ).toList(),
-                  onChanged: (accountId) {
-                    setState(() {
-                      _transactionPagingService.accountsSelection.forEach((element) {
-                        element.isSelected = element.account.id == accountId;
-                      });
-                    });
-                    showDialog(
-                        context: this.context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('TODO modal for selecting multiple accounts'),
-                            actions: [
-                              TextButton(
-                                child: Text('ok'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              )
-                            ],
-                          );
-                        });
-                  },
+                  ),
                 ),
                 SizedBox(width: 20),
                 DropdownButton<String>(
@@ -179,12 +177,8 @@ class _TransactionSearchFilteringOptionsWidgetState extends State<TransactionSea
     _transactionPagingService.name = _nameTextEditingController.text;
     await _transactionPagingService.performSearch();
   }
-}
 
-class DropdownAccountSelection{
-  final AccountModel account;
-  bool isSelected;
-  late Checkbox checkbox;
-
-  DropdownAccountSelection(this.account, this.isSelected);
+  void refresh() {
+    setState(() {});
+  }
 }
