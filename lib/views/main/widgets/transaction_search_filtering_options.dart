@@ -73,6 +73,7 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
             ),
             SizedBox(height: 20),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 SizedBox(width: 20),
                 SizedBox(
@@ -134,12 +135,36 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
                             return AccountDialogSelection();
                           });
                     },
-                    child: TextField(
-                      enabled: false,
-                      controller: _selectedAccountsTextEditingController,
-                      decoration: InputDecoration(
-                        labelText: 'Select accounts',
-                        border: OutlineInputBorder(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                enabled: false,
+                                style: TextStyle(color: Colors.white), // TODO use color based on theme
+                                controller: _selectedAccountsTextEditingController,
+                                decoration: InputDecoration(
+                                  labelText: 'Select accounts',
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            IconButton(onPressed: () {
+                              showDialog(
+                                  context: this.context,
+                                  barrierDismissible: false,
+                                  builder: (BuildContext context) {
+                                    return AccountDialogSelection();
+                                  });
+                            }, icon: Icon(Icons.view_list))
+                          ],
+                        ),
                       ),
                     ),
                   ),

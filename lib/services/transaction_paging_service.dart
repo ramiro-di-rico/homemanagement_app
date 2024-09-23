@@ -31,7 +31,7 @@ class TransactionPagingService extends ChangeNotifier  {
     notifyListeners();
 
     transactions = await _transactionService.filter(
-        1, 10, null, name, startDate, endDate, transactionType);
+        1, 10, null, name, startDate, endDate, transactionType, selectedAccounts);
 
     loading = false;
     notifyListeners();
