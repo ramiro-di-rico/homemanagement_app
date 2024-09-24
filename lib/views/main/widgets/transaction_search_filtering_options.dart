@@ -4,9 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/views/main/widgets/account_dialog_selection.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/account.dart';
 import '../../../models/transaction.dart';
-import '../../../services/repositories/account.repository.dart';
 import '../../../services/transaction_paging_service.dart';
 import 'category_dialog_selection.dart';
 

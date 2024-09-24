@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
-import 'package:home_management_app/views/main/widgets/transaction_search_filtering_options.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/transaction.dart';
+import '../../services/repositories/account.repository.dart';
 import '../../services/transaction_paging_service.dart';
 import '../accounts/account-details-behaviors/account-list-scrolling-behavior.dart';
+import 'widgets/transaction_search_filtering_options.dart';
 
 class TransactionsSearchDesktopView extends StatefulWidget {
   static const String id = 'transactions_search_desktop_view';
@@ -22,8 +23,9 @@ class TransactionsSearchDesktopView extends StatefulWidget {
 class _TransactionsSearchDesktopViewState
     extends State<TransactionsSearchDesktopView>
     with AccountListScrollingBehavior {
-
-  TransactionPagingService _transactionPagingService = GetIt.I<TransactionPagingService>();
+  TransactionPagingService _transactionPagingService =
+      GetIt.I<TransactionPagingService>();
+  AccountRepository _accountRepository = GetIt.I<AccountRepository>();
 
   List<IconData> _filteringNumber = [
     Icons.filter_alt,
@@ -74,7 +76,8 @@ class _TransactionsSearchDesktopViewState
               displayFilteringOptions();
             },
             icon: Icon(_transactionPagingService.filtering
-                ? _filteringNumber.elementAt(_transactionPagingService.selectedFilters)
+                ? _filteringNumber
+                    .elementAt(_transactionPagingService.selectedFilters)
                 : Icons.filter_alt_outlined),
             tooltip: 'Filter transactions',
           )
@@ -84,52 +87,77 @@ class _TransactionsSearchDesktopViewState
         child: !_transactionPagingService.filtering
             ? Center(child: Text('Select a filter to display transactions'))
             : _transactionPagingService.loading
-            ? Center(child: CircularProgressIndicator())
-            : GroupedListView<TransactionModel, DateTime>(
-                order: GroupedListOrder.DESC,
-                controller: scrollController,
-                physics: ScrollPhysics(),
-                elements: _transactionPagingService.transactions,
-                groupBy: (element) => element.date.toMidnight(),
-                groupSeparatorBuilder: (element) {
-                  return Container(
-                    height: 50,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
+                ? Center(child: CircularProgressIndicator())
+                : GroupedListView<TransactionModel, DateTime>(
+                    order: GroupedListOrder.DESC,
+                    controller: scrollController,
+                    physics: ScrollPhysics(),
+                    elements: _transactionPagingService.transactions,
+                    groupBy: (element) => element.date.toMidnight(),
+                    groupSeparatorBuilder: (element) {
+                      return Container(
+                        height: 50,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(DateFormat.MMMd().format(element)),
+                            padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(DateFormat.yMMMd().format(element)),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-                itemBuilder: (context, transaction) {
-                  return Card(
-                    child: Row(
-                      children: [
-                        SizedBox(width: 20),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(transaction.name),
-                              Text(transaction.price.toString()),
-                            ],
+                      );
+                    },
+                    itemBuilder: (context, transaction) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: SizedBox(
+                          height: 60,
+                          child: Card(
+                            child: Row(
+                              children: [
+                                SizedBox(width: 20),
+                                Text(
+                                  transaction.categoryName,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 80),
+                                Text(
+                                  _accountRepository.accounts
+                                      .firstWhere((element) =>
+                                          element.id == transaction.accountId)
+                                      .name,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 100),
+                                Text(transaction.name),
+                                Spacer(),
+                                Text(
+                                    transaction.price.toString(),
+                                    style: TextStyle(
+                                      color: transaction.transactionType ==
+                                              TransactionType.Income
+                                          ? Colors.greenAccent
+                                          : Colors.redAccent,
+                                    )),
+                                SizedBox(width: 20),
+                              ],
+                            ),
                           ),
                         ),
-                        Text(transaction.price.toString()),
-                        SizedBox(width: 20),
-                      ],
-                    ),
-                  );
-                }),
+                      );
+                    }),
       ),
     );
   }
@@ -156,6 +184,7 @@ class _TransactionsSearchDesktopViewState
 
   @override
   void nextPage() {
-    // TODO: implement nextPage
+    _transactionPagingService.currentPage++;
+    _transactionPagingService.performSearch();
   }
 }

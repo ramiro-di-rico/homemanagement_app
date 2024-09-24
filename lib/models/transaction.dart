@@ -1,7 +1,7 @@
 class TransactionModel {
   final int id;
   int accountId, categoryId;
-  String name;
+  String name, categoryName;
   double price;
   DateTime date;
   TransactionType transactionType;
@@ -17,21 +17,25 @@ class TransactionModel {
   }
 
   TransactionModel(this.id, this.accountId, this.categoryId, this.name,
-      this.price, this.date, this.transactionType);
+      this.price, this.date, this.transactionType, {this.categoryName = ""});
 
   factory TransactionModel.empty(int accountId, int categoryId) =>
       TransactionModel(0, accountId, categoryId, "", 0, DateTime.now(),
           TransactionType.Outcome);
 
   factory TransactionModel.fromJson(dynamic json) {
-    return TransactionModel(
+    var categoryName = json['categoryName'];
+    var model = TransactionModel(
         json['id'],
         json['accountId'],
         json['categoryId'],
         json['name'],
         double.parse(json['price'].toString()),
         DateTime.parse(json['date']),
-        parse(json['transactionType']));
+        parse(json['transactionType'],
+        categoryName: categoryName));
+    model.categoryName = categoryName;
+    return model;
   }
 
   Map toJson() => {
@@ -45,7 +49,7 @@ class TransactionModel {
             this.transactionType == TransactionType.Income ? 0 : 1,
       };
 
-  static TransactionType parse(int value) =>
+  static TransactionType parse(int value, {required categoryName}) =>
       value == 0 ? TransactionType.Income : TransactionType.Outcome;
 
   static TransactionType parseByName(String value) =>

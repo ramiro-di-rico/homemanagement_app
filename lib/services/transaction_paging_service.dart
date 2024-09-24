@@ -33,8 +33,13 @@ class TransactionPagingService extends ChangeNotifier  {
     _calculateAmountOfFilters();
     notifyListeners();
 
-    transactions = await _transactionService.filter(
-        1, 10, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories);
+    var results = await _transactionService.filter(
+        currentPage, pageSize, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories);
+
+    if (results.isNotEmpty) {
+      // Todo STILL shows duplicates
+      transactions.addAll(results.where((element) => !transactions.any((transaction) => transaction.id == element.id)));
+    }
 
     loading = false;
     notifyListeners();
@@ -52,6 +57,8 @@ class TransactionPagingService extends ChangeNotifier  {
     selectedCategories.clear();
     transactionType = null;
     filtering = false;
+    loading = false;
+    currentPage = 1;
     notifyListeners();
   }
 
