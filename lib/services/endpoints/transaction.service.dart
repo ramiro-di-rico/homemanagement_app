@@ -1,4 +1,5 @@
 import '../../models/account.dart';
+import '../../models/category.dart';
 import '../../models/http-models/transaction-with-balance.dart';
 import '../../models/transaction.dart';
 import '../../models/transaction.page.dart';
@@ -33,7 +34,8 @@ class TransactionService {
   }
 
   Future<List<TransactionModel>> filter(int currentPage, int pageSize,
-      List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate, TransactionType? transactionType, List<AccountModel> accounts) async {
+      List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate,
+      TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories) async {
 
     var queryFilter = 'currentPage=${currentPage}&pageSize=${pageSize}';
 
@@ -59,6 +61,10 @@ class TransactionService {
 
     if (accounts.isNotEmpty) {
       queryFilter += '&accountIds=' + accounts.map((e) => e.id).join('&accountIds=');
+    }
+
+    if (categories.isNotEmpty) {
+      queryFilter += '&categoryIds=' + categories.map((e) => e.id).join('&categoryIds=');
     }
 
     dynamic data = await apiServiceFactory.apiGet(

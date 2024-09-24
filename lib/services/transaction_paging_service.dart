@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_management_app/models/account.dart';
 
+import '../models/category.dart';
 import '../models/transaction.dart';
 import '../views/main/widgets/transaction_search_filtering_options.dart';
 import 'endpoints/transaction.service.dart';
@@ -18,11 +19,13 @@ class TransactionPagingService extends ChangeNotifier  {
   int selectedFilters = 0;
   List<TransactionModel> transactions = List.empty(growable: true);
   List<AccountModel> selectedAccounts = List.empty(growable: true);
+  List<CategoryModel> selectedCategories = List.empty(growable: true);
 
   String? name = null;
   DateTime? startDate = null;
   DateTime? endDate = null;
   TransactionType? transactionType = null;
+
 
   Future performSearch() async {
     filtering = true;
@@ -31,7 +34,7 @@ class TransactionPagingService extends ChangeNotifier  {
     notifyListeners();
 
     transactions = await _transactionService.filter(
-        1, 10, null, name, startDate, endDate, transactionType, selectedAccounts);
+        1, 10, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories);
 
     loading = false;
     notifyListeners();
@@ -46,6 +49,7 @@ class TransactionPagingService extends ChangeNotifier  {
     startDate = null;
     endDate = null;
     selectedAccounts.clear();
+    selectedCategories.clear();
     transactionType = null;
     filtering = false;
     notifyListeners();
@@ -63,6 +67,12 @@ class TransactionPagingService extends ChangeNotifier  {
       selectedFilters++;
     }
     if (transactionType != null) {
+      selectedFilters++;
+    }
+    if (selectedAccounts.isNotEmpty) {
+      selectedFilters++;
+    }
+    if (selectedCategories.isNotEmpty) {
       selectedFilters++;
     }
   }

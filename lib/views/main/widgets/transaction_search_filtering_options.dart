@@ -8,19 +8,24 @@ import '../../../models/account.dart';
 import '../../../models/transaction.dart';
 import '../../../services/repositories/account.repository.dart';
 import '../../../services/transaction_paging_service.dart';
+import 'category_dialog_selection.dart';
 
 class TransactionSearchFilteringOptionsSheet extends StatefulWidget {
-
   @override
-  _TransactionSearchFilteringOptionsSheetState createState() => _TransactionSearchFilteringOptionsSheetState();
+  _TransactionSearchFilteringOptionsSheetState createState() =>
+      _TransactionSearchFilteringOptionsSheetState();
 }
 
-class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSearchFilteringOptionsSheet> {
-  TransactionPagingService _transactionPagingService = GetIt.I<TransactionPagingService>();
-  AccountRepository _accountRepository = GetIt.I<AccountRepository>();
+class _TransactionSearchFilteringOptionsSheetState
+    extends State<TransactionSearchFilteringOptionsSheet> {
+  TransactionPagingService _transactionPagingService =
+      GetIt.I<TransactionPagingService>();
 
   TextEditingController _nameTextEditingController = TextEditingController();
-  TextEditingController _selectedAccountsTextEditingController = TextEditingController();
+  TextEditingController _selectedAccountsTextEditingController =
+      TextEditingController();
+  TextEditingController _selectedCategoriesTextEditingController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -37,12 +42,20 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
 
   @override
   Widget build(BuildContext context) {
-    _selectedAccountsTextEditingController.text = _transactionPagingService.selectedAccounts.map((account) => account.name).join(', ');
+    _selectedAccountsTextEditingController.text = _transactionPagingService
+        .selectedAccounts
+        .map((account) => account.name)
+        .join(', ');
+    _selectedCategoriesTextEditingController.text = _transactionPagingService
+        .selectedCategories
+        .map((category) => category.name)
+        .join(', ');
 
     return SizedBox(
-      height: 200,
+      height: 250,
       child: AnimatedPadding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         duration: const Duration(milliseconds: 100),
         curve: Curves.decelerate,
         child: Column(
@@ -61,18 +74,10 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
                   ),
                 ),
                 SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    doFiltering();
-                    Navigator.pop(context);
-                  },
-                  child: Text('Filter'),
-                ),
               ],
             ),
             SizedBox(height: 20),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 SizedBox(width: 20),
                 SizedBox(
@@ -123,6 +128,38 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
                   ),
                 ),
                 SizedBox(width: 20),
+                DropdownButton<String>(
+                  value: _transactionPagingService.transactionType == null
+                      ? 'Select'
+                      : _transactionPagingService.transactionType ==
+                              TransactionType.Income
+                          ? 'Income'
+                          : 'Outcome',
+                  items: ['Select', 'Outcome', 'Income'].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      if (newValue == 'Select') {
+                        _transactionPagingService.transactionType = null;
+                        return;
+                      }
+                      _transactionPagingService.transactionType =
+                          newValue == 'Income'
+                              ? TransactionType.Income
+                              : TransactionType.Outcome;
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                SizedBox(width: 20),
                 SizedBox(
                   width: 320,
                   child: GestureDetector(
@@ -146,22 +183,29 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
                             Expanded(
                               child: TextField(
                                 enabled: false,
-                                style: TextStyle(color: Theme.of(context).textTheme.labelLarge?.color),
-                                controller: _selectedAccountsTextEditingController,
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge
+                                        ?.color),
+                                controller:
+                                    _selectedAccountsTextEditingController,
                                 decoration: InputDecoration(
                                   labelText: 'Select accounts',
                                   border: InputBorder.none,
                                 ),
                               ),
                             ),
-                            IconButton(onPressed: () {
-                              showDialog(
-                                  context: this.context,
-                                  barrierDismissible: false,
-                                  builder: (BuildContext context) {
-                                    return AccountDialogSelection();
-                                  });
-                            }, icon: Icon(Icons.view_list))
+                            IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: this.context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return AccountDialogSelection();
+                                      });
+                                },
+                                icon: Icon(Icons.view_list))
                           ],
                         ),
                       ),
@@ -169,28 +213,78 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
                   ),
                 ),
                 SizedBox(width: 20),
-                DropdownButton<String>(
-                  value: _transactionPagingService.transactionType == null
-                      ? 'Select'
-                      : _transactionPagingService.transactionType == TransactionType.Income ? 'Income' : 'Outcome',
-                  items: ['Select', 'Outcome', 'Income'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      if (newValue == 'Select') {
-                        _transactionPagingService.transactionType = null;
-                        return;
-                      }
-                      _transactionPagingService.transactionType = newValue == 'Income' ? TransactionType.Income : TransactionType.Outcome;
-                    });
-                  },
+                SizedBox(
+                  width: 320,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                          context: this.context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return CategoryDialogSelection();
+                          });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                enabled: false,
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge
+                                        ?.color),
+                                controller:
+                                    _selectedCategoriesTextEditingController,
+                                decoration: InputDecoration(
+                                  labelText: 'Select categories',
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: this.context,
+                                      barrierDismissible: false,
+                                      builder: (BuildContext context) {
+                                        return CategoryDialogSelection();
+                                      });
+                                },
+                                icon: Icon(Icons.view_list))
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20),
+                SizedBox(
+                  height: 60,
+                  width: 150,
+                  child: FilledButton(
+                      style: ButtonStyle(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        doFiltering();
+                        Navigator.pop(context);
+                      },
+                      child: Text('Filter')),
                 ),
               ],
-            ),
+            )
           ],
         ),
       ),
