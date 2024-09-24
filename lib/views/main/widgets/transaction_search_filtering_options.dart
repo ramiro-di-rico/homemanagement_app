@@ -61,7 +61,6 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
                   ),
                 ),
                 SizedBox(width: 20),
-                SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: () {
                     doFiltering();
@@ -147,7 +146,7 @@ class _TransactionSearchFilteringOptionsSheetState extends State<TransactionSear
                             Expanded(
                               child: TextField(
                                 enabled: false,
-                                style: TextStyle(color: Colors.white), // TODO use color based on theme
+                                style: TextStyle(color: Theme.of(context).textTheme.labelLarge?.color),
                                 controller: _selectedAccountsTextEditingController,
                                 decoration: InputDecoration(
                                   labelText: 'Select accounts',

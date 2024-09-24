@@ -18,7 +18,7 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('TODO modal for selecting multiple accounts'),
+      title: Text('Select accounts'),
       content :
       SizedBox(
         height: 400,
