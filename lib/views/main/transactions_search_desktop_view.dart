@@ -5,6 +5,7 @@ import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/transaction.dart';
+import '../../services/infra/platform/platform_context.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/transaction_paging_service.dart';
 import '../accounts/account-details-behaviors/account-list-scrolling-behavior.dart';
@@ -26,6 +27,7 @@ class _TransactionsSearchDesktopViewState
   TransactionPagingService _transactionPagingService =
       GetIt.I<TransactionPagingService>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
+  PlatformContext _platform = GetIt.instance<PlatformContext>();
 
   List<IconData> _filteringNumber = [
     Icons.filter_alt,
@@ -79,6 +81,15 @@ class _TransactionsSearchDesktopViewState
                 child: Text(value.toString()),
               );
             }).toList(),
+          ),
+          IconButton(
+              onPressed: !_transactionPagingService.filtering && _platform.isDownloadEnabled() ?
+                  null : () {
+                var csvContent = _transactionPagingService.generateCsvContent();
+                _platform.saveFile('transactions', 'csv', csvContent);
+              },
+              icon: Icon(Icons.file_download),
+              tooltip: 'Export transactions'
           ),
           IconButton(
               onPressed: () {

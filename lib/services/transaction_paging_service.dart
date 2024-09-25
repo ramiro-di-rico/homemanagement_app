@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_management_app/models/account.dart';
+import 'package:intl/intl.dart';
 
 import '../models/category.dart';
 import '../models/transaction.dart';
@@ -82,5 +83,39 @@ class TransactionPagingService extends ChangeNotifier  {
     if (selectedCategories.isNotEmpty) {
       selectedFilters++;
     }
+  }
+
+  String generateCsvContent() {
+    // Define the headers
+    List<String> headers = [
+      'Id',
+      'Transaction Name',
+      'Price',
+      'Transaction Type',
+      'Date',
+      'Category Id',
+      'Category Name',
+      'Account Id'
+    ];
+
+    // Convert headers to CSV format
+    String csvContent = headers.join(',') + '\n';
+
+    // Iterate over transactions and convert each to a CSV row
+    for (var transaction in transactions) {
+      List<String> row = [
+        transaction.id.toString(),
+        transaction.name,
+        transaction.price.toString(),
+        transaction.parseTransactionByType(),
+        DateFormat('yyyy-MM-dd').format(transaction.date),
+        transaction.categoryId.toString(),
+        transaction.categoryName,
+        transaction.accountId.toString()
+      ];
+      csvContent += row.join(',') + '\n';
+    }
+
+    return csvContent;
   }
 }
