@@ -10,6 +10,7 @@ import '../../services/repositories/currency.repository.dart';
 import '../../services/security/authentication.service.dart';
 import 'dashboard.dart';
 import 'settings.dart';
+import 'transactions_search_desktop_view.dart';
 import 'widgets/account-sheet-dektop.dart';
 
 class HomeDesktop extends StatefulWidget {
@@ -36,10 +37,18 @@ class _HomeDesktopState extends State<HomeDesktop> {
         title: Text('Home Management'),
         actions: [
           IconButton(
+            icon: Icon(Icons.manage_search),
+            onPressed: () {
+              Navigator.pushNamed(context, TransactionsSearchDesktopView.id);
+            },
+            tooltip: 'Search transactions',
+          ),
+          IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
               Navigator.pushNamed(context, SettingsScreen.id);
             },
+            tooltip: 'Settings',
           ),
           IconButton(
             icon: Icon(Icons.logout),
@@ -47,6 +56,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
               GetIt.I<AuthenticationService>().logout();
               Navigator.pushNamed(context, LoginView.id);
             },
+            tooltip: 'Logout',
           ),
         ],
       ),

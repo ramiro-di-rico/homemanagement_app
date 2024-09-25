@@ -26,6 +26,7 @@ import 'services/infra/cryptography.service.dart';
 import 'services/endpoints/currency.service.dart';
 import 'services/endpoints/metrics.service.dart';
 import 'services/endpoints/transaction.service.dart';
+import 'services/transaction_paging_service.dart';
 
 void main() {
   var platform = PlatformStrategy.createPlatform();
@@ -142,6 +143,8 @@ void registerSingletons(PlatformContext platformContext) {
   var identityUserRepository = IdentityUserRepository(
       IdentityUserService(authenticationService: authenticationService));
 
+  var transactionPagingService = TransactionPagingService(transactionService);
+
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
@@ -152,4 +155,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(categoryRepository);
   GetIt.instance.registerSingleton(errorNotifierService);
   GetIt.instance.registerSingleton(identityUserRepository);
+  GetIt.instance.registerSingleton(transactionPagingService);
 }

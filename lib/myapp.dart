@@ -15,6 +15,7 @@ import 'views/authentication/2fa_view.dart';
 import 'views/authentication/login.dart';
 import 'views/main/home.dart';
 import 'views/main/settings_desktop.dart';
+import 'views/main/transactions_search_desktop_view.dart';
 
 class MyApp extends StatelessWidget {
   final PlatformContext _platformContext;
@@ -112,8 +113,10 @@ class MyApp extends StatelessWidget {
         LoggingView.id: (context) => LoggingView(),
         TwoFactorAuthenticationView.id: (context) => TwoFactorAuthenticationView(),
         SettingsScreen.id: (context) => !isDesktop ? SettingsScreen() : SettingsDesktopView(),
+        TransactionsSearchDesktopView.id : (context) => TransactionsSearchDesktopView(),
       },
       initialRoute: LoginView.id,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

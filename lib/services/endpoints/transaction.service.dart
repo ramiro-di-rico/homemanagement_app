@@ -1,5 +1,5 @@
-import 'dart:typed_data';
-
+import '../../models/account.dart';
+import '../../models/category.dart';
 import '../../models/http-models/transaction-with-balance.dart';
 import '../../models/transaction.dart';
 import '../../models/transaction.page.dart';
@@ -29,6 +29,46 @@ class TransactionService {
     dynamic data = await apiServiceFactory.apiGet(
         '$v3ApiName/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
 
+    var pageResult = TransactionPageModel.fromJson(data);
+    return pageResult.items;
+  }
+
+  Future<List<TransactionModel>> filter(int currentPage, int pageSize,
+      List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate,
+      TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories) async {
+
+    var queryFilter = 'currentPage=${currentPage}&pageSize=${pageSize}';
+
+    if (accountIds != null) {
+      queryFilter = 'accountIds=' + accountIds.join('&accountIds=');
+    }
+
+    if (name != null) {
+      queryFilter += '&name=$name';
+    }
+
+    if (startDate != null) {
+      queryFilter += '&startDate=${startDate.toUtc().toIso8601String()}';
+    }
+
+    if (endDate != null) {
+      queryFilter += '&endDate=${endDate.toUtc().toIso8601String()}';
+    }
+
+    if (transactionType != null) {
+      queryFilter += '&transactionType=${transactionType == TransactionType.Income ? 0 : 1}';
+    }
+
+    if (accounts.isNotEmpty) {
+      queryFilter += '&accountIds=' + accounts.map((e) => e.id).join('&accountIds=');
+    }
+
+    if (categories.isNotEmpty) {
+      queryFilter += '&categoryIds=' + categories.map((e) => e.id).join('&categoryIds=');
+    }
+
+    dynamic data = await apiServiceFactory.apiGet(
+        '$v3ApiName/filter?${queryFilter}');
     var pageResult = TransactionPageModel.fromJson(data);
     return pageResult.items;
   }
