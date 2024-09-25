@@ -63,6 +63,23 @@ class _TransactionsSearchDesktopViewState
       appBar: AppBar(
         title: Text('Search transactions'),
         actions: [
+          DropdownButton<int>(
+            value: _transactionPagingService.pageSize,
+            icon: Icon(Icons.arrow_downward),
+            onChanged: !_transactionPagingService.filtering ?
+                null : (int? pageSize) {
+              setState(() {
+                _transactionPagingService.pageSize = pageSize!;
+                _transactionPagingService.performSearch();
+              });
+            },
+            items: [10, 20, 30, 50, 100].map<DropdownMenuItem<int>>((int value) {
+              return DropdownMenuItem<int>(
+                value: value,
+                child: Text(value.toString()),
+              );
+            }).toList(),
+          ),
           IconButton(
               onPressed: () {
                 setState(() {
@@ -122,25 +139,31 @@ class _TransactionsSearchDesktopViewState
                             child: Row(
                               children: [
                                 SizedBox(width: 20),
-                                Text(
-                                  transaction.categoryName,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(width: 80),
-                                Text(
-                                  _accountRepository.accounts
-                                      .firstWhere((element) =>
-                                          element.id == transaction.accountId)
-                                      .name,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                SizedBox(
+                                  width: 80,
+                                  child: Text(
+                                    _accountRepository.accounts
+                                        .firstWhere((element) =>
+                                            element.id == transaction.accountId)
+                                        .name,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(width: 100),
+                                SizedBox(
+                                  width: 120,
+                                  child: Text(
+                                    transaction.categoryName,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(width: 80),
                                 Text(transaction.name),
                                 Spacer(),
                                 Text(
