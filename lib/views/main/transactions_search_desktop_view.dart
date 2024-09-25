@@ -68,14 +68,16 @@ class _TransactionsSearchDesktopViewState
           DropdownButton<int>(
             value: _transactionPagingService.pageSize,
             icon: Icon(Icons.arrow_downward),
-            onChanged: !_transactionPagingService.filtering ?
-                null : (int? pageSize) {
-              setState(() {
-                _transactionPagingService.pageSize = pageSize!;
-                _transactionPagingService.performSearch();
-              });
-            },
-            items: [10, 20, 30, 50, 100].map<DropdownMenuItem<int>>((int value) {
+            onChanged: !_transactionPagingService.filtering
+                ? null
+                : (int? pageSize) {
+                    setState(() {
+                      _transactionPagingService.pageSize = pageSize!;
+                      _transactionPagingService.performSearch();
+                    });
+                  },
+            items:
+                [10, 20, 30, 50, 100].map<DropdownMenuItem<int>>((int value) {
               return DropdownMenuItem<int>(
                 value: value,
                 child: Text(value.toString()),
@@ -83,14 +85,17 @@ class _TransactionsSearchDesktopViewState
             }).toList(),
           ),
           IconButton(
-              onPressed: !_transactionPagingService.filtering && _platform.isDownloadEnabled() ?
-                  null : () {
-                var csvContent = _transactionPagingService.generateCsvContent();
-                _platform.saveFile('transactions', 'csv', csvContent);
-              },
+              onPressed: !_transactionPagingService.filtering
+                  ? null
+                  : _platform.isDownloadEnabled()
+                      ? () {
+                          var csvContent =
+                              _transactionPagingService.generateCsvContent();
+                          _platform.saveFile('transactions', 'csv', csvContent);
+                        }
+                      : null,
               icon: Icon(Icons.file_download),
-              tooltip: 'Export transactions'
-          ),
+              tooltip: 'Export transactions'),
           IconButton(
               onPressed: () {
                 setState(() {
@@ -177,8 +182,7 @@ class _TransactionsSearchDesktopViewState
                                 SizedBox(width: 80),
                                 Text(transaction.name),
                                 Spacer(),
-                                Text(
-                                    transaction.price.toString(),
+                                Text(transaction.price.toString(),
                                     style: TextStyle(
                                       color: transaction.transactionType ==
                                               TransactionType.Income
