@@ -20,4 +20,16 @@ class MobilePlatform extends PlatformContext {
 
   @override
   bool isDownloadEnabled() => false;
+
+  @override
+  bool isUploadEnabled() {
+    // TODO: implement isUploadEnabled
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> pickFile() {
+    // TODO: implement pickFile
+    throw UnimplementedError();
+  }
 }

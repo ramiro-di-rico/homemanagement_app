@@ -15,4 +15,8 @@ abstract class PlatformContext{
   Future saveFile(String filename, String extension, String value);
 
   bool isDownloadEnabled();
+
+  bool isUploadEnabled();
+
+  Future<String> pickFile();
 }

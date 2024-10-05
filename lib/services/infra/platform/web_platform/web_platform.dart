@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:html' as html;
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:home_management_app/services/infra/platform/platform_type.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
@@ -55,4 +56,23 @@ class WebPlatformImpl extends PlatformContext {
 
   @override
   bool isDownloadEnabled() => true;
+
+  @override
+  bool isUploadEnabled() => true;
+
+  @override
+  Future<String> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
+
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      var fileContent = await file.xFile.readAsString();
+      return fileContent;
+    }
+
+    return '';
+  }
 }

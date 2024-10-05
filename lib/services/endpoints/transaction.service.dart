@@ -94,4 +94,9 @@ class TransactionService {
     var body = await apiServiceFactory.rawApiGet('$v3ApiName/export?accountId=$accountId');
     return body;
   }
+
+  Future import(int id, String fileContent) async {
+    var body = json.encode({'fileContent': fileContent});
+    await apiServiceFactory.apiPost(v3ApiName + '/import', body);
+  }
 }
