@@ -190,12 +190,16 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                   platform.isUploadEnabled()
                       ? MenuItemButton(
                           leadingIcon:
-                              Icon(Icons.upload, color: Colors.orangeAccent),
+                              Icon(Icons.upload, color: Colors.greenAccent),
                           child: Text('Upload CSV',
-                              style: TextStyle(color: Colors.orangeAccent)),
+                              style: TextStyle(color: Colors.greenAccent)),
                           onPressed: () async {
 
                             var fileContent = await pickFile();
+
+                            if (fileContent.isEmpty) {
+                              return;
+                            }
                             // TODO check if file is valid
                             await transactionService.import(item.id, fileContent);
                             refreshAccounts();

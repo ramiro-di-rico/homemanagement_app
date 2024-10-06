@@ -38,8 +38,5 @@ class DesktopPlatform extends PlatformContext {
   bool isDownloadEnabled() => false;
 
   @override
-  bool isUploadEnabled() {
-    // TODO: implement isUploadEnabled
-    throw UnimplementedError();
-  }
+  bool isUploadEnabled() => true;
 }
