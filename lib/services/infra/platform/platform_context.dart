@@ -17,6 +17,4 @@ abstract class PlatformContext{
   bool isDownloadEnabled();
 
   bool isUploadEnabled();
-
-  Future<String> pickFile();
 }

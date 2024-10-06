@@ -27,9 +27,4 @@ class MobilePlatform extends PlatformContext {
     throw UnimplementedError();
   }
 
-  @override
-  Future<String> pickFile() {
-    // TODO: implement pickFile
-    throw UnimplementedError();
-  }
 }

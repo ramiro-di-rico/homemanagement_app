@@ -194,7 +194,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                           child: Text('Upload CSV',
                               style: TextStyle(color: Colors.orangeAccent)),
                           onPressed: () async {
-                            var fileContent = await platform.pickFile();
+
+                            var fileContent = await pickFile();
                             // TODO check if file is valid
                             await transactionService.import(item.id, fileContent);
                             refreshAccounts();
@@ -232,5 +233,21 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
         style: TextStyle(color: Colors.redAccent),
       )));
     }
+  }
+
+
+  Future<String> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
+
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      var fileContent = await file.xFile.readAsString();
+      return fileContent;
+    }
+
+    return '';
   }
 }

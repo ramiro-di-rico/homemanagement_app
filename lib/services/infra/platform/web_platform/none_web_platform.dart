@@ -45,10 +45,4 @@ class NoneWebPlatformImpl implements PlatformContext {
     // TODO: implement isUploadEnabled
     throw UnimplementedError();
   }
-
-  @override
-  Future<String> pickFile() {
-    // TODO: implement pickFile
-    throw UnimplementedError();
-  }
 }
