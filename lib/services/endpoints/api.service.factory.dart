@@ -103,6 +103,19 @@ class ApiServiceFactory {
     }
   }
 
+  Future upload(String Api, dynamic file) async {
+    await _autoAuthenticateIfNeeded();
+
+    var request = http.MultipartRequest('POST', backendEndpoint.resolve(Api))
+      ..files.add(file);
+    request.headers.addAll(_getHeaders());
+
+    var response = await request.send();
+    if (response.statusCode != 200) {
+      throw Exception('Failed to upload to $Api');
+    }
+  }
+
   Future _autoAuthenticateIfNeeded() async {
     if (!authenticationService.isAuthenticated() &&
         authenticationService.canAutoAuthenticate()) {

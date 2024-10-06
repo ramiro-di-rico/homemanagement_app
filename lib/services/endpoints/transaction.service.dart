@@ -1,3 +1,5 @@
+import 'package:http/http.dart';
+
 import '../../models/account.dart';
 import '../../models/category.dart';
 import '../../models/http-models/transaction-with-balance.dart';
@@ -96,7 +98,8 @@ class TransactionService {
   }
 
   Future import(int id, String fileContent) async {
-    var body = json.encode({'fileContent': fileContent});
-    await apiServiceFactory.apiPost(v3ApiName + '/import', body);
+
+    var file = MultipartFile.fromString('csv', fileContent, filename: "file.csv");
+    await apiServiceFactory.upload(v3ApiName + '/import', file);
   }
 }
