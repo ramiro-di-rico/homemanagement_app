@@ -178,7 +178,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                       ? MenuItemButton(
                           leadingIcon:
                               Icon(Icons.download, color: Colors.blueAccent),
-                          child: Text('Download CSV',
+                          child: Text('Export transactions',
                               style: TextStyle(color: Colors.blueAccent)),
                           onPressed: () async {
                             var csvContent =
@@ -191,7 +191,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                       ? MenuItemButton(
                           leadingIcon:
                               Icon(Icons.upload, color: Colors.greenAccent),
-                          child: Text('Upload CSV',
+                          child: Text('Import transactions',
                               style: TextStyle(color: Colors.greenAccent)),
                           onPressed: () async {
 
@@ -200,12 +200,12 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                             if (fileContent.isEmpty) {
                               return;
                             }
-                            // TODO check if file is valid
+
                             await transactionService.import(item.id, fileContent);
                             refreshAccounts();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('CSV file uploaded successfully'),
+                                content: Text('Transactions imported successfully'),
                                 backgroundColor: Colors.green,
                               ),
                             );
