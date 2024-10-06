@@ -55,4 +55,7 @@ class WebPlatformImpl extends PlatformContext {
 
   @override
   bool isDownloadEnabled() => true;
+
+  @override
+  bool isUploadEnabled() => true;
 }

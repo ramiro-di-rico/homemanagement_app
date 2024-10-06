@@ -20,4 +20,7 @@ class MobilePlatform extends PlatformContext {
 
   @override
   bool isDownloadEnabled() => false;
+
+  @override
+  bool isUploadEnabled() => false;
 }

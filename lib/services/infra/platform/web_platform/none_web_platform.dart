@@ -39,4 +39,7 @@ class NoneWebPlatformImpl implements PlatformContext {
 
   @override
   bool isDownloadEnabled() => false;
+
+  @override
+  bool isUploadEnabled() => false;
 }

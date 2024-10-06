@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import '../../models/account.dart';
 import '../../services/endpoints/transaction.service.dart';
-import '../../services/infra/error_notifier_service.dart';
 import '../../services/infra/platform/platform_context.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
@@ -10,13 +9,15 @@ import '../accounts/account.detail.dart';
 import '../accounts/widgets/add_transaction_sheet_desktop.dart';
 import '../mixins/notifier_mixin.dart';
 import 'widgets/account.sheet.dart';
+import 'package:file_picker/file_picker.dart';
 
 class AccountListDesktopView extends StatefulWidget {
   @override
   _AccountListDesktopViewState createState() => _AccountListDesktopViewState();
 }
 
-class _AccountListDesktopViewState extends State<AccountListDesktopView> with NotifierMixin {
+class _AccountListDesktopViewState extends State<AccountListDesktopView>
+    with NotifierMixin {
   List<AccountModel> accounts = [];
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
   TransactionRepository transactionsRepo =
@@ -177,12 +178,37 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> with No
                       ? MenuItemButton(
                           leadingIcon:
                               Icon(Icons.download, color: Colors.blueAccent),
-                          child: Text('Download CSV',
+                          child: Text('Export transactions',
                               style: TextStyle(color: Colors.blueAccent)),
                           onPressed: () async {
                             var csvContent =
                                 await transactionService.export(item.id);
                             platform.saveFile(item.name, "csv", csvContent);
+                          },
+                        )
+                      : Container(),
+                  platform.isUploadEnabled()
+                      ? MenuItemButton(
+                          leadingIcon:
+                              Icon(Icons.upload, color: Colors.greenAccent),
+                          child: Text('Import transactions',
+                              style: TextStyle(color: Colors.greenAccent)),
+                          onPressed: () async {
+
+                            var fileContent = await pickFile();
+
+                            if (fileContent.isEmpty) {
+                              return;
+                            }
+
+                            await transactionService.import(item.id, fileContent);
+                            refreshAccounts();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Transactions imported successfully'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
                           },
                         )
                       : Container(),
@@ -211,5 +237,21 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView> with No
         style: TextStyle(color: Colors.redAccent),
       )));
     }
+  }
+
+
+  Future<String> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
+
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      var fileContent = await file.xFile.readAsString();
+      return fileContent;
+    }
+
+    return '';
   }
 }

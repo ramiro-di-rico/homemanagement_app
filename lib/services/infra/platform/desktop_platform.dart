@@ -36,4 +36,7 @@ class DesktopPlatform extends PlatformContext {
 
   @override
   bool isDownloadEnabled() => false;
+
+  @override
+  bool isUploadEnabled() => true;
 }
