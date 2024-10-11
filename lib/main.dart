@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'myapp.dart';
 import 'services/endpoints/identity_user_service.dart';
+import 'services/endpoints/recurring_transaction_service.dart';
 import 'services/infra/error_notifier_service.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_strategy.dart';
@@ -85,6 +86,8 @@ void registerServices() {
       caching: GetIt.I<Caching>()));
 
   GetIt.instance.registerFactory(() => IdentityUserService(authenticationService: GetIt.I<AuthenticationService>()));
+
+  GetIt.instance.registerFactory(() => RecurringTransactionService(authenticationService: GetIt.I<AuthenticationService>()));
 }
 
 void registerSingletons(PlatformContext platformContext) {
