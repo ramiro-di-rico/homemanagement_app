@@ -1,7 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/views/main/widgets/account_dialog_selection.dart';
+import 'package:home_management_app/views/main/widgets/account_select/account_dialog_selection.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/transaction.dart';
@@ -166,7 +166,8 @@ class _TransactionSearchFilteringOptionsSheetState
                           context: this.context,
                           barrierDismissible: false,
                           builder: (BuildContext context) {
-                            return AccountDialogSelection();
+                            //return AccountDialogSelection();
+                            return Container();
                           });
                     },
                     child: Container(
@@ -200,7 +201,8 @@ class _TransactionSearchFilteringOptionsSheetState
                                       context: this.context,
                                       barrierDismissible: false,
                                       builder: (BuildContext context) {
-                                        return AccountDialogSelection();
+                                        //return AccountDialogSelection();
+                                        return Container();
                                       });
                                 },
                                 icon: Icon(Icons.view_list))

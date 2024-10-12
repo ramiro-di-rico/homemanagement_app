@@ -132,7 +132,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                           BorderRadius.vertical(top: Radius.circular(25.0))),
                                       builder: (context) {
                                         return SizedBox(
-                                            height: 100,
+                                            height: 200,
                                             width: 900,
                                             child: AnimatedPadding(
                                                 padding: MediaQuery.of(context).viewInsets,
