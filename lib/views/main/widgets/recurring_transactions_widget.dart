@@ -44,7 +44,7 @@ class _RecurringTransactionListState extends State<RecurringTransactionList> {
                 ),
                 child: ListTile(
                   title: Text(transaction.name),
-                  subtitle: Text(transaction.price.toString()),
+                  subtitle: transaction.price == null ? Text('Price not set') : Text(transaction.price.toString()),
                   onTap: () async {
                     var result = await Navigator.push(
                       context,

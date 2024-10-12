@@ -11,6 +11,7 @@ import 'dashboard.dart';
 import 'settings.dart';
 import 'transactions_search_desktop_view.dart';
 import 'widgets/account-sheet-dektop.dart';
+import 'widgets/recurring_transaction_form_widget.dart';
 import 'widgets/recurring_transactions_widget.dart';
 
 class HomeDesktop extends StatefulWidget {
@@ -119,7 +120,26 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                 ),
                                 trailing: TextButton(
                                   onPressed: () {
-
+                                    showModalBottomSheet<void>(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      constraints: BoxConstraints(
+                                        maxHeight: 500,
+                                        maxWidth: 1200,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.vertical(top: Radius.circular(25.0))),
+                                      builder: (context) {
+                                        return SizedBox(
+                                            height: 100,
+                                            width: 900,
+                                            child: AnimatedPadding(
+                                                padding: MediaQuery.of(context).viewInsets,
+                                                duration: Duration(seconds: 1),
+                                                child: RecurringTransactionForm()));
+                                      },
+                                    );
                                   },
                                   child: Icon(Icons.add),
                                 ),

@@ -19,7 +19,7 @@ class RecurringTransaction{
   factory RecurringTransaction.fromJson(dynamic json) {
     var date = json['date'] == null ? null : DateTime.parse(json['date']);
     var dueDate = json['dueDate'] == null ? null : DateTime.parse(json['dueDate']);
-    var price = json['price'] == null ? 0 : json['price'];
+    var price = json['price'] == null ? null : json['price'].toDouble();
     return RecurringTransaction(
         json['id'],
         json['accountId'],
