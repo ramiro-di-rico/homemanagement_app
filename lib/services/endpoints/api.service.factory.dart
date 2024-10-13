@@ -90,6 +90,8 @@ class ApiServiceFactory {
     if (response.statusCode != 200) {
       throw Exception('Failed to put to $api');
     }
+
+    return json.decode(response.body);
   }
 
   Future apiDelete(String api, String id) async {

@@ -2,7 +2,7 @@ import 'transaction.dart';
 
 class RecurringTransaction{
   final int id;
-  int accountId, categoryId;
+  int? accountId, categoryId;
   String name;
   double? price;
   TransactionType transactionType;

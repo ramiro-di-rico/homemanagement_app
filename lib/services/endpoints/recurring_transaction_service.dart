@@ -16,7 +16,9 @@ class RecurringTransactionService {
 
   Future<List<RecurringTransaction>> getAll() async {
     dynamic data = await apiServiceFactory.apiGet('$v3ApiName');
-    return (data as List).map((item) => RecurringTransaction.fromJson(item)).toList();
+    return (data as List)
+        .map((item) => RecurringTransaction.fromJson(item))
+        .toList();
   }
 
   Future<RecurringTransaction> create(RecurringTransaction transaction) async {
@@ -27,7 +29,7 @@ class RecurringTransactionService {
 
   Future<RecurringTransaction> update(RecurringTransaction transaction) async {
     var body = jsonEncode(transaction.toJson());
-    dynamic data = await apiServiceFactory.apiPut('$v3ApiName/${transaction.id}', body);
+    dynamic data = await apiServiceFactory.apiPut(v3ApiName, body);
     return RecurringTransaction.fromJson(data);
   }
 
