@@ -21,15 +21,13 @@ class AccountSelect extends StatefulWidget {
 
 class _AccountSelectState extends State<AccountSelect> {
   TextEditingController _selectedAccountsTextEditingController =
-  TextEditingController();
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _selectedAccountsTextEditingController.text =
-        widget.selectedAccounts
-            .map((account) => account.name)
-            .join(', ');
+        widget.selectedAccounts.map((account) => account.name).join(', ');
   }
 
   @override
@@ -43,10 +41,9 @@ class _AccountSelectState extends State<AccountSelect> {
               return AccountDialogSelection(
                 onSelectedAccountsChanged: (selectedAccounts) {
                   widget.onSelectedAccountsChanged(selectedAccounts);
-                  _selectedAccountsTextEditingController.text =
-                      selectedAccounts
-                          .map((account) => account.account.name)
-                          .join(', ');
+                  _selectedAccountsTextEditingController.text = selectedAccounts
+                      .map((account) => account.account.name)
+                      .join(', ');
                 },
                 multipleSelection: widget.multipleSelection,
                 selectedAccounts: widget.selectedAccounts,
@@ -66,14 +63,12 @@ class _AccountSelectState extends State<AccountSelect> {
                 child: TextField(
                   enabled: false,
                   style: TextStyle(
-                      color: Theme.of(context)
-                          .textTheme
-                          .labelLarge
-                          ?.color),
-                  controller:
-                  _selectedAccountsTextEditingController,
+                      color: Theme.of(context).textTheme.labelLarge?.color),
+                  controller: _selectedAccountsTextEditingController,
                   decoration: InputDecoration(
-                    labelText: widget.multipleSelection ? 'Select accounts' : 'Select account',
+                    labelText: widget.multipleSelection
+                        ? 'Select accounts'
+                        : 'Select account',
                     border: InputBorder.none,
                   ),
                 ),
@@ -86,7 +81,8 @@ class _AccountSelectState extends State<AccountSelect> {
                         builder: (BuildContext context) {
                           return AccountDialogSelection(
                             onSelectedAccountsChanged: (selectedAccounts) {
-                              widget.onSelectedAccountsChanged(selectedAccounts);
+                              widget
+                                  .onSelectedAccountsChanged(selectedAccounts);
                               _selectedAccountsTextEditingController.text =
                                   selectedAccounts
                                       .map((account) => account.account.name)
@@ -97,7 +93,9 @@ class _AccountSelectState extends State<AccountSelect> {
                           );
                         });
                   },
-                  icon: Icon(Icons.view_list))
+                  icon: Icon(widget.multipleSelection
+                      ? Icons.view_list
+                      : Icons.arrow_drop_down))
             ],
           ),
         ),

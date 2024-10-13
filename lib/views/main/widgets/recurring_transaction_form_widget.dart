@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/views/main/widgets/category_select/category_select.dart';
 import '../../../models/account.dart';
+import '../../../models/category.dart';
 import '../../../models/recurring_transaction.dart';
 import '../../../models/transaction.dart';
 import '../../../services/endpoints/recurring_transaction_service.dart';
@@ -12,17 +14,20 @@ class RecurringTransactionForm extends StatefulWidget {
   RecurringTransactionForm({this.transaction});
 
   @override
-  _RecurringTransactionFormState createState() => _RecurringTransactionFormState();
+  _RecurringTransactionFormState createState() =>
+      _RecurringTransactionFormState();
 }
 
 class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
   late RecurringTransaction _recurringTransaction;
   final List<AccountModel> _selectedAccounts = [];
+  final List<CategoryModel> _selectedCategories = [];
 
   @override
   void initState() {
     super.initState();
-    _recurringTransaction = widget.transaction ?? RecurringTransaction.empty(0, 0);
+    _recurringTransaction =
+        widget.transaction ?? RecurringTransaction.empty(0, 0);
   }
 
   @override
@@ -56,7 +61,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                   width: 100,
                   child: DropdownButton<String>(
                     value: _recurringTransaction.transactionType ==
-                        TransactionType.Income
+                            TransactionType.Income
                         ? 'Income'
                         : 'Outcome',
                     items: ['Outcome', 'Income'].map((String value) {
@@ -68,9 +73,9 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                     onChanged: (String? newValue) {
                       setState(() {
                         _recurringTransaction.transactionType =
-                        newValue == 'Income'
-                            ? TransactionType.Income
-                            : TransactionType.Outcome;
+                            newValue == 'Income'
+                                ? TransactionType.Income
+                                : TransactionType.Outcome;
                       });
                     },
                   ),
@@ -79,10 +84,10 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                 SizedBox(
                   width: 100,
                   child: DropdownButton<String>(
-                    value: _recurringTransaction.recurrence ==
-                        Recurrence.Monthly
-                        ? 'Monthly'
-                        : 'Annually',
+                    value:
+                        _recurringTransaction.recurrence == Recurrence.Monthly
+                            ? 'Monthly'
+                            : 'Annually',
                     items: ['Monthly', 'Annually'].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
@@ -91,8 +96,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       setState(() {
-                        _recurringTransaction.recurrence =
-                        newValue == 'Monthly'
+                        _recurringTransaction.recurrence = newValue == 'Monthly'
                             ? Recurrence.Monthly
                             : Recurrence.Annually;
                       });
@@ -102,40 +106,51 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
               ],
             ),
             SizedBox(height: 20),
-            Row(
-              children: [
-                SizedBox(
-                  width: 200,
-                  child: AccountSelect(
-                    selectedAccounts: _selectedAccounts,
-                    multipleSelection: false,
-                    onSelectedAccountsChanged: (accounts) {
-                      _selectedAccounts.clear();
-                      _selectedAccounts.addAll(accounts.map((e) => e.account));
-                      //_recurringTransaction.accountId = accounts.first.id;
-                    },
-                  ),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (widget.transaction == null) {
-                      //await _transactionService.create();
-                    } else {
-                      await _transactionService.update(widget.transaction!);
-                    }
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Recurring transaction saved successfully'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                    Navigator.pop(context, true);
+            Row(children: [
+              SizedBox(
+                width: 200,
+                child: AccountSelect(
+                  selectedAccounts: _selectedAccounts,
+                  multipleSelection: false,
+                  onSelectedAccountsChanged: (accounts) {
+                    _selectedAccounts.clear();
+                    _selectedAccounts.addAll(accounts.map((e) => e.account));
+                    _recurringTransaction.accountId = accounts.first.account.id;
                   },
-                  child: Text(widget.transaction == null ? 'Add' : 'Update'),
                 ),
-              ]
-            ),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 200,
+                child: CategorySelect(
+                  onSelectedCategoriesChanged: (categories) {
+                    _selectedCategories.clear();
+                    _selectedCategories.addAll(categories);
+                    _recurringTransaction.categoryId = categories.first.id;
+                  },
+                  selectedCategories: _selectedCategories,
+                  multipleSelection: false,
+                ),
+              ),
+              SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (widget.transaction == null) {
+                    //await _transactionService.create();
+                  } else {
+                    await _transactionService.update(widget.transaction!);
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Recurring transaction saved successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  Navigator.pop(context, true);
+                },
+                child: Text(widget.transaction == null ? 'Add' : 'Update'),
+              ),
+            ]),
           ],
         ),
       ),

@@ -79,15 +79,6 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
                             .toList());
                       });
                     },
-                    /*onChanged: (value) {
-                setState(() {
-                  if (isSelected)
-                    _transactionPagingService.selectedAccounts.remove(account);
-                  else
-                    _transactionPagingService.selectedAccounts.add(account);
-                  _transactionPagingService.dispatchRefresh();
-                });
-              },*/
                   )
                 : RadioListTile(
                     title: Text(selectedAccount.account.name),

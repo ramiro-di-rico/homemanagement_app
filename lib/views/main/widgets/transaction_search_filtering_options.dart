@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 import '../../../models/transaction.dart';
 import '../../../services/transaction_paging_service.dart';
 import 'account_select/account_select.dart';
-import 'category_dialog_selection.dart';
+import 'category_select/category_dialog_selection.dart';
+import 'category_select/category_select.dart';
 
 class TransactionSearchFilteringOptionsSheet extends StatefulWidget {
   @override
@@ -167,54 +168,14 @@ class _TransactionSearchFilteringOptionsSheetState
                 SizedBox(width: 20),
                 SizedBox(
                   width: 320,
-                  child: GestureDetector(
-                    onTap: () {
-                      showDialog(
-                          context: this.context,
-                          barrierDismissible: false,
-                          builder: (BuildContext context) {
-                            return CategoryDialogSelection();
-                          });
+                  child: CategorySelect(
+                    selectedCategories: _transactionPagingService.selectedCategories,
+                    multipleSelection: true,
+                    onSelectedCategoriesChanged: (selectedCategories) {
+                      _transactionPagingService.selectedCategories.clear();
+                      _transactionPagingService.selectedCategories.addAll(selectedCategories);
+                      setState(() {});
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(5),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                enabled: false,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .labelLarge
-                                        ?.color),
-                                controller:
-                                    _selectedCategoriesTextEditingController,
-                                decoration: InputDecoration(
-                                  labelText: 'Select categories',
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: this.context,
-                                      barrierDismissible: false,
-                                      builder: (BuildContext context) {
-                                        return CategoryDialogSelection();
-                                      });
-                                },
-                                icon: Icon(Icons.view_list))
-                          ],
-                        ),
-                      ),
-                    ),
                   ),
                 ),
                 SizedBox(width: 20),
