@@ -81,7 +81,7 @@ class _CategoryDialogSelectionState extends State<CategoryDialogSelection> {
             ) : Container(),
             SizedBox(height: 20),
             SizedBox(
-              height: 380,
+              height: 330,
               width: 200,
               child: ListView.builder(
                 shrinkWrap: true,
