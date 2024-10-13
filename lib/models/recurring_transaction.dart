@@ -13,8 +13,8 @@ class RecurringTransaction{
   RecurringTransaction(this.id, this.accountId, this.categoryId, this.name, this.price,
       this.transactionType, this.recurrence, this.date, this.dueDate);
 
-  factory RecurringTransaction.empty(int accountId, int categoryId) =>
-      RecurringTransaction(0, accountId, categoryId, "", 0, TransactionType.Outcome, Recurrence.Monthly, DateTime.now(), DateTime.now());
+  factory RecurringTransaction.empty() =>
+      RecurringTransaction(0, null, null, "", 0, TransactionType.Outcome, Recurrence.Monthly, DateTime.now(), DateTime.now());
 
   factory RecurringTransaction.fromJson(dynamic json) {
     var date = json['date'] == null ? null : DateTime.parse(json['date']);
@@ -41,8 +41,8 @@ class RecurringTransaction{
         'transactionType':
             this.transactionType == TransactionType.Income ? 0 : 1,
         'recurrence': this.recurrence == Recurrence.Monthly ? 0 : 1,
-        'date': this.date?.toIso8601String(),
-        'dueDate': this.dueDate?.toIso8601String()
+        'date': this.date?.toUtc().toIso8601String(),
+        'dueDate': this.dueDate?.toUtc().toIso8601String()
       };
 
   static Recurrence parseRecurrence(int value) =>

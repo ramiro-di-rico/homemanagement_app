@@ -30,26 +30,36 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
   final List<CategoryModel> _selectedCategories = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  bool saving = false;
 
   @override
   void initState() {
     super.initState();
-    _recurringTransaction =
-        widget.transaction ?? RecurringTransaction.empty(0, 0);
+    _recurringTransaction = widget.transaction ?? RecurringTransaction.empty();
     _nameController.text = _recurringTransaction.name;
+
+    _priceController.addListener(onPriceChanged);
+    _nameController.addListener(onNameChanged);
 
     if (_recurringTransaction.price != null)
       _priceController.text = _recurringTransaction.price.toString();
 
     if (_recurringTransaction.accountId != null) {
-      _selectedAccounts.add(_accountRepository.accounts
-          .firstWhere((element) => element.id == _recurringTransaction.accountId));
+      _selectedAccounts.add(_accountRepository.accounts.firstWhere(
+          (element) => element.id == _recurringTransaction.accountId));
     }
 
     if (_recurringTransaction.categoryId != null) {
-      _selectedCategories.add(_categoryRepository.categories
-          .firstWhere((element) => element.id == _recurringTransaction.categoryId));
+      _selectedCategories.add(_categoryRepository.categories.firstWhere(
+          (element) => element.id == _recurringTransaction.categoryId));
     }
+  }
+
+  @override
+  void dispose() {
+    _priceController.removeListener(onPriceChanged);
+    _nameController.removeListener(onNameChanged);
+    super.dispose();
   }
 
   @override
@@ -84,6 +94,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                 SizedBox(
                   width: 180,
                   child: DateTimeField(
+                    //enabled: false,
                     decoration: InputDecoration(
                       icon: Icon(Icons.date_range),
                     ),
@@ -108,6 +119,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                 SizedBox(
                   width: 180,
                   child: DateTimeField(
+                    //enabled: false,
                     decoration: InputDecoration(
                       icon: Icon(Icons.date_range),
                     ),
@@ -128,7 +140,6 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                     initialValue: _recurringTransaction.dueDate,
                   ),
                 ),
-
               ],
             ),
             SizedBox(height: 20),
@@ -164,7 +175,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                 child: DropdownButton<String>(
                   underline: Container(),
                   value: _recurringTransaction.transactionType ==
-                      TransactionType.Income
+                          TransactionType.Income
                       ? 'Income'
                       : 'Outcome',
                   items: ['Outcome', 'Income'].map((String value) {
@@ -176,9 +187,9 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                   onChanged: (String? newValue) {
                     setState(() {
                       _recurringTransaction.transactionType =
-                      newValue == 'Income'
-                          ? TransactionType.Income
-                          : TransactionType.Outcome;
+                          newValue == 'Income'
+                              ? TransactionType.Income
+                              : TransactionType.Outcome;
                     });
                   },
                 ),
@@ -188,8 +199,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                 width: 100,
                 child: DropdownButton<String>(
                   underline: Container(),
-                  value:
-                  _recurringTransaction.recurrence == Recurrence.Monthly
+                  value: _recurringTransaction.recurrence == Recurrence.Monthly
                       ? 'Monthly'
                       : 'Annually',
                   items: ['Monthly', 'Annually'].map((String value) {
@@ -220,20 +230,37 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                     ),
                   ),
                   onPressed: () async {
-                    if (widget.transaction == null) {
-                      //await _transactionService.create();
-                    } else {
-                      await _transactionService.update(widget.transaction!);
+                    if (saving) return;
+
+                    setState(() {
+                      saving = true;
+                    });
+                    bool success = true;
+                    try {
+                      if (widget.transaction == null) {
+                        await _transactionService.create(_recurringTransaction);
+                      } else {
+                        await _transactionService.update(_recurringTransaction);
+                      }
+                    } on Exception catch (e) {
+                      success = false;
                     }
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Recurring transaction saved successfully'),
-                        backgroundColor: Colors.green,
+                        content: Text(success
+                            ? 'Recurring transaction saved successfully'
+                            : 'Error: Recurring transaction not saved'),
+                        backgroundColor: success ? Colors.green : Colors.red,
                       ),
                     );
+                    setState(() {
+                      saving = false;
+                    });
                     Navigator.pop(context, true);
                   },
-                  child: Text(widget.transaction == null ? 'Add' : 'Update'),
+                  child: saving
+                      ? CircularProgressIndicator()
+                      : Text(widget.transaction == null ? 'Add' : 'Update'),
                 ),
               ),
             ]),
@@ -241,5 +268,17 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
         ),
       ),
     );
+  }
+
+  void onPriceChanged() {
+    if (_priceController.text.isEmpty) {
+      _recurringTransaction.price = null;
+    } else {
+      _recurringTransaction.price = double.parse(_priceController.text);
+    }
+  }
+
+  void onNameChanged() {
+    _recurringTransaction.name = _nameController.text;
   }
 }

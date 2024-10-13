@@ -21,10 +21,9 @@ class RecurringTransactionService {
         .toList();
   }
 
-  Future<RecurringTransaction> create(RecurringTransaction transaction) async {
+  Future create(RecurringTransaction transaction) async {
     var body = jsonEncode(transaction.toJson());
-    dynamic data = await apiServiceFactory.postWithReturn(v3ApiName, body);
-    return RecurringTransaction.fromJson(data);
+    await apiServiceFactory.apiPost(v3ApiName, body);
   }
 
   Future<RecurringTransaction> update(RecurringTransaction transaction) async {
