@@ -24,6 +24,15 @@ class _AccountSelectState extends State<AccountSelect> {
   TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _selectedAccountsTextEditingController.text =
+        widget.selectedAccounts
+            .map((account) => account.name)
+            .join(', ');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -32,7 +41,13 @@ class _AccountSelectState extends State<AccountSelect> {
             barrierDismissible: false,
             builder: (BuildContext context) {
               return AccountDialogSelection(
-                onSelectedAccountsChanged: widget.onSelectedAccountsChanged,
+                onSelectedAccountsChanged: (selectedAccounts) {
+                  widget.onSelectedAccountsChanged(selectedAccounts);
+                  _selectedAccountsTextEditingController.text =
+                      selectedAccounts
+                          .map((account) => account.account.name)
+                          .join(', ');
+                },
                 multipleSelection: widget.multipleSelection,
                 selectedAccounts: widget.selectedAccounts,
               );
@@ -70,7 +85,13 @@ class _AccountSelectState extends State<AccountSelect> {
                         barrierDismissible: false,
                         builder: (BuildContext context) {
                           return AccountDialogSelection(
-                            onSelectedAccountsChanged: widget.onSelectedAccountsChanged,
+                            onSelectedAccountsChanged: (selectedAccounts) {
+                              widget.onSelectedAccountsChanged(selectedAccounts);
+                              _selectedAccountsTextEditingController.text =
+                                  selectedAccounts
+                                      .map((account) => account.account.name)
+                                      .join(', ');
+                            },
                             multipleSelection: widget.multipleSelection,
                             selectedAccounts: widget.selectedAccounts,
                           );

@@ -62,9 +62,6 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
           itemBuilder: (context, index) {
             var selectedAccount = _allAccounts[index];
 
-            print(selectedAccount.account.name);
-            print(selectedAccount.isSelected);
-
             return widget.multipleSelection
                 ? CheckboxListTile(
                     title: Text(selectedAccount.account.name),
