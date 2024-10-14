@@ -6,9 +6,9 @@ import '../../../models/account.dart';
 import '../../../models/category.dart';
 import '../../../models/recurring_transaction.dart';
 import '../../../models/transaction.dart';
-import '../../../services/endpoints/recurring_transaction_service.dart';
 import '../../../services/repositories/account.repository.dart';
 import '../../../services/repositories/category.repository.dart';
+import '../../../services/repositories/recurring_transaction_repository.dart';
 import 'account_select/account_select.dart';
 import 'category_select/category_select.dart';
 
@@ -25,6 +25,9 @@ class RecurringTransactionForm extends StatefulWidget {
 class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
   CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
+  final RecurringTransactionRepository _recurringTransactionRepository =
+  GetIt.I.get<RecurringTransactionRepository>();
+
   late RecurringTransaction _recurringTransaction;
   final List<AccountModel> _selectedAccounts = [];
   final List<CategoryModel> _selectedCategories = [];
@@ -64,9 +67,6 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    final RecurringTransactionService _transactionService =
-        GetIt.I.get<RecurringTransactionService>();
-
     return Container(
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -235,24 +235,14 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                     setState(() {
                       saving = true;
                     });
-                    bool success = true;
                     try {
                       if (widget.transaction == null) {
-                        await _transactionService.create(_recurringTransaction);
+                        await _recurringTransactionRepository.add(_recurringTransaction);
                       } else {
-                        await _transactionService.update(_recurringTransaction);
+                        await _recurringTransactionRepository.update(_recurringTransaction);
                       }
                     } on Exception catch (e) {
-                      success = false;
                     }
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(success
-                            ? 'Recurring transaction saved successfully'
-                            : 'Error: Recurring transaction not saved'),
-                        backgroundColor: success ? Colors.green : Colors.red,
-                      ),
-                    );
                     setState(() {
                       saving = false;
                     });

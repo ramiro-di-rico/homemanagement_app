@@ -12,6 +12,7 @@ import 'services/repositories/identity_user_repository.dart';
 import 'services/repositories/notification.repository.dart';
 import 'services/repositories/preferences.repository.dart';
 import 'services/repositories/currency.repository.dart';
+import 'services/repositories/recurring_transaction_repository.dart';
 import 'services/repositories/transaction.repository.dart';
 import 'services/repositories/user.repository.dart';
 import 'services/endpoints/api.service.factory.dart';
@@ -147,6 +148,9 @@ void registerSingletons(PlatformContext platformContext) {
       IdentityUserService(authenticationService: authenticationService));
 
   var transactionPagingService = TransactionPagingService(transactionService);
+  var recurringTransactionRepository = RecurringTransactionRepository(
+      RecurringTransactionService(authenticationService: authenticationService),
+      errorNotifierService);
 
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
@@ -159,4 +163,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(errorNotifierService);
   GetIt.instance.registerSingleton(identityUserRepository);
   GetIt.instance.registerSingleton(transactionPagingService);
+  GetIt.instance.registerSingleton(recurringTransactionRepository);
 }
