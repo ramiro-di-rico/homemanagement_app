@@ -6,6 +6,7 @@ import '../../../models/transaction.dart';
 import '../../../services/repositories/account.repository.dart';
 import '../../../services/repositories/category.repository.dart';
 import '../../../services/repositories/recurring_transaction_repository.dart';
+import '../../accounts/widgets/add_transaction_sheet_desktop.dart';
 import '../../mixins/notifier_mixin.dart';
 import 'recurring_transaction_form_widget.dart';
 
@@ -15,7 +16,8 @@ class RecurringTransactionList extends StatefulWidget {
       _RecurringTransactionListState();
 }
 
-class _RecurringTransactionListState extends State<RecurringTransactionList> with NotifierMixin {
+class _RecurringTransactionListState extends State<RecurringTransactionList>
+    with NotifierMixin {
   final RecurringTransactionRepository _recurringTransactionRepository =
       GetIt.I.get<RecurringTransactionRepository>();
   final AccountRepository _accountRepository = GetIt.I.get<AccountRepository>();
@@ -80,17 +82,47 @@ class _RecurringTransactionListState extends State<RecurringTransactionList> wit
                         await _recurringTransactionRepository
                             .delete(recurringTransaction);
                       } else if (result == 'create_transaction') {
-                        // Implement the logic to create a transaction
+                        var transaction = TransactionModel.fromRecurring(
+                            recurringTransaction);
+                        var account = _accountRepository.accounts
+                            .where((account) =>
+                                account.id == transaction.accountId)
+                            .firstOrNull;
+                        showModalBottomSheet<void>(
+                          context: context,
+                          isScrollControlled: true,
+                          constraints: BoxConstraints(
+                            maxHeight: 500,
+                            maxWidth: 1200,
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(25.0))),
+                          builder: (context) {
+                            return SizedBox(
+                              height: 100,
+                              child: AnimatedPadding(
+                                padding: MediaQuery.of(context).viewInsets,
+                                duration: Duration(seconds: 1),
+                                child: AddTransactionSheetDesktop(account!,
+                                    transactionModel: transaction,
+                                    fromRecurring: true),
+                              ),
+                            );
+                          },
+                        );
                       }
                     },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
                       const PopupMenuItem<String>(
                         value: 'create_transaction',
                         child: Row(
                           children: [
                             Icon(Icons.add, color: Colors.greenAccent),
                             SizedBox(width: 10),
-                            Text('Create Transaction', style: TextStyle(color: Colors.greenAccent)),
+                            Text('Create Transaction',
+                                style: TextStyle(color: Colors.greenAccent)),
                           ],
                         ),
                       ),
@@ -100,7 +132,8 @@ class _RecurringTransactionListState extends State<RecurringTransactionList> wit
                           children: [
                             Icon(Icons.delete, color: Colors.redAccent),
                             SizedBox(width: 10),
-                            Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                            Text('Delete',
+                                style: TextStyle(color: Colors.redAccent)),
                           ],
                         ),
                       ),

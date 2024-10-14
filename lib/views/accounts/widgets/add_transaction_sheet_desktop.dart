@@ -1,7 +1,6 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/app-textfield.dart';
 import 'package:home_management_app/models/account.dart';
@@ -13,10 +12,12 @@ import '../../../services/repositories/category.repository.dart';
 import '../../../services/repositories/transaction.repository.dart';
 
 class AddTransactionSheetDesktop extends StatefulWidget {
-  TransactionModel? transactionModel;
-  AccountModel _accountModel;
+  final TransactionModel? transactionModel;
+  final AccountModel _accountModel;
+  final fromRecurring;
+  final isEditing;
 
-  AddTransactionSheetDesktop(this._accountModel, {super.key, this.transactionModel});
+  AddTransactionSheetDesktop(this._accountModel, {this.transactionModel = null, this.fromRecurring = false, this.isEditing = false});
 
   @override
   State<AddTransactionSheetDesktop> createState() =>
@@ -34,12 +35,10 @@ class _AddTransactionSheetDesktopState
 
   TransactionModel transactionModel = TransactionModel.empty(0, 0);
   AccountModel accountModel = AccountModel.empty(0);
-  bool isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    isEditing = widget.transactionModel != null;
     accountModel = widget._accountModel;
     transactionModel = widget.transactionModel ??
         TransactionModel.empty(
@@ -47,7 +46,7 @@ class _AddTransactionSheetDesktopState
     nameController.addListener(onNameChanged);
     priceController.addListener(onPriceChanged);
     nameController.text = transactionModel.name;
-    priceController.text = isEditing ? transactionModel.price.toString() : "";
+    priceController.text = widget.isEditing || widget.fromRecurring ? transactionModel.price.toString() : "";
   }
 
   @override
@@ -169,7 +168,7 @@ class _AddTransactionSheetDesktopState
   }
 
   Future addTransaction() async {
-    if (isEditing) {
+    if (widget.isEditing) {
       await transactionRepository.update(widget.transactionModel!);
     } else {
       await transactionRepository.add(transactionModel);
