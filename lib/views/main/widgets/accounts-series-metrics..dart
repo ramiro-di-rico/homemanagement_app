@@ -167,7 +167,7 @@ class _AccountsMetricSeriesWidgetState
                 if (!isInt) return const Text("");
                 return Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Text(months[value.toInt()]),
+                  child: months.isEmpty ? Text('') : Text(months[value.toInt()]),
                 );
               },
             ),

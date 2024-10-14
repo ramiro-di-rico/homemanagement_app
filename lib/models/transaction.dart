@@ -1,3 +1,5 @@
+import 'recurring_transaction.dart';
+
 class TransactionModel {
   final int id;
   int accountId, categoryId;
@@ -36,6 +38,16 @@ class TransactionModel {
         categoryName: categoryName));
     model.categoryName = categoryName;
     return model;
+  }
+
+  factory TransactionModel.fromRecurring(RecurringTransaction recurringTransaction) {
+    return TransactionModel(0,
+        recurringTransaction.accountId!,
+        recurringTransaction.categoryId!,
+        recurringTransaction.name,
+        recurringTransaction.price ?? 0,
+        recurringTransaction.date!,
+        recurringTransaction.transactionType);
   }
 
   Map toJson() => {

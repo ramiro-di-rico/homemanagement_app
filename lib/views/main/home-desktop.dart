@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/views/authentication/login.dart';
-import 'package:home_management_app/views/main/account-list-desktop.dart';
-import 'package:home_management_app/views/main/account.list.dart';
 
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/security/authentication.service.dart';
+import '../authentication/login.dart';
+import 'account-list-desktop.dart';
 import 'dashboard.dart';
 import 'settings.dart';
 import 'transactions_search_desktop_view.dart';
 import 'widgets/account-sheet-dektop.dart';
+import 'widgets/recurring_transaction_form_widget.dart';
+import 'widgets/recurring_transactions_widget.dart';
 
 class HomeDesktop extends StatefulWidget {
   const HomeDesktop({super.key});
@@ -109,7 +110,42 @@ class _HomeDesktopState extends State<HomeDesktop> {
                                 ),
                               ),
                             ),
-                            AccountListDesktopView(),
+                            SizedBox(height: 380, child: AccountListDesktopView()),
+                            SizedBox(height: 20),
+                            Card(
+                              child: ListTile(
+                                title: Text(
+                                  'Recurring Transactions',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                trailing: TextButton(
+                                  onPressed: () {
+                                    showModalBottomSheet<void>(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      constraints: BoxConstraints(
+                                        maxHeight: 500,
+                                        maxWidth: 1200,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                          BorderRadius.vertical(top: Radius.circular(25.0))),
+                                      builder: (context) {
+                                        return SizedBox(
+                                            height: 200,
+                                            width: 900,
+                                            child: AnimatedPadding(
+                                                padding: MediaQuery.of(context).viewInsets,
+                                                duration: Duration(seconds: 1),
+                                                child: RecurringTransactionForm()));
+                                      },
+                                    );
+                                  },
+                                  child: Icon(Icons.add),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 400, child: RecurringTransactionList())
                           ],
                         ))
                   ],

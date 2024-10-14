@@ -72,7 +72,8 @@ class ApiServiceFactory {
     var response = await http.post(backendEndpoint.resolve(api),
         headers: _getHeaders(),
         body: body,
-        encoding: Encoding.getByName('utf-8'));
+        encoding: Encoding.getByName('utf-8'),
+    );
 
     if (response.statusCode < 200 || response.statusCode > 299) {
       throw Exception('Failed to post to $api');
@@ -90,6 +91,8 @@ class ApiServiceFactory {
     if (response.statusCode != 200) {
       throw Exception('Failed to put to $api');
     }
+
+    return json.decode(response.body);
   }
 
   Future apiDelete(String api, String id) async {
