@@ -74,13 +74,37 @@ class _RecurringTransactionListState extends State<RecurringTransactionList> wit
                               : category.name)),
                     ],
                   ),
-                  trailing: IconButton(
-                    color: Colors.redAccent,
-                    icon: Icon(Icons.delete),
-                    onPressed: () async {
-                      await _recurringTransactionRepository
-                          .delete(recurringTransaction);
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (String result) async {
+                      if (result == 'delete') {
+                        await _recurringTransactionRepository
+                            .delete(recurringTransaction);
+                      } else if (result == 'create_transaction') {
+                        // Implement the logic to create a transaction
+                      }
                     },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'create_transaction',
+                        child: Row(
+                          children: [
+                            Icon(Icons.add, color: Colors.greenAccent),
+                            SizedBox(width: 10),
+                            Text('Create Transaction', style: TextStyle(color: Colors.greenAccent)),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.redAccent),
+                            SizedBox(width: 10),
+                            Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   subtitle: Row(
                     children: [

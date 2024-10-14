@@ -42,7 +42,10 @@ mixin NotifierMixin<T extends StatefulWidget> on State<T> {
       );
     } else{
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+          .showSnackBar(SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.greenAccent,
+      ));
     }
   }
 }
