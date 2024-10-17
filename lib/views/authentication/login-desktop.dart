@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:home_management_app/views/authentication/user-controls-mixins/authentication-behavior.dart';
 import 'package:home_management_app/views/authentication/registration.dart';
 
@@ -86,7 +87,7 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                       Text('You don' 't have an account yet ?'),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, RegistrationScreen.id);
+                          context.go(RegistrationScreen.id);
                         },
                         child: Text('Create one'),
                       )

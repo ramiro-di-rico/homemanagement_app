@@ -11,7 +11,7 @@ import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  static const String id = 'registration_screen';
+  static const String id = '/registration_screen';
 
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();

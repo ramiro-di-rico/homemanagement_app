@@ -12,7 +12,7 @@ import '../accounts/account-details-behaviors/account-list-scrolling-behavior.da
 import 'widgets/transaction_search_filtering_options.dart';
 
 class TransactionsSearchDesktopView extends StatefulWidget {
-  static const String id = 'transactions_search_desktop_view';
+  static const String id = '/transactions_search_desktop_view';
 
   TransactionsSearchDesktopView();
 

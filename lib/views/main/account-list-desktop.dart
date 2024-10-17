@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import '../../models/account.dart';
 import '../../services/endpoints/transaction.service.dart';
 import '../../services/infra/platform/platform_context.dart';
@@ -88,8 +89,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                   ],
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, AccountDetailScreen.id,
-                      arguments: item);
+                  context.go(AccountDetailScreen.id, extra: item);
                 },
               ),
               trailing: MenuAnchor(

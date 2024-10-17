@@ -15,7 +15,7 @@ import 'settings.dart';
 import 'widgets/account.sheet.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const String id = 'home_screen';
+  static const String id = '/home_screen';
 
   @override
   _HomeScreenState createState() => _HomeScreenState();

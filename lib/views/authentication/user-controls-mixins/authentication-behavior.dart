@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../custom/keyboard.factory.dart';
 import '../../../models/view-models/user-view-model.dart';
@@ -52,7 +53,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
 
     if (!authenticatedSuccessfully &&
         this.authenticationService.user?.twoFactorRequired == true) {
-      await Navigator.pushNamed(context, TwoFactorAuthenticationView.id);
+      this.context.go(TwoFactorAuthenticationView.id);
       return;
     }
 
@@ -79,7 +80,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   }
 
   Future successFullAuthentication() async {
-    await Navigator.popAndPushNamed(context, HomeScreen.id);
+    this.context.go(HomeScreen.id);
   }
 
   Future autoAuthenticate() async {
@@ -92,7 +93,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
 
     if (!authenticatedSuccessfully &&
         this.authenticationService.user?.twoFactorRequired == true) {
-      await Navigator.pushNamed(context, TwoFactorAuthenticationView.id);
+      this.context.go(TwoFactorAuthenticationView.id);
       return;
     }
 

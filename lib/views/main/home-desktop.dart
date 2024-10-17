@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
@@ -40,14 +41,14 @@ class _HomeDesktopState extends State<HomeDesktop> {
           IconButton(
             icon: Icon(Icons.manage_search),
             onPressed: () {
-              Navigator.pushNamed(context, TransactionsSearchDesktopView.id);
+              context.go(TransactionsSearchDesktopView.id);
             },
             tooltip: 'Search transactions',
           ),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              Navigator.pushNamed(context, SettingsScreen.id);
+              context.go(SettingsScreen.id);
             },
             tooltip: 'Settings',
           ),
@@ -55,7 +56,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
             icon: Icon(Icons.logout),
             onPressed: () {
               GetIt.I<AuthenticationService>().logout();
-              Navigator.pushNamed(context, LoginView.id);
+              context.go(LoginView.id);
             },
             tooltip: 'Logout',
           ),

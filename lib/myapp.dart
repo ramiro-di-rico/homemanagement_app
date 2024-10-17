@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/views/accounts/account.detail.dart';
-import 'package:home_management_app/views/authentication/login-desktop.dart';
-import 'package:home_management_app/views/authentication/registration-desktop.dart';
-import 'package:home_management_app/views/authentication/registration.dart';
-import 'package:home_management_app/views/main/home-desktop.dart';
-import 'package:home_management_app/views/main/logging_view.dart';
-import 'package:home_management_app/views/main/settings.dart';
+import 'package:go_router/go_router.dart';
 
+import 'models/account.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_type.dart';
 import 'views/accounts/account-detail-desktop.dart';
 import 'views/accounts/account-metrics.dart';
+import 'views/accounts/account.detail.dart';
 import 'views/authentication/2fa_view.dart';
+import 'views/authentication/login-desktop.dart';
 import 'views/authentication/login.dart';
+import 'views/authentication/registration-desktop.dart';
+import 'views/authentication/registration.dart';
+import 'views/main/home-desktop.dart';
 import 'views/main/home.dart';
+import 'views/main/logging_view.dart';
+import 'views/main/settings.dart';
 import 'views/main/settings_desktop.dart';
 import 'views/main/transactions_search_desktop_view.dart';
 
@@ -28,50 +30,103 @@ class MyApp extends StatelessWidget {
     var platformType = _platformContext.getPlatformType();
     var isDesktop = platformType == PlatformType.Desktop || platformType == PlatformType.Web;
 
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            redirect: (context, state) {
+              return HomeScreen.id;
+            }
+          ),
+          GoRoute(
+            path: LoginView.id,
+            builder: (context, state) => !isDesktop ? LoginView() : DesktopLoginView(),
+          ),
+          GoRoute(
+            path: RegistrationScreen.id,
+            builder: (context, state) => !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
+          ),
+          GoRoute(
+            path: HomeScreen.id,
+            builder: (context, state) => !isDesktop ? HomeScreen() : HomeDesktop(),
+            routes: [
+              GoRoute(
+                path: TransactionsSearchDesktopView.id,
+                builder: (context, state) => TransactionsSearchDesktopView(),
+              ),
+              GoRoute(
+                path: AccountDetailScreen.id,
+                builder: (context, state) => !isDesktop ? AccountDetailScreen(state.extra as AccountModel) : AccountDetailDesktop(state.extra as AccountModel),
+              ),
+            ]
+          ),
+          GoRoute(
+            path: AccountMetrics.id,
+            builder: (context, state) => AccountMetrics(state.extra as AccountModel),
+          ),
+          GoRoute(
+            path: LoggingView.id,
+            builder: (context, state) => LoggingView(),
+          ),
+          GoRoute(
+            path: TwoFactorAuthenticationView.id,
+            builder: (context, state) => TwoFactorAuthenticationView(),
+          ),
+          GoRoute(
+            path: SettingsScreen.id,
+            builder: (context, state) => !isDesktop ? SettingsScreen() : SettingsDesktopView(),
+          ),
+        ],
+        initialLocation: LoginView.id,
+        redirect: (context, state) {
+          return null;
+        }
+      ),
+      debugShowCheckedModeBanner: false,
       title: 'Home Management',
       theme: ThemeData.light().copyWith(
           checkboxTheme: CheckboxThemeData(
-            fillColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
+            fillColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+              if (states.contains(MaterialState.disabled)) {
                 return null;
               }
-              if (states.contains(WidgetState.selected)) {
+              if (states.contains(MaterialState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
           ),
           radioTheme: RadioThemeData(
-            fillColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
+            fillColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+              if (states.contains(MaterialState.disabled)) {
                 return null;
               }
-              if (states.contains(WidgetState.selected)) {
+              if (states.contains(MaterialState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
           ),
           switchTheme: SwitchThemeData(
-            thumbColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
+            thumbColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+              if (states.contains(MaterialState.disabled)) {
                 return null;
               }
-              if (states.contains(WidgetState.selected)) {
+              if (states.contains(MaterialState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
-            trackColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
+            trackColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+              if (states.contains(MaterialState.disabled)) {
                 return null;
               }
-              if (states.contains(WidgetState.selected)) {
+              if (states.contains(MaterialState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
@@ -79,24 +134,24 @@ class MyApp extends StatelessWidget {
           )),
       darkTheme: ThemeData.dark().copyWith(
           checkboxTheme: CheckboxThemeData(
-            fillColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
+            fillColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+              if (states.contains(MaterialState.disabled)) {
                 return null;
               }
-              if (states.contains(WidgetState.selected)) {
+              if (states.contains(MaterialState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
           ),
           radioTheme: RadioThemeData(
-            fillColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
+            fillColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+              if (states.contains(MaterialState.disabled)) {
                 return null;
               }
-              if (states.contains(WidgetState.selected)) {
+              if (states.contains(MaterialState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
@@ -104,19 +159,6 @@ class MyApp extends StatelessWidget {
           ),
       ),
       themeMode: ThemeMode.system,
-      routes: {
-        LoginView.id: (context) => !isDesktop ? LoginView() : DesktopLoginView(),
-        RegistrationScreen.id: (context) => !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
-        HomeScreen.id: (context) => !isDesktop ? HomeScreen() : HomeDesktop(),
-        AccountDetailScreen.id: (context) => !isDesktop ? AccountDetailScreen() : AccountDetailDesktop(),
-        AccountMetrics.id: (context) => AccountMetrics(),
-        LoggingView.id: (context) => LoggingView(),
-        TwoFactorAuthenticationView.id: (context) => TwoFactorAuthenticationView(),
-        SettingsScreen.id: (context) => !isDesktop ? SettingsScreen() : SettingsDesktopView(),
-        TransactionsSearchDesktopView.id : (context) => TransactionsSearchDesktopView(),
-      },
-      initialRoute: LoginView.id,
-      debugShowCheckedModeBanner: false,
     );
   }
 }

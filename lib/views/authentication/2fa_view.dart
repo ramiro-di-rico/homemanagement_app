@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../services/security/authentication.service.dart';
 import '../../views/main/home.dart';
 
 class TwoFactorAuthenticationView extends StatefulWidget {
-  static const String id = '2fa_screen';
+  static const String id = '/2fa_screen';
 
   @override
   State<TwoFactorAuthenticationView> createState() => _TwoFactorAuthenticationViewState();
@@ -54,8 +55,9 @@ class _TwoFactorAuthenticationViewState extends State<TwoFactorAuthenticationVie
     var result = await authenticationService.completeTwoFactorAuthentication(code);
 
     if (result) {
-      Navigator.popUntil(context, (route) => HomeScreen.id == route.settings.name);
-      Navigator.pushNamed(context, HomeScreen.id);
+      //Navigator.popUntil(context, (route) => HomeScreen.id == route.settings.name);
+      context.pop();
+      context.go(HomeScreen.id);
     }
   }
 }

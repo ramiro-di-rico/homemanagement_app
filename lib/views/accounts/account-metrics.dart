@@ -9,7 +9,11 @@ import 'widgets/account-app-bar.dart';
 import 'widgets/account-most-expensive-categories.dart';
 
 class AccountMetrics extends StatefulWidget {
-  static const String id = 'account_metrics_screen';
+  static const String id = '/account_metrics_screen';
+
+  final AccountModel account;
+
+  const AccountMetrics(this.account);
 
   @override
   _AccountMetricsState createState() => _AccountMetricsState();
@@ -28,7 +32,7 @@ class _AccountMetricsState extends State<AccountMetrics> {
 
   @override
   Widget build(BuildContext context) {
-    account = ModalRoute.of(context)!.settings.arguments as AccountModel?;
+    account = widget.account;
 
     return Scaffold(
       appBar: AccountAppBar(
