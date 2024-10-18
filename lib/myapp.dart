@@ -64,16 +64,18 @@ class MyApp extends StatelessWidget {
                     builder: (context, state) => !isDesktop
                         ? AccountDetailScreen(state.extra as AccountModel)
                         : AccountDetailDesktop(state.extra as AccountModel),
+                    routes: [
+                      GoRoute(
+                        path: AccountMetrics.path,
+                        builder: (context, state) =>
+                            AccountMetrics(state.extra as AccountModel),
+                      ),
+                    ]
                   ),
                   GoRoute(
                     path: SettingsScreen.path,
                     builder: (context, state) =>
                         !isDesktop ? SettingsScreen() : SettingsDesktopView(),
-                  ),
-                  GoRoute(
-                    path: AccountMetrics.path,
-                    builder: (context, state) =>
-                        AccountMetrics(state.extra as AccountModel),
                   ),
                   GoRoute(
                     path: LoggingView.path,
