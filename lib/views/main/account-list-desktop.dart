@@ -89,7 +89,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                   ],
                 ),
                 onTap: () {
-                  context.go(AccountDetailScreen.id, extra: item);
+                  context.go(AccountDetailScreen.fullPath, extra: item);
                 },
               ),
               trailing: MenuAnchor(

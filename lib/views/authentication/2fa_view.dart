@@ -6,7 +6,7 @@ import '../../services/security/authentication.service.dart';
 import '../../views/main/home.dart';
 
 class TwoFactorAuthenticationView extends StatefulWidget {
-  static const String id = '/2fa_screen';
+  static const String fullPath = '/2fa_screen';
 
   @override
   State<TwoFactorAuthenticationView> createState() => _TwoFactorAuthenticationViewState();
@@ -57,7 +57,7 @@ class _TwoFactorAuthenticationViewState extends State<TwoFactorAuthenticationVie
     if (result) {
       //Navigator.popUntil(context, (route) => HomeScreen.id == route.settings.name);
       context.pop();
-      context.go(HomeScreen.id);
+      context.go(HomeScreen.fullPath);
     }
   }
 }

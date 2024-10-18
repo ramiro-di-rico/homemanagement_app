@@ -9,7 +9,7 @@ import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 
 class LoginView extends StatefulWidget {
-  static const String id = '/login_screen';
+  static const String fullPath = '/login_screen';
 
   @override
   _LoginViewState createState() => _LoginViewState();
@@ -95,7 +95,7 @@ class _LoginViewState extends State<LoginView>
                           Text('You don' 't have an account yet ?'),
                           TextButton(
                             onPressed: () {
-                              context.go(RegistrationScreen.id);
+                              context.go(RegistrationScreen.fullPath);
                             },
                             child: Text('Create one'),
                           )

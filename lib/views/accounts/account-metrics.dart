@@ -9,7 +9,7 @@ import 'widgets/account-app-bar.dart';
 import 'widgets/account-most-expensive-categories.dart';
 
 class AccountMetrics extends StatefulWidget {
-  static const String id = '/account_metrics_screen';
+  static const String fullPath = '/account_metrics_screen';
 
   final AccountModel account;
 

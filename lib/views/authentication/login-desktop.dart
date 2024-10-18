@@ -87,7 +87,7 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                       Text('You don' 't have an account yet ?'),
                       TextButton(
                         onPressed: () {
-                          context.go(RegistrationScreen.id);
+                          context.go(RegistrationScreen.fullPath);
                         },
                         child: Text('Create one'),
                       )

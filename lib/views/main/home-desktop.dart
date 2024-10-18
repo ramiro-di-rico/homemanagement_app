@@ -41,14 +41,14 @@ class _HomeDesktopState extends State<HomeDesktop> {
           IconButton(
             icon: Icon(Icons.manage_search),
             onPressed: () {
-              context.go(TransactionsSearchDesktopView.id);
+              context.go(TransactionsSearchDesktopView.fullPath);
             },
             tooltip: 'Search transactions',
           ),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              context.go(SettingsScreen.id);
+              context.go(SettingsScreen.fullPath);
             },
             tooltip: 'Settings',
           ),
@@ -56,7 +56,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
             icon: Icon(Icons.logout),
             onPressed: () {
               GetIt.I<AuthenticationService>().logout();
-              context.go(LoginView.id);
+              context.go(LoginView.fullPath);
             },
             tooltip: 'Logout',
           ),

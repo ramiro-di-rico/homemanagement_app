@@ -142,7 +142,7 @@ class _AccountListScreenState extends State<AccountListScreen> with NotifierMixi
                           : Colors.redAccent),
                 ),
                 onTap: () {
-                  context.go(AccountDetailScreen.id, extra: item);
+                  context.go(AccountDetailScreen.fullPath, extra: item);
                 },
               ),
             ),

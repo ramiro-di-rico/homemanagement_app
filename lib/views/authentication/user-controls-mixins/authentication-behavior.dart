@@ -53,7 +53,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
 
     if (!authenticatedSuccessfully &&
         this.authenticationService.user?.twoFactorRequired == true) {
-      this.context.go(TwoFactorAuthenticationView.id);
+      this.context.go(TwoFactorAuthenticationView.fullPath);
       return;
     }
 
@@ -80,7 +80,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   }
 
   Future successFullAuthentication() async {
-    this.context.go(HomeScreen.id);
+    this.context.go(HomeScreen.fullPath);
   }
 
   Future autoAuthenticate() async {
@@ -93,7 +93,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
 
     if (!authenticatedSuccessfully &&
         this.authenticationService.user?.twoFactorRequired == true) {
-      this.context.go(TwoFactorAuthenticationView.id);
+      this.context.go(TwoFactorAuthenticationView.fullPath);
       return;
     }
 

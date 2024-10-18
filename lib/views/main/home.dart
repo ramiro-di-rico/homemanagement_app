@@ -15,7 +15,7 @@ import 'settings.dart';
 import 'widgets/account.sheet.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const String id = '/home_screen';
+  static const String fullPath = '/home_screen';
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -196,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Icon(Icons.exit_to_app),
       onPressed: () {
         authenticationService.logout();
-        Navigator.popAndPushNamed(this.context, LoginView.id);
+        Navigator.popAndPushNamed(this.context, LoginView.fullPath);
       },
     );
   }

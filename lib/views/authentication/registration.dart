@@ -11,7 +11,7 @@ import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  static const String id = '/registration_screen';
+  static const String fullPath = '/registration_screen';
 
   @override
   _RegistrationScreenState createState() => _RegistrationScreenState();
@@ -37,7 +37,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                 if (result) {
                   await authenticationService.authenticate(userViewModel);
                   Navigator.pushNamedAndRemoveUntil(
-                      context, HomeScreen.id, (route) => false);
+                      context, HomeScreen.fullPath, (route) => false);
                 }
               },
               child: Icon(Icons.check),

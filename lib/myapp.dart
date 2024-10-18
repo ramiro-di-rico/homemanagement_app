@@ -36,49 +36,49 @@ class MyApp extends StatelessWidget {
           GoRoute(
             path: '/',
             redirect: (context, state) {
-              return HomeScreen.id;
+              return HomeScreen.fullPath;
             }
           ),
           GoRoute(
-            path: LoginView.id,
+            path: LoginView.fullPath,
             builder: (context, state) => !isDesktop ? LoginView() : DesktopLoginView(),
           ),
           GoRoute(
-            path: RegistrationScreen.id,
+            path: RegistrationScreen.fullPath,
             builder: (context, state) => !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
           ),
           GoRoute(
-            path: HomeScreen.id,
+            path: HomeScreen.fullPath,
             builder: (context, state) => !isDesktop ? HomeScreen() : HomeDesktop(),
             routes: [
               GoRoute(
-                path: TransactionsSearchDesktopView.id,
+                path: TransactionsSearchDesktopView.path,
                 builder: (context, state) => TransactionsSearchDesktopView(),
               ),
               GoRoute(
-                path: AccountDetailScreen.id,
+                path: AccountDetailScreen.path,
                 builder: (context, state) => !isDesktop ? AccountDetailScreen(state.extra as AccountModel) : AccountDetailDesktop(state.extra as AccountModel),
+              ),
+              GoRoute(
+                path: SettingsScreen.path,
+                builder: (context, state) => !isDesktop ? SettingsScreen() : SettingsDesktopView(),
               ),
             ]
           ),
           GoRoute(
-            path: AccountMetrics.id,
+            path: AccountMetrics.fullPath,
             builder: (context, state) => AccountMetrics(state.extra as AccountModel),
           ),
           GoRoute(
-            path: LoggingView.id,
+            path: LoggingView.fullPath,
             builder: (context, state) => LoggingView(),
           ),
           GoRoute(
-            path: TwoFactorAuthenticationView.id,
+            path: TwoFactorAuthenticationView.fullPath,
             builder: (context, state) => TwoFactorAuthenticationView(),
-          ),
-          GoRoute(
-            path: SettingsScreen.id,
-            builder: (context, state) => !isDesktop ? SettingsScreen() : SettingsDesktopView(),
-          ),
+          )
         ],
-        initialLocation: LoginView.id,
+        initialLocation: LoginView.fullPath,
         redirect: (context, state) {
           return null;
         }

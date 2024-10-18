@@ -25,7 +25,7 @@ import 'widgets/transaction-row-skeleton.dart';
 import 'widgets/transaction.row.info.dart';
 
 class AccountDetailScreen extends StatefulWidget {
-  static const String id = '${HomeScreen.id}/account_detail_screen';
+  static const String fullPath = '/home_screen/account_detail_screen';
   static const String path = '/account_detail_screen';
 
   final AccountModel account;
@@ -235,7 +235,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
             child: Icon(Icons.bar_chart),
             backgroundColor: Colors.lightBlue,
             labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => context.go(AccountMetrics.id, extra: account)),
+            onTap: () => context.go(AccountMetrics.fullPath, extra: account)),
       );
     }
     /* Filtering not working in transaction.repository

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../services/infra/logging_file.dart';
 
 class LoggingView extends StatefulWidget {
-  static const String id = '/logging_screen';
+  static const String fullPath = '/logging_screen';
 
   const LoggingView({super.key});
 
