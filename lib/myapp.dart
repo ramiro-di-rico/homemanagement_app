@@ -63,15 +63,15 @@ class MyApp extends StatelessWidget {
                 path: SettingsScreen.path,
                 builder: (context, state) => !isDesktop ? SettingsScreen() : SettingsDesktopView(),
               ),
+              GoRoute(
+                path: AccountMetrics.path,
+                builder: (context, state) => AccountMetrics(state.extra as AccountModel),
+              ),
+              GoRoute(
+                path: LoggingView.path,
+                builder: (context, state) => LoggingView(),
+              ),
             ]
-          ),
-          GoRoute(
-            path: AccountMetrics.fullPath,
-            builder: (context, state) => AccountMetrics(state.extra as AccountModel),
-          ),
-          GoRoute(
-            path: LoggingView.fullPath,
-            builder: (context, state) => LoggingView(),
           ),
           GoRoute(
             path: TwoFactorAuthenticationView.fullPath,
@@ -87,51 +87,61 @@ class MyApp extends StatelessWidget {
       title: 'Home Management',
       theme: ThemeData.light().copyWith(
           checkboxTheme: CheckboxThemeData(
-            fillColor: MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-              if (states.contains(MaterialState.disabled)) {
+            fillColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
                 return null;
               }
-              if (states.contains(MaterialState.selected)) {
+              if (states.contains(WidgetState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
           ),
           radioTheme: RadioThemeData(
-            fillColor: MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-              if (states.contains(MaterialState.disabled)) {
+            fillColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
                 return null;
               }
-              if (states.contains(MaterialState.selected)) {
+              if (states.contains(WidgetState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
           ),
           switchTheme: SwitchThemeData(
-            thumbColor: MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-              if (states.contains(MaterialState.disabled)) {
+            thumbColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
                 return null;
               }
-              if (states.contains(MaterialState.selected)) {
+              if (states.contains(WidgetState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
-            trackColor: MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-              if (states.contains(MaterialState.disabled)) {
+            trackColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.disabled)) {
                 return null;
               }
-              if (states.contains(MaterialState.selected)) {
+              if (states.contains(WidgetState.selected)) {
                 return Colors.pinkAccent;
               }
               return null;
             }),
-          )),
+          ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+          ),
+        ),
+      ),
       darkTheme: ThemeData.dark().copyWith(
           checkboxTheme: CheckboxThemeData(
             fillColor: MaterialStateProperty.resolveWith<Color?>(
