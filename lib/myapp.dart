@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import 'models/account.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_type.dart';
+import 'services/security/authentication.service.dart';
 import 'views/accounts/account-detail-desktop.dart';
 import 'views/accounts/account-metrics.dart';
 import 'views/accounts/account.detail.dart';
@@ -12,6 +14,7 @@ import 'views/authentication/login-desktop.dart';
 import 'views/authentication/login.dart';
 import 'views/authentication/registration-desktop.dart';
 import 'views/authentication/registration.dart';
+import 'views/authentication/reset_password_view.dart';
 import 'views/main/home-desktop.dart';
 import 'views/main/home.dart';
 import 'views/main/logging_view.dart';
@@ -31,35 +34,31 @@ class MyApp extends StatelessWidget {
     var isDesktop = platformType == PlatformType.Desktop ||
         platformType == PlatformType.Web;
 
+    var authenticationService = GetIt.I.get<AuthenticationService>();
+
     return MaterialApp.router(
       routerConfig: GoRouter(
-          routes: [
-            GoRoute(
-                path: '/',
-                redirect: (context, state) {
-                  return HomeScreen.fullPath;
-                }),
-            GoRoute(
-              path: LoginView.fullPath,
+        routes: [
+          GoRoute(
+            path: LoginView.fullPath,
+            builder: (context, state) =>
+                !isDesktop ? LoginView() : DesktopLoginView(),
+          ),
+          GoRoute(
+            path: RegistrationScreen.fullPath,
+            builder: (context, state) =>
+                !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
+          ),
+          GoRoute(
+              path: HomeScreen.fullPath,
               builder: (context, state) =>
-                  !isDesktop ? LoginView() : DesktopLoginView(),
-            ),
-            GoRoute(
-              path: RegistrationScreen.fullPath,
-              builder: (context, state) =>
-                  !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
-            ),
-            GoRoute(
-                path: HomeScreen.fullPath,
-                builder: (context, state) =>
-                    !isDesktop ? HomeScreen() : HomeDesktop(),
-                routes: [
-                  GoRoute(
-                    path: TransactionsSearchDesktopView.path,
-                    builder: (context, state) =>
-                        TransactionsSearchDesktopView(),
-                  ),
-                  GoRoute(
+                  !isDesktop ? HomeScreen() : HomeDesktop(),
+              routes: [
+                GoRoute(
+                  path: TransactionsSearchDesktopView.path,
+                  builder: (context, state) => TransactionsSearchDesktopView(),
+                ),
+                GoRoute(
                     path: AccountDetailScreen.path,
                     builder: (context, state) => !isDesktop
                         ? AccountDetailScreen(state.extra as AccountModel)
@@ -70,27 +69,45 @@ class MyApp extends StatelessWidget {
                         builder: (context, state) =>
                             AccountMetrics(state.extra as AccountModel),
                       ),
-                    ]
-                  ),
-                  GoRoute(
-                    path: SettingsScreen.path,
-                    builder: (context, state) =>
-                        !isDesktop ? SettingsScreen() : SettingsDesktopView(),
-                  ),
-                  GoRoute(
-                    path: LoggingView.path,
-                    builder: (context, state) => LoggingView(),
-                  ),
-                ]),
-            GoRoute(
-              path: TwoFactorAuthenticationView.fullPath,
-              builder: (context, state) => TwoFactorAuthenticationView(),
-            )
-          ],
-          initialLocation: LoginView.fullPath,
-          redirect: (context, state) {
-            return null;
-          }),
+                    ]),
+                GoRoute(
+                  path: SettingsScreen.path,
+                  builder: (context, state) =>
+                      !isDesktop ? SettingsScreen() : SettingsDesktopView(),
+                ),
+                GoRoute(
+                  path: LoggingView.path,
+                  builder: (context, state) => LoggingView(),
+                ),
+              ]),
+          GoRoute(
+            path: TwoFactorAuthenticationView.fullPath,
+            builder: (context, state) => TwoFactorAuthenticationView(),
+          ),
+          GoRoute(
+            path: ResetPasswordView.fullPath,
+            builder: (context, state) {
+              final email = state.uri.queryParameters['email'];
+              final token = state.uri.queryParameters['token'];
+
+              print(email);
+              print(token);
+
+              return ResetPasswordView();
+            },
+          )
+        ],
+        initialLocation: LoginView.fullPath,
+        /*redirect: (context, state) {
+          var parameter = state.uri.queryParameters['email'] ?? '';
+          if (state.matchedLocation == ResetPasswordView.fullPath &&
+              parameter.isNotEmpty) {
+            return ResetPasswordView.fullPath;
+          }
+
+          return null;
+        },*/
+      ),
       debugShowCheckedModeBanner: false,
       title: 'Home Management',
       theme: ThemeData.light().copyWith(

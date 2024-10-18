@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import '../../models/notification.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
@@ -196,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Icon(Icons.exit_to_app),
       onPressed: () {
         authenticationService.logout();
-        Navigator.popAndPushNamed(this.context, LoginView.fullPath);
+        context.go(LoginView.fullPath);
       },
     );
   }

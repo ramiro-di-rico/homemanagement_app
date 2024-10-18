@@ -73,6 +73,9 @@ class AuthenticationService {
 
   bool isAuthenticated() {
     var currentUtcDate = DateTime.now().toUtc();
+
+    if (user == null) return false;
+
     return user!.expirationDate.isAfter(currentUtcDate);
   }
 
