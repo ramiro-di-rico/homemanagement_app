@@ -28,110 +28,116 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     _platformContext.setContext(context);
     var platformType = _platformContext.getPlatformType();
-    var isDesktop = platformType == PlatformType.Desktop || platformType == PlatformType.Web;
+    var isDesktop = platformType == PlatformType.Desktop ||
+        platformType == PlatformType.Web;
 
     return MaterialApp.router(
       routerConfig: GoRouter(
-        routes: [
-          GoRoute(
-            path: '/',
-            redirect: (context, state) {
-              return HomeScreen.fullPath;
-            }
-          ),
-          GoRoute(
-            path: LoginView.fullPath,
-            builder: (context, state) => !isDesktop ? LoginView() : DesktopLoginView(),
-          ),
-          GoRoute(
-            path: RegistrationScreen.fullPath,
-            builder: (context, state) => !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
-          ),
-          GoRoute(
-            path: HomeScreen.fullPath,
-            builder: (context, state) => !isDesktop ? HomeScreen() : HomeDesktop(),
-            routes: [
-              GoRoute(
-                path: TransactionsSearchDesktopView.path,
-                builder: (context, state) => TransactionsSearchDesktopView(),
-              ),
-              GoRoute(
-                path: AccountDetailScreen.path,
-                builder: (context, state) => !isDesktop ? AccountDetailScreen(state.extra as AccountModel) : AccountDetailDesktop(state.extra as AccountModel),
-              ),
-              GoRoute(
-                path: SettingsScreen.path,
-                builder: (context, state) => !isDesktop ? SettingsScreen() : SettingsDesktopView(),
-              ),
-              GoRoute(
-                path: AccountMetrics.path,
-                builder: (context, state) => AccountMetrics(state.extra as AccountModel),
-              ),
-              GoRoute(
-                path: LoggingView.path,
-                builder: (context, state) => LoggingView(),
-              ),
-            ]
-          ),
-          GoRoute(
-            path: TwoFactorAuthenticationView.fullPath,
-            builder: (context, state) => TwoFactorAuthenticationView(),
-          )
-        ],
-        initialLocation: LoginView.fullPath,
-        redirect: (context, state) {
-          return null;
-        }
-      ),
+          routes: [
+            GoRoute(
+                path: '/',
+                redirect: (context, state) {
+                  return HomeScreen.fullPath;
+                }),
+            GoRoute(
+              path: LoginView.fullPath,
+              builder: (context, state) =>
+                  !isDesktop ? LoginView() : DesktopLoginView(),
+            ),
+            GoRoute(
+              path: RegistrationScreen.fullPath,
+              builder: (context, state) =>
+                  !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
+            ),
+            GoRoute(
+                path: HomeScreen.fullPath,
+                builder: (context, state) =>
+                    !isDesktop ? HomeScreen() : HomeDesktop(),
+                routes: [
+                  GoRoute(
+                    path: TransactionsSearchDesktopView.path,
+                    builder: (context, state) =>
+                        TransactionsSearchDesktopView(),
+                  ),
+                  GoRoute(
+                    path: AccountDetailScreen.path,
+                    builder: (context, state) => !isDesktop
+                        ? AccountDetailScreen(state.extra as AccountModel)
+                        : AccountDetailDesktop(state.extra as AccountModel),
+                  ),
+                  GoRoute(
+                    path: SettingsScreen.path,
+                    builder: (context, state) =>
+                        !isDesktop ? SettingsScreen() : SettingsDesktopView(),
+                  ),
+                  GoRoute(
+                    path: AccountMetrics.path,
+                    builder: (context, state) =>
+                        AccountMetrics(state.extra as AccountModel),
+                  ),
+                  GoRoute(
+                    path: LoggingView.path,
+                    builder: (context, state) => LoggingView(),
+                  ),
+                ]),
+            GoRoute(
+              path: TwoFactorAuthenticationView.fullPath,
+              builder: (context, state) => TwoFactorAuthenticationView(),
+            )
+          ],
+          initialLocation: LoginView.fullPath,
+          redirect: (context, state) {
+            return null;
+          }),
       debugShowCheckedModeBanner: false,
       title: 'Home Management',
       theme: ThemeData.light().copyWith(
-          checkboxTheme: CheckboxThemeData(
-            fillColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
-                return null;
-              }
-              if (states.contains(WidgetState.selected)) {
-                return Colors.pinkAccent;
-              }
+        checkboxTheme: CheckboxThemeData(
+          fillColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.disabled)) {
               return null;
-            }),
-          ),
-          radioTheme: RadioThemeData(
-            fillColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
-                return null;
-              }
-              if (states.contains(WidgetState.selected)) {
-                return Colors.pinkAccent;
-              }
+            }
+            if (states.contains(WidgetState.selected)) {
+              return Colors.pinkAccent;
+            }
+            return null;
+          }),
+        ),
+        radioTheme: RadioThemeData(
+          fillColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.disabled)) {
               return null;
-            }),
-          ),
-          switchTheme: SwitchThemeData(
-            thumbColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
-                return null;
-              }
-              if (states.contains(WidgetState.selected)) {
-                return Colors.pinkAccent;
-              }
+            }
+            if (states.contains(WidgetState.selected)) {
+              return Colors.pinkAccent;
+            }
+            return null;
+          }),
+        ),
+        switchTheme: SwitchThemeData(
+          thumbColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.disabled)) {
               return null;
-            }),
-            trackColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.disabled)) {
-                return null;
-              }
-              if (states.contains(WidgetState.selected)) {
-                return Colors.pinkAccent;
-              }
+            }
+            if (states.contains(WidgetState.selected)) {
+              return Colors.pinkAccent;
+            }
+            return null;
+          }),
+          trackColor: WidgetStateProperty.resolveWith<Color?>(
+              (Set<WidgetState> states) {
+            if (states.contains(WidgetState.disabled)) {
               return null;
-            }),
-          ),
+            }
+            if (states.contains(WidgetState.selected)) {
+              return Colors.pinkAccent;
+            }
+            return null;
+          }),
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
             shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -143,30 +149,39 @@ class MyApp extends StatelessWidget {
         ),
       ),
       darkTheme: ThemeData.dark().copyWith(
-          checkboxTheme: CheckboxThemeData(
-            fillColor: MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-              if (states.contains(MaterialState.disabled)) {
-                return null;
-              }
-              if (states.contains(MaterialState.selected)) {
-                return Colors.pinkAccent;
-              }
+        checkboxTheme: CheckboxThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
               return null;
-            }),
-          ),
-          radioTheme: RadioThemeData(
-            fillColor: MaterialStateProperty.resolveWith<Color?>(
-                (Set<MaterialState> states) {
-              if (states.contains(MaterialState.disabled)) {
-                return null;
-              }
-              if (states.contains(MaterialState.selected)) {
-                return Colors.pinkAccent;
-              }
+            }
+            if (states.contains(MaterialState.selected)) {
+              return Colors.pinkAccent;
+            }
+            return null;
+          }),
+        ),
+        radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.resolveWith<Color?>(
+              (Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
               return null;
-            }),
+            }
+            if (states.contains(MaterialState.selected)) {
+              return Colors.pinkAccent;
+            }
+            return null;
+          }),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
           ),
+        ),
       ),
       themeMode: ThemeMode.system,
     );
