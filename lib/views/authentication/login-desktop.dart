@@ -62,13 +62,13 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(200, 50),
                             ),
-                            child: Icon(Icons.send, color: Colors.white),
+                            child: Icon(Icons.send),
                             onPressed:
                                 userViewModel.isValid ? onButtonPressed : null,
                           )
                         : OutlinedButton(
                             onPressed: null,
-                            child: Icon(Icons.send, color: Colors.white),
+                            child: Icon(Icons.send),
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(200, 50),
                               ),

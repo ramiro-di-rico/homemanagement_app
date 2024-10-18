@@ -92,53 +92,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Home Management',
       theme: ThemeData.light().copyWith(
-        checkboxTheme: CheckboxThemeData(
-          fillColor: WidgetStateProperty.resolveWith<Color?>(
-              (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return null;
-            }
-            if (states.contains(WidgetState.selected)) {
-              return Colors.pinkAccent;
-            }
-            return null;
-          }),
-        ),
-        radioTheme: RadioThemeData(
-          fillColor: WidgetStateProperty.resolveWith<Color?>(
-              (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return null;
-            }
-            if (states.contains(WidgetState.selected)) {
-              return Colors.pinkAccent;
-            }
-            return null;
-          }),
-        ),
-        switchTheme: SwitchThemeData(
-          thumbColor: WidgetStateProperty.resolveWith<Color?>(
-              (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return null;
-            }
-            if (states.contains(WidgetState.selected)) {
-              return Colors.pinkAccent;
-            }
-            return null;
-          }),
-          trackColor: WidgetStateProperty.resolveWith<Color?>(
-              (Set<WidgetState> states) {
-            if (states.contains(WidgetState.disabled)) {
-              return null;
-            }
-            if (states.contains(WidgetState.selected)) {
-              return Colors.pinkAccent;
-            }
-            return null;
-          }),
-        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
           style: ButtonStyle(
             shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -149,31 +112,16 @@ class MyApp extends StatelessWidget {
         ),
       ),
       darkTheme: ThemeData.dark().copyWith(
-        checkboxTheme: CheckboxThemeData(
-          fillColor: MaterialStateProperty.resolveWith<Color?>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
-              return null;
-            }
-            if (states.contains(MaterialState.selected)) {
-              return Colors.pinkAccent;
-            }
-            return null;
-          }),
-        ),
-        radioTheme: RadioThemeData(
-          fillColor: MaterialStateProperty.resolveWith<Color?>(
-              (Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
-              return null;
-            }
-            if (states.contains(MaterialState.selected)) {
-              return Colors.pinkAccent;
-            }
-            return null;
-          }),
-        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
           style: ButtonStyle(
             shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
