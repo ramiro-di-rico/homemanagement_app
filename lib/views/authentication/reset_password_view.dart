@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../services/security/password_reset_service.dart';
 import 'login.dart';
 
 class ResetPasswordView extends StatefulWidget {
@@ -11,6 +13,9 @@ class ResetPasswordView extends StatefulWidget {
 }
 
 class _ResetPasswordViewState extends State<ResetPasswordView> {
+  final PasswordResetService _passwordResetService =
+      GetIt.I.get<PasswordResetService>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +38,14 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                   showSuccessSnackBar(context, 'Password reset email sent');
                 },
                 child: Text('Reset Password'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _passwordResetService.clearResetPasswordQueryParams();
+                  showSuccessSnackBar(context, 'Navigating back to login');
+                  context.go(LoginView.fullPath);
+                },
+                child: Text('Back to Login'),
               ),
             ],
           ),

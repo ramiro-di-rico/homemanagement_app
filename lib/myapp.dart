@@ -6,6 +6,7 @@ import 'models/account.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_type.dart';
 import 'services/security/authentication.service.dart';
+import 'services/security/password_reset_service.dart';
 import 'views/accounts/account-detail-desktop.dart';
 import 'views/accounts/account-metrics.dart';
 import 'views/accounts/account.detail.dart';
@@ -35,10 +36,15 @@ class MyApp extends StatelessWidget {
         platformType == PlatformType.Web;
 
     var authenticationService = GetIt.I.get<AuthenticationService>();
+    var passwordResetService = GetIt.I.get<PasswordResetService>();
 
     return MaterialApp.router(
       routerConfig: GoRouter(
         routes: [
+          GoRoute(
+            path: '/',
+            redirect: (context, state) => HomeScreen.fullPath,
+          ),
           GoRoute(
             path: LoginView.fullPath,
             builder: (context, state) =>
@@ -90,23 +96,34 @@ class MyApp extends StatelessWidget {
               final email = state.uri.queryParameters['email'];
               final token = state.uri.queryParameters['token'];
 
-              print(email);
-              print(token);
-
+              passwordResetService.setResetPasswordQueryParams(
+                  email.toString(), token.toString());
               return ResetPasswordView();
             },
           )
         ],
         initialLocation: LoginView.fullPath,
-        /*redirect: (context, state) {
-          var parameter = state.uri.queryParameters['email'] ?? '';
+        redirect: (context, state) {
+          print('Redirecting to: ${state.uri.path}');
+          var emailQueryParam = state.uri.queryParameters['email'] ?? '';
+          var tokenQueryParam = state.uri.queryParameters['token'] ?? '';
           if (state.matchedLocation == ResetPasswordView.fullPath &&
-              parameter.isNotEmpty) {
-            return ResetPasswordView.fullPath;
+              emailQueryParam.isNotEmpty &&
+              tokenQueryParam.isNotEmpty) {
+            return state.uri.path +
+                '?email=' +
+                emailQueryParam +
+                '&token=' +
+                tokenQueryParam;
+          }
+
+          if (passwordResetService.isResettingPassword()) {
+            return ResetPasswordView.fullPath +
+                passwordResetService.resetPasswordQueryParams();
           }
 
           return null;
-        },*/
+        },
       ),
       debugShowCheckedModeBanner: false,
       title: 'Home Management',
