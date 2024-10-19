@@ -11,10 +11,12 @@ class IdentityService {
   String registrationApi = 'identity/api/registration';
   String refreshTokenApi = 'identity/api/Authentication/UseRefreshToken';
   String twoFactorApi = 'identity/api/Authentication/CompleteTwoFactorAuthenticationSignIn';
-  final _logger = LoggerWrapper();
+  final LoggerWrapper? _logger;
+
+  IdentityService(this._logger);
 
   Future<UserModel?> internalAuthenticate(String email, String password) async {
-    _logger.i('Calling v1 authentication endpoint');
+    _logger?.i('Calling v1 authentication endpoint');
     var response = await http.post(Uri.https(this.url, this.authenticateApi),
         headers: <String, String>{'Content-Type': 'application/json'},
         body:
@@ -24,7 +26,7 @@ class IdentityService {
   }
 
   Future<UserModel?> internalAuthenticateV2(String username, String password) async {
-    _logger.i('Calling v2 authentication endpoint');
+    _logger?.i('Calling v2 authentication endpoint');
     var params = <String, String>{'api-version': '2' };
     var uri = Uri.https(this.url, this.authenticateApi, params);
     var response = await http.post(uri,
@@ -36,11 +38,11 @@ class IdentityService {
   }
 
   UserModel? _handleAuthResponse(http.Response response, String password) {
-    _logger.i('Response is ${response.statusCode}');
+    _logger?.i('Response is ${response.statusCode}');
     if (response.statusCode == 200) {
       var jsonModel = json.decode(response.body);
       jsonModel['password'] = password;
-      _logger.i('Converting user from json');
+      _logger?.i('Converting user from json');
       var user = UserModel.fromJson(jsonModel);
       return user;
     } else {
@@ -70,7 +72,7 @@ class IdentityService {
   }
 
   Future<UserModel?> refreshToken(UserModel? user) async {
-    _logger.i('Refreshing token');
+    _logger?.i('Refreshing token');
     var token = user!.token;
 
     var response = await http.put(Uri.https(this.url, this.refreshTokenApi),

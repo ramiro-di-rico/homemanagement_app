@@ -99,9 +99,10 @@ void registerSingletons(PlatformContext platformContext) {
   CryptographyService cryptographyService = CryptographyService();
   var userRepository = UserRepository();
   AuthenticationService authenticationService = AuthenticationService(
-      cryptographyService: cryptographyService, userRepository: userRepository,
-      platformContext: platformContext,
-      notifierService: errorNotifierService);
+      cryptographyService, userRepository,
+      platformContext,
+      errorNotifierService,
+      null);
 
   GetIt.instance.registerSingleton(authenticationService);
 

@@ -87,7 +87,6 @@ class Routing{
       ],
       initialLocation: LoginView.fullPath,
       redirect: (context, state) {
-        print('Redirecting to: ${state.uri.path}');
         var emailQueryParam = state.uri.queryParameters['email'] ?? '';
         var tokenQueryParam = state.uri.queryParameters['token'] ?? '';
         if (state.matchedLocation == ResetPasswordView.fullPath &&
