@@ -18,6 +18,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController repeatPasswordController = TextEditingController();
 
   @override
   void initState() {
@@ -50,8 +51,18 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 Text('Enter your new password'),
                 TextField(
                   controller: passwordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                  ),
+                ),
+                SizedBox(height: 30),
+                Text('Repeat your new password'),
+                TextField(
+                  obscureText: true,
+                  controller: repeatPasswordController,
+                  decoration: InputDecoration(
+                    labelText: 'Repeat Password',
                   ),
                 ),
                 SizedBox(height: 30),
@@ -59,7 +70,31 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        showSuccessSnackBar(context, 'Password reset email sent');
+                        if (passwordController.text.isEmpty ||
+                            repeatPasswordController.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Password cannot be empty'),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+
+                        if (passwordController.text !=
+                            repeatPasswordController.text) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Passwords do not match'),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                          return;
+                        }
+
+                        showSuccessSnackBar(context, 'Password reset successful');
                       },
                       child: Text('Reset Password'),
                     ),
