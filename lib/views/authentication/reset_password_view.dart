@@ -16,6 +16,15 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   final PasswordResetService _passwordResetService =
       GetIt.I.get<PasswordResetService>();
 
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    emailController.text = _passwordResetService.email;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,30 +33,49 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
       ),
       body: SafeArea(
         child: Center(
-          child: Column(
-            children: [
-              Text('Reset Password'),
-              Text('Enter your email address to reset your password'),
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
+          child: SizedBox(
+            width: 550,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 50),
+                Text('Enter your email address to reset your password'),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  showSuccessSnackBar(context, 'Password reset email sent');
-                },
-                child: Text('Reset Password'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _passwordResetService.clearResetPasswordQueryParams();
-                  showSuccessSnackBar(context, 'Navigating back to login');
-                  context.go(LoginView.fullPath);
-                },
-                child: Text('Back to Login'),
-              ),
-            ],
+                SizedBox(height: 30),
+                Text('Enter your new password'),
+                TextField(
+                  controller: passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                  ),
+                ),
+                SizedBox(height: 30),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        showSuccessSnackBar(context, 'Password reset email sent');
+                      },
+                      child: Text('Reset Password'),
+                    ),
+                    SizedBox(width: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        _passwordResetService.clearResetPasswordQueryParams();
+                        showSuccessSnackBar(context, 'Navigating back to login');
+                        context.go(LoginView.fullPath);
+                      },
+                      child: Text('Back to Login'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

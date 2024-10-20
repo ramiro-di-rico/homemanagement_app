@@ -4,6 +4,9 @@ class PasswordResetService{
 
   bool isResettingPassword() => _email.isNotEmpty && _token.isNotEmpty;
 
+  String get email => _email;
+  String get token => _token;
+
   String resetPasswordQueryParams() {
     return '?email=${_email}&token=${_token}';
   }
