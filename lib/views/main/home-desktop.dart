@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
+import '../../services/repositories/identity_user_repository.dart';
+import '../../services/repositories/preferences.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import 'account-list-desktop.dart';
@@ -30,6 +32,8 @@ class _HomeDesktopState extends State<HomeDesktop> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<CategoryRepository>().load();
+    GetIt.I<PreferencesRepository>().load();
+    GetIt.I<IdentityUserRepository>().getUser();
   }
 
   @override
