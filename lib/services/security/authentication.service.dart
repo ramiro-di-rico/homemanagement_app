@@ -12,37 +12,32 @@ import '../infra/platform/platform_type.dart';
 class AuthenticationService {
   CryptographyService _cryptographyService;
   UserRepository _userRepository;
-  IdentityService _identityService = IdentityService();
+  late IdentityService _identityService;
   PlatformContext _platformContext;
   final LocalAuthentication _localAuth = LocalAuthentication();
   final NotifierService _notifierService;
   bool _isBiometricEnabled = false;
-  final _logger = LoggerWrapper();
+  late LoggerWrapper? _logger;
   UserModel? user;
 
-  AuthenticationService(
-      {required CryptographyService cryptographyService,
-        required UserRepository userRepository,
-        required PlatformContext platformContext,
-        required NotifierService notifierService})
-      : _userRepository = userRepository,
-        _cryptographyService = cryptographyService,
-        _platformContext = platformContext,
-        _notifierService = notifierService;
+  AuthenticationService(this._cryptographyService, this._userRepository, this._platformContext, this._notifierService, LoggerWrapper? logger) {
+    _logger = logger;
+    _identityService = IdentityService(_logger);
+  }
 
   bool isAuthenticating = false;
 
   Future<bool> init() async {
     try {
-      _logger.i('Initializing authentication service...');
+      _logger?.i('Initializing authentication service...');
       this.user = await this._userRepository.load();
 
-      _logger.i('Checking if can auto authenticate...');
+      _logger?.i('Checking if can auto authenticate...');
       if (!canAutoAuthenticate()) return false;
 
-      _logger.i('Checking if is authenticated...');
+      _logger?.i('Checking if is authenticated...');
       if (isAuthenticated()) {
-        _logger.i('User is already authenticated');
+        _logger?.i('User is already authenticated');
         await refreshToken();
         return true;
       }
@@ -51,15 +46,15 @@ class AuthenticationService {
         return false;
       }
 
-      _logger.i('Checking if biometric is enabled...');
+      _logger?.i('Checking if biometric is enabled...');
       _isBiometricEnabled =
           await _localAuth.isDeviceSupported() && await _localAuth.canCheckBiometrics;
       if (_isBiometricEnabled) {
-        _logger.i('Biometric is enabled, authenticating...');
+        _logger?.i('Biometric is enabled, authenticating...');
         return await biometricsAuthenticate();
       }
 
-      _logger.i('Biometrics are not enabled');
+      _logger?.i('Biometrics are not enabled');
       return false;
     } on Exception catch (e) {
       _notifierService.notify('Unable to authenticate');
@@ -73,6 +68,9 @@ class AuthenticationService {
 
   bool isAuthenticated() {
     var currentUtcDate = DateTime.now().toUtc();
+
+    if (user == null) return false;
+
     return user!.expirationDate.isAfter(currentUtcDate);
   }
 
@@ -80,7 +78,7 @@ class AuthenticationService {
     var authOptions =
         AuthenticationOptions(stickyAuth: true, biometricOnly: true);
 
-    _logger.i('Authenticating using biometrics...');
+    _logger?.i('Authenticating using biometrics...');
     var biometricAuthenticated = await _localAuth.authenticate(
         localizedReason: 'Scan your fingerprint to authenticate',
         options: authOptions);
@@ -120,7 +118,7 @@ class AuthenticationService {
     var user = await _identityService.refreshToken(this.user);
     this.user = user;
 
-    _logger.i('Authentication succeeded, storing user');
+    _logger?.i('Authentication succeeded, storing user');
     this._userRepository.store(user!);
   }
 
@@ -128,20 +126,20 @@ class AuthenticationService {
     try {
       isAuthenticating = true;
 
-      _logger.i('Authenticating...');
+      _logger?.i('Authenticating...');
       user = isEmailAuthenticationType(email)
           ? await _identityService.internalAuthenticate(email, password)
         : await _identityService.internalAuthenticateV2(email, password);
 
       if (user == null) {
-      _logger.i('Authentication failed');
+      _logger?.i('Authentication failed');
       return false;
     }
-      _logger.i('Authentication succeeded, storing user');
+      _logger?.i('Authentication succeeded, storing user');
       this._userRepository.store(user!);
       return user?.twoFactorRequired == false;
     } on Exception catch (e) {
-      _logger.e(e);
+      _logger?.e(e);
       return false;
     }
     finally {

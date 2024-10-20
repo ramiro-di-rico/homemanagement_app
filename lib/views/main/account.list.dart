@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
@@ -141,8 +142,7 @@ class _AccountListScreenState extends State<AccountListScreen> with NotifierMixi
                           : Colors.redAccent),
                 ),
                 onTap: () {
-                  Navigator.pushNamed(context, AccountDetailScreen.id,
-                      arguments: item);
+                  context.go(AccountDetailScreen.fullPath, extra: item);
                 },
               ),
             ),

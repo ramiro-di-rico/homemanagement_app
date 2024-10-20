@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,7 @@ import '../../models/transaction.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
+import '../main/home.dart';
 import '../mixins/notifier_mixin.dart';
 import 'account-details-behaviors/account-list-scrolling-behavior.dart';
 import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
@@ -23,8 +25,11 @@ import 'widgets/transaction-row-skeleton.dart';
 import 'widgets/transaction.row.info.dart';
 
 class AccountDetailScreen extends StatefulWidget {
-  static const String id = 'account_detail_screen';
-  AccountDetailScreen();
+  static const String fullPath = '/home_screen/account_detail_screen';
+  static const String path = '/account_detail_screen';
+
+  final AccountModel account;
+  AccountDetailScreen(this.account);
 
   @override
   _AccountDetailScreenState createState() => _AccountDetailScreenState();
@@ -71,7 +76,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    account = ModalRoute.of(context)!.settings.arguments as AccountModel;
+    account = widget.account;
     load();
 
     return Scaffold(
@@ -230,8 +235,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
             child: Icon(Icons.bar_chart),
             backgroundColor: Colors.lightBlue,
             labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => Navigator.pushNamed(context, AccountMetrics.id,
-                arguments: account)),
+            onTap: () => context.go(AccountMetrics.fullPath, extra: account)),
       );
     }
     /* Filtering not working in transaction.repository

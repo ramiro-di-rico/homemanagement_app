@@ -23,7 +23,9 @@ import 'widgets/account.info.dart';
 import 'widgets/transaction.row.info.dart';
 
 class AccountDetailDesktop extends StatefulWidget {
-  const AccountDetailDesktop({super.key});
+
+  final AccountModel account;
+  AccountDetailDesktop(this.account);
 
   @override
   State<AccountDetailDesktop> createState() => _AccountDetailDesktopState();
@@ -63,7 +65,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
 
   @override
   Widget build(BuildContext context) {
-    account = ModalRoute.of(context)!.settings.arguments as AccountModel;
+    account = widget.account;
     load();
 
     return Scaffold(
