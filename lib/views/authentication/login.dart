@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
 import '../mixins/notifier_mixin.dart';
@@ -8,7 +9,7 @@ import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 
 class LoginView extends StatefulWidget {
-  static const String id = 'login_screen';
+  static const String fullPath = '/login_screen';
 
   @override
   _LoginViewState createState() => _LoginViewState();
@@ -94,8 +95,7 @@ class _LoginViewState extends State<LoginView>
                           Text('You don' 't have an account yet ?'),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(
-                                  context, RegistrationScreen.id);
+                              context.go(RegistrationScreen.fullPath);
                             },
                             child: Text('Create one'),
                           )

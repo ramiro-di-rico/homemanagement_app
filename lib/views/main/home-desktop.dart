@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
+import '../../services/repositories/identity_user_repository.dart';
+import '../../services/repositories/preferences.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import 'account-list-desktop.dart';
@@ -29,6 +32,8 @@ class _HomeDesktopState extends State<HomeDesktop> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<CategoryRepository>().load();
+    GetIt.I<PreferencesRepository>().load();
+    GetIt.I<IdentityUserRepository>().getUser();
   }
 
   @override
@@ -40,14 +45,14 @@ class _HomeDesktopState extends State<HomeDesktop> {
           IconButton(
             icon: Icon(Icons.manage_search),
             onPressed: () {
-              Navigator.pushNamed(context, TransactionsSearchDesktopView.id);
+              context.go(TransactionsSearchDesktopView.fullPath);
             },
             tooltip: 'Search transactions',
           ),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              Navigator.pushNamed(context, SettingsScreen.id);
+              context.go(SettingsScreen.fullPath);
             },
             tooltip: 'Settings',
           ),
@@ -55,7 +60,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
             icon: Icon(Icons.logout),
             onPressed: () {
               GetIt.I<AuthenticationService>().logout();
-              Navigator.pushNamed(context, LoginView.id);
+              context.go(LoginView.fullPath);
             },
             tooltip: 'Logout',
           ),

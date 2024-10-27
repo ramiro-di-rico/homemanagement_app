@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:home_management_app/views/authentication/user-controls-mixins/authentication-behavior.dart';
 import 'package:home_management_app/views/authentication/registration.dart';
 
@@ -61,13 +62,13 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(200, 50),
                             ),
-                            child: Icon(Icons.send, color: Colors.white),
+                            child: Icon(Icons.send),
                             onPressed:
                                 userViewModel.isValid ? onButtonPressed : null,
                           )
                         : OutlinedButton(
                             onPressed: null,
-                            child: Icon(Icons.send, color: Colors.white),
+                            child: Icon(Icons.send),
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(200, 50),
                               ),
@@ -86,7 +87,7 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                       Text('You don' 't have an account yet ?'),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, RegistrationScreen.id);
+                          context.go(RegistrationScreen.fullPath);
                         },
                         child: Text('Create one'),
                       )

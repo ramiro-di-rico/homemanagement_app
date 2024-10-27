@@ -28,6 +28,7 @@ import 'services/infra/cryptography.service.dart';
 import 'services/endpoints/currency.service.dart';
 import 'services/endpoints/metrics.service.dart';
 import 'services/endpoints/transaction.service.dart';
+import 'services/security/password_reset_service.dart';
 import 'services/transaction_paging_service.dart';
 
 void main() {
@@ -98,9 +99,10 @@ void registerSingletons(PlatformContext platformContext) {
   CryptographyService cryptographyService = CryptographyService();
   var userRepository = UserRepository();
   AuthenticationService authenticationService = AuthenticationService(
-      cryptographyService: cryptographyService, userRepository: userRepository,
-      platformContext: platformContext,
-      notifierService: errorNotifierService);
+      cryptographyService, userRepository,
+      platformContext,
+      errorNotifierService,
+      null);
 
   GetIt.instance.registerSingleton(authenticationService);
 
@@ -152,6 +154,9 @@ void registerSingletons(PlatformContext platformContext) {
       RecurringTransactionService(authenticationService: authenticationService),
       errorNotifierService);
 
+  var passwordResetService = PasswordResetService();
+
+
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
@@ -164,4 +169,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(identityUserRepository);
   GetIt.instance.registerSingleton(transactionPagingService);
   GetIt.instance.registerSingleton(recurringTransactionRepository);
+  GetIt.instance.registerSingleton(passwordResetService);
 }

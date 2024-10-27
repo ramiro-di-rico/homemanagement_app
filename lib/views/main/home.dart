@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import '../../models/notification.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
@@ -15,7 +16,7 @@ import 'settings.dart';
 import 'widgets/account.sheet.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const String id = 'home_screen';
+  static const String fullPath = '/home_screen';
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -196,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Icon(Icons.exit_to_app),
       onPressed: () {
         authenticationService.logout();
-        Navigator.popAndPushNamed(this.context, LoginView.id);
+        context.go(LoginView.fullPath);
       },
     );
   }

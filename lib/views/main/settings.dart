@@ -5,7 +5,8 @@ import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
 
 class SettingsScreen extends StatefulWidget {
-  static const String id = 'settings_screen';
+  static const String fullPath = '/home_screen/settings_screen';
+  static const String path = '/settings_screen';
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
