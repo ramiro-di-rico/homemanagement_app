@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_management_app/views/authentication/user-controls-mixins/authentication-behavior.dart';
 import 'package:home_management_app/views/authentication/registration.dart';
 
 import '../../custom/components/email-textfield.dart';
 import '../../custom/components/password-textfield.dart';
+import '../../services/endpoints/identity.service.dart';
 import '../mixins/notifier_mixin.dart';
 import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
@@ -18,7 +20,8 @@ class DesktopLoginView extends StatefulWidget {
 
 class _DesktopLoginViewState extends State<DesktopLoginView>
     with AuthenticationBehavior, EmailBehavior, PasswordBehavior, NotifierMixin {
-
+  
+  final IdentityService _identityService = GetIt.I.get<IdentityService>();
   final TextEditingController emailPasswordResetController = TextEditingController();
 
   @override
@@ -114,9 +117,9 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                                   ),
                                   ElevatedButton(
                                     child: Text('Submit'),
-                                    onPressed: () {
+                                    onPressed: () async  {
                                       final email = emailPasswordResetController.text;
-
+                                      await _identityService.requestPasswordChange(email);
                                       emailPasswordResetController.clear();
 
                                       ScaffoldMessenger.of(context).showSnackBar(
