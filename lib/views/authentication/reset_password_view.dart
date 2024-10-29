@@ -30,7 +30,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reset Password'),
+        title: Center(child: Text('Reset Password')),
       ),
       body: SafeArea(
         child: Center(
@@ -40,9 +40,10 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 50),
-                Text('Enter your email address to reset your password'),
+                Text('Your email address'),
                 TextField(
                   controller: emailController,
+                  enabled: false,
                   decoration: InputDecoration(
                     labelText: 'Email',
                   ),
