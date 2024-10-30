@@ -90,7 +90,7 @@ class IdentityService {
   Future<bool> requestPasswordChange(String email) async {
     var response = await http.post(Uri.https(this.url, 'identity/api/PasswordManagement/forgotpassword'),
         headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{'email': email}));
+        body: jsonEncode(<String, String>{'email': email, 'source': "FlutterApp"}));
 
     return response.statusCode == 200;
   }
@@ -98,7 +98,7 @@ class IdentityService {
   Future<bool> changePassword(String email, String password, String token) async {
     var response = await http.post(Uri.https(this.url, 'identity/api/PasswordManagement/tokenpasswordchange'),
         headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{'email': email, 'password': password, 'token': token}));
+        body: jsonEncode(<String, String>{'email': email, 'newPassword': password, 'token': token}));
 
     return response.statusCode == 200;
   }

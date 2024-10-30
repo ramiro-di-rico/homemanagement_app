@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../services/endpoints/identity.service.dart';
 import '../../services/security/password_reset_service.dart';
 import 'login.dart';
 import 'user-controls-mixins/password-strength-behavior.dart';
@@ -16,6 +17,7 @@ class ResetPasswordView extends StatefulWidget {
 class _ResetPasswordViewState extends State<ResetPasswordView> with PasswordStrengthBehavior {
   final PasswordResetService _passwordResetService =
       GetIt.I.get<PasswordResetService>();
+  final IdentityService _identityService = GetIt.I.get<IdentityService>();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -84,7 +86,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> with PasswordStre
                 Row(
                   children: [
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (passwordController.text.isEmpty ||
                             repeatPasswordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -109,7 +111,20 @@ class _ResetPasswordViewState extends State<ResetPasswordView> with PasswordStre
                           return;
                         }
 
-                        showSuccessSnackBar(context, 'Password reset successful');
+                        var success = await _identityService.changePassword(_passwordResetService.email, passwordController.text, _passwordResetService.token);
+
+                        if (success) {
+                          showSuccessSnackBar(context, 'Password reset successful');
+                          context.go(LoginView.fullPath);
+                        }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Password reset failed'),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
                       },
                       child: Text('Reset Password'),
                     ),
