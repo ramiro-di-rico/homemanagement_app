@@ -82,7 +82,6 @@ class Routing{
         )
       ],
       initialLocation: LoginView.fullPath,
-      debugLogDiagnostics: true,
       redirect: (context, state) {
         var emailQueryParam = state.uri.queryParameters['email'] ?? '';
         var tokenQueryParam = state.uri.queryParameters['token'] ?? '';
