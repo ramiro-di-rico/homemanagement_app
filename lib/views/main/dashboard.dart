@@ -49,14 +49,7 @@ class _DashboardState extends State<Dashboard> {
                 child: MostExpensiveCategoriesChart(),
               ),
               flex: 6,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: AccountsMetricSeriesWidget(),
-              ),
-              flex: 6,
-            ),
+            )
           ],
         ),
       ),

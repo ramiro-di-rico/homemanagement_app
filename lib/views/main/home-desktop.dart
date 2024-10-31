@@ -75,9 +75,9 @@ class _HomeDesktopState extends State<HomeDesktop> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(flex: 1, child: Dashboard()),
+                    Flexible(flex: 12, child: Dashboard()),
                     Flexible(
-                        flex: 1,
+                        flex: 7,
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,

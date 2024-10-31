@@ -102,7 +102,7 @@ class Routing{
           return LoginView.fullPath;
         }
 
-        return HomeScreen.fullPath;
+        return null;
       },
     );
   }
