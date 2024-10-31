@@ -8,7 +8,7 @@ class PasswordResetService{
   String get token => _token;
 
   String resetPasswordQueryParams() {
-    return '?email=${_email}&token=${_token}';
+    return '?view=reset_password&email=${_email}&token=${_token}';
   }
 
   void setResetPasswordQueryParams(String email, String token) {
