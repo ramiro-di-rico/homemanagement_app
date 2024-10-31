@@ -86,4 +86,26 @@ class IdentityService {
 
     return _handleAuthResponse(response, user.password);
   }
+
+  Future<bool> requestPasswordChange(String email) async {
+    var uri = createPasswordResetUri('identity/api/PasswordManagement/forgotpassword');
+    var response = await http.post(uri,
+        headers: <String, String>{'Content-Type': 'application/json'},
+        body: jsonEncode(<String, String>{'email': email, 'source': "FlutterApp"}));
+
+    return response.statusCode == 200;
+  }
+
+  Future<bool> changePassword(String email, String password, String token) async {
+    var uri = createPasswordResetUri('identity/api/PasswordManagement/tokenpasswordchange');
+    var response = await http.post(uri,
+        headers: <String, String>{'Content-Type': 'application/json'},
+        body: jsonEncode(<String, String>{'email': email, 'newPassword': password, 'token': token}));
+
+    return response.statusCode == 200;
+  }
+
+  Uri createPasswordResetUri(String api) {
+    return Uri.https(this.url, api);
+  }
 }

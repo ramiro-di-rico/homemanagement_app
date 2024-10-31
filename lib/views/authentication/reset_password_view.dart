@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../services/endpoints/identity.service.dart';
 import '../../services/security/password_reset_service.dart';
 import 'login.dart';
+import 'user-controls-mixins/password-strength-behavior.dart';
 
 class ResetPasswordView extends StatefulWidget {
   static const String fullPath = '/reset_password';
@@ -12,9 +14,10 @@ class ResetPasswordView extends StatefulWidget {
   State<ResetPasswordView> createState() => _ResetPasswordViewState();
 }
 
-class _ResetPasswordViewState extends State<ResetPasswordView> {
+class _ResetPasswordViewState extends State<ResetPasswordView> with PasswordStrengthBehavior {
   final PasswordResetService _passwordResetService =
       GetIt.I.get<PasswordResetService>();
+  final IdentityService _identityService = GetIt.I.get<IdentityService>();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -30,7 +33,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reset Password'),
+        title: Center(child: Text('Reset Password')),
       ),
       body: SafeArea(
         child: Center(
@@ -40,9 +43,10 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 50),
-                Text('Enter your email address to reset your password'),
+                Text('Your email address'),
                 TextField(
                   controller: emailController,
+                  enabled: false,
                   decoration: InputDecoration(
                     labelText: 'Email',
                   ),
@@ -51,10 +55,23 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 Text('Enter your new password'),
                 TextField(
                   controller: passwordController,
+                  onChanged: onPasswordChanged,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
                   ),
+                ),
+                Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: Slider(
+                      activeColor: getSliderColor(),
+                      inactiveColor: getSliderColor(),
+                      value: passwordStrength,
+                      onChanged: (value) {},
+                    )),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 1),
+                  child: Text('Password strength'),
                 ),
                 SizedBox(height: 30),
                 Text('Repeat your new password'),
@@ -69,7 +86,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 Row(
                   children: [
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (passwordController.text.isEmpty ||
                             repeatPasswordController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +111,20 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                           return;
                         }
 
-                        showSuccessSnackBar(context, 'Password reset successful');
+                        var success = await _identityService.changePassword(_passwordResetService.email, passwordController.text, _passwordResetService.token);
+
+                        if (success) {
+                          showSuccessSnackBar(context, 'Password reset successful');
+                          context.go(LoginView.fullPath);
+                        }else{
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Password reset failed'),
+                              backgroundColor: Colors.red,
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
                       },
                       child: Text('Reset Password'),
                     ),
@@ -102,7 +132,6 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                     ElevatedButton(
                       onPressed: () {
                         _passwordResetService.clearResetPasswordQueryParams();
-                        showSuccessSnackBar(context, 'Navigating back to login');
                         context.go(LoginView.fullPath);
                       },
                       child: Text('Back to Login'),
@@ -125,5 +154,20 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Color getSliderColor() {
+    if (passwordStrength >= 0.4 && passwordStrength < 0.6)
+      return Colors.red[400]!;
+
+    if (passwordStrength >= 0.6 && passwordStrength < 0.8)
+      return Colors.green[200]!;
+
+    if (passwordStrength >= 0.8 && passwordStrength < 1)
+      return Colors.green[400]!;
+
+    if (passwordStrength == 1) return Colors.green;
+
+    return Colors.red;
   }
 }

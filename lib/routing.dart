@@ -25,10 +25,6 @@ class Routing{
     return GoRouter(
       routes: [
         GoRoute(
-          path: '/',
-          redirect: (context, state) => HomeScreen.fullPath,
-        ),
-        GoRoute(
           path: LoginView.fullPath,
           builder: (context, state) =>
           !isDesktop ? LoginView() : DesktopLoginView(),
@@ -89,26 +85,24 @@ class Routing{
       redirect: (context, state) {
         var emailQueryParam = state.uri.queryParameters['email'] ?? '';
         var tokenQueryParam = state.uri.queryParameters['token'] ?? '';
-        if (state.matchedLocation == ResetPasswordView.fullPath &&
-            emailQueryParam.isNotEmpty &&
-            tokenQueryParam.isNotEmpty) {
-          return state.uri.path +
-              '?email=' +
-              emailQueryParam +
-              '&token=' +
-              tokenQueryParam;
-        }
+        var viewQueryParam = state.uri.queryParameters['view'] ?? '';
 
         if (passwordResetService.isResettingPassword()) {
           return ResetPasswordView.fullPath +
               passwordResetService.resetPasswordQueryParams();
         }
 
+        if (viewQueryParam == 'reset_password') {
+          passwordResetService.setResetPasswordQueryParams(
+              emailQueryParam.toString(), tokenQueryParam.toString());
+          return ResetPasswordView.fullPath + passwordResetService.resetPasswordQueryParams();
+        }
+
         if (!authenticationService.isAuthenticated()){
           return LoginView.fullPath;
         }
 
-        return null;
+        return HomeScreen.fullPath;
       },
     );
   }
