@@ -11,6 +11,7 @@ import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import 'account-list-desktop.dart';
 import 'dashboard.dart';
+import 'dashboard_desktop.dart';
 import 'settings.dart';
 import 'transactions_search_desktop_view.dart';
 import 'widgets/account-sheet-dektop.dart';
@@ -75,7 +76,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(flex: 12, child: Dashboard()),
+                    Flexible(flex: 12, child: DashboardDesktop()),
                     Flexible(
                         flex: 7,
                         child: Column(
