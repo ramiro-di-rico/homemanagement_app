@@ -10,6 +10,7 @@ import '../../services/repositories/preferences.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import 'account-list-desktop.dart';
+import 'budget_desktop_view.dart';
 import 'dashboard.dart';
 import 'dashboard_desktop.dart';
 import 'settings.dart';
@@ -49,6 +50,13 @@ class _HomeDesktopState extends State<HomeDesktop> {
               context.go(TransactionsSearchDesktopView.fullPath);
             },
             tooltip: 'Search transactions',
+          ),
+          IconButton(
+              onPressed: (){
+                context.go(BudgetDesktopView.fullPath);
+              },
+              icon: Icon(Icons.track_changes),
+              tooltip: 'Budget'
           ),
           IconButton(
             icon: Icon(Icons.settings),

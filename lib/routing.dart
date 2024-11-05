@@ -12,6 +12,7 @@ import 'views/authentication/login.dart';
 import 'views/authentication/registration-desktop.dart';
 import 'views/authentication/registration.dart';
 import 'views/authentication/reset_password_view.dart';
+import 'views/main/budget_desktop_view.dart';
 import 'views/main/home-desktop.dart';
 import 'views/main/home.dart';
 import 'views/main/logging_view.dart';
@@ -63,6 +64,10 @@ class Routing{
               GoRoute(
                 path: LoggingView.path,
                 builder: (context, state) => LoggingView(),
+              ),
+              GoRoute(
+                path: BudgetDesktopView.path,
+                builder: (context, state) => BudgetDesktopView(),
               ),
             ]),
         GoRoute(
