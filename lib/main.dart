@@ -8,6 +8,7 @@ import 'services/infra/error_notifier_service.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_strategy.dart';
 import 'services/repositories/account.repository.dart';
+import 'services/repositories/budget_repository.dart';
 import 'services/repositories/category.repository.dart';
 import 'services/repositories/identity_user_repository.dart';
 import 'services/repositories/notification.repository.dart';
@@ -159,6 +160,8 @@ void registerSingletons(PlatformContext platformContext) {
 
   var passwordResetService = PasswordResetService();
 
+  var budgetRepository = BudgetRepository();
+
 
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
@@ -173,4 +176,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(transactionPagingService);
   GetIt.instance.registerSingleton(recurringTransactionRepository);
   GetIt.instance.registerSingleton(passwordResetService);
+  GetIt.instance.registerSingleton(budgetRepository);
 }
