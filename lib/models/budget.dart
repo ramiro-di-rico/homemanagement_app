@@ -1,4 +1,4 @@
-class Budget{
+class BudgetModel{
   int id;
   String name;
   double amount;
@@ -6,10 +6,10 @@ class Budget{
   DateTime? startDate;
   DateTime? endDate;
 
-  Budget(this.id, this.name, this.amount, this.accountId, this.categoryId, this.currencyId, this.budgetParentId, this.startDate, this.endDate);
+  BudgetModel(this.id, this.name, this.amount, this.accountId, this.categoryId, this.currencyId, this.budgetParentId, this.startDate, this.endDate);
 
-  factory Budget.fromJson(Map<String, dynamic> json){
-    return Budget(
+  factory BudgetModel.fromJson(Map<String, dynamic> json){
+    return BudgetModel(
       json['id'],
       json['name'],
       json['amount'],
@@ -22,7 +22,7 @@ class Budget{
     );
   }
 
-  Map ToJson(Budget budget){
+  Map ToJson(BudgetModel budget){
     return {
       'id': budget.id,
       'name': budget.name,

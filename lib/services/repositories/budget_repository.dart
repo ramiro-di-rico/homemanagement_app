@@ -4,27 +4,27 @@ import '../../models/budget.dart';
 
 class BudgetRepository extends ChangeNotifier{
 
-  List<Budget> _budgets = [];
+  List<BudgetModel> _budgets = [];
 
   BudgetRepository(){
-    _budgets.add(Budget(1, 'Groceries', 100, null, null, null, null, null, null));
-    _budgets.add(Budget(2, 'Rent', 1000, null, null, null, null, DateTime.now(), null));
-    _budgets.add(Budget(3, 'Utilities', 200, null, null, null, null, null, DateTime.now()));
+    _budgets.add(BudgetModel(1, 'Groceries', 100, null, null, null, null, null, null));
+    _budgets.add(BudgetModel(2, 'Rent', 1000, null, null, null, null, DateTime.now(), null));
+    _budgets.add(BudgetModel(3, 'Utilities', 200, null, null, null, null, null, DateTime.now()));
   }
 
-  List<Budget> get budgets => _budgets;
+  List<BudgetModel> get budgets => _budgets;
 
-  Future addBudget(Budget budget) async {
+  Future addBudget(BudgetModel budget) async {
     _budgets.add(budget);
     notifyListeners();
   }
 
-  Future updateBudget(Budget budget) async {
+  Future updateBudget(BudgetModel budget) async {
     // Update the budget
     notifyListeners();
   }
 
-  Future removeBudget(Budget budget) async {
+  Future removeBudget(BudgetModel budget) async {
     _budgets.remove(budget);
     notifyListeners();
   }
