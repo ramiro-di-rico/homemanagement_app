@@ -87,7 +87,8 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
                     onChanged: (value) {
                       setState(() {
                         _selectedAccount = value;
-                        widget.onSelectedAccountsChanged([selectedAccount]);
+                        _selectedAccount!.isSelected = true;
+                        widget.onSelectedAccountsChanged([_selectedAccount!]);
                         Navigator.of(context).pop();
                       });
                     },
@@ -95,14 +96,22 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
           },
         ),
       ),
-      actions: widget.multipleSelection ? [
+      actions: [
+        TextButton(
+          child: Text('clear'),
+          onPressed: () {
+            _selectedAccount = null;
+            widget.onSelectedAccountsChanged([]);
+            Navigator.of(context).pop();
+          },
+        ),
         TextButton(
           child: Text('ok'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         )
-      ] : [],
+      ],
     );
   }
 }

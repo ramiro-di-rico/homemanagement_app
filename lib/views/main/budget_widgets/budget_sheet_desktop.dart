@@ -70,15 +70,21 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                 width: 200,
                 child: AccountSelect(
                   multipleSelection: false,
-                  selectedAccounts: [
-                    budget.accountId == 0
-                        ? _accountRepository.accounts.first
-                        : _accountRepository.accounts
-                            .where((account) => account.id == budget.accountId)
-                            .first
-                  ],
+                  selectedAccounts: budget.accountId == null
+                      ? []
+                      : [
+                          _accountRepository.accounts
+                              .where(
+                                  (account) => account.id == budget.accountId)
+                              .first
+                        ],
                   onSelectedAccountsChanged: (accounts) {
-                    budget.accountId = accounts.first.account.id;
+                    if (accounts.isNotEmpty) {
+                      budget.accountId = accounts.first.account.id;
+                      return;
+                    }
+
+                    budget.accountId = null;
                   },
                 ),
               ),
@@ -87,8 +93,21 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                 width: 200,
                 child: CategorySelect(
                     multipleSelection: false,
+                    selectedCategories: [
+                      budget.categoryId == null
+                          ? _categoryRepository.categories.first
+                          : _categoryRepository.categories
+                              .where((category) =>
+                                  category.id == budget.categoryId)
+                              .first
+                    ],
                     onSelectedCategoriesChanged: (categories) {
-                      budget.categoryId = categories.first.id;
+                      if (categories.isNotEmpty) {
+                        budget.categoryId = categories.first.id;
+                        return;
+                      }
+
+                      budget.categoryId = null;
                     }),
               ),
               SizedBox(width: 20),
