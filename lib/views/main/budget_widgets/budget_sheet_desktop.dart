@@ -1,11 +1,15 @@
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:home_management_app/views/main/widgets/category_select/category_select.dart';
+import 'package:intl/intl.dart';
 
 import '../../../models/budget.dart';
 import '../../../models/currency.dart';
+import '../../../services/repositories/account.repository.dart';
 import '../../../services/repositories/budget_repository.dart';
+import '../../../services/repositories/category.repository.dart';
 import '../widgets/account_select/account_select.dart';
+import '../widgets/category_select/category_select.dart';
 
 class BudgetSheetDesktop extends StatefulWidget {
   final BudgetModel? budget;
@@ -18,10 +22,13 @@ class BudgetSheetDesktop extends StatefulWidget {
 
 class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
   BudgetRepository _budgetRepository = GetIt.I.get<BudgetRepository>();
+  AccountRepository _accountRepository = GetIt.I.get<AccountRepository>();
+  CategoryRepository _categoryRepository = GetIt.I.get<CategoryRepository>();
   TextEditingController _nameController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
   List<CurrencyModel> currencies = [];
   bool isEditMode = false;
+  late BudgetModel budget;
 
   @override
   void initState() {
@@ -29,61 +36,129 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
     isEditMode = widget.budget != null;
     _nameController.text = widget.budget!.name;
     _amountController.text = widget.budget!.amount.toString();
+
+    budget =
+        isEditMode ? BudgetModel.copy(widget.budget!) : BudgetModel.empty();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
+      child: Column(
         children: [
-          SizedBox(width: 50),
-          SizedBox(
-            width: 300,
-            child: TextField(
-              decoration: InputDecoration(labelText: 'Name'),
-              controller: _nameController,
-            ),
+          SizedBox(height: 15),
+          Row(
+            children: [
+              SizedBox(width: 50),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  decoration: InputDecoration(labelText: 'Name'),
+                  controller: _nameController,
+                ),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 150,
+                child: TextField(
+                  decoration: InputDecoration(labelText: 'Amount'),
+                  controller: _amountController,
+                ),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 200,
+                child: AccountSelect(
+                  multipleSelection: false,
+                  selectedAccounts: [
+                    budget.accountId == 0
+                        ? _accountRepository.accounts.first
+                        : _accountRepository.accounts
+                            .where((account) => account.id == budget.accountId)
+                            .first
+                  ],
+                  onSelectedAccountsChanged: (accounts) {
+                    budget.accountId = accounts.first.account.id;
+                  },
+                ),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 200,
+                child: CategorySelect(
+                    multipleSelection: false,
+                    onSelectedCategoriesChanged: (categories) {
+                      budget.categoryId = categories.first.id;
+                    }),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 100,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Save the budget
+                  },
+                  child: Text('Save'),
+                ),
+              ),
+            ],
           ),
-          SizedBox(width: 20),
-          SizedBox(
-            width: 150,
-            child: TextField(
-              decoration: InputDecoration(labelText: 'Amount'),
-              controller: _amountController,
-            ),
-          ),
-          SizedBox(width: 20),
-          SizedBox(
-            width: 200,
-            child: AccountSelect(
-              multipleSelection: false,
-              //accounts: _budgetRepository.accounts,
-              //selectedAccount: widget.budget?.account,
-              onSelectedAccountsChanged: (accounts) {
-                //widget.budget.account = accounts.first;
-              },
-            ),
-          ),
-          SizedBox(width: 20),
-          SizedBox(
-            width: 200,
-            child: CategorySelect(
-                multipleSelection: false,
-                onSelectedCategoriesChanged: (categories){
-
-                }),
-          ),
-          SizedBox(width: 20),
-          SizedBox(
-            width: 100,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                // Save the budget
-              },
-              child: Text('Save'),
-            ),
-          ),
+          SizedBox(height: 30),
+          Row(
+            children: [
+              SizedBox(width: 20),
+              SizedBox(
+                width: 180,
+                child: DateTimeField(
+                  decoration: InputDecoration(
+                    label: Text('Start Date'),
+                    icon: Icon(Icons.date_range),
+                  ),
+                  format: DateFormat("dd MMM yyyy"),
+                  onShowPicker: (context, currentValue) {
+                    return showDatePicker(
+                        context: context,
+                        firstDate: DateTime(1900),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(2100));
+                  },
+                  onChanged: (date) {
+                    setState(() {
+                      budget.startDate = date;
+                    });
+                  },
+                  resetIcon: Icon(Icons.clear),
+                  initialValue: budget.startDate,
+                ),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 180,
+                child: DateTimeField(
+                  decoration: InputDecoration(
+                    label: Text('End Date'),
+                    icon: Icon(Icons.date_range),
+                  ),
+                  format: DateFormat("dd MMM yyyy"),
+                  onShowPicker: (context, currentValue) {
+                    return showDatePicker(
+                        context: context,
+                        firstDate: DateTime(1900),
+                        initialDate: currentValue ?? DateTime.now(),
+                        lastDate: DateTime(2100));
+                  },
+                  onChanged: (date) {
+                    setState(() {
+                      budget.endDate = date;
+                    });
+                  },
+                  resetIcon: Icon(Icons.clear),
+                  initialValue: budget.endDate,
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );

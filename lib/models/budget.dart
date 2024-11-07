@@ -35,4 +35,12 @@ class BudgetModel{
       'endDate': budget.endDate?.toIso8601String()
     };
   }
+
+  factory BudgetModel.empty(){
+    return BudgetModel(0, '', 0, 0, 0, 0, 0, null, null);
+  }
+
+  factory BudgetModel.copy(BudgetModel budget){
+    return BudgetModel(budget.id, budget.name, budget.amount, budget.accountId, budget.categoryId, budget.currencyId, budget.budgetParentId, budget.startDate, budget.endDate);
+  }
 }
