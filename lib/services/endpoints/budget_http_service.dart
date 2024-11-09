@@ -17,7 +17,7 @@ class BudgetHttpService{
   }
 
   Future<BudgetModel> addBudget(BudgetModel budget) async {
-    final decodedJson = await apiServiceFactory.postWithReturn(endpoint, jsonEncode(budget));
+    final decodedJson = await apiServiceFactory.postWithReturn(endpoint, jsonEncode(budget.ToJson()));
     return BudgetModel.fromJson(decodedJson);
   }
 
