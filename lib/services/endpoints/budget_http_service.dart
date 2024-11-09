@@ -17,12 +17,12 @@ class BudgetHttpService{
   }
 
   Future<BudgetModel> addBudget(BudgetModel budget) async {
-    final decodedJson = await apiServiceFactory.postWithReturn(endpoint, jsonEncode(budget.ToJson()));
+    final decodedJson = await apiServiceFactory.postWithReturn(endpoint, jsonEncode(budget));
     return BudgetModel.fromJson(decodedJson);
   }
 
   Future updateBudget(BudgetModel budget) async {
-    await apiServiceFactory.apiPut(endpoint, jsonEncode(budget.ToJson()));
+    await apiServiceFactory.apiPut("${endpoint}/${budget.id}", jsonEncode(budget.ToJson()));
   }
 
   Future<void> removeBudget(BudgetModel budget) async {
