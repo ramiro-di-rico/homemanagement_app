@@ -12,6 +12,7 @@ class BudgetDesktopView extends StatefulWidget {
 }
 
 class _BudgetDesktopViewState extends State<BudgetDesktopView> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +27,7 @@ class _BudgetDesktopViewState extends State<BudgetDesktopView> {
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Flexible(
                       flex: 3,

@@ -37,7 +37,7 @@ class BudgetModel{
   }
 
   factory BudgetModel.empty(){
-    return BudgetModel(0, '', 0, 0, 0, 0, 0, null, null);
+    return BudgetModel(0, '', 0, null, null, null, null, null, null);
   }
 
   factory BudgetModel.copy(BudgetModel budget){

@@ -160,7 +160,7 @@ void registerSingletons(PlatformContext platformContext) {
 
   var passwordResetService = PasswordResetService();
 
-  var budgetRepository = BudgetRepository();
+  var budgetRepository = BudgetRepository(errorNotifierService);
 
 
   GetIt.instance.registerSingleton(platformContext);

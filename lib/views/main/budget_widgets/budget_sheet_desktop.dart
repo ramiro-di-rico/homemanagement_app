@@ -34,11 +34,18 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
   void initState() {
     super.initState();
     isEditMode = widget.budget != null;
-    _nameController.text = widget.budget!.name;
-    _amountController.text = widget.budget!.amount.toString();
-
     budget =
         isEditMode ? BudgetModel.copy(widget.budget!) : BudgetModel.empty();
+
+    _nameController.text = budget.name;
+    _amountController.text = budget.amount.toString();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _amountController.dispose();
+    super.dispose();
   }
 
   @override
@@ -110,17 +117,6 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                       budget.categoryId = null;
                     }),
               ),
-              SizedBox(width: 20),
-              SizedBox(
-                width: 100,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Save the budget
-                  },
-                  child: Text('Save'),
-                ),
-              ),
             ],
           ),
           SizedBox(height: 30),
@@ -174,6 +170,26 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                   },
                   resetIcon: Icon(Icons.clear),
                   initialValue: budget.endDate,
+                ),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 100,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    budget.name = _nameController.text;
+                    budget.amount = double.parse(_amountController.text);
+
+                    if (isEditMode) {
+                      _budgetRepository.updateBudget(budget);
+                    } else {
+                      _budgetRepository.addBudget(budget);
+                    }
+
+                    Navigator.pop(context);
+                  },
+                  child: Text('Save'),
                 ),
               ),
             ],
