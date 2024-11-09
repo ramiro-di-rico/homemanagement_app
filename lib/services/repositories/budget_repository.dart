@@ -1,24 +1,31 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
 
 import '../../models/budget.dart';
+import '../endpoints/budget_http_service.dart';
 import '../infra/error_notifier_service.dart';
 
 class BudgetRepository extends ChangeNotifier{
   NotifierService errorNotifierService;
+  BudgetHttpService budgetHttpService;
   List<BudgetModel> _budgets = [];
 
-  BudgetRepository(this.errorNotifierService){
-    _budgets.add(BudgetModel(1, 'Groceries', 100, 3, null, null, null, null, null));
-    _budgets.add(BudgetModel(2, 'Rent', 1000, 3, null, null, null, DateTime.now(), null));
-    _budgets.add(BudgetModel(3, 'Utilities', 200, 3, null, null, null, null, DateTime.now()));
-  }
+  BudgetRepository(this.errorNotifierService, this.budgetHttpService);
 
   List<BudgetModel> get budgets => _budgets;
 
+  Future load() async {
+    try {
+      _budgets = await budgetHttpService.getBudgets();
+      notifyListeners();
+    } on Exception catch (e) {
+      errorNotifierService.notify('Error loading budgets: $e', isError: true);
+    }
+  }
+
   Future addBudget(BudgetModel budget) async {
     try {
-      _budgets.add(budget);
+      var addedBudget = await budgetHttpService.addBudget(budget);
+      _budgets.add(addedBudget);
       errorNotifierService.notify('Budget ${budget.name} added successfully');
       notifyListeners();
     } on Exception catch (e) {
@@ -28,6 +35,7 @@ class BudgetRepository extends ChangeNotifier{
 
   Future updateBudget(BudgetModel budget) async {
     try {
+      await budgetHttpService.updateBudget(budget);
       var index = _budgets.indexWhere((element) => element.id == budget.id);
       _budgets[index] = budget;
       errorNotifierService.notify('Budget ${budget.name} updated successfully');
@@ -39,6 +47,7 @@ class BudgetRepository extends ChangeNotifier{
 
   Future removeBudget(BudgetModel budget) async {
     try {
+      await budgetHttpService.removeBudget(budget);
       _budgets.remove(budget);
       errorNotifierService.notify('Budget ${budget.name} removed successfully');
       notifyListeners();

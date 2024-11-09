@@ -9,30 +9,33 @@ class BudgetModel{
   BudgetModel(this.id, this.name, this.amount, this.accountId, this.categoryId, this.currencyId, this.budgetParentId, this.startDate, this.endDate);
 
   factory BudgetModel.fromJson(Map<String, dynamic> json){
+    var startDate = json['startDate'] != null ? DateTime.parse(json['startDate']) : null;
+    var endDate = json['endDate'] != null ? DateTime.parse(json['endDate']) : null;
+
     return BudgetModel(
       json['id'],
       json['name'],
-      json['amount'],
+      double.parse(json['amount'].toString()),
       json['accountId'],
       json['categoryId'],
       json['currencyId'],
       json['budgetParentId'],
-      DateTime.parse(json['startDate']),
-      DateTime.parse(json['endDate'])
+      startDate,
+      endDate
     );
   }
 
-  Map ToJson(BudgetModel budget){
+  Map ToJson(){
     return {
-      'id': budget.id,
-      'name': budget.name,
-      'amount': budget.amount,
-      'accountId': budget.accountId,
-      'categoryId': budget.categoryId,
-      'currencyId': budget.currencyId,
-      'budgetParentId': budget.budgetParentId,
-      'startDate': budget.startDate?.toIso8601String(),
-      'endDate': budget.endDate?.toIso8601String()
+      'id': id,
+      'name': name,
+      'amount': amount,
+      'accountId': accountId,
+      'categoryId': categoryId,
+      'currencyId': currencyId,
+      'budgetParentId': budgetParentId,
+      'startDate': startDate?.toIso8601String(),
+      'endDate': endDate?.toIso8601String()
     };
   }
 

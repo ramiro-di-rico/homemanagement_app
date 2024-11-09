@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'myapp.dart';
+import 'services/endpoints/budget_http_service.dart';
 import 'services/endpoints/identity.service.dart';
 import 'services/endpoints/identity_user_service.dart';
 import 'services/endpoints/recurring_transaction_service.dart';
@@ -94,6 +95,8 @@ void registerServices() {
   GetIt.instance.registerFactory(() => RecurringTransactionService(authenticationService: GetIt.I<AuthenticationService>()));
 
   GetIt.instance.registerFactory(() => IdentityService(null));
+
+  GetIt.instance.registerFactory(() => BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>())));
 }
 
 void registerSingletons(PlatformContext platformContext) {
@@ -160,7 +163,7 @@ void registerSingletons(PlatformContext platformContext) {
 
   var passwordResetService = PasswordResetService();
 
-  var budgetRepository = BudgetRepository(errorNotifierService);
+  var budgetRepository = BudgetRepository(errorNotifierService, BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
 
 
   GetIt.instance.registerSingleton(platformContext);

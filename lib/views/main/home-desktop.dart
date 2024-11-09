@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../services/repositories/account.repository.dart';
+import '../../services/repositories/budget_repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/repositories/identity_user_repository.dart';
@@ -11,7 +12,6 @@ import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import 'account-list-desktop.dart';
 import 'budget_desktop_view.dart';
-import 'dashboard.dart';
 import 'dashboard_desktop.dart';
 import 'settings.dart';
 import 'transactions_search_desktop_view.dart';
@@ -36,6 +36,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
     GetIt.I<CategoryRepository>().load();
     GetIt.I<PreferencesRepository>().load();
     GetIt.I<IdentityUserRepository>().getUser();
+    GetIt.I<BudgetRepository>().load();
   }
 
   @override
