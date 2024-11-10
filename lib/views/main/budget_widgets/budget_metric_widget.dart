@@ -12,34 +12,101 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
   BudgetRepository _budgetRepository = GetIt.I.get<BudgetRepository>();
 
   @override
+  void initState() {
+    super.initState();
+    _budgetRepository.addListener(refreshState);
+  }
+
+  @override
+  void dispose() {
+    _budgetRepository.removeListener(refreshState);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       height: 700,
       child: SingleChildScrollView(
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-                children: _budgetRepository.budgetMetrics
-                    .map((metric) => Row(
-                          children: [
-                            Text(metric.name),
-                            Text(metric.totalBudgeted.toString()),
-                            Slider(
-                              allowedInteraction: SliderInteraction.tapOnly,
-                              thumbColor: Colors.red,
-                              label: metric.totalSpent.toString(),
-                              min: 0,
-                              max: metric.totalBudgeted.toDouble(),
-                              value: metric.totalSpent.toDouble(),
-                              onChanged: (value) {},
-                            )
-                          ],
-                        ))
-                    .toList()),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              children: drawMetrics(),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> drawMetrics() {
+    List<Widget> rows = [];
+    rows.add(Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+        child: Row(
+          children: [
+            SizedBox(
+                width: 150,
+                child: Text('Name')),
+            SizedBox(width: 20),
+            SizedBox(
+              width: 200,
+              child: Text('Spent'),
+            ),
+            SizedBox(width: 20),
+            SizedBox(
+                width: 120,
+                child: Text('Budgeted')),
+            SizedBox(width: 20),
+            SizedBox(
+                width: 120,
+                child: Text('Remaining')
+            )
+          ],
+        ),
+      ),
+    ));
+    rows.addAll(_budgetRepository.budgetMetrics
+        .map((metric) => Card(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+            child: Row(
+                  children: [
+                    SizedBox(
+                        width: 150,
+                        child: Text(metric.name)),
+                    SizedBox(width: 20),
+                    SizedBox(
+                      width: 200,
+                      child: Slider(
+                        allowedInteraction: SliderInteraction.tapOnly,
+                        thumbColor: Colors.deepPurpleAccent,
+                        label: metric.totalSpent.toString(),
+                        min: 0,
+                        max: metric.totalBudgeted.toDouble(),
+                        value: metric.totalSpent.toDouble(),
+                        onChanged: (value) {},
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    SizedBox(
+                        width: 120,
+                        child: Text(metric.totalBudgeted.toString())),
+                    SizedBox(width: 20),
+                    SizedBox(
+                        width: 120,
+                        child: Text((metric.totalBudgeted - metric.totalSpent).toString())
+                    )
+                  ],
+                ),
+          ),
+        ))
+        .toList());
+
+    return rows;
+  }
+
+  void refreshState() {
+    setState(() {});
   }
 }
