@@ -1,4 +1,5 @@
 import '../../models/budget.dart';
+import '../../models/http-models/budget_metric_model.dart';
 import 'api.service.factory.dart';
 import 'dart:convert';
 
@@ -27,5 +28,11 @@ class BudgetHttpService{
 
   Future<void> removeBudget(BudgetModel budget) async {
     await apiServiceFactory.apiDelete(endpoint, budget.id.toString());
+  }
+
+  Future<List<BudgetMetricModel>> getBudgetMetrics() async {
+    final response = await apiServiceFactory.fetchList('budgets/achievements');
+
+    return response.map((e) => BudgetMetricModel.fromJson(e)).toList();
   }
 }
