@@ -20,9 +20,10 @@ class _BudgetDesktopViewState extends State<BudgetDesktopView> {
         title: Text('Budget'),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            height: 750,
+        child: Container(
+          height: 750,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
             child: Column(
               children: [
                 Row(
