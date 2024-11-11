@@ -80,7 +80,7 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
                       width: 200,
                       child: Slider(
                         allowedInteraction: SliderInteraction.tapOnly,
-                        thumbColor: Colors.deepPurpleAccent,
+                        thumbColor: calculateColor(metric.totalSpent, metric.totalBudgeted),
                         label: metric.totalSpent.toString(),
                         min: 0,
                         max: metric.totalBudgeted.toDouble(),
@@ -91,11 +91,11 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
                     SizedBox(width: 20),
                     SizedBox(
                         width: 120,
-                        child: Text(metric.totalBudgeted.toString())),
+                        child: Text(metric.totalBudgeted.toStringAsFixed(0).toString())),
                     SizedBox(width: 20),
                     SizedBox(
                         width: 120,
-                        child: Text((metric.totalBudgeted - metric.totalSpent).toString())
+                        child: Text((metric.totalBudgeted - metric.totalSpent).toStringAsFixed(0).toString())
                     )
                   ],
                 ),
@@ -108,5 +108,20 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
 
   void refreshState() {
     setState(() {});
+  }
+
+  int calculatePercentage(double totalSpent, double totalBudgeted) {
+    return ((totalSpent / totalBudgeted) * 100).toInt();
+  }
+
+  Color calculateColor(double totalSpent, double totalBudgeted) {
+    var percentage = calculatePercentage(totalSpent, totalBudgeted);
+    if (percentage < 50) {
+      return Colors.greenAccent;
+    } else if (percentage < 75) {
+      return Colors.orangeAccent;
+    } else {
+      return Colors.redAccent;
+    }
   }
 }
