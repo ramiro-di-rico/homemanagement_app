@@ -6,6 +6,7 @@ import '../../../services/repositories/account.repository.dart';
 import '../../../services/repositories/budget_repository.dart';
 import '../../../services/repositories/category.repository.dart';
 import '../../mixins/notifier_mixin.dart';
+import '../widgets/category_select/category_select.dart';
 import 'budget_sheet_desktop.dart';
 
 class BudgetListView extends StatefulWidget {
@@ -17,6 +18,8 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
   BudgetRepository _budgetRepository = GetIt.I.get<BudgetRepository>();
   CategoryRepository _categoryRepository = GetIt.I.get<CategoryRepository>();
   AccountRepository _accountRepository = GetIt.I.get<AccountRepository>();
+
+  int? selectedCategoryId;
 
   @override
   void initState() {
@@ -64,6 +67,69 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                         });
                   },
                   child: Text('Add Budget'),
+                ),
+              ),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(width: 150, child: Text('Filters')),
+                        SizedBox(width: 20),
+                        SizedBox(
+                          width: 200,
+                          child: CategorySelect(
+                              multipleSelection: false,
+                              selectedCategories: selectedCategoryId == null
+                                  ? []
+                                  : [
+                                      _categoryRepository.categories
+                                          .where((category) =>
+                                              category.id == selectedCategoryId)
+                                          .first
+                                    ],
+                              onSelectedCategoriesChanged: (categories) {
+                                if (categories.isNotEmpty) {
+                                  selectedCategoryId = categories.first.id;
+                                  _budgetRepository.filterBudgetsBy(
+                                      categoryId: selectedCategoryId);
+                                  return;
+                                }
+
+                                selectedCategoryId = null;
+                                _budgetRepository.filterBudgetsBy();
+                              }),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      children: [
+                        SizedBox(width: 150, child: Text('')),
+                        SizedBox(width: 20),
+                        SizedBox(
+                          width: 250,
+                          child: DropdownButtonFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Account',
+                            ),
+                            items: _accountRepository.accounts
+                                .map((e) => DropdownMenuItem(
+                                      child: Text(e.name),
+                                      value: e.id,
+                                    ))
+                                .toList(),
+                            onChanged: (value) {
+                              _budgetRepository.filterBudgetsBy(accountId: value);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),

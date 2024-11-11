@@ -8,18 +8,25 @@ import '../infra/error_notifier_service.dart';
 class BudgetRepository extends ChangeNotifier{
   NotifierService errorNotifierService;
   BudgetHttpService budgetHttpService;
-  List<BudgetModel> _budgets = [];
+  List<BudgetModel> _allBudgets = [];
+  List<BudgetModel> budgets = [];
   List<BudgetMetricModel> budgetMetrics = [];
 
   BudgetRepository(this.errorNotifierService, this.budgetHttpService);
 
-  List<BudgetModel> get budgets => _budgets;
-
   Future load() async {
     try {
-      _budgets = await budgetHttpService.getBudgets();
       await loadBudgetMetrics();
-      //notifyListeners();
+      await loadBudgets();
+    } on Exception catch (e) {
+      errorNotifierService.notify('Error loading budgets and metrics: $e', isError: true);
+    }
+  }
+
+  Future loadBudgets() async {
+    try {
+      _allBudgets = await budgetHttpService.getBudgets();
+      filterBudgetsBy();
     } on Exception catch (e) {
       errorNotifierService.notify('Error loading budgets: $e', isError: true);
     }
@@ -28,7 +35,6 @@ class BudgetRepository extends ChangeNotifier{
   Future loadBudgetMetrics() async {
     try {
       budgetMetrics = await budgetHttpService.getBudgetMetrics();
-      notifyListeners();
     } on Exception catch (e) {
       errorNotifierService.notify('Error loading budget metrics: $e', isError: true);
     }
@@ -37,7 +43,7 @@ class BudgetRepository extends ChangeNotifier{
   Future addBudget(BudgetModel budget) async {
     try {
       var addedBudget = await budgetHttpService.addBudget(budget);
-      _budgets.add(addedBudget);
+      _allBudgets.add(addedBudget);
       _notify('Budget ${budget.name} added successfully');
     } on Exception catch (e) {
       _notify('Error adding budget: $e', isError: true);
@@ -47,8 +53,8 @@ class BudgetRepository extends ChangeNotifier{
   Future updateBudget(BudgetModel budget) async {
     try {
       await budgetHttpService.updateBudget(budget);
-      var index = _budgets.indexWhere((element) => element.id == budget.id);
-      _budgets[index] = budget;
+      var index = _allBudgets.indexWhere((element) => element.id == budget.id);
+      _allBudgets[index] = budget;
       _notify('Budget ${budget.name} updated successfully');
     } on Exception catch (e) {
       _notify('Error updating budget: $e', isError: true);
@@ -58,7 +64,7 @@ class BudgetRepository extends ChangeNotifier{
   Future removeBudget(BudgetModel budget) async {
     try {
       await budgetHttpService.removeBudget(budget);
-      _budgets.remove(budget);
+      _allBudgets.remove(budget);
       _notify('Budget ${budget.name} removed successfully');
     } on Exception catch (e) {
       _notify('Error removing budget: $e', isError: true);
@@ -71,5 +77,16 @@ class BudgetRepository extends ChangeNotifier{
     Future.delayed(Duration(milliseconds: 300), () async {
       await loadBudgetMetrics();
     });
+  }
+
+  void filterBudgetsBy({int? categoryId = null, int? accountId = null, int? currencyId = null, BudgetState? state = null}) {
+    budgets = _allBudgets.where((element) {
+      var categoryMatch = categoryId == null || element.categoryId == categoryId;
+      var accountMatch = accountId == null || element.accountId == accountId;
+      var currencyMatch = currencyId == null || element.currencyId == currencyId;
+      var stateMatch = state == null || element.state == state;
+      return categoryMatch && accountMatch && currencyMatch && stateMatch;
+    }).toList();
+    notifyListeners();
   }
 }

@@ -5,8 +5,9 @@ class BudgetModel{
   int? accountId, categoryId, currencyId, budgetParentId;
   DateTime? startDate;
   DateTime? endDate;
+  BudgetState? state;
 
-  BudgetModel(this.id, this.name, this.amount, this.accountId, this.categoryId, this.currencyId, this.budgetParentId, this.startDate, this.endDate);
+  BudgetModel(this.id, this.name, this.amount, this.accountId, this.categoryId, this.currencyId, this.budgetParentId, this.startDate, this.endDate, this.state);
 
   factory BudgetModel.fromJson(Map<String, dynamic> json){
     var startDate = json['startDate'] != null ? DateTime.parse(json['startDate']) : null;
@@ -21,7 +22,8 @@ class BudgetModel{
       json['currencyId'],
       json['budgetParentId'],
       startDate,
-      endDate
+      endDate,
+      parseState(json['state'])
     );
   }
 
@@ -40,10 +42,29 @@ class BudgetModel{
   }
 
   factory BudgetModel.empty(){
-    return BudgetModel(0, '', 0, null, null, null, null, null, null);
+    return BudgetModel(0, '', 0, null, null, null, null, null, null, null);
   }
 
   factory BudgetModel.copy(BudgetModel budget){
-    return BudgetModel(budget.id, budget.name, budget.amount, budget.accountId, budget.categoryId, budget.currencyId, budget.budgetParentId, budget.startDate, budget.endDate);
+    return BudgetModel(budget.id, budget.name, budget.amount, budget.accountId, budget.categoryId, budget.currencyId, budget.budgetParentId, budget.startDate, budget.endDate, budget.state);
   }
+
+  static BudgetState parseState(int state){
+    switch(state){
+      case 0:
+        return BudgetState.New;
+      case 1:
+        return BudgetState.Active;
+      case 2:
+        return BudgetState.Archived;
+      default:
+        return BudgetState.New;
+    }
+  }
+}
+
+enum BudgetState{
+  New,
+  Active,
+  Archived
 }
