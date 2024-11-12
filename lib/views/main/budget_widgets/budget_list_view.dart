@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
+import '../../../models/budget.dart';
 import '../../../services/repositories/account.repository.dart';
 import '../../../services/repositories/budget_repository.dart';
 import '../../../services/repositories/category.repository.dart';
@@ -23,11 +24,14 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
   int? selectedCategoryId;
   int? selectedAccountId;
   bool showFilters = false;
+  BudgetState? selectedBudgetState;
+  List<BudgetState> budgetStates = BudgetState.values;
 
   @override
   void initState() {
     super.initState();
     _budgetRepository.addListener(refreshState);
+    selectedBudgetState = BudgetState.Active;
   }
 
   @override
@@ -96,7 +100,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                   : Card(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 20),
+                            horizontal: 20.0, vertical: 15),
                         child: Column(
                           children: [
                             Row(
@@ -117,16 +121,9 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                                 ],
                                       onSelectedCategoriesChanged:
                                           (categories) {
-                                        if (categories.isNotEmpty) {
-                                          selectedCategoryId =
-                                              categories.first.id;
-                                          _budgetRepository.filterBudgetsBy(
-                                              categoryId: selectedCategoryId);
-                                          return;
-                                        }
 
-                                        selectedCategoryId = null;
-                                        _budgetRepository.filterBudgetsBy();
+                                        selectedCategoryId = categories.isNotEmpty ? categories.first.id : null;
+                                        doFiltering();
                                       }),
                                 ),
                                 SizedBox(width: 20),
@@ -145,18 +142,27 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                                       .first
                                                 ],
                                       onSelectedAccountsChanged: (accounts) {
-                                        if (accounts.isNotEmpty) {
-                                          selectedAccountId =
-                                              accounts.first.account.id;
-                                          _budgetRepository.filterBudgetsBy(
-                                              accountId: selectedAccountId);
-                                          return;
-                                        }
 
-                                        selectedAccountId = null;
-                                        _budgetRepository.filterBudgetsBy();
+                                        selectedAccountId = accounts.isNotEmpty ? accounts.first.account.id : null;
+                                        doFiltering();
                                       }),
                                 ),
+                                SizedBox(width: 20),
+                                DropdownButton<BudgetState>(
+                                  value: selectedBudgetState,
+                                  onChanged: (BudgetState? newValue) {
+                                    setState(() {
+                                      selectedBudgetState = newValue;
+                                      doFiltering();
+                                    });
+                                  },
+                                  items: BudgetState.values.map<DropdownMenuItem<BudgetState>>((BudgetState state) {
+                                    return DropdownMenuItem<BudgetState>(
+                                      value: state,
+                                      child: Text(state.toString().split('.').last),
+                                    );
+                                  }).toList(),
+                                )
                               ],
                             ),
                           ],
@@ -289,5 +295,12 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
 
   void refreshState() {
     setState(() {});
+  }
+
+  void doFiltering(){
+    _budgetRepository.filterBudgetsBy(
+        categoryId: selectedCategoryId,
+        accountId: selectedAccountId,
+        state: selectedBudgetState);
   }
 }
