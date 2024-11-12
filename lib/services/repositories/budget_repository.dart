@@ -11,6 +11,7 @@ class BudgetRepository extends ChangeNotifier{
   List<BudgetModel> _allBudgets = [];
   List<BudgetModel> budgets = [];
   List<BudgetMetricModel> budgetMetrics = [];
+  BudgetFilteringOptions filteringOptions = BudgetFilteringOptions();
 
   BudgetRepository(this.errorNotifierService, this.budgetHttpService);
 
@@ -73,20 +74,36 @@ class BudgetRepository extends ChangeNotifier{
 
   void _notify(String message, {bool isError = false}) {
     errorNotifierService.notify(message);
-    notifyListeners();
+    filterBudgetsBy(categoryId: filteringOptions.categoryId,
+        accountId: filteringOptions.accountId,
+        currencyId: filteringOptions.currencyId,
+        state: filteringOptions.state);
     Future.delayed(Duration(milliseconds: 300), () async {
       await loadBudgetMetrics();
+      notifyListeners();
     });
   }
 
   void filterBudgetsBy({int? categoryId = null, int? accountId = null, int? currencyId = null, BudgetState? state = null}) {
+    filteringOptions.accountId = accountId;
+    filteringOptions.categoryId = categoryId;
+    filteringOptions.currencyId = currencyId;
+    filteringOptions.state = state;
     budgets = _allBudgets.where((element) {
-      var categoryMatch = categoryId == null || element.categoryId == categoryId;
-      var accountMatch = accountId == null || element.accountId == accountId;
-      var currencyMatch = currencyId == null || element.currencyId == currencyId;
-      var stateMatch = state == null || element.state == state;
+      var categoryMatch = filteringOptions.categoryId == null || element.categoryId == categoryId;
+      var accountMatch = filteringOptions.accountId == null || element.accountId == accountId;
+      var currencyMatch = filteringOptions.currencyId == null || element.currencyId == currencyId;
+      var stateMatch = filteringOptions.state == null || element.state == state;
       return categoryMatch && accountMatch && currencyMatch && stateMatch;
     }).toList();
     notifyListeners();
   }
+}
+class BudgetFilteringOptions{
+  int? categoryId;
+  int? accountId;
+  int? currencyId;
+  BudgetState? state;
+
+  BudgetFilteringOptions({this.categoryId, this.accountId, this.currencyId, this.state});
 }

@@ -223,6 +223,26 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                   SizedBox(
                                       width: 200,
                                       child: Text('End: ${endDate}')),
+                                  Spacer(),
+                                  SizedBox(
+                                    width: 150,
+                                    child: Chip(
+                                      color: WidgetStateProperty.resolveWith(
+                                          (states) {
+                                        switch (budget.state) {
+                                          case BudgetState.New:
+                                            return Colors.blue;
+                                          case BudgetState.Active:
+                                            return Colors.green;
+                                          case BudgetState.Archived:
+                                            return Colors.red;
+                                          default:
+                                            return Colors.grey;
+                                        }
+                                      }),
+                                      label: Text(budget.state.toString().split('.').last),
+                                    ),
+                                  ),
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -235,12 +255,39 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                       label: Text(category?.name ?? 'N/A'),
                                     ),
                                   ),
-                                  SizedBox(width: 20),
                                   SizedBox(
                                     width: 150,
                                     child: Chip(
                                       label: Text(account?.name ?? 'N/A'),
                                     ),
+                                  ),
+                                  Spacer(),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Open the budget sheet to create a copy of the current budget
+                                      showModalBottomSheet<void>(
+                                          context: context,
+                                          constraints: BoxConstraints(
+                                            maxHeight: 1000,
+                                            maxWidth: 1200,
+                                          ),
+                                          isScrollControlled: true,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.vertical(
+                                                  top: Radius.circular(25.0))),
+                                          builder: (context) {
+                                            return SizedBox(
+                                              height: 175,
+                                              child: AnimatedPadding(
+                                                  padding: MediaQuery.of(context).viewInsets,
+                                                  duration: Duration(seconds: 1),
+                                                  child: BudgetSheetDesktop(
+                                                    budget: BudgetModel.duplicate(budget),
+                                                  )),
+                                            );
+                                          });
+                                    },
+                                    child: Text('Copy'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {

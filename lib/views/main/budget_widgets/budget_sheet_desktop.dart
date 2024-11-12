@@ -28,14 +28,19 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
   TextEditingController _amountController = TextEditingController();
   List<CurrencyModel> currencies = [];
   bool isEditMode = false;
+  bool isDuplicate = false;
   late BudgetModel budget;
 
   @override
   void initState() {
     super.initState();
-    isEditMode = widget.budget != null;
-    budget =
-        isEditMode ? BudgetModel.copy(widget.budget!) : BudgetModel.empty();
+    isEditMode = widget.budget != null && widget.budget?.id != 0;
+    isDuplicate = widget.budget?.id == 0;
+    budget = isEditMode
+        ? BudgetModel.copy(widget.budget!)
+        : isDuplicate
+          ? BudgetModel.duplicate(widget.budget!)
+          : BudgetModel.empty();
 
     _nameController.text = budget.name;
     _amountController.text = budget.amount.toString();
@@ -183,9 +188,9 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
 
                     if (isEditMode) {
                       _budgetRepository.updateBudget(budget);
-                    } else {
-                      _budgetRepository.addBudget(budget);
                     }
+
+                    _budgetRepository.addBudget(budget);
 
                     Navigator.pop(context);
                   },

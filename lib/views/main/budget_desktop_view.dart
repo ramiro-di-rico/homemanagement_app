@@ -31,7 +31,7 @@ class _BudgetDesktopViewState extends State<BudgetDesktopView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Flexible(
-                      flex: 3,
+                      flex: 2,
                       child: Column(
                         children: [
                           BudgetMetricWidget(),

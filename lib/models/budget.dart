@@ -49,6 +49,10 @@ class BudgetModel{
     return BudgetModel(budget.id, budget.name, budget.amount, budget.accountId, budget.categoryId, budget.currencyId, budget.budgetParentId, budget.startDate, budget.endDate, budget.state);
   }
 
+  factory BudgetModel.duplicate(BudgetModel budget){
+    return BudgetModel(0, budget.name, budget.amount, budget.accountId, budget.categoryId, budget.currencyId, budget.budgetParentId, budget.startDate, budget.endDate, budget.state);
+  }
+
   static BudgetState parseState(int state){
     switch(state){
       case 0:
