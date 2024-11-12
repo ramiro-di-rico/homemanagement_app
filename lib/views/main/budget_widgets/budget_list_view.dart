@@ -6,6 +6,7 @@ import '../../../services/repositories/account.repository.dart';
 import '../../../services/repositories/budget_repository.dart';
 import '../../../services/repositories/category.repository.dart';
 import '../../mixins/notifier_mixin.dart';
+import '../widgets/account_select/account_select.dart';
 import '../widgets/category_select/category_select.dart';
 import 'budget_sheet_desktop.dart';
 
@@ -20,6 +21,8 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
   AccountRepository _accountRepository = GetIt.I.get<AccountRepository>();
 
   int? selectedCategoryId;
+  int? selectedAccountId;
+  bool showFilters = false;
 
   @override
   void initState() {
@@ -41,97 +44,125 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
         child: Column(
           children: [
             Card(
-              child: ListTile(
-                title: Text('Budgets'),
-                trailing: ElevatedButton(
-                  onPressed: () {
-                    // Open the budget sheet
-                    showModalBottomSheet<void>(
-                        context: context,
-                        constraints: BoxConstraints(
-                          maxHeight: 1000,
-                          maxWidth: 1200,
-                        ),
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(25.0))),
-                        builder: (context) {
-                          return SizedBox(
-                            height: 175,
-                            child: AnimatedPadding(
-                                padding: MediaQuery.of(context).viewInsets,
-                                duration: Duration(seconds: 1),
-                                child: BudgetSheetDesktop()),
-                          );
-                        });
-                  },
-                  child: Text('Add Budget'),
-                ),
-              ),
-            ),
-            Card(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
-                child: Column(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        SizedBox(width: 150, child: Text('Filters')),
-                        SizedBox(width: 20),
-                        SizedBox(
-                          width: 200,
-                          child: CategorySelect(
-                              multipleSelection: false,
-                              selectedCategories: selectedCategoryId == null
-                                  ? []
-                                  : [
-                                      _categoryRepository.categories
-                                          .where((category) =>
-                                              category.id == selectedCategoryId)
-                                          .first
-                                    ],
-                              onSelectedCategoriesChanged: (categories) {
-                                if (categories.isNotEmpty) {
-                                  selectedCategoryId = categories.first.id;
-                                  _budgetRepository.filterBudgetsBy(
-                                      categoryId: selectedCategoryId);
-                                  return;
-                                }
-
-                                selectedCategoryId = null;
-                                _budgetRepository.filterBudgetsBy();
-                              }),
-                        ),
-                      ],
+                    Text('Budgets'),
+                    Spacer(),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          showFilters = !showFilters;
+                        });
+                      },
+                      child:
+                          Text(showFilters ? 'Hide Filters' : 'Show Filters'),
                     ),
-                    SizedBox(height: 20),
-                    Row(
-                      children: [
-                        SizedBox(width: 150, child: Text('')),
-                        SizedBox(width: 20),
-                        SizedBox(
-                          width: 250,
-                          child: DropdownButtonFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Account',
+                    ElevatedButton(
+                      onPressed: () {
+                        // Open the budget sheet
+                        showModalBottomSheet<void>(
+                            context: context,
+                            constraints: BoxConstraints(
+                              maxHeight: 1000,
+                              maxWidth: 1200,
                             ),
-                            items: _accountRepository.accounts
-                                .map((e) => DropdownMenuItem(
-                                      child: Text(e.name),
-                                      value: e.id,
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              _budgetRepository.filterBudgetsBy(accountId: value);
-                            },
-                          ),
-                        ),
-                      ],
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(25.0))),
+                            builder: (context) {
+                              return SizedBox(
+                                height: 175,
+                                child: AnimatedPadding(
+                                    padding: MediaQuery.of(context).viewInsets,
+                                    duration: Duration(seconds: 1),
+                                    child: BudgetSheetDesktop()),
+                              );
+                            });
+                      },
+                      child: Text('Add Budget'),
                     ),
                   ],
                 ),
               ),
+            ),
+            AnimatedSwitcher(
+              duration: Duration(milliseconds: 500),
+              child: !showFilters
+                  ? SizedBox.shrink()
+                  : Card(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 20),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 200,
+                                  child: CategorySelect(
+                                      multipleSelection: false,
+                                      selectedCategories:
+                                          selectedCategoryId == null
+                                              ? []
+                                              : [
+                                                  _categoryRepository.categories
+                                                      .where((category) =>
+                                                          category.id ==
+                                                          selectedCategoryId)
+                                                      .first
+                                                ],
+                                      onSelectedCategoriesChanged:
+                                          (categories) {
+                                        if (categories.isNotEmpty) {
+                                          selectedCategoryId =
+                                              categories.first.id;
+                                          _budgetRepository.filterBudgetsBy(
+                                              categoryId: selectedCategoryId);
+                                          return;
+                                        }
+
+                                        selectedCategoryId = null;
+                                        _budgetRepository.filterBudgetsBy();
+                                      }),
+                                ),
+                                SizedBox(width: 20),
+                                SizedBox(
+                                  width: 200,
+                                  child: AccountSelect(
+                                      multipleSelection: false,
+                                      selectedAccounts:
+                                          selectedAccountId == null
+                                              ? []
+                                              : [
+                                                  _accountRepository.accounts
+                                                      .where((account) =>
+                                                          account.id ==
+                                                          selectedAccountId)
+                                                      .first
+                                                ],
+                                      onSelectedAccountsChanged: (accounts) {
+                                        if (accounts.isNotEmpty) {
+                                          selectedAccountId =
+                                              accounts.first.account.id;
+                                          _budgetRepository.filterBudgetsBy(
+                                              accountId: selectedAccountId);
+                                          return;
+                                        }
+
+                                        selectedAccountId = null;
+                                        _budgetRepository.filterBudgetsBy();
+                                      }),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
             ),
             _budgetRepository.budgets.isEmpty
                 ? Card(
@@ -163,15 +194,18 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                           : null;
                       return Card(
                         child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  SizedBox(width: 200, child: Text(budget.name)),
-                                  Text("Budget target: ${budget.amount.toStringAsFixed(0).toString()}")
+                                  SizedBox(
+                                      width: 200, child: Text(budget.name)),
+                                  Text(
+                                      "Budget target: ${budget.amount.toStringAsFixed(0).toString()}")
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -181,7 +215,8 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                       width: 200,
                                       child: Text('Start: ${startDate}')),
                                   SizedBox(
-                                      width: 200, child: Text('End: ${endDate}')),
+                                      width: 200,
+                                      child: Text('End: ${endDate}')),
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -212,15 +247,19 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                           ),
                                           isScrollControlled: true,
                                           shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.vertical(
-                                                  top: Radius.circular(25.0))),
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                      top: Radius.circular(
+                                                          25.0))),
                                           builder: (context) {
                                             return SizedBox(
                                               height: 175,
                                               child: AnimatedPadding(
-                                                  padding: MediaQuery.of(context)
-                                                      .viewInsets,
-                                                  duration: Duration(seconds: 1),
+                                                  padding:
+                                                      MediaQuery.of(context)
+                                                          .viewInsets,
+                                                  duration:
+                                                      Duration(seconds: 1),
                                                   child: BudgetSheetDesktop(
                                                     budget: budget,
                                                   )),
