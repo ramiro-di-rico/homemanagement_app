@@ -188,6 +188,8 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
 
                     if (isEditMode) {
                       _budgetRepository.updateBudget(budget);
+                      Navigator.pop(context);
+                      return;
                     }
 
                     _budgetRepository.addBudget(budget);
