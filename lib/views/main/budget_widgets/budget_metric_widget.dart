@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../services/repositories/budget_repository.dart';
+import '../../../extensions/number_format_extension.dart';
 
 class BudgetMetricWidget extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 700,
+      height: 600,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -46,7 +47,7 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
         child: Row(
           children: [
             SizedBox(
-                width: 150,
+                width: 100,
                 child: Text('Name')),
             SizedBox(width: 20),
             SizedBox(
@@ -55,11 +56,11 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
             ),
             SizedBox(width: 20),
             SizedBox(
-                width: 120,
+                width: 80,
                 child: Text('Budgeted')),
             SizedBox(width: 20),
             SizedBox(
-                width: 120,
+                width: 80,
                 child: Text('Remaining')
             )
           ],
@@ -73,7 +74,7 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
             child: Row(
                   children: [
                     SizedBox(
-                        width: 150,
+                        width: 100,
                         child: Text(metric.name)),
                     SizedBox(width: 20),
                     SizedBox(
@@ -84,18 +85,19 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
                         label: metric.totalSpent.toString(),
                         min: 0,
                         max: metric.totalBudgeted.toDouble(),
-                        value: metric.totalSpent.toDouble(),
+                        value: metric.spentMoreThanBudgeted() ? metric.totalBudgeted : metric.totalSpent,
+                        activeColor: metric.spentMoreThanBudgeted() ? Colors.redAccent : Colors.cyanAccent,
                         onChanged: (value) {},
                       ),
                     ),
                     SizedBox(width: 20),
                     SizedBox(
-                        width: 120,
-                        child: Text(metric.totalBudgeted.toStringAsFixed(0).toString())),
+                        width: 80,
+                        child: Text(metric.totalBudgeted.formatWithDot())),
                     SizedBox(width: 20),
                     SizedBox(
-                        width: 120,
-                        child: Text((metric.totalBudgeted - metric.totalSpent).toStringAsFixed(0).toString())
+                        width: 80,
+                        child: Text((metric.totalBudgeted - metric.totalSpent).formatWithDot())
                     )
                   ],
                 ),
