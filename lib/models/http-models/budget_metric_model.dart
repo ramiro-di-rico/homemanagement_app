@@ -21,4 +21,8 @@ class BudgetMetricModel{
       json['parentBudgetId']
     );
   }
+
+  bool spentMoreThanBudgeted(){
+    return totalSpent > totalBudgeted;
+  }
 }

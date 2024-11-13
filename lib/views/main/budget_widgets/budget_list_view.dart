@@ -10,6 +10,7 @@ import '../../mixins/notifier_mixin.dart';
 import '../widgets/account_select/account_select.dart';
 import '../widgets/category_select/category_select.dart';
 import 'budget_sheet_desktop.dart';
+import '../../../extensions/number_format_extension.dart';
 
 class BudgetListView extends StatefulWidget {
   @override
@@ -43,7 +44,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 700,
+      height: 600,
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -121,8 +122,10 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                                 ],
                                       onSelectedCategoriesChanged:
                                           (categories) {
-
-                                        selectedCategoryId = categories.isNotEmpty ? categories.first.id : null;
+                                        selectedCategoryId =
+                                            categories.isNotEmpty
+                                                ? categories.first.id
+                                                : null;
                                         doFiltering();
                                       }),
                                 ),
@@ -142,8 +145,9 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                                       .first
                                                 ],
                                       onSelectedAccountsChanged: (accounts) {
-
-                                        selectedAccountId = accounts.isNotEmpty ? accounts.first.account.id : null;
+                                        selectedAccountId = accounts.isNotEmpty
+                                            ? accounts.first.account.id
+                                            : null;
                                         doFiltering();
                                       }),
                                 ),
@@ -156,10 +160,13 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                       doFiltering();
                                     });
                                   },
-                                  items: BudgetState.values.map<DropdownMenuItem<BudgetState>>((BudgetState state) {
+                                  items: BudgetState.values
+                                      .map<DropdownMenuItem<BudgetState>>(
+                                          (BudgetState state) {
                                     return DropdownMenuItem<BudgetState>(
                                       value: state,
-                                      child: Text(state.toString().split('.').last),
+                                      child: Text(
+                                          state.toString().split('.').last),
                                     );
                                   }).toList(),
                                 )
@@ -211,7 +218,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                   SizedBox(
                                       width: 200, child: Text(budget.name)),
                                   Text(
-                                      "Budget target: ${budget.amount.toStringAsFixed(0).toString()}")
+                                      "Budget target: ${budget.amount.formatWithDot()}")
                                 ],
                               ),
                               SizedBox(height: 10),
@@ -240,7 +247,10 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                             return Colors.grey;
                                         }
                                       }),
-                                      label: Text(budget.state.toString().split('.').last),
+                                      label: Text(budget.state
+                                          .toString()
+                                          .split('.')
+                                          .last),
                                     ),
                                   ),
                                 ],
@@ -273,16 +283,23 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                           ),
                                           isScrollControlled: true,
                                           shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.vertical(
-                                                  top: Radius.circular(25.0))),
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                      top: Radius.circular(
+                                                          25.0))),
                                           builder: (context) {
                                             return SizedBox(
                                               height: 175,
                                               child: AnimatedPadding(
-                                                  padding: MediaQuery.of(context).viewInsets,
-                                                  duration: Duration(seconds: 1),
+                                                  padding:
+                                                      MediaQuery.of(context)
+                                                          .viewInsets,
+                                                  duration:
+                                                      Duration(seconds: 1),
                                                   child: BudgetSheetDesktop(
-                                                    budget: BudgetModel.duplicate(budget),
+                                                    budget:
+                                                        BudgetModel.duplicate(
+                                                            budget),
                                                   )),
                                             );
                                           });
@@ -344,7 +361,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
     setState(() {});
   }
 
-  void doFiltering(){
+  void doFiltering() {
     _budgetRepository.filterBudgetsBy(
         categoryId: selectedCategoryId,
         accountId: selectedAccountId,
