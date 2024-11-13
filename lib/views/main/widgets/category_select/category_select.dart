@@ -21,10 +21,12 @@ class CategorySelect extends StatefulWidget {
 class _CategorySelectState extends State<CategorySelect> {
   TextEditingController _selectedCategoriesTextEditingController =
       TextEditingController();
+  List<CategoryModel> _selectedCategories = [];
 
   @override
   void initState() {
     super.initState();
+    _selectedCategories.addAll(widget.selectedCategories);
     _selectedCategoriesTextEditingController.text =
         widget.selectedCategories.map((category) => category.name).join(', ');
   }
@@ -39,6 +41,7 @@ class _CategorySelectState extends State<CategorySelect> {
             builder: (BuildContext context) {
               return CategoryDialogSelection(
                 onSelectedCategoriesChanged: (selectedCategories) {
+                  _selectedCategories = selectedCategories.toList();
                   widget.onSelectedCategoriesChanged(selectedCategories);
                   _selectedCategoriesTextEditingController.text =
                       selectedCategories
@@ -46,7 +49,7 @@ class _CategorySelectState extends State<CategorySelect> {
                           .join(', ');
                 },
                 multipleSelection: widget.multipleSelection,
-                selectedCategories: widget.selectedCategories,
+                selectedCategories: _selectedCategories,
               );
             });
       },
@@ -90,7 +93,7 @@ class _CategorySelectState extends State<CategorySelect> {
                                     .join(', ');
                           },
                           multipleSelection: widget.multipleSelection,
-                          selectedCategories: widget.selectedCategories,
+                          selectedCategories: _selectedCategories,
                         );
                       });
                 },

@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../services/repositories/account.repository.dart';
+import '../../services/repositories/budget_repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/repositories/identity_user_repository.dart';
@@ -10,7 +11,8 @@ import '../../services/repositories/preferences.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import 'account-list-desktop.dart';
-import 'dashboard.dart';
+import 'budget_desktop_view.dart';
+import 'dashboard_desktop.dart';
 import 'settings.dart';
 import 'transactions_search_desktop_view.dart';
 import 'widgets/account-sheet-dektop.dart';
@@ -34,6 +36,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
     GetIt.I<CategoryRepository>().load();
     GetIt.I<PreferencesRepository>().load();
     GetIt.I<IdentityUserRepository>().getUser();
+    GetIt.I<BudgetRepository>().load();
   }
 
   @override
@@ -48,6 +51,13 @@ class _HomeDesktopState extends State<HomeDesktop> {
               context.go(TransactionsSearchDesktopView.fullPath);
             },
             tooltip: 'Search transactions',
+          ),
+          IconButton(
+              onPressed: (){
+                context.go(BudgetDesktopView.fullPath);
+              },
+              icon: Icon(Icons.track_changes),
+              tooltip: 'Budget'
           ),
           IconButton(
             icon: Icon(Icons.settings),
@@ -75,7 +85,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(flex: 12, child: Dashboard()),
+                    Flexible(flex: 12, child: DashboardDesktop()),
                     Flexible(
                         flex: 7,
                         child: Column(

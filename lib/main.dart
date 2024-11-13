@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'myapp.dart';
+import 'services/endpoints/budget_http_service.dart';
 import 'services/endpoints/identity.service.dart';
 import 'services/endpoints/identity_user_service.dart';
 import 'services/endpoints/recurring_transaction_service.dart';
@@ -8,6 +9,7 @@ import 'services/infra/error_notifier_service.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_strategy.dart';
 import 'services/repositories/account.repository.dart';
+import 'services/repositories/budget_repository.dart';
 import 'services/repositories/category.repository.dart';
 import 'services/repositories/identity_user_repository.dart';
 import 'services/repositories/notification.repository.dart';
@@ -93,6 +95,8 @@ void registerServices() {
   GetIt.instance.registerFactory(() => RecurringTransactionService(authenticationService: GetIt.I<AuthenticationService>()));
 
   GetIt.instance.registerFactory(() => IdentityService(null));
+
+  GetIt.instance.registerFactory(() => BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>())));
 }
 
 void registerSingletons(PlatformContext platformContext) {
@@ -159,6 +163,8 @@ void registerSingletons(PlatformContext platformContext) {
 
   var passwordResetService = PasswordResetService();
 
+  var budgetRepository = BudgetRepository(errorNotifierService, BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
+
 
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
@@ -173,4 +179,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(transactionPagingService);
   GetIt.instance.registerSingleton(recurringTransactionRepository);
   GetIt.instance.registerSingleton(passwordResetService);
+  GetIt.instance.registerSingleton(budgetRepository);
 }

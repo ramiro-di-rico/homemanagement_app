@@ -23,11 +23,14 @@ class _AccountSelectState extends State<AccountSelect> {
   TextEditingController _selectedAccountsTextEditingController =
       TextEditingController();
 
+  List<AccountModel> _selectedAccounts = [];
+
   @override
   void initState() {
     super.initState();
+    _selectedAccounts.addAll(widget.selectedAccounts);
     _selectedAccountsTextEditingController.text =
-        widget.selectedAccounts.map((account) => account.name).join(', ');
+        _selectedAccounts.map((account) => account.name).join(', ');
   }
 
   @override
@@ -40,13 +43,14 @@ class _AccountSelectState extends State<AccountSelect> {
             builder: (BuildContext context) {
               return AccountDialogSelection(
                 onSelectedAccountsChanged: (selectedAccounts) {
+                  _selectedAccounts = selectedAccounts.where((a) => a.isSelected).map((account) => account.account).toList();
                   widget.onSelectedAccountsChanged(selectedAccounts);
                   _selectedAccountsTextEditingController.text = selectedAccounts
                       .map((account) => account.account.name)
                       .join(', ');
                 },
                 multipleSelection: widget.multipleSelection,
-                selectedAccounts: widget.selectedAccounts,
+                selectedAccounts: _selectedAccounts,
               );
             });
       },
@@ -89,7 +93,7 @@ class _AccountSelectState extends State<AccountSelect> {
                                       .join(', ');
                             },
                             multipleSelection: widget.multipleSelection,
-                            selectedAccounts: widget.selectedAccounts,
+                            selectedAccounts: _selectedAccounts,
                           );
                         });
                   },

@@ -22,24 +22,11 @@ mixin NotifierMixin<T extends StatefulWidget> on State<T> {
     if (message == null || message == "null") return;
 
     if (errorNotifierService.hasError){
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: Text('ok'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        },
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.redAccent,
+      ));
     } else{
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(

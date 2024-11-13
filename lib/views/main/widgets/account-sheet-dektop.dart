@@ -41,7 +41,7 @@ class _AccountSheetDesktopState extends State<AccountSheetDesktop> {
     _textEditingController.addListener(onNameChanged);
   }
 
-  @override
+@override
   void dispose() {
     this._textEditingController.removeListener(onNameChanged);
     this._textEditingController.dispose();

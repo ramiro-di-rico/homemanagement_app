@@ -120,6 +120,7 @@ class _CategoryDialogSelectionState extends State<CategoryDialogSelection> {
                           onChanged: (value) {
                             setState(() {
                               _selectedCategory = value;
+                              _selectedCategory!.isSelected = true;
                               widget.onSelectedCategoriesChanged([categoryItem.category]);
                             });
                             Navigator.of(context).pop();
@@ -132,6 +133,14 @@ class _CategoryDialogSelectionState extends State<CategoryDialogSelection> {
         ),
       ),
       actions: [
+        TextButton(
+          onPressed: () {
+            _selectedCategory = null;
+            widget.onSelectedCategoriesChanged([]);
+            Navigator.of(context).pop();
+          },
+          child: Text('Clear'),
+        ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
