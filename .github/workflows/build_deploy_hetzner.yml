@@ -48,8 +48,5 @@ jobs:
           passphrase: ${{ secrets.HETZNER_PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            docker stop home_management_app
-            docker rm home_management_app
-            docker rmi --force thekillingtomato/homemanagement-app
-            docker pull thekillingtomato/homemanagement-app:latest
-            docker run -d -p 9000:80 --name home_management_app thekillingtomato/homemanagement-app:latest
+            docker compose -f home-management-all/docker-compose.yml pull home_management_web_app
+            docker compose -f home-management-all/docker-compose.yml up -d
