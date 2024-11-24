@@ -5,6 +5,7 @@ import '../../models/overall.dart';
 import '../../services/endpoints/metrics.service.dart';
 import 'widgets/accounts-series-metrics..dart';
 import 'widgets/balances.widget.dart';
+import 'widgets/category_historical/category_historical_chart_widget.dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
 class DashboardDesktop extends StatefulWidget {
@@ -26,7 +27,7 @@ class _DashboardState extends State<DashboardDesktop> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        height: 650,
+        height: 850,
         child: Column(
           children: [
             Expanded(
@@ -54,6 +55,13 @@ class _DashboardState extends State<DashboardDesktop> {
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: MostExpensiveCategoriesChart(),
+              ),
+              flex: 6,
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: CategoryHistoricalChartWidget(),
               ),
               flex: 6,
             )

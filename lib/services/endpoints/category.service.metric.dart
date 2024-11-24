@@ -2,6 +2,7 @@ import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 import 'dart:convert';
 
+import '../../models/http-models/category_historical_response.dart';
 import 'api-mixin.dart';
 import '../infra/caching.dart';
 
@@ -73,4 +74,23 @@ class CategoryMetricService with HttpApiServiceMixin {
 
   Map<String, String> _getQueryParams(int month, int take) =>
       {'month': month.toString(), 'take': take.toString()};
+
+  Future<List<CategoryHistoricalResponse>> getCategoryHistoricalResponses(DateTime dateFrom, DateTime dateTo, int take) async {
+
+    var response = await httpGet(
+      createUri('category/historical', queryParameters: {
+        'dateFrom': dateFrom.toIso8601String(),
+        'dateTo': dateTo.toIso8601String(),
+        'take': take.toString(),
+      }),
+      authenticationService.getUserToken(),
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> body = jsonDecode(response.body);
+      return body.map((dynamic item) => CategoryHistoricalResponse.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to fetch category historical responses.');
+    }
+  }
 }
