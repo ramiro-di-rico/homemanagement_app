@@ -9,6 +9,7 @@ import '../../services/repositories/transaction.repository.dart';
 import '../accounts/account.detail.dart';
 import '../accounts/widgets/add_transaction_sheet_desktop.dart';
 import '../mixins/notifier_mixin.dart';
+import 'widgets/account-sheet-dektop.dart';
 import 'widgets/account.sheet.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -55,170 +56,221 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: refreshAccounts,
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: this.accounts.length,
-        itemBuilder: (context, index) {
-          if (this.accounts.isEmpty) return Container();
-
-          final item = this.accounts[index];
-
-          return Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+    return Column(
+      children: [
+        Card(
+          child: ListTile(
+            title: Text(
+              'Accounts',
+              style: TextStyle(fontSize: 20),
             ),
-            child: ListTile(
-              title: ListTile(
-                title: Row(
-                  children: [
-                    Text(
-                      item.name,
+            leading: IconButton(
+              tooltip: showArchive ? 'Hide archived accounts' : 'Show archived accounts',
+              icon: Icon(showArchive ? Icons.visibility : Icons.visibility_off),
+              onPressed: () {
+                setState(() {
+                  accountsRepo.displayArchive(!showArchive);
+                  showArchive = !showArchive;
+                });
+              },
+            ),
+            trailing: TextButton(
+              onPressed: () {
+                showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    constraints: BoxConstraints(
+                      maxHeight: 500,
+                      maxWidth: 1200,
                     ),
-                    Spacer(),
-                    Text(
-                      item.balance % 1 == 0
-                          ? item.balance.toStringAsFixed(0)
-                          : item.balance.toStringAsFixed(2),
-                      style: TextStyle(
-                          color: item.balance >= 0
-                              ? Colors.greenAccent
-                              : Colors.redAccent),
+                    shape: RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(25.0))),
+                    builder: (context) {
+                      return SizedBox(
+                        height: 100,
+                        child: AnimatedPadding(
+                            padding: MediaQuery.of(context).viewInsets,
+                            duration: Duration(seconds: 1),
+                            child: AccountSheetDesktop()),
+                      );
+                    });
+              },
+              child: Icon(Icons.add),
+            ),
+          ),
+        ),
+        SingleChildScrollView(
+          child: Container(
+            height: 330,
+            child: RefreshIndicator(
+              onRefresh: refreshAccounts,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: this.accounts.length,
+                itemBuilder: (context, index) {
+                  if (this.accounts.isEmpty) return Container();
+
+                  final item = this.accounts[index];
+
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ],
-                ),
-                onTap: () {
-                  context.go(AccountDetailScreen.fullPath, extra: item);
-                },
-              ),
-              trailing: MenuAnchor(
-                builder: (BuildContext context, MenuController controller,
-                    Widget? child) {
-                  return IconButton(
-                    onPressed: () {
-                      if (controller.isOpen) {
-                        controller.close();
-                      } else {
-                        controller.open();
-                      }
-                    },
-                    icon: const Icon(Icons.more_vert),
-                    tooltip: 'Show menu',
+                    child: ListTile(
+                      title: ListTile(
+                        title: Row(
+                          children: [
+                            Text(
+                              item.name,
+                            ),
+                            Spacer(),
+                            Text(
+                              item.balance % 1 == 0
+                                  ? item.balance.toStringAsFixed(0)
+                                  : item.balance.toStringAsFixed(2),
+                              style: TextStyle(
+                                  color: item.balance >= 0
+                                      ? Colors.greenAccent
+                                      : Colors.redAccent),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          context.go(AccountDetailScreen.fullPath, extra: item);
+                        },
+                      ),
+                      trailing: MenuAnchor(
+                        builder: (BuildContext context, MenuController controller,
+                            Widget? child) {
+                          return IconButton(
+                            onPressed: () {
+                              if (controller.isOpen) {
+                                controller.close();
+                              } else {
+                                controller.open();
+                              }
+                            },
+                            icon: const Icon(Icons.more_vert),
+                            tooltip: 'Show menu',
+                          );
+                        },
+                        menuChildren: [
+                          MenuItemButton(
+                              leadingIcon: Icon(Icons.add, color: Colors.greenAccent),
+                              child: Text('Add',
+                                  style: TextStyle(color: Colors.greenAccent)),
+                              onPressed: () {
+                                showModalBottomSheet<void>(
+                                    context: context,
+                                    constraints: BoxConstraints(
+                                      maxHeight: 1000,
+                                      maxWidth: 1200,
+                                    ),
+                                    isScrollControlled: true,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(25.0))),
+                                    builder: (context) {
+                                      return SizedBox(
+                                        height: 100,
+                                        child: AnimatedPadding(
+                                            padding: MediaQuery.of(context).viewInsets,
+                                            duration: Duration(seconds: 1),
+                                            child: AddTransactionSheetDesktop(item)),
+                                      );
+                                    });
+                              }),
+                          MenuItemButton(
+                            leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
+                            child: Text('Edit',
+                                style: TextStyle(color: Colors.blueAccent)),
+                            onPressed: () {
+                              showModalBottomSheet<void>(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(25.0))),
+                                  builder: (context) {
+                                    return SizedBox(
+                                      height: 250,
+                                      child: AnimatedPadding(
+                                          padding: MediaQuery.of(context).viewInsets,
+                                          duration: Duration(seconds: 1),
+                                          child: AccountSheet(accountModel: item)),
+                                    );
+                                  });
+                            },
+                          ),
+                          MenuItemButton(
+                            leadingIcon: Icon(Icons.archive, color: Colors.pinkAccent),
+                            child: Text(item.archive ? 'Unarchive' : 'Archive',
+                                style: TextStyle(color: Colors.pinkAccent)),
+                            onPressed: () {
+                              accountsRepo.archive(item);
+                            },
+                          ),
+                          MenuItemButton(
+                            leadingIcon: Icon(
+                              Icons.delete,
+                              color: Colors.redAccent,
+                            ),
+                            child: Text('Delete',
+                                style: TextStyle(color: Colors.redAccent)),
+                            onPressed: () {
+                              remove(item, index);
+                            },
+                          ),
+                          platform.isDownloadEnabled()
+                              ? MenuItemButton(
+                                  leadingIcon:
+                                      Icon(Icons.download, color: Colors.blueAccent),
+                                  child: Text('Export transactions',
+                                      style: TextStyle(color: Colors.blueAccent)),
+                                  onPressed: () async {
+                                    var csvContent =
+                                        await transactionService.export(item.id);
+                                    platform.saveFile(item.name, "csv", csvContent);
+                                  },
+                                )
+                              : Container(),
+                          platform.isUploadEnabled()
+                              ? MenuItemButton(
+                                  leadingIcon:
+                                      Icon(Icons.upload, color: Colors.greenAccent),
+                                  child: Text('Import transactions',
+                                      style: TextStyle(color: Colors.greenAccent)),
+                                  onPressed: () async {
+
+                                    var fileContent = await pickFile();
+
+                                    if (fileContent.isEmpty) {
+                                      return;
+                                    }
+
+                                    await transactionService.import(item.id, fileContent);
+                                    refreshAccounts();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Transactions imported successfully'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Container(),
+                        ],
+                        child: Icon(Icons.more_vert),
+                      ),
+                    ),
                   );
                 },
-                menuChildren: [
-                  MenuItemButton(
-                      leadingIcon: Icon(Icons.add, color: Colors.greenAccent),
-                      child: Text('Add',
-                          style: TextStyle(color: Colors.greenAccent)),
-                      onPressed: () {
-                        showModalBottomSheet<void>(
-                            context: context,
-                            constraints: BoxConstraints(
-                              maxHeight: 1000,
-                              maxWidth: 1200,
-                            ),
-                            isScrollControlled: true,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(25.0))),
-                            builder: (context) {
-                              return SizedBox(
-                                height: 100,
-                                child: AnimatedPadding(
-                                    padding: MediaQuery.of(context).viewInsets,
-                                    duration: Duration(seconds: 1),
-                                    child: AddTransactionSheetDesktop(item)),
-                              );
-                            });
-                      }),
-                  MenuItemButton(
-                    leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
-                    child: Text('Edit',
-                        style: TextStyle(color: Colors.blueAccent)),
-                    onPressed: () {
-                      showModalBottomSheet<void>(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(25.0))),
-                          builder: (context) {
-                            return SizedBox(
-                              height: 250,
-                              child: AnimatedPadding(
-                                  padding: MediaQuery.of(context).viewInsets,
-                                  duration: Duration(seconds: 1),
-                                  child: AccountSheet(accountModel: item)),
-                            );
-                          });
-                    },
-                  ),
-                  MenuItemButton(
-                    leadingIcon: Icon(Icons.archive, color: Colors.pinkAccent),
-                    child: Text(item.archive ? 'Unarchive' : 'Archive',
-                        style: TextStyle(color: Colors.pinkAccent)),
-                    onPressed: () {
-                      accountsRepo.archive(item);
-                    },
-                  ),
-                  MenuItemButton(
-                    leadingIcon: Icon(
-                      Icons.delete,
-                      color: Colors.redAccent,
-                    ),
-                    child: Text('Delete',
-                        style: TextStyle(color: Colors.redAccent)),
-                    onPressed: () {
-                      remove(item, index);
-                    },
-                  ),
-                  platform.isDownloadEnabled()
-                      ? MenuItemButton(
-                          leadingIcon:
-                              Icon(Icons.download, color: Colors.blueAccent),
-                          child: Text('Export transactions',
-                              style: TextStyle(color: Colors.blueAccent)),
-                          onPressed: () async {
-                            var csvContent =
-                                await transactionService.export(item.id);
-                            platform.saveFile(item.name, "csv", csvContent);
-                          },
-                        )
-                      : Container(),
-                  platform.isUploadEnabled()
-                      ? MenuItemButton(
-                          leadingIcon:
-                              Icon(Icons.upload, color: Colors.greenAccent),
-                          child: Text('Import transactions',
-                              style: TextStyle(color: Colors.greenAccent)),
-                          onPressed: () async {
-
-                            var fileContent = await pickFile();
-
-                            if (fileContent.isEmpty) {
-                              return;
-                            }
-
-                            await transactionService.import(item.id, fileContent);
-                            refreshAccounts();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Transactions imported successfully'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          },
-                        )
-                      : Container(),
-                ],
-                child: Icon(Icons.more_vert),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
 
