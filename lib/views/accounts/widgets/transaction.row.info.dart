@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/extensions/hex_color_extension.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
@@ -90,6 +91,7 @@ class TransactionRowInfo extends StatelessWidget {
                       ),
                       Chip(
                         label: Text(category.name),
+                        backgroundColor: category.color.fromHex(),
                       ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
