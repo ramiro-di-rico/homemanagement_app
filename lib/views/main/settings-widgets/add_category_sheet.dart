@@ -17,7 +17,6 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
   CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
   TextEditingController _categoryNameController = TextEditingController();
   Color pickerColor = Colors.red;
-  String hexString = '';
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +52,6 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
                         onColorChanged: (color) {
                           setState(() {
                             pickerColor = color;
-                            hexString = pickerColor.toHex();
                           });
                         },
                         colorPickerWidth: 300,
@@ -85,6 +83,7 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
         ElevatedButton(
           onPressed: () {
             var category = CategoryModel.create(_categoryNameController.text);
+            category.color = pickerColor.toHex();
             _categoryRepository.add(category);
             Navigator.pop(context);
           },
