@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/extensions/hex_color_extension.dart';
 import 'package:home_management_app/views/main/settings-widgets/add_category_sheet.dart';
 
 import '../../../services/repositories/category.repository.dart';
@@ -84,6 +85,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                 itemBuilder: (context, index) {
                   var category = _categoryRepository.categories[index];
                   return Card(
+                    color: category.color.fromHex(),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: Row(
