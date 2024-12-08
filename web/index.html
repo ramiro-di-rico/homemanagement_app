@@ -34,5 +34,13 @@
 </head>
 <body>
   <script src="./flutter_bootstrap.js" async></script>
+  <script>
+    function setBodyBackgroundColor() {
+      const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.body.style.backgroundColor = isDarkMode ? '#121212' : '#ffffff';
+    }
+
+    setBodyBackgroundColor();
+  </script>
 </body>
 </html>
