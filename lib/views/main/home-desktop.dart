@@ -77,96 +77,29 @@ class _HomeDesktopState extends State<HomeDesktop> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            height: 1000,
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(flex: 12, child: DashboardDesktop()),
-                    Flexible(
-                        flex: 7,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 10),
-                            Card(
-                              child: ListTile(
-                                title: Text(
-                                  'Accounts',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                trailing: TextButton(
-                                  onPressed: () {
-                                    showModalBottomSheet<void>(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        constraints: BoxConstraints(
-                                          maxHeight: 500,
-                                          maxWidth: 1200,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                            BorderRadius.vertical(top: Radius.circular(25.0))),
-                                        builder: (context) {
-                                          return SizedBox(
-                                            height: 100,
-                                            child: AnimatedPadding(
-                                                padding: MediaQuery.of(context).viewInsets,
-                                                duration: Duration(seconds: 1),
-                                                child: AccountSheetDesktop()),
-                                          );
-                                        });
-                                  },
-                                  child: Icon(Icons.add),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 380, child: AccountListDesktopView()),
-                            SizedBox(height: 20),
-                            Card(
-                              child: ListTile(
-                                title: Text(
-                                  'Recurring Transactions',
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                trailing: TextButton(
-                                  onPressed: () {
-                                    showModalBottomSheet<void>(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      constraints: BoxConstraints(
-                                        maxHeight: 500,
-                                        maxWidth: 1200,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.vertical(top: Radius.circular(25.0))),
-                                      builder: (context) {
-                                        return SizedBox(
-                                            height: 200,
-                                            width: 900,
-                                            child: AnimatedPadding(
-                                                padding: MediaQuery.of(context).viewInsets,
-                                                duration: Duration(seconds: 1),
-                                                child: RecurringTransactionForm()));
-                                      },
-                                    );
-                                  },
-                                  child: Icon(Icons.add),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 400, child: RecurringTransactionList())
-                          ],
-                        ))
-                  ],
-                ),
-              ],
-            ),
+        child: Container(
+          height: 1000,
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(flex: 12, child: DashboardDesktop()),
+                  Flexible(
+                      flex: 7,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          SizedBox(height: 410, child: AccountListDesktopView()),
+                          SizedBox(height: 10),
+                          SizedBox(height: 410, child: RecurringTransactionList())
+                        ],
+                      ))
+                ],
+              ),
+            ],
           ),
         ),
       ),

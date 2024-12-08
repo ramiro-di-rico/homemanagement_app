@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/extensions/hex_color_extension.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
@@ -82,26 +83,34 @@ class TransactionRowInfo extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      SizedBox(
+                        width: 150,
                         child: Text(
                           transaction.name,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Chip(
-                        label: Text(category.name),
+                      SizedBox(
+                        width: 120,
+                        child: Chip(
+                          label: Text(category.name),
+                          backgroundColor: category.color.fromHex(),
+                        ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                        child: Text(
-                          transaction.price % 1 == 0
-                              ? transaction.price.toStringAsFixed(0)
-                              : transaction.price.toStringAsFixed(2),
-                          style: TextStyle(
-                              color: transaction.transactionType ==
-                                      TransactionType.Income
-                                  ? Colors.greenAccent
-                                  : Colors.redAccent),
+                      SizedBox(
+                        width: 80,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                          child: Text(
+                            transaction.price % 1 == 0
+                                ? transaction.price.toStringAsFixed(0)
+                                : transaction.price.toStringAsFixed(2),
+                            style: TextStyle(
+                                color: transaction.transactionType ==
+                                        TransactionType.Income
+                                    ? Colors.greenAccent
+                                    : Colors.redAccent),
+                          ),
                         ),
                       )
                     ],

@@ -1,27 +1,29 @@
 class CategoryModel{
   final int id, userId;
-  String name, icon;
+  String name, icon, color;
   final bool measurable, isActive;
 
-  CategoryModel(this.id, this.userId, this.name, this.icon, this.measurable, this.isActive);
+  CategoryModel(this.id, this.userId, this.name, this.icon, this.measurable, this.isActive, this.color);
 
   factory CategoryModel.fromJson(Map<String, dynamic> json){
+    var color = json['color'] ?? '#ffffff';
     return CategoryModel(
       json['id'],
       json['userId'],
       json['name'],
       json['icon'],
       json['measurable'],
-      json['isActive']
+      json['isActive'],
+      color
     );
   }
 
   factory CategoryModel.empty(){
-    return CategoryModel(0, 0, 'Category Model', '', false, false);
+    return CategoryModel(0, 0, 'Category Model', '', false, false, '#ffffff');
   }
 
   factory CategoryModel.create(String name){
-    return CategoryModel(0, 0, name, 'empty', false, false);
+    return CategoryModel(0, 0, name, 'empty', false, false, '#ffffff');
   }
 
   toJson() {
@@ -30,20 +32,21 @@ class CategoryModel{
       'name': name,
       'icon': icon,
       'measurable': measurable,
-      'isActive': isActive
+      'isActive': isActive,
+      'color': color
     };
   }
 }
 
 class UpdateCategoryModel{
   final int categoryId;
-  final String name, icon;
+  final String name, icon, color;
   final bool measurable, isActive;
 
-  UpdateCategoryModel(this.categoryId, this.name, this.icon, this.measurable, this.isActive);
+  UpdateCategoryModel(this.categoryId, this.name, this.icon, this.measurable, this.isActive, this.color);
 
   factory UpdateCategoryModel.fromCategoryModel(CategoryModel category){
-    return UpdateCategoryModel(category.id, category.name, category.icon, category.measurable, category.isActive);
+    return UpdateCategoryModel(category.id, category.name, category.icon, category.measurable, category.isActive, category.color);
   }
 
   toJson() {
@@ -52,7 +55,8 @@ class UpdateCategoryModel{
       'name': name,
       'icon': icon,
       'measurable': measurable,
-      'isActive': isActive
+      'isActive': isActive,
+      'color': color
     };
   }
 }

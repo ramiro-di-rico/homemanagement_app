@@ -41,151 +41,202 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
   Widget build(BuildContext context) {
     return _recurringTransactionRepository.loading
         ? Center(child: CircularProgressIndicator())
-        : ListView.builder(
-            shrinkWrap: true,
-            itemCount:
-                _recurringTransactionRepository.recurringTransactions.length,
-            itemBuilder: (context, index) {
-              var recurringTransaction =
-                  _recurringTransactionRepository.recurringTransactions[index];
-              var account = _accountRepository.accounts
-                  .where(
-                      (account) => account.id == recurringTransaction.accountId)
-                  .firstOrNull;
-              var category = _categoryRepository.categories
-                  .where((category) =>
-                      category.id == recurringTransaction.categoryId)
-                  .firstOrNull;
-              return Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+        : Column(
+            children: [
+              Card(
                 child: ListTile(
-                  title: Row(
-                    children: [
-                      Text(recurringTransaction.name),
-                      Spacer(),
-                      Chip(
-                          label: Text(account == null
-                              ? 'Account not set'
-                              : account.name)),
-                      SizedBox(width: 10),
-                      Chip(
-                          label: Text(category == null
-                              ? 'Category not set'
-                              : category.name)),
-                    ],
+                  title: Text(
+                    'Recurring Transactions',
+                    style: TextStyle(fontSize: 20),
                   ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (String result) async {
-                      if (result == 'delete') {
-                        await _recurringTransactionRepository
-                            .delete(recurringTransaction);
-                      } else if (result == 'create_transaction') {
-                        var transaction = TransactionModel.fromRecurring(
-                            recurringTransaction);
-                        var account = _accountRepository.accounts
-                            .where((account) =>
-                                account.id == transaction.accountId)
-                            .firstOrNull;
-                        showModalBottomSheet<void>(
-                          context: context,
-                          isScrollControlled: true,
-                          constraints: BoxConstraints(
-                            maxHeight: 500,
-                            maxWidth: 1200,
-                          ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(25.0))),
-                          builder: (context) {
-                            return SizedBox(
-                              height: 100,
+                  trailing: TextButton(
+                    onPressed: () {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        constraints: BoxConstraints(
+                          maxHeight: 500,
+                          maxWidth: 1200,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25.0))),
+                        builder: (context) {
+                          return SizedBox(
+                              height: 200,
+                              width: 900,
                               child: AnimatedPadding(
-                                padding: MediaQuery.of(context).viewInsets,
-                                duration: Duration(seconds: 1),
-                                child: AddTransactionSheetDesktop(account!,
-                                    transactionModel: transaction,
-                                    fromRecurring: true),
+                                  padding: MediaQuery.of(context).viewInsets,
+                                  duration: Duration(seconds: 1),
+                                  child: RecurringTransactionForm()));
+                        },
+                      );
+                    },
+                    child: Icon(Icons.add),
+                  ),
+                ),
+              ),
+              SingleChildScrollView(
+                child: Container(
+                  height: 330,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _recurringTransactionRepository
+                        .recurringTransactions.length,
+                    itemBuilder: (context, index) {
+                      var recurringTransaction = _recurringTransactionRepository
+                          .recurringTransactions[index];
+                      var account = _accountRepository.accounts
+                          .where((account) =>
+                              account.id == recurringTransaction.accountId)
+                          .firstOrNull;
+                      var category = _categoryRepository.categories
+                          .where((category) =>
+                              category.id == recurringTransaction.categoryId)
+                          .firstOrNull;
+                      return Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ListTile(
+                          title: Row(
+                            children: [
+                              Text(recurringTransaction.name),
+                              Spacer(),
+                              Chip(
+                                  label: Text(account == null
+                                      ? 'Account not set'
+                                      : account.name)),
+                              SizedBox(width: 10),
+                              Chip(
+                                  label: Text(category == null
+                                      ? 'Category not set'
+                                      : category.name)),
+                            ],
+                          ),
+                          trailing: PopupMenuButton<String>(
+                            onSelected: (String result) async {
+                              if (result == 'delete') {
+                                await _recurringTransactionRepository
+                                    .delete(recurringTransaction);
+                              } else if (result == 'create_transaction') {
+                                var transaction =
+                                    TransactionModel.fromRecurring(
+                                        recurringTransaction);
+                                var account = _accountRepository.accounts
+                                    .where((account) =>
+                                        account.id == transaction.accountId)
+                                    .firstOrNull;
+                                showModalBottomSheet<void>(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  constraints: BoxConstraints(
+                                    maxHeight: 500,
+                                    maxWidth: 1200,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(25.0))),
+                                  builder: (context) {
+                                    return SizedBox(
+                                      height: 100,
+                                      child: AnimatedPadding(
+                                        padding:
+                                            MediaQuery.of(context).viewInsets,
+                                        duration: Duration(seconds: 1),
+                                        child: AddTransactionSheetDesktop(
+                                            account!,
+                                            transactionModel: transaction,
+                                            fromRecurring: true),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                            },
+                            itemBuilder: (BuildContext context) =>
+                                <PopupMenuEntry<String>>[
+                              const PopupMenuItem<String>(
+                                value: 'create_transaction',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.add, color: Colors.greenAccent),
+                                    SizedBox(width: 10),
+                                    Text('Create Transaction',
+                                        style: TextStyle(
+                                            color: Colors.greenAccent)),
+                                  ],
+                                ),
                               ),
+                              const PopupMenuItem<String>(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete, color: Colors.redAccent),
+                                    SizedBox(width: 10),
+                                    Text('Delete',
+                                        style:
+                                            TextStyle(color: Colors.redAccent)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          subtitle: Row(
+                            children: [
+                              recurringTransaction.price == null
+                                  ? Text('Price not set')
+                                  : Text(
+                                      recurringTransaction.price.toString(),
+                                      style: TextStyle(
+                                        color: recurringTransaction
+                                                    .transactionType ==
+                                                TransactionType.Income
+                                            ? Colors.greenAccent
+                                            : Colors.redAccent,
+                                      ),
+                                    ),
+                              Spacer(),
+                              Text(
+                                recurringTransaction.recurrence ==
+                                        Recurrence.Monthly
+                                    ? 'Monthly'
+                                    : 'Annually',
+                              ),
+                            ],
+                          ),
+                          onTap: () async {
+                            showModalBottomSheet<void>(
+                              context: context,
+                              isScrollControlled: true,
+                              constraints: BoxConstraints(
+                                maxHeight: 500,
+                                maxWidth: 1200,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(25.0))),
+                              builder: (context) {
+                                return SizedBox(
+                                    height: 200,
+                                    width: 900,
+                                    child: AnimatedPadding(
+                                        padding:
+                                            MediaQuery.of(context).viewInsets,
+                                        duration: Duration(seconds: 1),
+                                        child: RecurringTransactionForm(
+                                            transaction:
+                                                recurringTransaction)));
+                              },
                             );
                           },
-                        );
-                      }
+                        ),
+                      );
                     },
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
-                        value: 'create_transaction',
-                        child: Row(
-                          children: [
-                            Icon(Icons.add, color: Colors.greenAccent),
-                            SizedBox(width: 10),
-                            Text('Create Transaction',
-                                style: TextStyle(color: Colors.greenAccent)),
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, color: Colors.redAccent),
-                            SizedBox(width: 10),
-                            Text('Delete',
-                                style: TextStyle(color: Colors.redAccent)),
-                          ],
-                        ),
-                      ),
-                    ],
                   ),
-                  subtitle: Row(
-                    children: [
-                      recurringTransaction.price == null
-                          ? Text('Price not set')
-                          : Text(
-                              recurringTransaction.price.toString(),
-                              style: TextStyle(
-                                color: recurringTransaction.transactionType ==
-                                        TransactionType.Income
-                                    ? Colors.greenAccent
-                                    : Colors.redAccent,
-                              ),
-                            ),
-                      Spacer(),
-                      Text(
-                        recurringTransaction.recurrence == Recurrence.Monthly
-                            ? 'Monthly'
-                            : 'Annually',
-                      ),
-                    ],
-                  ),
-                  onTap: () async {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      constraints: BoxConstraints(
-                        maxHeight: 500,
-                        maxWidth: 1200,
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(25.0))),
-                      builder: (context) {
-                        return SizedBox(
-                            height: 200,
-                            width: 900,
-                            child: AnimatedPadding(
-                                padding: MediaQuery.of(context).viewInsets,
-                                duration: Duration(seconds: 1),
-                                child: RecurringTransactionForm(
-                                    transaction: recurringTransaction)));
-                      },
-                    );
-                  },
                 ),
-              );
-            },
+              ),
+            ],
           );
   }
 
