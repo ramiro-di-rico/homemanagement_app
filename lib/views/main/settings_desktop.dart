@@ -6,6 +6,7 @@ import 'logging_view.dart';
 import 'settings-widgets/categories_list_widget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
+import 'settings-widgets/reminders/reminders_list_desktop.dart';
 import 'settings-widgets/two-factor-authentication.widget.dart';
 import 'settings-widgets/user_info_widget.dart';
 import 'settings-widgets/user_language_widget.dart';
@@ -63,6 +64,7 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                 UserLanguageWidget(),
                                 TwoFactorAuthenticationWidget(),
                                 DailyBackupWidget(),
+                                ReminderListView(),
                                 Padding(
                                   padding: EdgeInsets.all(10),
                                   child: _isDeveloper

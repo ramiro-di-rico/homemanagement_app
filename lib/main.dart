@@ -5,6 +5,7 @@ import 'services/endpoints/budget_http_service.dart';
 import 'services/endpoints/identity.service.dart';
 import 'services/endpoints/identity_user_service.dart';
 import 'services/endpoints/recurring_transaction_service.dart';
+import 'services/endpoints/reminder_service.dart';
 import 'services/infra/error_notifier_service.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_strategy.dart';
@@ -16,6 +17,7 @@ import 'services/repositories/notification.repository.dart';
 import 'services/repositories/preferences.repository.dart';
 import 'services/repositories/currency.repository.dart';
 import 'services/repositories/recurring_transaction_repository.dart';
+import 'services/repositories/reminder_repository.dart';
 import 'services/repositories/transaction.repository.dart';
 import 'services/repositories/user.repository.dart';
 import 'services/endpoints/api.service.factory.dart';
@@ -165,6 +167,7 @@ void registerSingletons(PlatformContext platformContext) {
 
   var budgetRepository = BudgetRepository(errorNotifierService, BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
 
+  var reminderRepository = ReminderRepository(ReminderService(GetIt.I<AuthenticationService>()));
 
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
@@ -180,4 +183,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(recurringTransactionRepository);
   GetIt.instance.registerSingleton(passwordResetService);
   GetIt.instance.registerSingleton(budgetRepository);
+  GetIt.instance.registerSingleton(reminderRepository);
 }
