@@ -39,7 +39,7 @@ class _ReminderListViewState extends State<ReminderListView> {
       context: context,
       constraints: BoxConstraints(
         maxHeight: 1000,
-        maxWidth: 500,
+        maxWidth: 600,
       ),
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
@@ -49,7 +49,8 @@ class _ReminderListViewState extends State<ReminderListView> {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
           child: SizedBox(
-              height: 150,
+              height: 180,
+              width: 800,
               child: ReminderSheet(reminder: reminder)),
         );
       },

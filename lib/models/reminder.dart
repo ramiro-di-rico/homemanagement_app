@@ -42,7 +42,7 @@ class Reminder {
       'title': title,
       'startDate': startDate.toIso8601String(),
       'endDate': endDate?.toIso8601String(),
-      'frequency': frequency.toString().split('.').last,
+      'frequency': frequency.index,
       'notifyByEmail': notifyByEmail,
     };
   }
