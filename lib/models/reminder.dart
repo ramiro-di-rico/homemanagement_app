@@ -14,6 +14,17 @@ class Reminder {
 
   Reminder(this.id, this.title, this.startDate, this.endDate, this.frequency, this.notifyByEmail);
 
+  String get frequencyString {
+    switch (frequency) {
+      case Frequency.daily:
+        return 'Daily';
+      case Frequency.monthly:
+        return 'Monthly';
+      case Frequency.yearly:
+        return 'Yearly';
+    }
+  }
+
   factory Reminder.fromJson(Map<String, dynamic> json) {
     return Reminder(
       json['id'] as int,

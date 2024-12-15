@@ -52,10 +52,10 @@ class _ReminderListViewState extends State<ReminderListView> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 320,
+      height: 300,
       child: SingleChildScrollView(
         child: SizedBox(
-          height: 300,
+          height: 290,
           child: Column(
             children: [
               Card(
@@ -75,40 +75,12 @@ class _ReminderListViewState extends State<ReminderListView> {
                   itemBuilder: (context, index) {
                     final reminder = _reminders[index];
                     return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(reminder.title),
-                                IconButton(
-                                  icon: Icon(Icons.edit),
-                                  onPressed: () => _showReminderSheet(reminder: reminder),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(reminder.frequency.toString()),
-                                Text(reminder.startDate.toString()),
-                                Text(reminder.endDate?.toString() ?? ''),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                    /*return Card(
                       child: ListTile(
                         title: Text(reminder.title),
-                        subtitle: Text(reminder.frequency.toString()),
-
+                        trailing: Text(reminder.frequencyString),
                         onTap: () => _showReminderSheet(reminder: reminder),
                       ),
-                    );*/
+                    );
                   },
                 ),
               ),

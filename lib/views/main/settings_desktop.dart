@@ -66,6 +66,7 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                   UserLanguageWidget(),
                                   TwoFactorAuthenticationWidget(),
                                   DailyBackupWidget(),
+                                  SizedBox(height: 20),
                                   ReminderListView(),
                                   Padding(
                                     padding: EdgeInsets.all(10),
