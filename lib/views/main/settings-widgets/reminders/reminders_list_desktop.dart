@@ -10,7 +10,8 @@ class ReminderListView extends StatefulWidget {
 }
 
 class _ReminderListViewState extends State<ReminderListView> {
-  final ReminderRepository _reminderRepository = GetIt.instance<ReminderRepository>();
+  final ReminderRepository _reminderRepository =
+      GetIt.instance<ReminderRepository>();
   List<Reminder> _reminders = [];
 
   @override
@@ -36,6 +37,10 @@ class _ReminderListViewState extends State<ReminderListView> {
   void _showReminderSheet({Reminder? reminder}) {
     showModalBottomSheet(
       context: context,
+      constraints: BoxConstraints(
+        maxHeight: 1000,
+        maxWidth: 500,
+      ),
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
@@ -43,7 +48,9 @@ class _ReminderListViewState extends State<ReminderListView> {
       builder: (context) {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
-          child: ReminderSheet(reminder: reminder),
+          child: SizedBox(
+              height: 150,
+              child: ReminderSheet(reminder: reminder)),
         );
       },
     );

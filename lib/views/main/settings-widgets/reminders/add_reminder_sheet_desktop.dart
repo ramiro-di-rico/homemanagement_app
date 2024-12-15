@@ -48,29 +48,32 @@ class _ReminderSheetState extends State<ReminderSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a title';
-                }
-                return null;
-              },
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _saveReminder,
-              child: Text(widget.reminder == null ? 'Add Reminder' : 'Update Reminder'),
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 150,
+                child: TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(labelText: 'Title'),
+                ),
+              ),
+              SizedBox(width: 10),
+
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: _saveReminder,
+                child: Text(widget.reminder == null ? 'Add Reminder' : 'Update Reminder'),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
