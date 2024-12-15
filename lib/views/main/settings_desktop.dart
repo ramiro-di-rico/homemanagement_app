@@ -49,7 +49,7 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                 child: CircularProgressIndicator(),
               )
             : Container(
-                height: 1000,
+                height: 1200,
                 child: Column(
                   children: [
                     Expanded(
@@ -57,32 +57,35 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                         children: [
                           Expanded(
                             flex: 1,
-                            child: Column(
-                              children: [
-                                UserInfoWidget(),
-                                PreferredCurrency(),
-                                UserLanguageWidget(),
-                                TwoFactorAuthenticationWidget(),
-                                DailyBackupWidget(),
-                                ReminderListView(),
-                                Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: _isDeveloper
-                                      ? ElevatedButton(
-                                          onPressed: () async {
-                                            await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoggingView(),
-                                              ),
-                                            );
-                                          },
-                                          child: Text('Developer Mode'),
-                                        )
-                                      : Container(),
-                                ),
-                              ],
+                            child: SizedBox(
+                              height: 900,
+                              child: Column(
+                                children: [
+                                  UserInfoWidget(),
+                                  PreferredCurrency(),
+                                  UserLanguageWidget(),
+                                  TwoFactorAuthenticationWidget(),
+                                  DailyBackupWidget(),
+                                  ReminderListView(),
+                                  Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: _isDeveloper
+                                        ? ElevatedButton(
+                                            onPressed: () async {
+                                              await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      LoggingView(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('Developer Mode'),
+                                          )
+                                        : Container(),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           Expanded(

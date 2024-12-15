@@ -51,37 +51,71 @@ class _ReminderListViewState extends State<ReminderListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Card(
-          child: ListTile(
-            title: Text('Reminders'),
-            trailing: IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => _showReminderSheet(),
-            ),
-          ),
-        ),
-        SingleChildScrollView(
-          child: Container(
-            height: 330,
-            child: RefreshIndicator(
-              onRefresh: _loadReminders,
-              child: ListView.builder(
-                itemCount: _reminders.length,
-                itemBuilder: (context, index) {
-                  final reminder = _reminders[index];
-                  return ListTile(
-                    title: Text(reminder.title),
-                    subtitle: Text(reminder.frequency.toString()),
-                    onTap: () => _showReminderSheet(reminder: reminder),
-                  );
-                },
+    return Container(
+      height: 320,
+      child: SingleChildScrollView(
+        child: SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              Card(
+                child: ListTile(
+                  title: Text('Reminders'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () => _showReminderSheet(),
+                  ),
+                ),
               ),
-            ),
+              RefreshIndicator(
+                onRefresh: _loadReminders,
+                child: ListView.builder(
+                  itemCount: _reminders.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final reminder = _reminders[index];
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(reminder.title),
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () => _showReminderSheet(reminder: reminder),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(reminder.frequency.toString()),
+                                Text(reminder.startDate.toString()),
+                                Text(reminder.endDate?.toString() ?? ''),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                    /*return Card(
+                      child: ListTile(
+                        title: Text(reminder.title),
+                        subtitle: Text(reminder.frequency.toString()),
+
+                        onTap: () => _showReminderSheet(reminder: reminder),
+                      ),
+                    );*/
+                  },
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

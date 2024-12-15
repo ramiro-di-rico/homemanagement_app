@@ -27,27 +27,33 @@ class _PreferredCurrencyState extends State<PreferredCurrency> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Row(
-              children: [
-                Text(
-                  'Preferred Currency',
-                ),
-                Spacer(),
-                DropdownComponent(
-                  items: currencies,
-                  onChanged: onCurrencyTypeChanged,
-                  currentValue: selectedCurrency,
-                ),
-              ],
+    return SizedBox(
+      height: 120,
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Row(
+                children: [
+                  Text(
+                    'Preferred Currency',
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    width: 60,
+                    child: DropdownComponent(
+                      items: currencies,
+                      onChanged: onCurrencyTypeChanged,
+                      currentValue: selectedCurrency,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
