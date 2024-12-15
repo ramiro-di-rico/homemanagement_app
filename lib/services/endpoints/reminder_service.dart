@@ -5,7 +5,7 @@ import '../security/authentication.service.dart';
 
 class ReminderService {
   final AuthenticationService _authenticationService;
-  final Uri backendEndpoint = Uri.http('116.203.43.30:5470', 'reminder');
+  final Uri backendEndpoint = Uri.https('www.ramiro-di-rico.dev', 'reminderapi/reminder');
 
   ReminderService(this._authenticationService);
 

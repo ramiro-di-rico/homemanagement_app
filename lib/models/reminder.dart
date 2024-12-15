@@ -20,7 +20,7 @@ class Reminder {
       json['title'] as String,
       DateTime.parse(json['startDate'] as String),
       json['endDate'] != null ? DateTime.parse(json['endDate'] as String) : null,
-      Frequency.values.firstWhere((e) => e.toString().split('.').last == json['frequency']),
+      Frequency.values.firstWhere((e) => e.index == json['frequency']),
       json['notifyByEmail'] as bool,
     );
   }
