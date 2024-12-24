@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../models/reminder.dart';
 import '../../../../services/repositories/reminder_repository.dart';
+import '../../../mixins/notifier_mixin.dart';
 
 class ReminderSheet extends StatefulWidget {
   final Reminder? reminder;
@@ -15,7 +16,7 @@ class ReminderSheet extends StatefulWidget {
   _ReminderSheetState createState() => _ReminderSheetState();
 }
 
-class _ReminderSheetState extends State<ReminderSheet> {
+class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
   final _titleController = TextEditingController();
   final ReminderRepository _reminderRepository =
       GetIt.instance<ReminderRepository>();
@@ -59,6 +60,7 @@ class _ReminderSheetState extends State<ReminderSheet> {
       await _reminderRepository.updateReminder(reminder.id, reminder);
     }
     Navigator.of(context).pop();
+    errorNotifierService.notify('Reminder saved');
   }
 
   void _showErrorDialog(String message) {
@@ -208,12 +210,31 @@ class _ReminderSheetState extends State<ReminderSheet> {
             ],
           ),
           SizedBox(height: 10),
-          SizedBox(
-            width: 300,
-            child: ElevatedButton(
-              onPressed: _saveReminder,
-              child: Text('Save'),
-            ),
+          Row(
+            children: [
+              SizedBox(
+                width: 250,
+                child: ElevatedButton(
+                  onPressed: _saveReminder,
+                  child: Text('Save'),
+                ),
+              ),
+              SizedBox(width: 20),
+              SizedBox(
+                width: 250,
+                child: FilledButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.redAccent),
+                  ),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    await _reminderRepository.deleteReminder(widget.reminder!.id);
+                    errorNotifierService.notify('Reminder deleted');
+                  },
+                  child: Text('Remove'),
+                ),
+              )
+            ],
           ),
         ],
       ),
