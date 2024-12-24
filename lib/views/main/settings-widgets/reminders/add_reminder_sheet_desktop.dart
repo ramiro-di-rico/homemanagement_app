@@ -48,8 +48,8 @@ class _ReminderSheetState extends State<ReminderSheet> {
     final reminder = Reminder(
       widget.reminder?.id ?? 0,
       _titleController.text,
-      widget.reminder?.startDate ?? DateTime.now(),
-      widget.reminder?.endDate,
+      _startDate ?? DateTime.now(),
+      _endDate,
       _selectedFrequency ?? Frequency.daily,
       widget.reminder?.notifyByEmail ?? false,
     );

@@ -25,48 +25,46 @@ class _DashboardState extends State<DashboardDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        height: 850,
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: BalanceWidget(),
-                    ),
-                    flex: 4,
+    return Container(
+      height: 850,
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: BalanceWidget(),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: OverviewWidget(overall: overall),
-                    ),
-                    flex: 5,
+                  flex: 4,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: OverviewWidget(overall: overall),
                   ),
-                ],
-              ),
-              flex: 4,
+                  flex: 5,
+                ),
+              ],
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: MostExpensiveCategoriesChart(),
-              ),
-              flex: 6,
+            flex: 4,
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: MostExpensiveCategoriesChart(),
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: CategoryHistoricalChartWidget(),
-              ),
-              flex: 6,
-            )
-          ],
-        ),
+            flex: 6,
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: CategoryHistoricalChartWidget(),
+            ),
+            flex: 6,
+          )
+        ],
       ),
     );
   }

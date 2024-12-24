@@ -48,18 +48,19 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : Container(
+            : SingleChildScrollView(
+              child: Container(
                 height: 1200,
                 child: Column(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: SizedBox(
-                              height: 900,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   UserInfoWidget(),
                                   PreferredCurrency(),
@@ -88,17 +89,17 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                 ],
                               ),
                             ),
-                          ),
-                          Expanded(
-                            child: CategoriesListWidget(),
-                            flex: 1,
-                          ),
-                        ],
+                            Expanded(
+                              child: CategoriesListWidget(),
+                              flex: 1,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ),
+            ),
       ),
     );
   }
