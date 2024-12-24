@@ -33,7 +33,9 @@ class ReminderService {
       },
       body: jsonEncode(reminder.toJson()),
     );
-    if (response.statusCode == 200) {
+
+    var okStatusCode = response.statusCode > 200 && response.statusCode < 300;
+    if (okStatusCode) {
       return Reminder.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to add reminder');
@@ -50,7 +52,9 @@ class ReminderService {
       },
       body: jsonEncode(reminder.toJson()),
     );
-    if (response.statusCode == 200) {
+
+    var okStatusCode = response.statusCode > 200 && response.statusCode < 300;
+    if (!okStatusCode) {
       return Reminder.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to update reminder');
@@ -60,10 +64,11 @@ class ReminderService {
   Future<void> deleteReminder(String id) async {
     final token = await _authenticationService.getUserToken();
     final response = await http.delete(
-      backendEndpoint.resolve(id),
+      backendEndpoint.resolve("reminder/${id}"),
       headers: {'Authorization': 'Bearer $token'},
     );
-    if (response.statusCode != 200) {
+    var okStatusCode = response.statusCode > 200 && response.statusCode < 300;
+    if (!okStatusCode) {
       throw Exception('Failed to delete reminder');
     }
   }
