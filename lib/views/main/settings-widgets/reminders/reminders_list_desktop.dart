@@ -49,7 +49,7 @@ class _ReminderListViewState extends State<ReminderListView> {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
           child: SizedBox(
-              height: 180,
+              height: 190,
               width: 800,
               child: ReminderSheet(reminder: reminder)),
         );

@@ -45,7 +45,7 @@ class ReminderService {
   Future<Reminder> updateReminder(int id, Reminder reminder) async {
     final token = await _authenticationService.getUserToken();
     final response = await http.put(
-      backendEndpoint.resolve(id.toString()),
+      backendEndpoint.resolve("reminder"),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

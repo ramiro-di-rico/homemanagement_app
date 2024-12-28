@@ -23,6 +23,7 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
   Frequency? _selectedFrequency = Frequency.daily;
   DateTime? _startDate;
   DateTime? _endDate;
+  bool _notifyByEmail = false;
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
       _selectedFrequency = widget.reminder!.frequency;
       _startDate = widget.reminder!.startDate;
       _endDate = widget.reminder!.endDate;
+      _notifyByEmail = widget.reminder!.notifyByEmail;
     }
   }
 
@@ -212,8 +214,23 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
           SizedBox(height: 10),
           Row(
             children: [
+              SizedBox(width: 20),
               SizedBox(
-                width: 250,
+                width: 230,
+                child: ListTile(
+                  leading: Checkbox(
+                    value: _notifyByEmail,
+                    onChanged: (value) {
+                      setState(() {
+                        _notifyByEmail = value ?? false;
+                      });
+                    },
+                  ),
+                  title: Text('Notify by email'),
+                ),
+              ),
+              SizedBox(
+                width: 150,
                 child: ElevatedButton(
                   onPressed: _saveReminder,
                   child: Text('Save'),
@@ -221,7 +238,7 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
               ),
               SizedBox(width: 20),
               SizedBox(
-                width: 250,
+                width: 150,
                 child: FilledButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(Colors.redAccent),
