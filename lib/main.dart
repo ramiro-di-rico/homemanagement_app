@@ -167,7 +167,7 @@ void registerSingletons(PlatformContext platformContext) {
 
   var budgetRepository = BudgetRepository(errorNotifierService, BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
 
-  var reminderRepository = ReminderRepository(ReminderService(GetIt.I<AuthenticationService>()));
+  var reminderRepository = ReminderRepository(ReminderService(GetIt.I<AuthenticationService>()), errorNotifierService);
 
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);

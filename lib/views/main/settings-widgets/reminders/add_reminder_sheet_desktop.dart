@@ -62,7 +62,6 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
       await _reminderRepository.updateReminder(reminder.id, reminder);
     }
     Navigator.of(context).pop();
-    errorNotifierService.notify('Reminder saved');
   }
 
   void _showErrorDialog(String message) {

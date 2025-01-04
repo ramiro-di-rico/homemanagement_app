@@ -53,8 +53,8 @@ class ReminderService {
       body: jsonEncode(reminder.toJson()),
     );
 
-    var okStatusCode = response.statusCode > 200 && response.statusCode < 300;
-    if (!okStatusCode) {
+    var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;
+    if (okStatusCode) {
       return Reminder.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to update reminder');
