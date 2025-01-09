@@ -54,7 +54,7 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
       _startDate ?? DateTime.now(),
       _endDate,
       _selectedFrequency ?? Frequency.daily,
-      widget.reminder?.notifyByEmail ?? false,
+      _notifyByEmail,
     );
     if (widget.reminder == null) {
       await _reminderRepository.addReminder(reminder);
