@@ -31,27 +31,30 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
   Widget build(BuildContext context) {
     // TODO - dropdown not being refresh to reflect current language
     print(selectedLanguage);
-    return Column(
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Row(
-              children: [
-                Text(
-                  'App Language',
-                ),
-                Spacer(),
-                DropdownComponent(
-                  items: ['English', 'Spanish'],
-                  onChanged: onLanguageChanged,
-                  currentValue: selectedLanguage,
-                ),
-              ],
+    return SizedBox(
+      height: 100,
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Row(
+                children: [
+                  Text(
+                    'App Language',
+                  ),
+                  Spacer(),
+                  DropdownComponent(
+                    items: ['English', 'Spanish'],
+                    onChanged: onLanguageChanged,
+                    currentValue: selectedLanguage,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

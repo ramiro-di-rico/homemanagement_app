@@ -27,17 +27,20 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          children: [
-            ListTile(
-              title: Text('Email'),
-              subtitle: Text(_userInfo?.email ?? ""),
-            ),
-            ListTile(
-              title: Text('Username'),
-              subtitle: Text(_userInfo?.username ?? ""),
-            ),
-          ],
+        child: SizedBox(
+          height: 140,
+          child: Column(
+            children: [
+              ListTile(
+                title: Text('Email'),
+                subtitle: Text(_userInfo?.email ?? ""),
+              ),
+              ListTile(
+                title: Text('Username'),
+                subtitle: Text(_userInfo?.username ?? ""),
+              ),
+            ],
+          ),
         ),
       ),
     );

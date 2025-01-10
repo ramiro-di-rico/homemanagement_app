@@ -6,6 +6,7 @@ import 'logging_view.dart';
 import 'settings-widgets/categories_list_widget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/preferred-currency-widget.dart';
+import 'settings-widgets/reminders/reminders_list_desktop.dart';
 import 'settings-widgets/two-factor-authentication.widget.dart';
 import 'settings-widgets/user_info_widget.dart';
 import 'settings-widgets/user_language_widget.dart';
@@ -47,52 +48,58 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : Container(
-                height: 1000,
+            : SingleChildScrollView(
+              child: Container(
+                height: 1200,
                 child: Column(
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Column(
-                              children: [
-                                UserInfoWidget(),
-                                PreferredCurrency(),
-                                UserLanguageWidget(),
-                                TwoFactorAuthenticationWidget(),
-                                DailyBackupWidget(),
-                                Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: _isDeveloper
-                                      ? ElevatedButton(
-                                          onPressed: () async {
-                                            await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoggingView(),
-                                              ),
-                                            );
-                                          },
-                                          child: Text('Developer Mode'),
-                                        )
-                                      : Container(),
-                                ),
-                              ],
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  UserInfoWidget(),
+                                  PreferredCurrency(),
+                                  UserLanguageWidget(),
+                                  TwoFactorAuthenticationWidget(),
+                                  DailyBackupWidget(),
+                                  SizedBox(height: 20),
+                                  ReminderListView(),
+                                  Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: _isDeveloper
+                                        ? ElevatedButton(
+                                            onPressed: () async {
+                                              await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      LoggingView(),
+                                                ),
+                                              );
+                                            },
+                                            child: Text('Developer Mode'),
+                                          )
+                                        : Container(),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: CategoriesListWidget(),
-                            flex: 1,
-                          ),
-                        ],
+                            Expanded(
+                              child: CategoriesListWidget(),
+                              flex: 1,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ),
+            ),
       ),
     );
   }
