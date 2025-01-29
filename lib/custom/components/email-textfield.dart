@@ -18,6 +18,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      autofillHints: [AutofillHints.email, AutofillHints.username],
       keyboardType: TextInputType.emailAddress,
       textAlign: TextAlign.center,
       decoration: InputDecoration(

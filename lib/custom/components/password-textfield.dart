@@ -20,6 +20,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      autofillHints: [AutofillHints.password],
       enabled: widget.enablePassword,
       keyboardType: TextInputType.emailAddress,
       textAlign: TextAlign.center,
