@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_management_app/models/account.dart';
+import 'package:home_management_app/models/currency.dart';
 import 'package:intl/intl.dart';
 
 import '../models/category.dart';
@@ -21,12 +22,12 @@ class TransactionPagingService extends ChangeNotifier  {
   List<TransactionModel> transactions = List.empty(growable: true);
   List<AccountModel> selectedAccounts = List.empty(growable: true);
   List<CategoryModel> selectedCategories = List.empty(growable: true);
+  List<CurrencyModel> selectedCurrencies = List.empty(growable: true);
 
   String? name = null;
   DateTime? startDate = null;
   DateTime? endDate = null;
   TransactionType? transactionType = null;
-
 
   Future performSearch() async {
     filtering = true;
@@ -35,7 +36,7 @@ class TransactionPagingService extends ChangeNotifier  {
     notifyListeners();
 
     var results = await _transactionService.filter(
-        currentPage, pageSize, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories);
+        currentPage, pageSize, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies);
 
     if (results.isNotEmpty) {
       // Todo STILL shows duplicates
@@ -56,10 +57,12 @@ class TransactionPagingService extends ChangeNotifier  {
     endDate = null;
     selectedAccounts.clear();
     selectedCategories.clear();
+    selectedCurrencies.clear();
     transactionType = null;
     filtering = false;
     loading = false;
     currentPage = 1;
+    transactions.clear();
     notifyListeners();
   }
 

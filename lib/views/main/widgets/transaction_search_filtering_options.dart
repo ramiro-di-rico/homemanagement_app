@@ -1,6 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/views/main/widgets/currency_select/currency_select.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/transaction.dart';
@@ -121,31 +122,47 @@ class _TransactionSearchFilteringOptionsSheetState
                   ),
                 ),
                 SizedBox(width: 20),
-                DropdownButton<String>(
-                  value: _transactionPagingService.transactionType == null
-                      ? 'Select'
-                      : _transactionPagingService.transactionType ==
-                              TransactionType.Income
-                          ? 'Income'
-                          : 'Outcome',
-                  items: ['Select', 'Outcome', 'Income'].map((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      if (newValue == 'Select') {
-                        _transactionPagingService.transactionType = null;
-                        return;
-                      }
-                      _transactionPagingService.transactionType =
-                          newValue == 'Income'
-                              ? TransactionType.Income
-                              : TransactionType.Outcome;
-                    });
-                  },
+                SizedBox(
+                  width: 100,
+                  child: DropdownButton<String>(
+                    value: _transactionPagingService.transactionType == null
+                        ? 'Select'
+                        : _transactionPagingService.transactionType ==
+                                TransactionType.Income
+                            ? 'Income'
+                            : 'Outcome',
+                    items: ['Select', 'Outcome', 'Income'].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        if (newValue == 'Select') {
+                          _transactionPagingService.transactionType = null;
+                          return;
+                        }
+                        _transactionPagingService.transactionType =
+                            newValue == 'Income'
+                                ? TransactionType.Income
+                                : TransactionType.Outcome;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(width: 20),
+                SizedBox(
+                  width: 140,
+                  child: CurrencySelect(
+                    selectedCurrencies: _transactionPagingService.selectedCurrencies,
+                    multipleSelection: false,
+                    onSelectedCurrenciesChanged: (selectedCurrencies) {
+                      _transactionPagingService.selectedCurrencies.clear();
+                      _transactionPagingService.selectedCurrencies.addAll(selectedCurrencies);
+                      setState(() {});
+                    },
+                  ),
                 ),
               ],
             ),

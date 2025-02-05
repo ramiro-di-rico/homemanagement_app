@@ -1,3 +1,4 @@
+import 'package:home_management_app/models/currency.dart';
 import 'package:http/http.dart';
 
 import '../../models/account.dart';
@@ -37,7 +38,7 @@ class TransactionService {
 
   Future<List<TransactionModel>> filter(int currentPage, int pageSize,
       List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate,
-      TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories) async {
+      TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories, List<CurrencyModel> currencies) async {
 
     var queryFilter = 'currentPage=${currentPage}&pageSize=${pageSize}';
 
@@ -67,6 +68,10 @@ class TransactionService {
 
     if (categories.isNotEmpty) {
       queryFilter += '&categoryIds=' + categories.map((e) => e.id).join('&categoryIds=');
+    }
+
+    if (currencies.isNotEmpty) {
+      queryFilter += '&currencyId=' + currencies.first.id.toString();
     }
 
     dynamic data = await apiServiceFactory.apiGet(
