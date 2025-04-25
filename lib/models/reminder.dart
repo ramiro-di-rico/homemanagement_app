@@ -2,6 +2,7 @@ enum Frequency {
   daily,
   monthly,
   yearly,
+  workDays,
 }
 
 class Reminder {
@@ -22,6 +23,8 @@ class Reminder {
         return 'Monthly';
       case Frequency.yearly:
         return 'Yearly';
+      case Frequency.workDays:
+        return 'WorkDays';
     }
   }
 
