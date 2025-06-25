@@ -24,7 +24,7 @@ class AccountService {
 
   Future update(AccountModel account) async {
     var msg = jsonEncode(account);
-    await this.apiServiceFactory.apiPut(endpoint, msg);
+    await apiServiceFactory.apiPut('$endpoint/${account.id}', msg);
   }
 
   Future delete(AccountModel accountModel) async {
