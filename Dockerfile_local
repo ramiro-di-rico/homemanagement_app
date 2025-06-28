@@ -8,8 +8,8 @@ RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-m
 RUN apt-get clean
 
 ENV DEBIAN_FRONTEND=dialog
-ENV PUB_HOSTED_URL=https://pub.flutter-io.cn
-ENV FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+ENV PUB_HOSTED_URL=https://pub.dartlang.org
+ENV FLUTTER_STORAGE_BASE_URL=https://storage.googleapis.com
 
 # download Flutter SDK from Flutter Github repo
 RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
