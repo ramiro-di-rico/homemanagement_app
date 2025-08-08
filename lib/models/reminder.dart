@@ -12,8 +12,9 @@ class Reminder {
   final DateTime? endDate;
   final Frequency frequency;
   final bool notifyByEmail;
+  final bool isCompleted;
 
-  Reminder(this.id, this.title, this.startDate, this.endDate, this.frequency, this.notifyByEmail);
+  Reminder(this.id, this.title, this.startDate, this.endDate, this.frequency, this.notifyByEmail, this.isCompleted);
 
   String get frequencyString {
     switch (frequency) {
@@ -36,6 +37,7 @@ class Reminder {
       json['endDate'] != null ? DateTime.parse(json['endDate'] as String) : null,
       Frequency.values.firstWhere((e) => e.index == json['frequency']),
       json['notifyByEmail'] as bool,
+      json['isCompleted'] as bool? ?? false,
     );
   }
 
@@ -47,6 +49,7 @@ class Reminder {
       'endDate': endDate?.toIso8601String(),
       'frequency': frequency.index,
       'notifyByEmail': notifyByEmail,
+      'isCompleted': isCompleted,
     };
   }
 }

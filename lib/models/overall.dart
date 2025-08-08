@@ -9,7 +9,12 @@ class Overall {
       this.incomeTransactions, this.totalOutcome, this.totalIncome);
 
   factory Overall.fromJson(Map<String, dynamic> json) {
-    return Overall(json['totalTransactions'], json['expenseTransactions'],
-        json['incomeTransactions'], json['totalExpense'], json['totalIncome']);
+    return Overall(
+      (json['totalTransactions'] as num).toInt(),
+      (json['expenseTransactions'] as num).toInt(),
+      (json['incomeTransactions'] as num).toInt(),
+      (json['totalExpense'] as num).toInt(),
+      (json['totalIncome'] as num).toInt(),
+    );
   }
 }

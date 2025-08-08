@@ -34,6 +34,20 @@ class _ReminderListViewState extends State<ReminderListView> {
     });
   }
 
+  Future<void> _toggleCompletion(Reminder reminder, bool isCompleted) async {
+    final updatedReminder = Reminder(
+      reminder.id,
+      reminder.title,
+      reminder.startDate,
+      reminder.endDate,
+      reminder.frequency,
+      reminder.notifyByEmail,
+      isCompleted,
+    );
+    await _reminderRepository.updateReminder(reminder.id, updatedReminder);
+    _loadReminders();
+  }
+
   void _showReminderSheet({Reminder? reminder}) {
     showModalBottomSheet(
       context: context,
@@ -49,7 +63,7 @@ class _ReminderListViewState extends State<ReminderListView> {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
           child: SizedBox(
-              height: 190,
+              height: 240,
               width: 800,
               child: ReminderSheet(reminder: reminder)),
         );
@@ -84,7 +98,21 @@ class _ReminderListViewState extends State<ReminderListView> {
                     final reminder = _reminders[index];
                     return Card(
                       child: ListTile(
-                        title: Text(reminder.title),
+                        leading: Checkbox(
+                          value: reminder.isCompleted,
+                          onChanged: (value) => _toggleCompletion(reminder, value ?? false),
+                        ),
+                        title: Text(
+                          reminder.title,
+                          style: TextStyle(
+                            decoration: reminder.isCompleted
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                            color: reminder.isCompleted
+                                ? Colors.grey
+                                : null,
+                          ),
+                        ),
                         trailing: Text(reminder.frequencyString),
                         onTap: () => _showReminderSheet(reminder: reminder),
                       ),

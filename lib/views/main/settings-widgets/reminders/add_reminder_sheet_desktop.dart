@@ -24,6 +24,7 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
   DateTime? _startDate;
   DateTime? _endDate;
   bool _notifyByEmail = false;
+  bool _isCompleted = false;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
       _startDate = widget.reminder!.startDate;
       _endDate = widget.reminder!.endDate;
       _notifyByEmail = widget.reminder!.notifyByEmail;
+      _isCompleted = widget.reminder!.isCompleted;
     }
   }
 
@@ -55,6 +57,7 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
       _endDate,
       _selectedFrequency ?? Frequency.daily,
       _notifyByEmail,
+      _isCompleted,
     );
     if (widget.reminder == null) {
       await _reminderRepository.addReminder(reminder);
@@ -228,6 +231,26 @@ class _ReminderSheetState extends State<ReminderSheet> with NotifierMixin {
                   title: Text('Notify by email'),
                 ),
               ),
+              SizedBox(
+                width: 230,
+                child: ListTile(
+                  leading: Checkbox(
+                    value: _isCompleted,
+                    onChanged: (value) {
+                      setState(() {
+                        _isCompleted = value ?? false;
+                      });
+                    },
+                  ),
+                  title: Text('Completed'),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              SizedBox(width: 20),
               SizedBox(
                 width: 150,
                 child: ElevatedButton(
