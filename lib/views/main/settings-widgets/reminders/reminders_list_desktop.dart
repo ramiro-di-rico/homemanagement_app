@@ -73,55 +73,51 @@ class _ReminderListViewState extends State<ReminderListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 300,
+    return Expanded(
       child: SingleChildScrollView(
-        child: SizedBox(
-          height: 290,
-          child: Column(
-            children: [
-              Card(
-                child: ListTile(
-                  title: Text('Reminders'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.add),
-                    onPressed: () => _showReminderSheet(),
-                  ),
+        child: Column(
+          children: [
+            Card(
+              child: ListTile(
+                title: Text('Reminders'),
+                trailing: IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () => _showReminderSheet(),
                 ),
               ),
-              RefreshIndicator(
-                onRefresh: _loadReminders,
-                child: ListView.builder(
-                  itemCount: _reminders.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    final reminder = _reminders[index];
-                    return Card(
-                      child: ListTile(
-                        leading: Checkbox(
-                          value: reminder.isCompleted,
-                          onChanged: (value) => _toggleCompletion(reminder, value ?? false),
-                        ),
-                        title: Text(
-                          reminder.title,
-                          style: TextStyle(
-                            decoration: reminder.isCompleted
-                                ? TextDecoration.lineThrough
-                                : TextDecoration.none,
-                            color: reminder.isCompleted
-                                ? Colors.grey
-                                : null,
-                          ),
-                        ),
-                        trailing: Text(reminder.frequencyString),
-                        onTap: () => _showReminderSheet(reminder: reminder),
+            ),
+            RefreshIndicator(
+              onRefresh: _loadReminders,
+              child: ListView.builder(
+                itemCount: _reminders.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  final reminder = _reminders[index];
+                  return Card(
+                    child: ListTile(
+                      leading: Checkbox(
+                        value: reminder.isCompleted,
+                        onChanged: (value) => _toggleCompletion(reminder, value ?? false),
                       ),
-                    );
-                  },
-                ),
+                      title: Text(
+                        reminder.title,
+                        style: TextStyle(
+                          decoration: reminder.isCompleted
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                          color: reminder.isCompleted
+                              ? Colors.grey
+                              : null,
+                        ),
+                      ),
+                      trailing: Text(reminder.frequencyString),
+                      onTap: () => _showReminderSheet(reminder: reminder),
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
