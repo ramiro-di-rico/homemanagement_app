@@ -152,7 +152,9 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                   onSelectedAccountsChanged: (accounts) {
                     _selectedAccounts.clear();
                     _selectedAccounts.addAll(accounts.map((e) => e.account));
-                    _recurringTransaction.accountId = accounts.first.account.id;
+                    _recurringTransaction.accountId = accounts.isNotEmpty
+                        ? accounts.first.account.id
+                        : null;
                   },
                 ),
               ),
