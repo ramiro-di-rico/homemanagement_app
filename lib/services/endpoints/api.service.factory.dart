@@ -101,7 +101,7 @@ class ApiServiceFactory {
     var response = await http.delete(backendEndpoint.resolve('$api/$id'),
         headers: _getHeaders());
 
-    var isSuccessful = response.statusCode > 200 && response.statusCode < 299;
+    var isSuccessful = response.statusCode >= 200 && response.statusCode < 299;
     if (!isSuccessful) {
       throw Exception('Failed to delete to $api');
     }
