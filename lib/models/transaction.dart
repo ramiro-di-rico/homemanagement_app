@@ -46,7 +46,7 @@ class TransactionModel {
         recurringTransaction.categoryId!,
         recurringTransaction.name,
         recurringTransaction.price ?? 0,
-        recurringTransaction.date!,
+        recurringTransaction.date ?? DateTime.now(),
         recurringTransaction.transactionType);
   }
 
