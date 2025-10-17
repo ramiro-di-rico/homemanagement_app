@@ -235,6 +235,33 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                                   },
                                 )
                               : Container(),
+                          platform.isDownloadEnabled()
+                              ? MenuItemButton(
+                                  leadingIcon:
+                                      Icon(Icons.description, color: Colors.orangeAccent),
+                                  child: Text('Download import template',
+                                      style: TextStyle(color: Colors.orangeAccent)),
+                                  onPressed: () async {
+                                    try {
+                                      final csvContent = buildCsvTemplate(item.id);
+                                      await platform.saveFile('transactions_template', 'csv', csvContent);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Template downloaded'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Failed to download template'),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                )
+                              : Container(),
                           platform.isUploadEnabled()
                               ? MenuItemButton(
                                   leadingIcon:
@@ -291,6 +318,14 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
     }
   }
 
+
+  String buildCsvTemplate(int accountId) {
+    final header = 'Id;Name;Price;Date;TransactionType;Category;;AccountId';
+    final today = DateTime.now();
+    final exampleDate = '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    final exampleRow = ';Example transaction;0.00;$exampleDate;Expense;Some Category;;$accountId';
+    return header + '\n' + exampleRow + '\n';
+  }
 
   Future<String> pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
