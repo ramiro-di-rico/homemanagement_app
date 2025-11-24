@@ -80,9 +80,32 @@ class _ReminderListViewState extends State<ReminderListView> {
             Card(
               child: ListTile(
                 title: Text('Reminders'),
-                trailing: IconButton(
-                  icon: Icon(Icons.add),
-                  onPressed: () => _showReminderSheet(),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Tooltip(
+                      message: 'Mark all as completed',
+                      child: IconButton(
+                        icon: Icon(Icons.done_all),
+                        onPressed: () async {
+                          await _reminderRepository.setAllCompleted(true);
+                        },
+                      ),
+                    ),
+                    Tooltip(
+                      message: 'Mark all as not completed',
+                      child: IconButton(
+                        icon: Icon(Icons.undo),
+                        onPressed: () async {
+                          await _reminderRepository.setAllCompleted(false);
+                        },
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.add),
+                      onPressed: () => _showReminderSheet(),
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -43,6 +43,19 @@ class ReminderRepository extends ChangeNotifier {
     }
   }
 
+  Future setAllCompleted(bool isCompleted) async {
+    try {
+      await _reminderService.setAllCompleted(isCompleted);
+      _cachedReminders = _cachedReminders
+          .map((r) => Reminder(r.id, r.title, r.startDate, r.endDate, r.frequency, r.notifyByEmail, isCompleted))
+          .toList();
+      notifyListeners();
+      _notifierService.notify(isCompleted ? 'All reminders completed' : 'All reminders marked as not completed');
+    } on Exception catch (e) {
+      _notifierService.notify(e.toString(), isError: true);
+    }
+  }
+
   Future deleteReminder(int id) async {
     try {
       await _reminderService.deleteReminder(id.toString());

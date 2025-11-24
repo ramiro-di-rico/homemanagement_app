@@ -61,6 +61,26 @@ class ReminderService {
     }
   }
 
+  Future<void> setAllCompleted(bool isCompleted) async {
+    final token = await _authenticationService.getUserToken();
+    final uri = backendEndpoint.replace(
+      path: '${backendEndpoint.path}/completed',
+      queryParameters: {
+        'isCompleted': isCompleted.toString(),
+      },
+    );
+    final response = await http.patch(
+      uri,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;
+    if (!okStatusCode) {
+      throw Exception('Failed to set all reminders completion');
+    }
+  }
+
   Future<void> deleteReminder(String id) async {
     final token = await _authenticationService.getUserToken();
     final response = await http.delete(
