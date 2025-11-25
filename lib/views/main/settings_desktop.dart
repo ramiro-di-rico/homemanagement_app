@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/views/main/settings-widgets/user-settings-widget.dart';
 
 import '../../services/repositories/preferences.repository.dart';
 import 'logging_view.dart';
@@ -68,6 +69,8 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                   TwoFactorAuthenticationWidget(),
                                   DailyBackupWidget(),
                                   SizedBox(height: 20),
+                                  UserSettingsWidget(),
+                                  //SizedBox(height: 20),
                                   ReminderListView(),
                                   Padding(
                                     padding: EdgeInsets.all(10),

@@ -34,7 +34,11 @@ class PreferencesRepository extends ChangeNotifier {
   {
     if (this.preferences.length == 0) return '';
 
-    return this.preferences.firstWhere((element) => element.name == 'PreferredCurrency').value;
+    var pref = this.preferences.firstWhere(
+      (element) => element.name == preferredCurrency,
+      orElse: () => PreferenceModel(preferredCurrency, ''),
+    );
+    return pref.value;
   }
 
   String getCurrentLanguage()

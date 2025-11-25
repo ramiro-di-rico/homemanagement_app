@@ -6,6 +6,7 @@ import 'services/endpoints/identity.service.dart';
 import 'services/endpoints/identity_user_service.dart';
 import 'services/endpoints/recurring_transaction_service.dart';
 import 'services/endpoints/reminder_service.dart';
+import 'services/endpoints/user-settings-service.dart';
 import 'services/infra/error_notifier_service.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_strategy.dart';
@@ -99,6 +100,11 @@ void registerServices() {
   GetIt.instance.registerFactory(() => IdentityService(null));
 
   GetIt.instance.registerFactory(() => BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>())));
+
+  GetIt.instance.registerFactory(() => UserSettingsService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>()),
+      notifierService: GetIt.I<NotifierService>()));
 }
 
 void registerSingletons(PlatformContext platformContext) {
