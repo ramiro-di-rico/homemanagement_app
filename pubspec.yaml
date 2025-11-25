@@ -20,7 +20,8 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   flip_card: ^0.7.0
   local_auth: ^2.1.6
-  package_info: ^2.0.2
+  # Migrate from deprecated package_info to package_info_plus to support latest Android Gradle Plugin requirements
+  package_info_plus: ^8.0.0
   flutter_slidable: ^4.0.1
   grouped_list: ^6.0.0
   logger: ^2.0.2
