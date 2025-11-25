@@ -103,7 +103,8 @@ void registerServices() {
 
   GetIt.instance.registerFactory(() => UserSettingsService(
       authenticationService: GetIt.I<AuthenticationService>(),
-      apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>())));
+      apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>()),
+      notifierService: GetIt.I<NotifierService>()));
 }
 
 void registerSingletons(PlatformContext platformContext) {
