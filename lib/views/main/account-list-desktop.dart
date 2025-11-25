@@ -27,6 +27,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
   TransactionService transactionService = GetIt.instance<TransactionService>();
   PlatformContext platform = GetIt.instance<PlatformContext>();
   bool showArchive = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
 
   @override
   void initState() {
@@ -34,12 +36,18 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
     load();
     accountsRepo.addListener(load);
     transactionsRepo.addListener(refreshAccounts);
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text;
+      });
+    });
   }
 
   @override
   void dispose() {
     accountsRepo.removeListener(load);
     transactionsRepo.removeListener(refreshAccounts);
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -56,47 +64,91 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
 
   @override
   Widget build(BuildContext context) {
+    final List<AccountModel> visibleAccounts = _query.trim().isEmpty
+        ? accounts
+        : accounts
+            .where((a) => a.name.toLowerCase().contains(_query.toLowerCase()))
+            .toList();
     return Column(
       children: [
         Card(
-          child: ListTile(
-            title: Text(
-              'Accounts',
-              style: TextStyle(fontSize: 20),
-            ),
-            leading: IconButton(
-              tooltip: showArchive ? 'Hide archived accounts' : 'Show archived accounts',
-              icon: Icon(showArchive ? Icons.visibility : Icons.visibility_off),
-              onPressed: () {
-                setState(() {
-                  accountsRepo.displayArchive(!showArchive);
-                  showArchive = !showArchive;
-                });
-              },
-            ),
-            trailing: TextButton(
-              onPressed: () {
-                showModalBottomSheet<void>(
-                    context: context,
-                    isScrollControlled: true,
-                    constraints: BoxConstraints(
-                      maxHeight: 500,
-                      maxWidth: 1200,
-                    ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(25.0))),
-                    builder: (context) {
-                      return SizedBox(
-                        height: 100,
-                        child: AnimatedPadding(
-                            padding: MediaQuery.of(context).viewInsets,
-                            duration: Duration(seconds: 1),
-                            child: AccountSheetDesktop()),
-                      );
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            child: Row(
+              children: [
+                // Leading icon button (archive visibility toggle)
+                IconButton(
+                  tooltip: showArchive
+                      ? 'Hide archived accounts'
+                      : 'Show archived accounts',
+                  icon: Icon(
+                      showArchive ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    setState(() {
+                      accountsRepo.displayArchive(!showArchive);
+                      showArchive = !showArchive;
                     });
-              },
-              child: Icon(Icons.add),
+                  },
+                ),
+                // Title
+                Text(
+                  'Accounts',
+                  style: TextStyle(fontSize: 20),
+                ),
+                SizedBox(width: 12),
+                // Search field expanded to fill remaining width
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: 'Search accounts',
+                        prefixIcon: Icon(Icons.search),
+                        suffixIcon: _query.isNotEmpty
+                            ? IconButton(
+                                icon: Icon(Icons.clear),
+                                onPressed: () {
+                                  _searchController.clear();
+                                },
+                              )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12),
+                // Trailing add icon button
+                IconButton(
+                  tooltip: 'Add account',
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        constraints: BoxConstraints(
+                          maxHeight: 500,
+                          maxWidth: 1200,
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(25.0))),
+                        builder: (context) {
+                          return SizedBox(
+                            height: 100,
+                            child: AnimatedPadding(
+                                padding: MediaQuery.of(context).viewInsets,
+                                duration: Duration(seconds: 1),
+                                child: AccountSheetDesktop()),
+                          );
+                        });
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -107,11 +159,11 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
               onRefresh: refreshAccounts,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: this.accounts.length,
+                itemCount: visibleAccounts.length,
                 itemBuilder: (context, index) {
-                  if (this.accounts.isEmpty) return Container();
+                  if (visibleAccounts.isEmpty) return Container();
 
-                  final item = this.accounts[index];
+                  final item = visibleAccounts[index];
 
                   return Card(
                     shape: RoundedRectangleBorder(

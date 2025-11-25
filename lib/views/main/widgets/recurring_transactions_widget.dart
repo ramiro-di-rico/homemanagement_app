@@ -23,56 +23,102 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
   final AccountRepository _accountRepository = GetIt.I.get<AccountRepository>();
   final CategoryRepository _categoryRepository =
       GetIt.I.get<CategoryRepository>();
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
 
   @override
   void initState() {
     super.initState();
     _recurringTransactionRepository.addListener(refresh);
     load();
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text;
+      });
+    });
   }
 
   @override
   void dispose() {
     _recurringTransactionRepository.removeListener(refresh);
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final visibleRecurring = _query.trim().isEmpty
+        ? _recurringTransactionRepository.recurringTransactions
+        : _recurringTransactionRepository.recurringTransactions
+            .where((rt) => rt.name.toLowerCase().contains(_query.toLowerCase()))
+            .toList();
     return _recurringTransactionRepository.loading
         ? Center(child: CircularProgressIndicator())
         : Column(
             children: [
               Card(
-                child: ListTile(
-                  title: Text(
-                    'Recurring Transactions',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  trailing: TextButton(
-                    onPressed: () {
-                      showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        constraints: BoxConstraints(
-                          maxHeight: 500,
-                          maxWidth: 1200,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Recurring Transactions',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 40,
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              isDense: true,
+                              hintText: 'Search recurring transactions',
+                              prefixIcon: Icon(Icons.search),
+                              suffixIcon: _query.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(Icons.clear),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                      },
+                                    )
+                                  : null,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(25.0))),
-                        builder: (context) {
-                          return SizedBox(
-                              height: 200,
-                              width: 900,
-                              child: AnimatedPadding(
-                                  padding: MediaQuery.of(context).viewInsets,
-                                  duration: Duration(seconds: 1),
-                                  child: RecurringTransactionForm()));
+                      ),
+                      SizedBox(width: 12),
+                      IconButton(
+                        tooltip: 'Add recurring transaction',
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          showModalBottomSheet<void>(
+                            context: context,
+                            isScrollControlled: true,
+                            constraints: BoxConstraints(
+                              maxHeight: 500,
+                              maxWidth: 1200,
+                            ),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(25.0))),
+                            builder: (context) {
+                              return SizedBox(
+                                  height: 200,
+                                  width: 900,
+                                  child: AnimatedPadding(
+                                      padding: MediaQuery.of(context).viewInsets,
+                                      duration: Duration(seconds: 1),
+                                      child: RecurringTransactionForm()));
+                            },
+                          );
                         },
-                      );
-                    },
-                    child: Icon(Icons.add),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -81,11 +127,10 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                   height: 330,
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: _recurringTransactionRepository
-                        .recurringTransactions.length,
+                    itemCount: visibleRecurring.length,
                     itemBuilder: (context, index) {
-                      var recurringTransaction = _recurringTransactionRepository
-                          .recurringTransactions[index];
+                      if (visibleRecurring.isEmpty) return Container();
+                      var recurringTransaction = visibleRecurring[index];
                       var account = _accountRepository.accounts
                           .where((account) =>
                               account.id == recurringTransaction.accountId)
