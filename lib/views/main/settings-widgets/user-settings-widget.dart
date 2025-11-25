@@ -17,7 +17,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
 
   UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
   late UserSettings userSettings;
-  String selectedDelimiter = ';';
+  String selectedDelimiter = '';
 
   @override
   void initState() {
@@ -47,10 +47,16 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
                     'CSV Delimiter',
                   ),
                   Spacer(),
-                  DropdownComponent(
-                    items: [';', ',', '|'],
-                    onChanged: onDelimiterChanged,
-                    currentValue: selectedDelimiter,
+                  selectedDelimiter.isEmpty
+                  ? CircularProgressIndicator()
+                  : SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: DropdownComponent(
+                        items: [';', ',', '|'],
+                        onChanged: onDelimiterChanged,
+                        currentValue: selectedDelimiter,
+                    ),
                   ),
                 ],
               ),
@@ -67,7 +73,6 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
     setState(() {
       userSettings = result;
       selectedDelimiter = userSettings.csvDelimiter;
-      print(userSettings.csvDelimiter);
     });
   }
 
