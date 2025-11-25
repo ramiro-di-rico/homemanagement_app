@@ -92,7 +92,9 @@ class ApiServiceFactory {
       throw Exception('Failed to put to $api');
     }
 
-    return json.decode(response.body);
+    return response.body.isEmpty
+        ? null
+        : json.decode(response.body);
   }
 
   Future apiDelete(String api, String id) async {

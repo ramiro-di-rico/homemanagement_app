@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../../custom/components/dropdown.component.dart';
 import '../../../models/user-settings.dart';
 import '../../../services/endpoints/user-settings-service.dart';
+import '../../mixins/notifier_mixin.dart';
 
 class UserSettingsWidget extends StatefulWidget {
   const UserSettingsWidget({super.key});
@@ -12,7 +13,7 @@ class UserSettingsWidget extends StatefulWidget {
   State<UserSettingsWidget> createState() => _UserSettingsWidgetState();
 }
 
-class _UserSettingsWidgetState extends State<UserSettingsWidget> {
+class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMixin {
 
   UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
   late UserSettings userSettings;
@@ -60,7 +61,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> {
     );
   }
 
-  Future load() async {
+  Future<void> load() async {
     var result = await _userSettingsService.fetchUserSettings();
 
     setState(() {
