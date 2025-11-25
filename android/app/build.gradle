@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -5,6 +8,7 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// Read values from local.properties
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
@@ -23,17 +27,16 @@ if (flutterVersionName == null) {
     flutterVersionName = "1.0"
 }
 
-
 // For Debugging create a file named key.properties in android folder
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}else {
-    keystoreProperties.setProperty('storePassword', System.getenv('KEY_STORE_PASSWORD'));
-    keystoreProperties.setProperty('keyPassword', System.getenv('KEY_PASSWORD'));
-    keystoreProperties.setProperty('keyAlias', System.getenv('ALIAS'));
-    keystoreProperties.setProperty('storeFile', System.getenv('KEY_PATH'));
+} else {
+    keystoreProperties.setProperty('storePassword', System.getenv('KEY_STORE_PASSWORD'))
+    keystoreProperties.setProperty('keyPassword', System.getenv('KEY_PASSWORD'))
+    keystoreProperties.setProperty('keyAlias', System.getenv('ALIAS'))
+    keystoreProperties.setProperty('storeFile', System.getenv('KEY_PATH'))
 }
 
 android {
@@ -42,8 +45,14 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        // Use Java 17 to align with modern AGP/Gradle and Kotlin targets
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        // Ensure Kotlin compiles to JVM 17 to match Java target
+        jvmTarget = '17'
     }
 
     defaultConfig {
@@ -75,4 +84,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+// Configure Kotlin toolchain explicitly to JDK 17 for CI environments
+kotlin {
+    jvmToolchain(17)
 }
