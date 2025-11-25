@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import '../../../custom/components/dropdown.component.dart';
 import '../../../services/repositories/currency.repository.dart';
 import '../../../services/repositories/preferences.repository.dart';
+import '../../../models/preference.dart';
 
 class PreferredCurrency extends StatefulWidget {
   const PreferredCurrency({super.key});
@@ -23,6 +24,10 @@ class _PreferredCurrencyState extends State<PreferredCurrency> {
     super.initState();
     currencies.addAll(currencyRepository.currencies.map((c) => c.name));
     selectedCurrency = preferencesRepository.getPreferredCurrency();
+    // Fallback to first available currency if none is set
+    if (selectedCurrency.isEmpty && currencies.isNotEmpty) {
+      selectedCurrency = currencies.first;
+    }
   }
 
   @override
@@ -57,7 +62,14 @@ class _PreferredCurrencyState extends State<PreferredCurrency> {
     );
   }
 
-  onCurrencyTypeChanged(String currencyChanged) {
-    // add logic to change currency
+  Future<void> onCurrencyTypeChanged(String currencyChanged) async {
+    setState(() {
+      selectedCurrency = currencyChanged;
+    });
+
+    // Persist preference
+    final preference = PreferenceModel(
+        PreferencesRepository.preferredCurrency, currencyChanged);
+    await preferencesRepository.update(preference);
   }
 }
