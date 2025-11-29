@@ -6,7 +6,7 @@ import 'dart:convert';
 class AccountService {
   AuthenticationService authenticationService;
   ApiServiceFactory apiServiceFactory;
-  final endpoint = 'account/v3';
+  final endpoint = 'account';
 
   AccountService(
       {required this.authenticationService, required this.apiServiceFactory});
