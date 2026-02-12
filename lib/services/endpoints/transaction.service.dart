@@ -13,7 +13,7 @@ import 'dart:convert';
 class TransactionService {
   AuthenticationService authenticationService;
   late ApiServiceFactory apiServiceFactory;
-  final String v3ApiName = 'transactions/v3';
+  final String apiName = 'transactions';
 
   TransactionService({required this.authenticationService}) {
     this.apiServiceFactory =
@@ -22,7 +22,7 @@ class TransactionService {
 
   Future<List<TransactionModel>> page(TransactionPageModel page) async {
     dynamic data = await apiServiceFactory.apiGet(
-        '$v3ApiName/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+        '$apiName/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
     var pageResult = TransactionPageModel.fromJson(data);
     return pageResult.items;
   }
@@ -30,7 +30,7 @@ class TransactionService {
   Future<List<TransactionModel>> pageNameFiltering(
       TransactionPageModel page, String name) async {
     dynamic data = await apiServiceFactory.apiGet(
-        '$v3ApiName/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
+        '$apiName/filter?accountId=${page.accountId}&name=$name&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
 
     var pageResult = TransactionPageModel.fromJson(data);
     return pageResult.items;
@@ -75,7 +75,7 @@ class TransactionService {
     }
 
     dynamic data = await apiServiceFactory.apiGet(
-        '$v3ApiName/filter?${queryFilter}');
+        '$apiName/filter?${queryFilter}');
     var pageResult = TransactionPageModel.fromJson(data);
     return pageResult.items;
   }
@@ -83,28 +83,28 @@ class TransactionService {
   Future<TransactionWithBalanceModel> add(
       TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
-    var result = await apiServiceFactory.postWithReturn(v3ApiName, body);
+    var result = await apiServiceFactory.postWithReturn(apiName, body);
     return TransactionWithBalanceModel.fromJson(result);
   }
 
   Future delete(int id) async {
-    await apiServiceFactory.apiDelete(v3ApiName, id.toString());
+    await apiServiceFactory.apiDelete(apiName, id.toString());
   }
 
   Future update(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(
-        v3ApiName + '/' + transactionModel.id.toString(), body);
+        apiName + '/' + transactionModel.id.toString(), body);
   }
 
   Future<String> export(int accountId) async {
-    var body = await apiServiceFactory.rawApiGet('$v3ApiName/export?accountId=$accountId');
+    var body = await apiServiceFactory.rawApiGet('$apiName/export?accountId=$accountId');
     return body;
   }
 
   Future import(int id, String fileContent) async {
 
     var file = MultipartFile.fromString('csv', fileContent, filename: "file.csv");
-    await apiServiceFactory.upload(v3ApiName + '/import', file);
+    await apiServiceFactory.upload(apiName + '/import', file);
   }
 }
