@@ -5,6 +5,7 @@ import 'package:home_management_app/services/endpoints/api-mixin.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 import 'dart:convert';
 
+import '../../models/http-models/balance_history_response.dart';
 import '../infra/caching.dart';
 
 class MetricService with HttpApiServiceMixin {
@@ -97,6 +98,18 @@ class MetricService with HttpApiServiceMixin {
       return breakdown;
     } else {
       throw Exception("Failed to fetch breakdown.");
+    }
+  }
+
+  Future<List<BalanceHistoryResponse>> getBalanceHistory() async {
+    var response = await httpGet(
+        createUri('Account/balance-history'), authenticationService.getUserToken());
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((e) => BalanceHistoryResponse.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to fetch balance history.");
     }
   }
 }
