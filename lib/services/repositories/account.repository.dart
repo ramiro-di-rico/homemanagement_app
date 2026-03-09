@@ -24,6 +24,10 @@ class AccountRepository extends ChangeNotifier {
     _loadAccounts(_internalAccounts);
   }
 
+  List<AccountModel> getAllAccounts(){
+    return _internalAccounts;
+  }
+
   Future load() async {
     var result = await this.accountService.fetchAccounts();
     this._internalAccounts.clear();

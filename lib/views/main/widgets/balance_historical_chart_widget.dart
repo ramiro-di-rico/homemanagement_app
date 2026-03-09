@@ -53,9 +53,10 @@ class _BalanceHistoricalChartWidgetState
   LineChartData buildChartData() {
     // Group data by currency name and month
     Map<String, Map<int, double>> groupedData = {};
+    var allAccounts = accountRepository.getAllAccounts();
 
     for (var item in data) {
-      var account = accountRepository.accounts
+      var account = allAccounts
           .where((element) => element.id == item.accountId)
           .firstOrNull;
       if (account == null) continue;
@@ -65,13 +66,14 @@ class _BalanceHistoricalChartWidgetState
           .firstOrNull;
       String currencyName = currency?.name ?? 'Unknown';
 
-      if (currency!.id != 3)continue;
-
       groupedData.putIfAbsent(currencyName, () => {});
+
       var month = item.date.month;
       var previous = groupedData[currencyName]![month] ?? 0;
-      groupedData[currencyName]![month] =
-          previous + item.balance;
+      var sum = previous + item.balance;
+      var current = groupedData[currencyName]![month];
+      current = sum;
+      groupedData[currencyName]![month] = current;
     }
 
     List<Color> lineColors = [
