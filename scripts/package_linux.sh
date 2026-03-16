@@ -28,7 +28,7 @@ mkdir -p "$TEMP_DIST/$APP_NAME"
 cp -r "$BUILD_DIR/"* "$TEMP_DIST/$APP_NAME/"
 
 # Copy icon
-ICON_SOURCE="ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png"
+ICON_SOURCE="assets/icon/app_icon.png"
 if [ -f "$ICON_SOURCE" ]; then
     cp "$ICON_SOURCE" "$TEMP_DIST/$APP_NAME/icon.png"
 else
