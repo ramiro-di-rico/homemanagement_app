@@ -21,6 +21,7 @@ class _BalanceHistoricalChartWidgetState
   AccountRepository accountRepository = GetIt.I.get<AccountRepository>();
   CurrencyRepository currencyRepository = GetIt.I.get<CurrencyRepository>();
   List<BalanceHistoryResponse> data = [];
+  int? selectedCurrencyId;
 
   @override
   void initState() {
@@ -35,9 +36,31 @@ class _BalanceHistoricalChartWidgetState
         : Card(
             child: Column(
               children: [
-                const ListTile(
-                  leading: Icon(Icons.history),
-                  title: Text('Balance History'),
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: const Text('Balance History'),
+                  trailing: DropdownButton<int?>(
+                    value: selectedCurrencyId,
+                    hint: const Text('All Currencies'),
+                    underline: const SizedBox(),
+                    items: [
+                      const DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text('All'),
+                      ),
+                      ...currencyRepository.currencies.map((currency) {
+                        return DropdownMenuItem<int?>(
+                          value: currency.id,
+                          child: Text(currency.name),
+                        );
+                      }),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCurrencyId = value;
+                      });
+                    },
+                  ),
                 ),
                 Expanded(
                   child: Padding(
@@ -60,6 +83,11 @@ class _BalanceHistoricalChartWidgetState
           .where((element) => element.id == item.accountId)
           .firstOrNull;
       if (account == null) continue;
+
+      if (selectedCurrencyId != null &&
+          account.currencyId != selectedCurrencyId) {
+        continue;
+      }
 
       var currency = currencyRepository.currencies
           .where((element) => element.id == account.currencyId)
@@ -119,7 +147,6 @@ class _BalanceHistoricalChartWidgetState
       ),
       borderData: FlBorderData(show: false),
       lineBarsData: groupedData.entries.map((entry) {
-        final currencyName = entry.key;
         final monthData = entry.value;
 
         // Sort months for the line

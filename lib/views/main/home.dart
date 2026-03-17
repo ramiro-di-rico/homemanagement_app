@@ -25,8 +25,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   AuthenticationService authenticationService =
       GetIt.I<AuthenticationService>();
-  NotificationRepository notificationRepository =
-      GetIt.I<NotificationRepository>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
   IdentityUserRepository _identityUserRepository =
       GetIt.I<IdentityUserRepository>();
@@ -53,16 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<PreferencesRepository>().load();
-    notificationRepository.load();
     GetIt.I<CategoryRepository>().load();
-
-    notificationRepository.addListener(() {
-      /*
-      setState(() {
-        hasNotifications = this.notificationRepository.notifications.length > 0;
-      });
-      */
-    });
 
   _identityUserRepository.getUser();
   }
@@ -120,49 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Icon(showArchiveAccounts
                       ? Icons.visibility_off
                       : Icons.visibility))
-              /*TextButton(
-            onPressed: displayNotifications,
-            child: Icon(
-                hasNotifications
-                    ? Icons.notifications
-                    : Icons.notifications_none,
-                color: Colors.white)),*/
             ]
           : [],
     );
-  }
-
-  displayNotifications() {
-    showModalBottomSheet(
-        isDismissible: true,
-        context: this.context,
-        builder: (BuildContext context) {
-          return Center(
-              child: Column(
-                  children: this
-                      .notificationRepository
-                      .notifications
-                      .map((e) => ListTile(
-                            title: Text(
-                              e.title,
-                              style: TextStyle(
-                                  decoration: e.dismissed
-                                      ? TextDecoration.lineThrough
-                                      : TextDecoration.none),
-                            ),
-                            trailing: TextButton(
-                              onPressed: () => dismissNotification(e),
-                              child: Icon(Icons.check),
-                            ),
-                          ))
-                      .toList()));
-        });
-  }
-
-  void dismissNotification(NotificationModel notificationModel) {
-    setState(() {
-      this.notificationRepository.dismiss(notificationModel);
-    });
   }
 
   void addFloatingActions() {
