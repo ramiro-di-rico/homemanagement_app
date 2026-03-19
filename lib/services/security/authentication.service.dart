@@ -75,13 +75,9 @@ class AuthenticationService {
   }
 
   Future<bool> biometricsAuthenticate() async {
-    var authOptions =
-        AuthenticationOptions(stickyAuth: true, biometricOnly: true);
-
     _logger?.i('Authenticating using biometrics...');
     var biometricAuthenticated = await _localAuth.authenticate(
-        localizedReason: 'Scan your fingerprint to authenticate',
-        options: authOptions);
+        localizedReason: 'Scan your fingerprint to authenticate');
 
     if (biometricAuthenticated) {
       await refreshToken();
