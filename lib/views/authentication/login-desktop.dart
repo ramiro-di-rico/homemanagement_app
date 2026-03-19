@@ -91,7 +91,7 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      Text('Forgot your password ?'),
+                      Expanded(child: Text('Forgot your password ?')),
                       TextButton(
                         onPressed: () {
                           showDialog(
@@ -147,7 +147,7 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      Text('You don' 't have an account yet ?'),
+                      Expanded(child: Text('You don' 't have an account yet ?')),
                       TextButton(
                         onPressed: () {
                           context.go(RegistrationScreen.fullPath);
