@@ -21,22 +21,7 @@ class SettingsDesktopView extends StatefulWidget {
 
 class _SettingsDesktopViewState extends State<SettingsDesktopView> {
   bool _isDeveloper = false;
-  bool _preferencesLoaded = false;
-  PreferencesRepository preferencesRepository =
-      GetIt.I<PreferencesRepository>();
-
-  @override
-  void initState() {
-    super.initState();
-    preferencesRepository.addListener(_onPreferencesLoaded);
-    preferencesRepository.load();
-  }
-
-  @override
-  void dispose() {
-    preferencesRepository.removeListener(_onPreferencesLoaded);
-    super.dispose();
-  }
+  bool _preferencesLoaded = true;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +35,7 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                 child: CircularProgressIndicator(),
               )
             : SingleChildScrollView(
-              child: Container(
+              child: SizedBox(
                 height: 1200,
                 child: Column(
                     children: [
@@ -64,7 +49,7 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   UserInfoWidget(),
-                                  PreferredCurrency(),
+                                  //PreferredCurrency(),
                                   UserLanguageWidget(),
                                   TwoFactorAuthenticationWidget(),
                                   DailyBackupWidget(),
@@ -93,8 +78,8 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                               ),
                             ),
                             Expanded(
-                              child: CategoriesListWidget(),
                               flex: 1,
+                              child: CategoriesListWidget(),
                             ),
                           ],
                         ),

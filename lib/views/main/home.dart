@@ -50,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     AccountRepository accountRepository = GetIt.instance<AccountRepository>();
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
-    GetIt.I<PreferencesRepository>().load();
     GetIt.I<CategoryRepository>().load();
 
   _identityUserRepository.getUser();

@@ -34,7 +34,6 @@ class _HomeDesktopState extends State<HomeDesktop> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<CategoryRepository>().load();
-    GetIt.I<PreferencesRepository>().load();
     GetIt.I<IdentityUserRepository>().getUser();
     GetIt.I<BudgetRepository>().load();
   }
