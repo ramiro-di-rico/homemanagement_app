@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
 
 import 'package:flutter/widgets.dart';
 import 'package:home_management_app/services/infra/platform/platform_type.dart';
@@ -37,20 +38,20 @@ class WebPlatformImpl extends PlatformContext {
 
     // prepare
     final bytes = utf8.encode(value);
-    final blob = html.Blob([bytes]);
-    final url = html.Url.createObjectUrlFromBlob(blob);
-    final anchor = html.document.createElement('a') as html.AnchorElement
+    final blob = web.Blob([bytes.toJS].toJS);
+    final url = web.URL.createObjectURL(blob);
+    final anchor = web.document.createElement('a') as web.HTMLAnchorElement
       ..href = url
       ..style.display = 'none'
       ..download = "$filename.$extension";
-    html.document.body?.children.add(anchor);
+    web.document.body?.appendChild(anchor);
 
     // download
     anchor.click();
 
     // cleanup
-    html.document.body?.children.remove(anchor);
-    html.Url.revokeObjectUrl(url);
+    web.document.body?.removeChild(anchor);
+    web.URL.revokeObjectURL(url);
   }
 
   @override
