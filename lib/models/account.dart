@@ -40,6 +40,7 @@ class AccountModel {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'accountId': id,
         'name': name,
         'balance': balance,
         'measurable': measurable,
