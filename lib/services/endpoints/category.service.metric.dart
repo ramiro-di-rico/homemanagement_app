@@ -78,7 +78,7 @@ class CategoryMetricService with HttpApiServiceMixin {
   Future<List<CategoryHistoricalResponse>> getCategoryHistoricalResponses(DateTime dateFrom, DateTime dateTo, int take) async {
 
     var response = await httpGet(
-      createUri('category/historical', queryParameters: {
+      createUri('category/v1/historical', queryParameters: {
         'dateFrom': dateFrom.toIso8601String(),
         'dateTo': dateTo.toIso8601String(),
         'take': take.toString(),

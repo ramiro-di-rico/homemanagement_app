@@ -4,6 +4,7 @@ import 'package:home_management_app/views/main/widgets/overview/overview-widget.
 import '../../models/overall.dart';
 import '../../services/endpoints/metrics.service.dart';
 import 'widgets/accounts-series-metrics..dart';
+import 'widgets/balance_historical_chart_widget.dart';
 import 'widgets/balances.widget.dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
@@ -47,6 +48,13 @@ class _DashboardState extends State<Dashboard> {
               child: Padding(
                 padding: EdgeInsets.all(10),
                 child: MostExpensiveCategoriesChart(),
+              ),
+              flex: 6,
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: BalanceHistoricalChartWidget(),
               ),
               flex: 6,
             )

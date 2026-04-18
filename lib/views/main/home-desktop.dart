@@ -34,7 +34,6 @@ class _HomeDesktopState extends State<HomeDesktop> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<CategoryRepository>().load();
-    GetIt.I<PreferencesRepository>().load();
     GetIt.I<IdentityUserRepository>().getUser();
     GetIt.I<BudgetRepository>().load();
   }
@@ -78,30 +77,27 @@ class _HomeDesktopState extends State<HomeDesktop> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Container(
-            height: 1000,
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(flex: 12, child: DashboardDesktop()),
-                    Flexible(
-                        flex: 7,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 10),
-                            SizedBox(height: 410, child: AccountListDesktopView()),
-                            SizedBox(height: 10),
-                            SizedBox(height: 410, child: RecurringTransactionList())
-                          ],
-                        ))
-                  ],
-                ),
-              ],
-            ),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Flexible(flex: 12, child: DashboardDesktop()),
+                  Flexible(
+                      flex: 7,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 10),
+                          SizedBox(height: 410, child: AccountListDesktopView()),
+                          SizedBox(height: 10),
+                          SizedBox(height: 410, child: RecurringTransactionList())
+                        ],
+                      ))
+                ],
+              ),
+            ],
           ),
         ),
       ),

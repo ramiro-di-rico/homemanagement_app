@@ -8,6 +8,7 @@ class RecurringTransactionService {
   AuthenticationService authenticationService;
   late ApiServiceFactory apiServiceFactory;
   final String v3ApiName = 'RecurringTransactions/v3';
+  final String apiName = 'recurringtransactions';
 
   RecurringTransactionService({required this.authenticationService}) {
     this.apiServiceFactory =
@@ -15,7 +16,7 @@ class RecurringTransactionService {
   }
 
   Future<List<RecurringTransaction>> getAll() async {
-    dynamic data = await apiServiceFactory.apiGet('$v3ApiName');
+    dynamic data = await apiServiceFactory.apiGet('$apiName');
     return (data as List)
         .map((item) => RecurringTransaction.fromJson(item))
         .toList();
@@ -23,16 +24,16 @@ class RecurringTransactionService {
 
   Future create(RecurringTransaction transaction) async {
     var body = jsonEncode(transaction.toJson());
-    await apiServiceFactory.apiPost(v3ApiName, body);
+    await apiServiceFactory.apiPost(apiName, body);
   }
 
   Future<RecurringTransaction> update(RecurringTransaction transaction) async {
     var body = jsonEncode(transaction.toJson());
-    dynamic data = await apiServiceFactory.apiPut(v3ApiName, body);
+    dynamic data = await apiServiceFactory.apiPut(apiName, body);
     return RecurringTransaction.fromJson(data);
   }
 
   Future<void> delete(int id) async {
-    await apiServiceFactory.apiDelete('$v3ApiName', id.toString());
+    await apiServiceFactory.apiDelete('$apiName', id.toString());
   }
 }
