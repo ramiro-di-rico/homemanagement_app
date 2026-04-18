@@ -110,11 +110,18 @@ class _AccountListScreenState extends State<AccountListScreen> with NotifierMixi
                 ),
                 SlidableAction(
                   onPressed: (context) async {
-                    item.archive = !item.archive;
-                    await accountsRepo.update(item);
+                    await accountsRepo.hide(item);
+                  },
+                  icon: item.isHidden ? Icons.visibility : Icons.visibility_off,
+                  backgroundColor: Colors.blueAccent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                SlidableAction(
+                  onPressed: (context) async {
+                    await accountsRepo.archive(item);
                   },
                   icon: item.archive ? Icons.unarchive : Icons.archive,
-                  backgroundColor: Colors.blueAccent,
+                  backgroundColor: Colors.pinkAccent,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 SlidableAction(

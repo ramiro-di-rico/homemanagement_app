@@ -5,9 +5,10 @@ class AccountModel {
   bool measurable;
   AccountType accountType;
   bool archive;
+  bool isHidden;
 
   AccountModel(this.id, this.name, this.balance, this.measurable,
-      this.accountType, this.currencyId, this.userId, this.archive);
+      this.accountType, this.currencyId, this.userId, this.archive, this.isHidden);
 
   factory AccountModel.fromJson(Map<String, dynamic> json) {
     return AccountModel(
@@ -18,7 +19,8 @@ class AccountModel {
         json['accountType'] == 0 ? AccountType.Cash : AccountType.BankAccount,
         json['currencyId'],
         json['userId'],
-        json['archive']);
+        json['archive'],
+        json['isHidden']);
   }
 
   factory AccountModel.nameAndBalance(Map<String, dynamic> json) =>
@@ -30,10 +32,11 @@ class AccountModel {
           AccountType.Cash,
           0,
           0,
+          false,
           false);
 
   factory AccountModel.empty(int currencyId) =>
-      AccountModel(0, "", 0, false, AccountType.Cash, currencyId, 0, false);
+      AccountModel(0, "", 0, false, AccountType.Cash, currencyId, 0, false, false);
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -43,7 +46,8 @@ class AccountModel {
         'accountType': accountType == AccountType.Cash ? 0 : 1,
         'currencyId': currencyId,
         'userId': userId,
-        'archive': archive
+        'archive': archive,
+        'isHidden': isHidden
       };
 
   String accountTypeToString() {

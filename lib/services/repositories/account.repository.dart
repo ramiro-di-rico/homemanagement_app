@@ -13,14 +13,14 @@ class AccountRepository extends ChangeNotifier {
   final List<AccountModel> _internalAccounts = [];
   final List<AccountModel> accounts = [];
   final List<AccountSeries> accountSeries = [];
-  bool showArchive = false;
+  bool showHidden = false;
 
   AccountRepository({required this.accountService, required this.notifierService});
 
   Future refresh() async => await load();
 
-  displayArchive(bool show) {
-    showArchive = show;
+  displayHidden(bool show) {
+    showHidden = show;
     _loadAccounts(_internalAccounts);
   }
 
@@ -33,9 +33,9 @@ class AccountRepository extends ChangeNotifier {
 
   _loadAccounts(List<AccountModel> result) {
     this.accounts.clear();
-    this.accounts.addAll(showArchive
+    this.accounts.addAll(showHidden
         ? _internalAccounts
-        : _internalAccounts.where((element) => !element.archive).toList());
+        : _internalAccounts.where((element) => !element.isHidden).toList());
     notifyListeners();
   }
 
@@ -71,6 +71,19 @@ class AccountRepository extends ChangeNotifier {
       notifierService.notify('Account ${accountModel.name} ${archiveLabel} successfully');
     } catch (ex) {
       notifierService.notify('Failed to ${archiveLabel} account ${accountModel.name}');
+      print(ex);
+    }
+  }
+
+  Future hide(AccountModel accountModel) async {
+    var hideLabel = accountModel.isHidden ? 'shown' : 'hidden';
+    try {
+      accountModel.isHidden = !accountModel.isHidden;
+      await accountService.update(accountModel);
+      _loadAccounts(accounts);
+      notifierService.notify('Account ${accountModel.name} ${hideLabel} successfully');
+    } catch (ex) {
+      notifierService.notify('Failed to ${hideLabel} account ${accountModel.name}');
       print(ex);
     }
   }

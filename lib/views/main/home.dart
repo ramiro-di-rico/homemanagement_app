@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   int bottomBarNavigationIndex = 0;
   bool hasNotifications = false;
-  bool showArchiveAccounts = false;
+  bool showHiddenAccounts = false;
 
   @override
   void initState() {
@@ -113,20 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
               TextButton(
                   onPressed: () {
                     setState(() {
-                      showArchiveAccounts = !showArchiveAccounts;
-                      _accountRepository.displayArchive(showArchiveAccounts);
+                      showHiddenAccounts = !showHiddenAccounts;
+                      _accountRepository.displayHidden(showHiddenAccounts);
                     });
                   },
-                  child: Icon(showArchiveAccounts
+                  child: Icon(showHiddenAccounts
                       ? Icons.visibility_off
                       : Icons.visibility))
-              /*TextButton(
-            onPressed: displayNotifications,
-            child: Icon(
-                hasNotifications
-                    ? Icons.notifications
-                    : Icons.notifications_none,
-                color: Colors.white)),*/
             ]
           : [],
     );

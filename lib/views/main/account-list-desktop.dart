@@ -26,7 +26,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
       GetIt.instance<TransactionRepository>();
   TransactionService transactionService = GetIt.instance<TransactionService>();
   PlatformContext platform = GetIt.instance<PlatformContext>();
-  bool showArchive = false;
+  bool showHidden = false;
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
 
@@ -78,15 +78,15 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
               children: [
                 // Leading icon button (archive visibility toggle)
                 IconButton(
-                  tooltip: showArchive
-                      ? 'Hide archived accounts'
-                      : 'Show archived accounts',
+                  tooltip: showHidden
+                      ? 'Show all accounts'
+                      : 'Hide accounts',
                   icon: Icon(
-                      showArchive ? Icons.visibility : Icons.visibility_off),
+                      showHidden ? Icons.visibility : Icons.visibility_off),
                   onPressed: () {
                     setState(() {
-                      accountsRepo.displayArchive(!showArchive);
-                      showArchive = !showArchive;
+                      accountsRepo.displayHidden(!showHidden);
+                      showHidden = !showHidden;
                     });
                   },
                 ),
@@ -253,6 +253,14 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                                           child: AccountSheet(accountModel: item)),
                                     );
                                   });
+                            },
+                          ),
+                          MenuItemButton(
+                            leadingIcon: Icon(item.isHidden ? Icons.visibility : Icons.visibility_off, color: Colors.blueAccent),
+                            child: Text(item.isHidden ? 'Show' : 'Hide',
+                                style: TextStyle(color: Colors.blueAccent)),
+                            onPressed: () {
+                              accountsRepo.hide(item);
                             },
                           ),
                           MenuItemButton(
