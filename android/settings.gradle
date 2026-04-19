@@ -20,9 +20,9 @@ pluginManagement {
 
 plugins {
     // Provide explicit versions for Android and Kotlin plugins so Gradle can resolve them in CI
-    id "com.android.application" version "8.9.1" apply false
-    id "com.android.library" version "8.9.1" apply false
-    id "org.jetbrains.kotlin.android" version "2.0.21" apply false
+    id "com.android.application" version "8.12.1" apply false
+    id "com.android.library" version "8.12.1" apply false
+    id "org.jetbrains.kotlin.android" version "2.2.0" apply false
     // Flutter plugin loader
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
 }
