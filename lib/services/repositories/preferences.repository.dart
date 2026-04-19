@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 import '../../models/preference.dart';
 import '../endpoints/preferences.service.dart';
 import '../infra/error_notifier_service.dart';
+import 'user.repository.dart';
 
 class PreferencesRepository extends ChangeNotifier {
   PreferenceService preferenceService;
   NotifierService notifierService;
+  UserRepository userRepository;
 
   List<PreferenceModel> preferences = [];
   static const String dailyBackup = 'EnableDailyBackups';
   static const String preferredCurrency = 'PreferredCurrency';
   static const String language = 'Language';
+  static const String useMainAccounts = 'UseMainAccounts';
 
-  PreferencesRepository({required this.preferenceService, required this.notifierService});
+  PreferencesRepository({required this.preferenceService, required this.notifierService, required this.userRepository});
 
   Future load() async {
     var result = await this.preferenceService.fetch();
@@ -46,6 +49,15 @@ class PreferencesRepository extends ChangeNotifier {
     if (this.preferences.length == 0) return '';
 
     return this.preferences.firstWhere((element) => element.name == language).value;
+  }
+
+  bool getUseMainAccounts() {
+    return userRepository.preferences?.getBool(useMainAccounts) ?? false;
+  }
+
+  Future setUseMainAccounts(bool value) async {
+    await userRepository.preferences?.setBool(useMainAccounts, value);
+    notifyListeners();
   }
 
   Future update(PreferenceModel preference) async {

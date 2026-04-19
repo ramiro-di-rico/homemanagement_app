@@ -24,6 +24,6 @@ class UserSettingsService {
   Future update(UserSettings userSettings) async {
     var msg = jsonEncode(userSettings);
     await apiServiceFactory.apiPut('UserSettings', msg);
-    notifierService.notify('CSV Delimiter updated');
+    notifierService.notify('User Settings updated');
   }
 }

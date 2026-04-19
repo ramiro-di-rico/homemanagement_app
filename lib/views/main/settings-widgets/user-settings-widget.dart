@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../../custom/components/dropdown.component.dart';
 import '../../../models/user-settings.dart';
 import '../../../services/endpoints/user-settings-service.dart';
+import '../../../services/repositories/preferences.repository.dart';
 import '../../mixins/notifier_mixin.dart';
 
 class UserSettingsWidget extends StatefulWidget {
@@ -16,8 +17,10 @@ class UserSettingsWidget extends StatefulWidget {
 class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMixin {
 
   UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
+  PreferencesRepository _preferencesRepository = GetIt.I<PreferencesRepository>();
   late UserSettings userSettings;
   String selectedDelimiter = '';
+  bool useMainAccounts = false;
 
   @override
   void initState() {
@@ -28,7 +31,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 120,
+      height: 180,
       child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,6 +64,28 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Text(
+                    'Use Main Accounts',
+                  ),
+                  Spacer(),
+                  selectedDelimiter.isEmpty
+                      ? CircularProgressIndicator()
+                      : Switch(
+                    value: useMainAccounts,
+                    onChanged: (value) {
+                      setState(() {
+                        useMainAccounts = value;
+                      });
+                      _preferencesRepository.setUseMainAccounts(value);
+                    },
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -73,6 +98,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
     setState(() {
       userSettings = result;
       selectedDelimiter = userSettings.csvDelimiter;
+      useMainAccounts = _preferencesRepository.getUseMainAccounts();
     });
   }
 

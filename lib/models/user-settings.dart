@@ -10,6 +10,6 @@ class UserSettings{
   }
 
   Map toJson() => {
-    'csvDelimiter': this.csvDelimiter
+    'csvDelimiter': this.csvDelimiter,
   };
 }
