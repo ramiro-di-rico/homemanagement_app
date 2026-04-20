@@ -41,8 +41,8 @@ class MainAccountRepository extends ChangeNotifier {
       await load();
       notifierService.notify('Main Account ${mainAccount.name} added successfully');
     } catch (ex) {
+      notifierService.notify('Failed to add main account ${mainAccount.name}', isError: true);
       print(ex);
-      notifierService.notify('Failed to add main account ${mainAccount.name}');
     }
   }
 
@@ -52,7 +52,7 @@ class MainAccountRepository extends ChangeNotifier {
       await load();
       notifierService.notify('Main Account ${mainAccount.name} updated successfully');
     } catch (ex) {
-      notifierService.notify('Failed to update main account ${mainAccount.name}');
+      notifierService.notify('Failed to update main account ${mainAccount.name}', isError: true);
       print(ex);
     }
   }
@@ -63,9 +63,9 @@ class MainAccountRepository extends ChangeNotifier {
       mainAccount.isHidden = !mainAccount.isHidden;
       await mainAccountService.update(mainAccount);
       await load();
-      notifierService.notify('Main Account ${mainAccount.name} ${hideLabel} successfully');
+      notifierService.notify('Main Account ${mainAccount.name} $hideLabel successfully');
     } catch (ex) {
-      notifierService.notify('Failed to ${hideLabel} main account ${mainAccount.name}');
+      notifierService.notify('Failed to $hideLabel main account ${mainAccount.name}', isError: true);
       print(ex);
     }
   }
@@ -76,8 +76,8 @@ class MainAccountRepository extends ChangeNotifier {
       await load();
       notifierService.notify('Main Account ${mainAccount.name} deleted successfully');
     } catch (ex) {
+      notifierService.notify('Failed to delete main account ${mainAccount.name}', isError: true);
       print(ex);
-      notifierService.notify('Failed to delete main account ${mainAccount.name}');
     }
   }
 
@@ -88,10 +88,9 @@ class MainAccountRepository extends ChangeNotifier {
   Future addAccountToMain(int mainAccountId, int accountId) async {
     try {
       await mainAccountService.addAccount(mainAccountId, accountId);
-      await load();
       notifierService.notify('Account added to main account successfully');
     } catch (ex) {
-      notifierService.notify('Failed to add account to main account');
+      notifierService.notify('Failed to add account to main account', isError: true);
       print(ex);
     }
   }
@@ -99,10 +98,9 @@ class MainAccountRepository extends ChangeNotifier {
   Future removeAccountFromMain(int mainAccountId, int accountId) async {
     try {
       await mainAccountService.removeAccount(mainAccountId, accountId);
-      await load();
       notifierService.notify('Account removed from main account successfully');
     } catch (ex) {
-      notifierService.notify('Failed to remove account from main account');
+      notifierService.notify('Failed to remove account from main account', isError: true);
       print(ex);
     }
   }

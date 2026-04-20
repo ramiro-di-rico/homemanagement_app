@@ -25,7 +25,7 @@ class AccountRepository extends ChangeNotifier {
   }
 
   List<AccountModel> getAllAccounts(){
-    return _internalAccounts;
+    return List.from(_internalAccounts);
   }
 
   Future load() async {
@@ -48,10 +48,10 @@ class AccountRepository extends ChangeNotifier {
       await this.accountService.add(accountModel);
       this.accounts.add(accountModel);
       notifyListeners();
-      notifierService.notify('Account $accountModel.name added successfully');
+      notifierService.notify('Account ${accountModel.name} added successfully');
     } catch (ex) {
       print(ex);
-      notifierService.notify('Failed to add account ${accountModel.name}');
+      notifierService.notify('Failed to add account ${accountModel.name}', isError: true);
     }
   }
 
@@ -59,9 +59,9 @@ class AccountRepository extends ChangeNotifier {
     try {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
-      notifierService.notify('Account $accountModel.name updated successfully');
+      notifierService.notify('Account ${accountModel.name} updated successfully');
     } catch (ex) {
-      notifierService.notify('Failed to update account ${accountModel.name}');
+      notifierService.notify('Failed to update account ${accountModel.name}', isError: true);
       print(ex);
     }
   }
@@ -72,9 +72,9 @@ class AccountRepository extends ChangeNotifier {
       accountModel.archive = !accountModel.archive;
       await accountService.update(accountModel);
       _loadAccounts(accounts);
-      notifierService.notify('Account ${accountModel.name} ${archiveLabel} successfully');
+      notifierService.notify('Account ${accountModel.name} $archiveLabel successfully');
     } catch (ex) {
-      notifierService.notify('Failed to ${archiveLabel} account ${accountModel.name}');
+      notifierService.notify('Failed to $archiveLabel account ${accountModel.name}', isError: true);
       print(ex);
     }
   }
@@ -85,9 +85,9 @@ class AccountRepository extends ChangeNotifier {
       accountModel.isHidden = !accountModel.isHidden;
       await accountService.update(accountModel);
       _loadAccounts(accounts);
-      notifierService.notify('Account ${accountModel.name} ${hideLabel} successfully');
+      notifierService.notify('Account ${accountModel.name} $hideLabel successfully');
     } catch (ex) {
-      notifierService.notify('Failed to ${hideLabel} account ${accountModel.name}');
+      notifierService.notify('Failed to $hideLabel account ${accountModel.name}', isError: true);
       print(ex);
     }
   }
@@ -97,10 +97,10 @@ class AccountRepository extends ChangeNotifier {
       await this.accountService.delete(accountModel);
       this.accounts.remove(accountModel);
       notifyListeners();
-      notifierService.notify('Account $accountModel.name deleted successfully');
+      notifierService.notify('Account ${accountModel.name} deleted successfully');
     } catch (ex) {
       print(ex);
-      notifierService.notify('Failed to delete account ${accountModel.name}');
+      notifierService.notify('Failed to delete account ${accountModel.name}', isError: true);
     }
   }
 

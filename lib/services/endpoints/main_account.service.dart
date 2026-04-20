@@ -35,9 +35,9 @@ class MainAccountService {
   }
 
   Future<List<AccountModel>> fetchAccounts(int mainAccountId) async {
-    var list = await this.apiServiceFactory.fetchList('$endpoint/$mainAccountId/accounts');
-    var result = list.map((e) => AccountModel.fromJson(e)).toList();
-    return result;
+    var json = await this.apiServiceFactory.apiGet('$endpoint/$mainAccountId/accounts');
+    var result = MainAccountModel.fromJson(json);
+    return result.childAccounts;
   }
 
   Future addAccount(int mainAccountId, int accountId) async {
