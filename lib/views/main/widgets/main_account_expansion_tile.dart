@@ -86,17 +86,7 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MainAccountDetailScreen(mainAccount: widget.mainAccount),
-            ),
-          );
-        },
-        child: Text(widget.mainAccount.name),
-      ),
+      title: Text(widget.mainAccount.name),
       shape: Border.all(color: Colors.transparent),
       collapsedShape: Border.all(color: Colors.transparent),
       trailing: Row(
