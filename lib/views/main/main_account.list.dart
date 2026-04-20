@@ -3,6 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/main_account.dart';
 import 'package:home_management_app/services/repositories/main_account.repository.dart';
+import 'package:home_management_app/views/main/widgets/main_account_expansion_tile.dart';
 import 'main_account.detail.dart';
 import 'widgets/main_account.sheet.dart';
 
@@ -46,78 +47,11 @@ class _MainAccountListScreenState extends State<MainAccountListScreen> {
     return RefreshIndicator(
       onRefresh: refreshMainAccounts,
       child: ListView.builder(
-        shrinkWrap: true,
         itemCount: this.mainAccounts.length,
         itemBuilder: (context, index) {
           final item = this.mainAccounts[index];
 
-          return Slidable(
-            startActionPane: ActionPane(
-              motion: ScrollMotion(),
-              children: [
-                SlidableAction(
-                  onPressed: ((context) => {
-                    showModalBottomSheet<void>(
-                        context: context,
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(25.0))),
-                        builder: (context) {
-                          return SizedBox(
-                            height: 250,
-                            child: AnimatedPadding(
-                                padding: MediaQuery.of(context).viewInsets,
-                                duration: Duration(seconds: 1),
-                                child: MainAccountSheet(mainAccountModel: item)),
-                          );
-                        })
-                  }),
-                  icon: Icons.edit,
-                  backgroundColor: Colors.lightBlueAccent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                SlidableAction(
-                  onPressed: (context) async {
-                    await mainAccountsRepo.hide(item);
-                  },
-                  icon: item.isHidden ? Icons.visibility : Icons.visibility_off,
-                  backgroundColor: Colors.blueAccent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                SlidableAction(
-                  onPressed: (context) async => await remove(item),
-                  icon: Icons.delete,
-                  backgroundColor: Colors.redAccent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ],
-            ),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: ListTile(
-                title: Text(
-                  item.name,
-                ),
-                trailing: Chip(
-                  label: Text(
-                    item.childAccountCount.toString(),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  backgroundColor: Colors.blueAccent,
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MainAccountDetailScreen(mainAccount: item),
-                    ),
-                  );
-                },
-              ),
-            ),
-          );
+          return MainAccountExpansionTile(mainAccount: item);
         },
       ),
     );

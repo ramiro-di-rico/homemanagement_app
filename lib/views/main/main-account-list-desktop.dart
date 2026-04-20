@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/models/main_account.dart';
 import 'package:home_management_app/services/repositories/main_account.repository.dart';
+import 'widgets/main_account_expansion_tile.dart';
 import 'main_account.detail.dart';
 import 'widgets/main_account.sheet.dart';
 
@@ -136,108 +137,16 @@ class _MainAccountListDesktopViewState extends State<MainAccountListDesktopView>
             ),
           ),
         ),
-        SingleChildScrollView(
-          child: Container(
-            height: 330,
-            child: RefreshIndicator(
-              onRefresh: refreshMainAccounts,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: visibleAccounts.length,
-                itemBuilder: (context, index) {
-                  final item = visibleAccounts[index];
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: refreshMainAccounts,
+            child: ListView.builder(
+              itemCount: visibleAccounts.length,
+              itemBuilder: (context, index) {
+                final item = visibleAccounts[index];
 
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        item.name,
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Chip(
-                            label: Text(
-                              item.childAccountCount.toString(),
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.blueAccent,
-                          ),
-                          MenuAnchor(
-                            builder: (BuildContext context, MenuController controller,
-                                Widget? child) {
-                              return IconButton(
-                                onPressed: () {
-                                  if (controller.isOpen) {
-                                    controller.close();
-                                  } else {
-                                    controller.open();
-                                  }
-                                },
-                                icon: const Icon(Icons.more_vert),
-                                tooltip: 'Show menu',
-                              );
-                            },
-                            menuChildren: [
-                              MenuItemButton(
-                                leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
-                                child: Text('Edit',
-                                    style: TextStyle(color: Colors.blueAccent)),
-                                onPressed: () {
-                                  showModalBottomSheet<void>(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(25.0))),
-                                      builder: (context) {
-                                        return SizedBox(
-                                          height: 250,
-                                          child: AnimatedPadding(
-                                              padding: MediaQuery.of(context).viewInsets,
-                                              duration: Duration(seconds: 1),
-                                              child: MainAccountSheet(mainAccountModel: item)),
-                                        );
-                                      });
-                                },
-                              ),
-                              MenuItemButton(
-                                leadingIcon: Icon(item.isHidden ? Icons.visibility : Icons.visibility_off, color: Colors.blueAccent),
-                                child: Text(item.isHidden ? 'Show' : 'Hide',
-                                    style: TextStyle(color: Colors.blueAccent)),
-                                onPressed: () {
-                                  mainAccountsRepo.hide(item);
-                                },
-                              ),
-                              MenuItemButton(
-                                leadingIcon: Icon(
-                                  Icons.delete,
-                                  color: Colors.redAccent,
-                                ),
-                                child: Text('Delete',
-                                    style: TextStyle(color: Colors.redAccent)),
-                                onPressed: () async {
-                                  await remove(item);
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                         Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MainAccountDetailScreen(mainAccount: item),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
+                return MainAccountExpansionTile(mainAccount: item);
+              },
             ),
           ),
         ),
