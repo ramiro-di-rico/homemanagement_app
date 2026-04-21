@@ -40,7 +40,12 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
   void initState() {
     accountRepository.addListener(_onAccountRepositoryChanged);
     allAccounts = accountRepository.getAllAccounts();
-    load();
+    if (widget.mainAccount.childAccounts.isNotEmpty) {
+      childAccounts = widget.mainAccount.childAccounts;
+      isLoading = false;
+    } else {
+      load();
+    }
     super.initState();
   }
 

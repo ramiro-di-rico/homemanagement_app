@@ -82,7 +82,13 @@ class MainAccountRepository extends ChangeNotifier {
   }
 
   Future<List<AccountModel>> getAccounts(int mainAccountId) async {
-    return await mainAccountService.fetchAccounts(mainAccountId);
+    var result = await mainAccountService.fetchAccounts(mainAccountId);
+    var mainAccount = _internalMainAccounts.where((element) => element.id == mainAccountId).firstOrNull;
+    if (mainAccount != null) {
+      mainAccount.childAccounts = result;
+      mainAccount.childAccountCount = result.length;
+    }
+    return result;
   }
 
   Future addAccountToMain(int mainAccountId, int accountId) async {

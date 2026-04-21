@@ -12,7 +12,7 @@ class MainAccountModel {
     var mainAccount = MainAccountModel(
       json['id'],
       json['name'],
-      json['userId'],
+      json['userId'] ?? 0,
       json['childAccountCount'] ?? 0,
       json['isHidden'] ?? false
     );

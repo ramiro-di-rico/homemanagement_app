@@ -42,6 +42,7 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
   void initState() {
     accountRepository.addListener(_onAccountRepositoryChanged);
     allAccounts = accountRepository.getAllAccounts();
+    childAccounts = widget.mainAccount.childAccounts;
     super.initState();
   }
 
@@ -171,7 +172,7 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
         setState(() {
           isExpanded = expanded;
         });
-        if (expanded && childAccounts.isEmpty) {
+        if (expanded && childAccounts.isEmpty && widget.mainAccount.childAccountCount > 0) {
           load();
         }
       },
