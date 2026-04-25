@@ -10,6 +10,7 @@ class MainAccountRepository extends ChangeNotifier {
   final List<MainAccountModel> _internalMainAccounts = [];
   final List<MainAccountModel> mainAccounts = [];
   bool showHidden = false;
+  bool isLoading = false;
 
   MainAccountRepository({required this.mainAccountService, required this.notifierService});
 
@@ -21,10 +22,17 @@ class MainAccountRepository extends ChangeNotifier {
   }
 
   Future load() async {
-    var result = await this.mainAccountService.fetchMainAccounts();
-    this._internalMainAccounts.clear();
-    this._internalMainAccounts.addAll(result);
-    _loadMainAccounts(result);
+    isLoading = true;
+    notifyListeners();
+    try {
+      var result = await this.mainAccountService.fetchMainAccounts();
+      this._internalMainAccounts.clear();
+      this._internalMainAccounts.addAll(result);
+      _loadMainAccounts(result);
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   _loadMainAccounts(List<MainAccountModel> result) {

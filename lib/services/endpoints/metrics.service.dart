@@ -11,7 +11,6 @@ import '../infra/caching.dart';
 class MetricService with HttpApiServiceMixin {
   AuthenticationService authenticationService;
   Caching caching;
-  Overall? overall;
   String cacheKey = 'overall';
 
   MetricService({required this.authenticationService, required this.caching});
@@ -21,19 +20,16 @@ class MetricService with HttpApiServiceMixin {
       return this.caching.fetch(cacheKey) as Overall;
     }
 
-    if (this.overall == null) {
-      var response = await httpGet(
-          createUri('account/overall'), authenticationService.getUserToken());
+    var response = await httpGet(
+        createUri('account/overall'), authenticationService.getUserToken());
 
-      if (response.statusCode == 200) {
-        this.overall = Overall.fromJson(json.decode(response.body));
-        caching.add(cacheKey, this.overall!);
-      } else {
-        throw Exception('Failed to fetch overall.');
-      }
+    if (response.statusCode == 200) {
+      var overallResult = Overall.fromJson(json.decode(response.body));
+      caching.add(cacheKey, overallResult);
+      return overallResult;
+    } else {
+      throw Exception('Failed to fetch overall.');
     }
-
-    return this.overall!;
   }
 
   Future<Overall> getOverallByAccountId(int accountId) async {
@@ -42,19 +38,16 @@ class MetricService with HttpApiServiceMixin {
       return this.caching.fetch(key) as Overall;
     }
 
-    if (this.overall == null) {
-      var response = await httpGet(createUri('account/$accountId/overall'),
-          authenticationService.getUserToken());
+    var response = await httpGet(createUri('account/$accountId/overall'),
+        authenticationService.getUserToken());
 
-      if (response.statusCode == 200) {
-        this.overall = Overall.fromJson(json.decode(response.body));
-        caching.add(key, this.overall!);
-      } else {
-        throw Exception('Failed to fetch overall.');
-      }
+    if (response.statusCode == 200) {
+      var overallResult = Overall.fromJson(json.decode(response.body));
+      caching.add(key, overallResult);
+      return overallResult;
+    } else {
+      throw Exception('Failed to fetch overall.');
     }
-
-    return this.overall!;
   }
 
   Future<Metric> getIncomeMetrics() async {
@@ -76,7 +69,7 @@ class MetricService with HttpApiServiceMixin {
 
     if (response.statusCode == 200) {
       metric = Metric.fromJson(json.decode(response.body));
-      caching.add(cacheKey, metric);
+      caching.add(type, metric);
     } else {
       throw Exception("Failed to fetch metric $type.");
     }
@@ -94,7 +87,7 @@ class MetricService with HttpApiServiceMixin {
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       var breakdown = data.map((e) => Breakdown.fromJson(e)).toList();
-      caching.add(cacheKey, breakdown);
+      caching.add('getBreakdown', breakdown);
       return breakdown;
     } else {
       throw Exception("Failed to fetch breakdown.");

@@ -59,25 +59,27 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                           userViewModel.isEmailValid && !isAuthenticating),
                 ),
                 SizedBox(height: 20),
-                isAuthenticating
-                    ? Padding(
-                        padding: EdgeInsets.all(5),
-                        child: CircularProgressIndicator())
-                    : userViewModel.isPasswordValid
-                        ? ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 50),
-                            ),
-                            child: Icon(Icons.send),
-                            onPressed:
-                                userViewModel.isValid ? onButtonPressed : null,
-                          )
-                        : OutlinedButton(
-                            onPressed: null,
-                            child: Icon(Icons.send),
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(200, 50),
-                              ),
+                if (isAuthenticating)
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: CircularProgressIndicator(),
+                  )
+                else
+                  userViewModel.isPasswordValid
+                      ? ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(200, 50),
+                          ),
+                          child: Icon(Icons.send),
+                          onPressed:
+                              userViewModel.isValid ? onButtonPressed : null,
+                        )
+                      : OutlinedButton(
+                          onPressed: null,
+                          child: Icon(Icons.send),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(200, 50),
+                          ),
                         ),
                 SizedBox(height: 20),
                 Padding(

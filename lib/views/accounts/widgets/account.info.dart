@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/trending-mixin.dart';
 import 'package:home_management_app/models/account.dart';
+import 'package:home_management_app/models/currency.dart';
 import 'package:home_management_app/services/repositories/currency.repository.dart';
 
 class AccountDetailWidget extends StatelessWidget with TrendingMixin {
@@ -11,9 +12,9 @@ class AccountDetailWidget extends StatelessWidget with TrendingMixin {
 
   @override
   Widget build(BuildContext context) {
-    var currency = GetIt.I<CurrencyRepository>()
-        .currencies
-        .firstWhere((element) => element.id == accountModel.currencyId);
+    var currency = GetIt.I<CurrencyRepository>().currencies.firstWhere(
+        (element) => element.id == accountModel.currencyId,
+        orElse: () => CurrencyModel.empty());
     return Card(
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

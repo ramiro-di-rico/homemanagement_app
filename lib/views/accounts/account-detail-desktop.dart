@@ -45,8 +45,10 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
 
   @override
   void initState() {
+    account = widget.account;
     transactionRepository.addListener(refreshState);
     accountRepository.addListener(refreshState);
+    load();
     super.initState();
   }
 
@@ -57,6 +59,15 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(AccountDetailDesktop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.account.id != widget.account.id) {
+      account = widget.account;
+      load();
+    }
+  }
+
   void refreshState() {
     setState(() {
       transactions = transactionRepository.transactions;
@@ -65,9 +76,6 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
 
   @override
   Widget build(BuildContext context) {
-    account = widget.account;
-    load();
-
     return Scaffold(
       appBar: AppBar(title: Text('Account: ${account.name}')),
       body: SafeArea(
@@ -205,9 +213,12 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
 
                                         var category = categoryRepository
                                             .categories
-                                            .firstWhere((element) =>
-                                                element.id ==
-                                                transaction.categoryId);
+                                            .firstWhere(
+                                                (element) =>
+                                                    element.id ==
+                                                    transaction.categoryId,
+                                                orElse: () =>
+                                                    CategoryModel.empty());
 
                                         return TransactionRowInfo(
                                           transaction: transaction,
@@ -233,17 +244,10 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
   }
 
   void load() async {
-    if (!transactionRepository.transactions
-        .any((element) => element.accountId == account.id)) {
-      setState(() {
-        addSkeletonTransactions();
-      });
-      await transactionRepository.loadFirstPage(account.id);
-      overall = await _metricService.getOverallByAccountId(account.id);
-      refreshState();
-    } else {
-      refreshState();
-    }
+    refreshState();
+    await transactionRepository.loadFirstPage(account.id);
+    overall = await _metricService.getOverallByAccountId(account.id);
+    refreshState();
   }
 
   nextPage() {

@@ -105,8 +105,9 @@ class AccountRepository extends ChangeNotifier {
   }
 
   updateBalance(int accountId, double value, TransactionType type) {
-    var account =
-        this._internalAccounts.firstWhere((element) => element.id == accountId);
+    var account = this._internalAccounts.firstWhere(
+        (element) => element.id == accountId,
+        orElse: () => AccountModel.empty(0));
     account.balance = type == TransactionType.Income
         ? account.balance + value
         : account.balance - value;
@@ -114,8 +115,9 @@ class AccountRepository extends ChangeNotifier {
   }
 
   revertBalance(int accountId, double value, TransactionType type) {
-    var account =
-        this._internalAccounts.firstWhere((element) => element.id == accountId);
+    var account = this._internalAccounts.firstWhere(
+        (element) => element.id == accountId,
+        orElse: () => AccountModel.empty(0));
     account.balance = type == TransactionType.Income
         ? account.balance - value
         : account.balance + value;
@@ -123,9 +125,9 @@ class AccountRepository extends ChangeNotifier {
   }
 
   setBalance(AccountModel targetAccount) {
-    var account = this
-        ._internalAccounts
-        .firstWhere((element) => element.id == targetAccount.id);
+    var account = this._internalAccounts.firstWhere(
+        (element) => element.id == targetAccount.id,
+        orElse: () => AccountModel.empty(0));
     account.balance = targetAccount.balance;
     _loadAccounts(_internalAccounts);
   }

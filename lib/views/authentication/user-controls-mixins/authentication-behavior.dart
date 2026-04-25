@@ -28,9 +28,11 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   }
 
   Future loadUser() async {
+    setAuthenticatingStatus(true);
     if (await authenticationService.init()) {
       await successFullAuthentication();
     }
+    setAuthenticatingStatus(false);
   }
 
   void setAuthenticatingStatus(bool status) {

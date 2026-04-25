@@ -44,38 +44,38 @@ class _LoginViewState extends State<LoginView>
                     enablePassword:
                         userViewModel.isEmailValid && !isAuthenticating),
               ),
-              isAuthenticating
-                  ? Padding(
-                      padding: EdgeInsets.all(5),
-                      child: CircularProgressIndicator())
-                  : authenticationService.canAutoAuthenticate()
-                      ? Row(
+              if (isAuthenticating)
+                Padding(
+                    padding: EdgeInsets.all(5),
+                    child: CircularProgressIndicator())
+              else
+                authenticationService.canAutoAuthenticate()
+                    ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: ElevatedButton(
-                                child: Icon(Icons.send, color: Colors.white),
-                                onPressed: userViewModel.isValid
-                                    ? onButtonPressed
-                                    : null,
-                              ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ElevatedButton(
+                              child: Icon(Icons.send, color: Colors.white),
+                              onPressed: userViewModel.isValid
+                                  ? onButtonPressed
+                                  : null,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: ElevatedButton(
-                                child:
-                                    Icon(Icons.fingerprint, color: Colors.white),
-                                onPressed: autoAuthenticate,
-                              ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ElevatedButton(
+                              child: Icon(Icons.fingerprint, color: Colors.white),
+                              onPressed: autoAuthenticate,
                             ),
-                          ],
-                        )
-                      : ElevatedButton(
-                          child: Icon(Icons.send, color: Colors.white),
-                          onPressed:
-                              userViewModel.isValid ? onButtonPressed : null,
-                        ),
+                          ),
+                        ],
+                      )
+                    : ElevatedButton(
+                        child: Icon(Icons.send, color: Colors.white),
+                        onPressed:
+                            userViewModel.isValid ? onButtonPressed : null,
+                      ),
             ],
           ),
           Column(

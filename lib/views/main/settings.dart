@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/views/main/settings-widgets/user-settings-widget.dart';
+import 'package:home_management_app/views/main/settings-widgets/feature-toggles.widget.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 import 'settings-widgets/daily-backup.widget.dart';
@@ -37,6 +38,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: EdgeInsets.all(10),
             child: UserSettingsWidget(),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: FeatureTogglesWidget(),
           ),
           Padding(
             padding: EdgeInsets.all(10),

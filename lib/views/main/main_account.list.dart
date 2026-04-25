@@ -44,6 +44,12 @@ class _MainAccountListScreenState extends State<MainAccountListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (mainAccountsRepo.isLoading && this.mainAccounts.isEmpty) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return RefreshIndicator(
       onRefresh: refreshMainAccounts,
       child: ListView.builder(

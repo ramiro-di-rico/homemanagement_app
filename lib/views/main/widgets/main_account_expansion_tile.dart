@@ -6,6 +6,9 @@ import 'package:home_management_app/models/main_account.dart';
 import 'package:home_management_app/services/endpoints/transaction.service.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:home_management_app/services/repositories/main_account.repository.dart';
+import 'package:home_management_app/services/infra/platform/platform_context.dart';
+import 'package:home_management_app/services/infra/platform/platform_type.dart';
+import 'package:home_management_app/views/accounts/account-detail-desktop.dart';
 import 'package:home_management_app/views/accounts/account.detail.dart';
 import 'package:home_management_app/views/accounts/widgets/add.transaction.sheet.dart';
 import 'package:home_management_app/views/main/main_account.detail.dart';
@@ -37,6 +40,8 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
   Set<int> pendingRemoveIds = {};
 
   final Map<int, AnimationController> _progressControllers = {};
+
+  PlatformContext platform = GetIt.I<PlatformContext>();
 
   @override
   void initState() {
@@ -218,6 +223,13 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
       child: InkWell(
         onTap: () {
           context.go(AccountDetailScreen.fullPath, extra: account);
+          /*var platformType = platform.getPlatformType();
+          var isDesktop = platformType == PlatformType.Desktop ||
+              platformType == PlatformType.Web;
+
+          !isDesktop
+              ? context.go(AccountDetailScreen.fullPath, extra: account)
+              : AccountDetailDesktop(account);*/
         },
         child: Column(
           children: [

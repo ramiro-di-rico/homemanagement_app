@@ -50,10 +50,12 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
 
   @override
   void initState() {
+    account = widget.account;
     transactionRepository.addListener(refreshState);
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(refreshState);
     accountRepository.addListener(refreshState);
+    load();
     super.initState();
   }
 
@@ -68,6 +70,15 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(AccountDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.account.id != widget.account.id) {
+      account = widget.account;
+      load();
+    }
+  }
+
   void refreshState() {
     setState(() {
       transactions = transactionRepository.transactions;
@@ -76,9 +87,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    account = widget.account;
-    load();
-
     return Scaffold(
       appBar: AccountAppBar(
         account: account,
@@ -159,8 +167,10 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
                               }
 
                               var category = categoryRepository.categories
-                                  .firstWhere((element) =>
-                                      element.id == transaction.categoryId);
+                                  .firstWhere(
+                                      (element) =>
+                                          element.id == transaction.categoryId,
+                                      orElse: () => CategoryModel.empty());
 
                               return TransactionRowInfo(
                                 transaction: transaction,
@@ -277,15 +287,8 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
   }
 
   void load() async {
-    if (!transactionRepository.transactions
-        .any((element) => element.accountId == account.id)) {
-      setState(() {
-        addSkeletonTransactions();
-      });
-      await transactionRepository.loadFirstPage(account.id);
-    } else {
-      refreshState();
-    }
+    refreshState();
+    await transactionRepository.loadFirstPage(account.id);
   }
 
   displayBox() {

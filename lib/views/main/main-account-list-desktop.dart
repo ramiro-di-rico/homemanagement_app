@@ -102,14 +102,18 @@ class _MainAccountListDesktopViewState extends State<MainAccountListDesktopView>
         Expanded(
           child: RefreshIndicator(
             onRefresh: refreshMainAccounts,
-            child: ListView.builder(
-              itemCount: mainAccounts.length,
-              itemBuilder: (context, index) {
-                final item = mainAccounts[index];
+            child: mainAccountsRepo.isLoading && mainAccounts.isEmpty
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ListView.builder(
+                    itemCount: mainAccounts.length,
+                    itemBuilder: (context, index) {
+                      final item = mainAccounts[index];
 
-                return MainAccountExpansionTile(mainAccount: item);
-              },
-            ),
+                      return MainAccountExpansionTile(mainAccount: item);
+                    },
+                  ),
           ),
         ),
       ],
