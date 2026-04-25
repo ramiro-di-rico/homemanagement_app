@@ -80,6 +80,7 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   }
 
   Future successFullAuthentication() async {
+    if (!mounted) return;
     this.context.go(HomeScreen.fullPath);
   }
 

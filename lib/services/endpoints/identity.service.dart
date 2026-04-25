@@ -46,6 +46,7 @@ class IdentityService {
       var user = UserModel.fromJson(jsonModel);
       return user;
     } else {
+      _logger?.i('Auth failed with status: ${response.statusCode}');
       return null;
     }
   }
@@ -72,19 +73,30 @@ class IdentityService {
   }
 
   Future<UserModel?> refreshToken(UserModel? user) async {
+    if (user == null) {
+      _logger?.i('Cannot refresh token: user is null');
+      return null;
+    }
     _logger?.i('Refreshing token');
-    var token = user!.token;
+    var token = user.token;
 
-    var response = await http.put(Uri.https(this.url, this.refreshTokenApi),
-        headers: <String, String>
-        {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(<String, String>{'username': user.username, 'refreshToken': user.refreshToken}));
+    try {
+      var response = await http.put(Uri.https(this.url, this.refreshTokenApi),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(<String, String>{
+            'username': user.username,
+            'refreshToken': user.refreshToken
+          }));
 
-    return _handleAuthResponse(response, user.password);
+      return _handleAuthResponse(response, user.password);
+    } catch (e) {
+      _logger?.e('Error during refresh token request: $e');
+      return null;
+    }
   }
 
   Future<bool> requestPasswordChange(String email) async {
