@@ -223,13 +223,6 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
       child: InkWell(
         onTap: () {
           context.go(AccountDetailScreen.fullPath, extra: account);
-          /*var platformType = platform.getPlatformType();
-          var isDesktop = platformType == PlatformType.Desktop ||
-              platformType == PlatformType.Web;
-
-          !isDesktop
-              ? context.go(AccountDetailScreen.fullPath, extra: account)
-              : AccountDetailDesktop(account);*/
         },
         child: Column(
           children: [
@@ -396,7 +389,6 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
       duration: Duration(seconds: 30),
     );
     setState(() {
-      childAccounts.add(account);
       pendingAddIds.add(account.id);
       _progressControllers[account.id] = controller;
     });
@@ -404,12 +396,8 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
 
     try {
       await mainAccountRepository.addAccountToMain(widget.mainAccount.id, account.id);
+      await load();
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          childAccounts.removeWhere((a) => a.id == account.id);
-        });
-      }
     } finally {
       if (mounted) {
         setState(() {
@@ -434,11 +422,7 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
 
     try {
       await mainAccountRepository.removeAccountFromMain(widget.mainAccount.id, account.id);
-      if (mounted) {
-        setState(() {
-          childAccounts.removeWhere((a) => a.id == account.id);
-        });
-      }
+      await load();
     } catch (e) {
     } finally {
       if (mounted) {

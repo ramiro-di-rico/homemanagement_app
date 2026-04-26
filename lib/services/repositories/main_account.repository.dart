@@ -102,6 +102,7 @@ class MainAccountRepository extends ChangeNotifier {
   Future addAccountToMain(int mainAccountId, int accountId) async {
     try {
       await mainAccountService.addAccount(mainAccountId, accountId);
+      await load();
       notifierService.notify('Account added to main account successfully');
     } catch (ex) {
       notifierService.notify('Failed to add account to main account', isError: true);
@@ -112,6 +113,7 @@ class MainAccountRepository extends ChangeNotifier {
   Future removeAccountFromMain(int mainAccountId, int accountId) async {
     try {
       await mainAccountService.removeAccount(mainAccountId, accountId);
+      await load();
       notifierService.notify('Account removed from main account successfully');
     } catch (ex) {
       notifierService.notify('Failed to remove account from main account', isError: true);
