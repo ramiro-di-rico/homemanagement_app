@@ -17,7 +17,7 @@ class ApiServiceFactory {
     var response =
         await http.get(backendEndpoint.resolve(api), headers: _getHeaders());
 
-    if (response.statusCode == 200) {
+    if (_isSuccesFullResponse(response)) {
       List data = json.decode(response.body);
       return data;
     } else {
@@ -33,7 +33,7 @@ class ApiServiceFactory {
       headers: _getHeaders(),
     );
 
-    if (response.statusCode != 200) {
+    if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to post to $api');
     }
 
@@ -48,7 +48,7 @@ class ApiServiceFactory {
       headers: _getHeaders(),
     );
 
-    if (response.statusCode != 200) {
+    if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to post to $api');
     }
 
@@ -61,7 +61,7 @@ class ApiServiceFactory {
     var response = await http.post(backendEndpoint.resolve(api),
         headers: _getHeaders(), body: body);
 
-    if (response.statusCode < 200 || response.statusCode > 299) {
+    if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to post to $api');
     }
   }
@@ -75,7 +75,7 @@ class ApiServiceFactory {
         encoding: Encoding.getByName('utf-8'),
     );
 
-    if (response.statusCode < 200 || response.statusCode > 299) {
+    if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to post to $api');
     }
 
@@ -88,7 +88,7 @@ class ApiServiceFactory {
     var response = await http.put(backendEndpoint.resolve(api),
         headers: _getHeaders(), body: body);
 
-    if (response.statusCode != 200) {
+    if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to put to $api');
     }
 
@@ -104,7 +104,7 @@ class ApiServiceFactory {
         headers: _getHeaders());
 
     var isSuccessful = response.statusCode >= 200 && response.statusCode < 299;
-    if (!isSuccessful) {
+    if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to delete to $api');
     }
   }
@@ -117,7 +117,7 @@ class ApiServiceFactory {
     request.headers.addAll(_getHeaders());
 
     var response = await request.send();
-    if (response.statusCode != 200) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       throw Exception('Failed to upload to $Api');
     }
   }
@@ -136,5 +136,9 @@ class ApiServiceFactory {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     };
+  }
+
+  bool _isSuccesFullResponse(http.Response response) {
+    return response.statusCode >= 200 && response.statusCode < 300;
   }
 }
