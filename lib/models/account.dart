@@ -13,14 +13,14 @@ class AccountModel {
   factory AccountModel.fromJson(Map<String, dynamic> json) {
     return AccountModel(
         json['id'],
-        json['name'],
-        double.parse(json['balance'].toString()),
-        json['measurable'],
-        json['accountType'] == 0 ? AccountType.Cash : AccountType.BankAccount,
-        json['currencyId'],
-        json['userId'],
-        json['archive'],
-        json['isHidden']);
+        json['name'] ?? '',
+        double.tryParse(json['balance']?.toString() ?? '0') ?? 0,
+        json['measurable'] ?? false,
+        json['accountType'] == 1 ? AccountType.BankAccount : AccountType.Cash,
+        json['currencyId'] ?? 0,
+        json['userId'] ?? 0,
+        json['archive'] ?? false,
+        json['isHidden'] ?? false);
   }
 
   factory AccountModel.nameAndBalance(Map<String, dynamic> json) =>

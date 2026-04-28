@@ -43,6 +43,14 @@ class _AccountMostExpensiveCategoriesState
   }
 
   @override
+  void didUpdateWidget(AccountMostExpensiveCategories oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountModel.id != widget.accountModel.id) {
+      loadMetrics();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
         height: 200,

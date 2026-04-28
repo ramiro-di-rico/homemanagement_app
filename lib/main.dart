@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'myapp.dart';
+import 'services/endpoints/main_account.service.dart';
 import 'services/endpoints/budget_http_service.dart';
 import 'services/endpoints/identity.service.dart';
 import 'services/endpoints/identity_user_service.dart';
@@ -17,6 +18,7 @@ import 'services/repositories/identity_user_repository.dart';
 import 'services/repositories/notification.repository.dart';
 import 'services/repositories/preferences.repository.dart';
 import 'services/repositories/currency.repository.dart';
+import 'services/repositories/main_account.repository.dart';
 import 'services/repositories/recurring_transaction_repository.dart';
 import 'services/repositories/reminder_repository.dart';
 import 'services/repositories/transaction.repository.dart';
@@ -101,6 +103,11 @@ void registerServices() {
 
   GetIt.instance.registerFactory(() => BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>())));
 
+  GetIt.instance.registerFactory(() => MainAccountService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>())));
+
   GetIt.instance.registerFactory(() => UserSettingsService(
       authenticationService: GetIt.I<AuthenticationService>(),
       apiServiceFactory: ApiServiceFactory(authenticationService: GetIt.I<AuthenticationService>()),
@@ -139,7 +146,8 @@ void registerSingletons(PlatformContext platformContext) {
           authenticationService: GetIt.I<AuthenticationService>(),
           apiServiceFactory: ApiServiceFactory(
               authenticationService: GetIt.I<AuthenticationService>())),
-      notifierService: errorNotifierService);
+      notifierService: errorNotifierService,
+      userRepository: userRepository);
 
   var notificationRepository = NotificationRepository(
       notificationService: NotificationService(
@@ -175,6 +183,13 @@ void registerSingletons(PlatformContext platformContext) {
 
   var reminderRepository = ReminderRepository(ReminderService(GetIt.I<AuthenticationService>()), errorNotifierService);
 
+  MainAccountService mainAccountService = MainAccountService(
+      authenticationService: authenticationService,
+      apiServiceFactory:
+      ApiServiceFactory(authenticationService: authenticationService));
+
+  var mainAccountRepository = MainAccountRepository(mainAccountService: mainAccountService, notifierService: errorNotifierService);
+
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
@@ -190,4 +205,5 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(passwordResetService);
   GetIt.instance.registerSingleton(budgetRepository);
   GetIt.instance.registerSingleton(reminderRepository);
+  GetIt.instance.registerSingleton(mainAccountRepository);
 }

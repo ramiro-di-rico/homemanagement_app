@@ -14,7 +14,8 @@ class NotifierService extends ChangeNotifier {
   }
 
   String? getMessage() {
-    var message = _message.toString();
+    if (_message == null) return null;
+    var message = _message!;
     _message = null;
     return message;
   }

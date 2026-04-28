@@ -8,9 +8,11 @@ import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/repositories/identity_user_repository.dart';
 import '../../services/repositories/preferences.repository.dart';
+import '../../services/endpoints/user-settings-service.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import 'account-list-desktop.dart';
+import 'main-account-list-desktop.dart';
 import 'budget_desktop_view.dart';
 import 'dashboard_desktop.dart';
 import 'settings.dart';
@@ -27,6 +29,9 @@ class HomeDesktop extends StatefulWidget {
 }
 
 class _HomeDesktopState extends State<HomeDesktop> {
+  bool useMainAccounts = false;
+  PreferencesRepository _preferencesRepository = GetIt.I<PreferencesRepository>();
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +41,13 @@ class _HomeDesktopState extends State<HomeDesktop> {
     GetIt.I<CategoryRepository>().load();
     GetIt.I<IdentityUserRepository>().getUser();
     GetIt.I<BudgetRepository>().load();
+    _loadUseMainAccounts();
+  }
+
+  void _loadUseMainAccounts() {
+    setState(() {
+      useMainAccounts = _preferencesRepository.getUseMainAccounts();
+    });
   }
 
   @override
@@ -52,16 +64,16 @@ class _HomeDesktopState extends State<HomeDesktop> {
             tooltip: 'Search transactions',
           ),
           IconButton(
-              onPressed: (){
+              onPressed: () {
                 context.go(BudgetDesktopView.fullPath);
               },
               icon: Icon(Icons.track_changes),
-              tooltip: 'Budget'
-          ),
+              tooltip: 'Budget'),
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () {
-              context.go(SettingsScreen.fullPath);
+            onPressed: () async {
+              await context.push(SettingsScreen.fullPath);
+              _loadUseMainAccounts();
             },
             tooltip: 'Settings',
           ),
@@ -90,9 +102,14 @@ class _HomeDesktopState extends State<HomeDesktop> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 10),
-                          SizedBox(height: 410, child: AccountListDesktopView()),
+                          SizedBox(
+                              height: 410,
+                              child: useMainAccounts
+                                  ? MainAccountListDesktopView()
+                                  : AccountListDesktopView()),
                           SizedBox(height: 10),
-                          SizedBox(height: 410, child: RecurringTransactionList())
+                          SizedBox(
+                              height: 410, child: RecurringTransactionList())
                         ],
                       ))
                 ],

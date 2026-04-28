@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../models/account.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:home_management_app/services/endpoints/transaction.service.dart';
@@ -26,8 +27,10 @@ class TransactionRepository extends ChangeNotifier {
     var transactionResult = await this.transactionService.add(transaction);
     if (accountsContainer.any((element) =>
         element.account.id == transactionResult.transactionModel.accountId)) {
-      var container = accountsContainer.firstWhere((element) =>
-          element.account.id == transactionResult.transactionModel.accountId);
+      var container = accountsContainer.firstWhere(
+          (element) =>
+              element.account.id == transactionResult.transactionModel.accountId,
+          orElse: () => AccountContainer(AccountModel.empty(0)));
       container.transactions.insert(0, transactionResult.transactionModel);
       mapContainerToTransctions();
     }
@@ -44,7 +47,8 @@ class TransactionRepository extends ChangeNotifier {
   Future remove(TransactionModel transactionModel) async {
     await this.transactionService.delete(transactionModel.id);
     var container = accountsContainer.firstWhere(
-        (element) => element.account.id == transactionModel.accountId);
+        (element) => element.account.id == transactionModel.accountId,
+        orElse: () => AccountContainer(AccountModel.empty(0)));
     container.transactions
         .removeWhere((element) => element.id == transactionModel.id);
     mapContainerToTransctions();
@@ -75,8 +79,9 @@ class TransactionRepository extends ChangeNotifier {
   }
 
   void clear(int accountId) {
-    var container = accountsContainer
-        .firstWhere((element) => element.account.id == accountId);
+    var container = accountsContainer.firstWhere(
+        (element) => element.account.id == accountId,
+        orElse: () => AccountContainer(AccountModel.empty(0)));
     container.transactions
         .removeWhere((element) => element.accountId == accountId);
   }
@@ -92,8 +97,10 @@ class TransactionRepository extends ChangeNotifier {
     transactions.clear();
     page = TransactionPageModel.newPage(accountId, 1, pageSize);
     if (!accountsContainer.any((element) => element.account.id == accountId)) {
-      var containers =
-          accountRepository.accounts.map((e) => AccountContainer(e)).toList();
+      var containers = accountRepository
+          .getAllAccounts()
+          .map((e) => AccountContainer(e))
+          .toList();
       accountsContainer.addAll(containers);
     }
     await fetchPage();
@@ -111,8 +118,9 @@ class TransactionRepository extends ChangeNotifier {
   }
 
   Future<List<TransactionModel>> getPage() async {
-    var container = accountsContainer
-        .firstWhere((element) => element.account.id == page.accountId);
+    var container = accountsContainer.firstWhere(
+        (element) => element.account.id == page.accountId,
+        orElse: () => AccountContainer(AccountModel.empty(0)));
     var query = container.transactions
         .where((element) => element.accountId == page.accountId);
 
@@ -170,6 +178,7 @@ class TransactionRepository extends ChangeNotifier {
     }
   }
 
-  AccountContainer _getCurrentContainer() => accountsContainer
-      .firstWhere((element) => element.account.id == page.accountId);
+  AccountContainer _getCurrentContainer() => accountsContainer.firstWhere(
+      (element) => element.account.id == page.accountId,
+      orElse: () => AccountContainer(AccountModel.empty(0)));
 }

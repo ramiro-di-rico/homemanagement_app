@@ -6,6 +6,8 @@ import '../../services/endpoints/transaction.service.dart';
 import '../../services/infra/platform/platform_context.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
+import 'package:home_management_app/services/infra/platform/platform_type.dart';
+import 'package:home_management_app/views/accounts/account-detail-desktop.dart';
 import '../accounts/account.detail.dart';
 import '../accounts/widgets/add_transaction_sheet_desktop.dart';
 import '../mixins/notifier_mixin.dart';
@@ -189,7 +191,13 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                           ],
                         ),
                         onTap: () {
-                          context.go(AccountDetailScreen.fullPath, extra: item);
+                          var platformType = platform.getPlatformType();
+                          var isDesktop = platformType == PlatformType.Desktop ||
+                              platformType == PlatformType.Web;
+
+                          !isDesktop
+                              ? context.go(AccountDetailScreen.fullPath, extra: item)
+                              : context.go(AccountDetailScreen.fullPath, extra: item);
                         },
                       ),
                       trailing: MenuAnchor(

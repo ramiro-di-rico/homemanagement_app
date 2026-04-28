@@ -15,7 +15,7 @@ class UserSettingsWidget extends StatefulWidget {
 
 class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMixin {
 
-  UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
+  final UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
   late UserSettings userSettings;
   String selectedDelimiter = '';
 
@@ -34,7 +34,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
                 'User Settings',
               ),

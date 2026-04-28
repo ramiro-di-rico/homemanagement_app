@@ -38,26 +38,25 @@ class AuthenticationService {
       _logger?.i('Checking if is authenticated...');
       if (isAuthenticated()) {
         _logger?.i('User is already authenticated');
-        await refreshToken();
-        return true;
+        bool refreshed = await refreshToken();
+        if (refreshed) return true;
       }
 
-      if (_platformContext.getPlatformType() != PlatformType.Mobile) {
-        return false;
+      _logger?.i('Token expired or refresh failed, attempting auto authentication...');
+      if (_platformContext.getPlatformType() == PlatformType.Mobile) {
+        _logger?.i('Checking if biometric is enabled...');
+        _isBiometricEnabled =
+            await _localAuth.isDeviceSupported() && await _localAuth.canCheckBiometrics;
+        if (_isBiometricEnabled) {
+          _logger?.i('Biometric is enabled, authenticating...');
+          return await biometricsAuthenticate();
+        }
       }
 
-      _logger?.i('Checking if biometric is enabled...');
-      _isBiometricEnabled =
-          await _localAuth.isDeviceSupported() && await _localAuth.canCheckBiometrics;
-      if (_isBiometricEnabled) {
-        _logger?.i('Biometric is enabled, authenticating...');
-        return await biometricsAuthenticate();
-      }
-
-      _logger?.i('Biometrics are not enabled');
-      return false;
+      _logger?.i('Attempting auto authentication with stored credentials...');
+      return await autoAuthenticate();
     } on Exception catch (e) {
-      _notifierService.notify('Unable to authenticate');
+      _logger?.e('Error during auth init: $e');
       return false;
     }
   }
@@ -76,12 +75,19 @@ class AuthenticationService {
 
   Future<bool> biometricsAuthenticate() async {
     _logger?.i('Authenticating using biometrics...');
-    var biometricAuthenticated = await _localAuth.authenticate(
-        localizedReason: 'Scan your fingerprint to authenticate');
+    try {
+      var biometricAuthenticated = await _localAuth.authenticate(
+          localizedReason: 'Scan your fingerprint to authenticate');
 
-    if (biometricAuthenticated) {
-      await refreshToken();
-      return true;
+      if (biometricAuthenticated) {
+        bool refreshed = await refreshToken();
+        if (refreshed) return true;
+
+        // If refresh failed after biometric, try full auto authenticate
+        return await autoAuthenticate();
+      }
+    } catch (e) {
+      _logger?.e('Error during biometric authentication: $e');
     }
 
     return false;
@@ -110,12 +116,21 @@ class AuthenticationService {
     return false;
   }
 
-  Future refreshToken() async {
-    var user = await _identityService.refreshToken(this.user);
-    this.user = user;
+  Future<bool> refreshToken() async {
+    try {
+      var user = await _identityService.refreshToken(this.user);
+      if (user != null) {
+        this.user = user;
+        _logger?.i('Token refresh succeeded, storing user');
+        this._userRepository.store(user);
+        return true;
+      }
+    } catch (e) {
+      _logger?.e('Error refreshing token: $e');
+    }
 
-    _logger?.i('Authentication succeeded, storing user');
-    this._userRepository.store(user!);
+    _logger?.i('Token refresh failed');
+    return false;
   }
 
   Future<bool> _authenticateImpl(String email, String password) async {
