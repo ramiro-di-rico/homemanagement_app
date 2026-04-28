@@ -10,7 +10,7 @@ class MainAccountModel {
 
   factory MainAccountModel.fromJson(Map<String, dynamic> json) {
     var mainAccount = MainAccountModel(
-      json['id'],
+      json['id'] ?? json['MainAccountId'] ?? 0,
       json['name'],
       json['userId'] ?? 0,
       json['childAccountCount'] ?? 0,
@@ -28,6 +28,7 @@ class MainAccountModel {
 
   Map<String, dynamic> toJson() => {
     'id': id,
+    'MainAccountId': id,
     'name': name,
     'userId': userId,
     'childAccountCount': childAccountCount,
