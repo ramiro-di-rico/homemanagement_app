@@ -60,13 +60,21 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
     super.dispose();
   }
 
-  void _onAccountRepositoryChanged() {
-    if (mounted) {
-      setState(() {
-        allAccounts = accountRepository.getAllAccounts();
-      });
-    }
-  }
+   void _onAccountRepositoryChanged() {
+     if (mounted) {
+       setState(() {
+         allAccounts = accountRepository.getAllAccounts();
+         // Update childAccounts with the latest account data from the repository
+         childAccounts = childAccounts.map((childAccount) {
+           final updatedAccount = allAccounts.firstWhere(
+             (account) => account.id == childAccount.id,
+             orElse: () => childAccount,
+           );
+           return updatedAccount;
+         }).toList();
+       });
+     }
+   }
 
   Future<void> load() async {
     setState(() {
