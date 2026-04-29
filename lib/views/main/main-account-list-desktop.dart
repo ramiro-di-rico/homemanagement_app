@@ -168,10 +168,14 @@ class _MainAccountListDesktopViewState extends State<MainAccountListDesktopView>
       itemBuilder: (context, index) {
         if (index < mainAccounts.length) {
           final item = mainAccounts[index];
-          return MainAccountExpansionTile(mainAccount: item);
+          return MainAccountExpansionTile(
+            key: ValueKey(item.id),
+            mainAccount: item,
+          );
         } else {
           // Display ungrouped accounts
           return ExpansionTile(
+            key: ValueKey('ungrouped-accounts'),
             title: Text('Ungrouped Accounts'),
             shape: Border.all(color: Colors.transparent),
             collapsedShape: Border.all(color: Colors.transparent),

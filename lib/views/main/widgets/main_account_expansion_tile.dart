@@ -47,8 +47,32 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
   void initState() {
     accountRepository.addListener(_onAccountRepositoryChanged);
     allAccounts = accountRepository.getAllAccounts();
-    childAccounts = widget.mainAccount.childAccounts;
+    childAccounts = List<AccountModel>.from(widget.mainAccount.childAccounts);
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant MainAccountExpansionTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final changedMainAccount = oldWidget.mainAccount.id != widget.mainAccount.id;
+    final oldChildIds = oldWidget.mainAccount.childAccounts.map((e) => e.id).toSet();
+    final newChildIds = widget.mainAccount.childAccounts.map((e) => e.id).toSet();
+    final childMembershipChanged = oldChildIds.length != newChildIds.length || !oldChildIds.containsAll(newChildIds);
+
+    if (changedMainAccount || childMembershipChanged) {
+      childAccounts = List<AccountModel>.from(widget.mainAccount.childAccounts);
+    }
+
+    if (changedMainAccount) {
+      isExpanded = false;
+      pendingAddIds.clear();
+      pendingRemoveIds.clear();
+      for (final controller in _progressControllers.values) {
+        controller.dispose();
+      }
+      _progressControllers.clear();
+    }
   }
 
   @override
