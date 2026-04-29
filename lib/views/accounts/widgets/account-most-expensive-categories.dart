@@ -76,6 +76,16 @@ class _AccountMostExpensiveCategoriesState
   }
 
   BarChartData buildChart() {
+    if (metrics.isEmpty) {
+      return BarChartData(
+        alignment: BarChartAlignment.spaceBetween,
+        borderData: FlBorderData(show: false),
+        gridData: FlGridData(show: false),
+        titlesData: FlTitlesData(show: false),
+        barGroups: [],
+      );
+    }
+
     return BarChartData(
       alignment: BarChartAlignment.spaceBetween,
       borderData: FlBorderData(show: false),
@@ -85,12 +95,16 @@ class _AccountMostExpensiveCategoriesState
           sideTitles: SideTitles(
             showTitles: true,
             reservedSize: 30,
-            getTitlesWidget: (value, metadata) => Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Text(
-                metrics[value.toInt()].category.name,
-              ),
-            ),
+            getTitlesWidget: (value, metadata) {
+              final index = value.toInt();
+              if (index < 0 || index >= metrics.length) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(metrics[index].category.name),
+              );
+            },
           ),
         ),
         leftTitles: AxisTitles(
@@ -113,8 +127,8 @@ class _AccountMostExpensiveCategoriesState
               x: metrics.indexOf(e),
               barRods: [
                 BarChartRodData(
-                  fromY: e.price.toDouble(),
-                  toY: 0,
+                  fromY: 0,
+                  toY: e.price.toDouble(),
                 )
               ],
             ),
