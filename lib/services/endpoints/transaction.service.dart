@@ -103,8 +103,14 @@ class TransactionService {
   }
 
   Future import(int id, String fileContent) async {
-
     var file = MultipartFile.fromString('csv', fileContent, filename: "file.csv");
     await apiServiceFactory.upload(apiName + '/import', file);
+  }
+
+  Future<void> bulkAdd(List<TransactionModel> transactions) async {
+    var body = json.encode({
+      'transactions': transactions.map((t) => t.toJson()).toList(),
+    });
+    await apiServiceFactory.apiPost('$apiName/bulk', body);
   }
 }

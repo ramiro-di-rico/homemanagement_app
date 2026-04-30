@@ -18,6 +18,7 @@ import 'dashboard_desktop.dart';
 import 'settings.dart';
 import 'statistics_view.dart';
 import 'transactions_search_desktop_view.dart';
+import '../../views/screens/bulk_transactions_screen.dart';
 import 'widgets/account-sheet-dektop.dart';
 import 'widgets/recurring_transaction_form_widget.dart';
 import 'widgets/recurring_transactions_widget.dart';
@@ -63,6 +64,13 @@ class _HomeDesktopState extends State<HomeDesktop> {
               context.go(TransactionsSearchDesktopView.fullPath);
             },
             tooltip: 'Search transactions',
+          ),
+          IconButton(
+            icon: Icon(Icons.playlist_add),
+            onPressed: () {
+              context.go(BulkTransactionsScreen.fullPath);
+            },
+            tooltip: 'Bulk transactions',
           ),
           IconButton(
             icon: Icon(Icons.bar_chart),
