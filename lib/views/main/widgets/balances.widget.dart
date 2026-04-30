@@ -21,22 +21,40 @@ class _BalanceWidgetState extends State<BalanceWidget> {
   }
 
   @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
     return Card(
-      child: ListView.builder(
-        itemCount: breakdown.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: Text(breakdown[index].name),
-            trailing: Text(convertToCurrency(breakdown[index].value)),
-            leadingAndTrailingTextStyle: TextStyle(
-              color: Theme.of(context).textTheme.labelLarge?.color,
-                fontWeight: FontWeight.bold, fontSize: 16),
-          );
-        },
+      child: Column( // Changed from ListView directly to Column for title + list structure
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+        Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+              child: Row( // Using a Row to align items and place the icon
+                children: [
+                  Icon(Icons.account_balance, color: Colors.blueGrey, size: 24), // Added Icon for balance
+                  SizedBox(width: 10), // Spacing between icon and title text
+                   Text(
+                     'Balance',
+                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), // Increased title font size
+                   ),
+                ],
+              ),
+            ),
+          Expanded( // Wrap the list view in Expanded to fill remaining vertical space
+            child: ListView.builder(
+              itemCount: breakdown.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              leading: Text(breakdown[index].name, style: TextStyle(fontSize: 16),), // Now wrapped with style in the next step
+              trailing: Text(convertToCurrency(breakdown[index].value), style: TextStyle(fontSize: 16)), // Now wrapped with style in the next step
+              dense: true,
+            );
+          },
+            ),
+          )
+        ],
       ),
     );
-  }
+}
 
   void fetchBreakdown() async {
     var result = await metricService.getBreakdown();
