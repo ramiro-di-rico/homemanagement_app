@@ -16,6 +16,7 @@ import 'dashboard.dart';
 import 'widgets/main_account.sheet.dart';
 import 'settings.dart';
 import 'statistics_view.dart';
+import '../screens/bulk_transactions_screen.dart';
 import 'widgets/account.sheet.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -142,6 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ]
               : this.bottomBarNavigationIndex == 0
                   ? [
+                      IconButton(
+                        onPressed: () {
+                          context.go(BulkTransactionsScreen.fullPath);
+                        },
+                        icon: Icon(Icons.playlist_add),
+                        tooltip: 'Bulk transactions',
+                      ),
                       IconButton(
                         onPressed: () {
                           context.go(StatisticsView.fullPath);
