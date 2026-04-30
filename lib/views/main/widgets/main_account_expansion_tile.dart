@@ -214,25 +214,39 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
         }
       },
       children: [
-        if (isLoading)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: CircularProgressIndicator(),
-          )
-        else ...[
-          ...childAccounts.map((account) => _buildChildAccountItem(account)).toList(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: ElevatedButton.icon(
-              onPressed: _showAddAccountDialog,
-              icon: Icon(Icons.add),
-              label: Text('Add Account'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 40),
-              ),
-            ),
-          ),
-        ]
+         if (isLoading)
+           Padding(
+             padding: const EdgeInsets.all(8.0),
+             child: CircularProgressIndicator(),
+           )
+         else Container(
+           decoration: BoxDecoration(
+             color: isExpanded ? Theme.of(context).cardColor.withOpacity(0.5) : null,
+             borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+             border: Border(
+               bottom: BorderSide(
+                 color: Colors.blueAccent, // Added border for distinction
+                 width: 1,
+               ),
+             ),
+           ),
+           child: Column(
+             children: [
+               ...childAccounts.map((account) => _buildChildAccountItem(account)).toList(),
+               Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                 child: ElevatedButton.icon(
+                   onPressed: _showAddAccountDialog,
+                   icon: Icon(Icons.add),
+                   label: Text('Add Account'),
+                   style: ElevatedButton.styleFrom(
+                     minimumSize: Size(double.infinity, 40),
+                   ),
+                 ),
+               ),
+             ],
+           )
+         )
       ],
     );
   }
