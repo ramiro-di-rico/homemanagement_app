@@ -15,6 +15,7 @@ import 'main_account.list.dart';
 import 'dashboard.dart';
 import 'widgets/main_account.sheet.dart';
 import 'settings.dart';
+import 'statistics_view.dart';
 import 'widgets/account.sheet.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -139,6 +140,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       icon: Icon(Icons.refresh))
                 ]
+              : this.bottomBarNavigationIndex == 0
+                  ? [
+                      IconButton(
+                        onPressed: () {
+                          context.go(StatisticsView.fullPath);
+                        },
+                        icon: Icon(Icons.bar_chart),
+                        tooltip: 'Statistics',
+                      )
+                    ]
               : [],
     );
   }

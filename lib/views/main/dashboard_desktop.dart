@@ -3,11 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/views/main/widgets/overview/overview-widget.dart';
 import '../../models/overall.dart';
 import '../../services/endpoints/metrics.service.dart';
-import 'widgets/accounts-series-metrics..dart';
 import 'widgets/balances.widget.dart';
-import 'widgets/category_historical/category_historical_chart_widget.dart';
 import 'widgets/balance_historical_chart_widget.dart';
-import 'widgets/most-expensive-categories.widget.dart';
 
 class DashboardDesktop extends StatefulWidget {
   @override
@@ -47,20 +44,6 @@ class _DashboardState extends State<DashboardDesktop> {
                 flex: 5,
               ),
             ],
-          ),
-        ),
-        Container(
-          height: 400,
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: MostExpensiveCategoriesChart(),
-          ),
-        ),
-        Container(
-          height: 400,
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: CategoryHistoricalChartWidget(),
           ),
         ),
         Container(

@@ -6,7 +6,6 @@ import '../../services/endpoints/metrics.service.dart';
 import 'widgets/accounts-series-metrics..dart';
 import 'widgets/balance_historical_chart_widget.dart';
 import 'widgets/balances.widget.dart';
-import 'widgets/most-expensive-categories.widget.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -43,13 +42,6 @@ class _DashboardState extends State<Dashboard> {
                 child: OverviewWidget(overall: overall),
               ),
               flex: 5,
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: MostExpensiveCategoriesChart(),
-              ),
-              flex: 6,
             ),
             Expanded(
               child: Padding(

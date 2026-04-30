@@ -18,6 +18,7 @@ import 'views/main/home.dart';
 import 'views/main/logging_view.dart';
 import 'views/main/settings.dart';
 import 'views/main/settings_desktop.dart';
+import 'views/main/statistics_view.dart';
 import 'views/main/transactions_search_desktop_view.dart';
 
 class Routing{
@@ -68,6 +69,10 @@ class Routing{
               GoRoute(
                 path: BudgetDesktopView.path,
                 builder: (context, state) => BudgetDesktopView(),
+              ),
+              GoRoute(
+                path: StatisticsView.path,
+                builder: (context, state) => const StatisticsView(),
               ),
             ]),
         GoRoute(
