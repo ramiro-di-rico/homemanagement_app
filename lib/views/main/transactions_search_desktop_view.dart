@@ -62,6 +62,10 @@ class _TransactionsSearchDesktopViewState
 
   @override
   Widget build(BuildContext context) {
+    final accountNamesById = {
+      for (final account in _accountRepository.accounts) account.id: account.name
+    };
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Search transactions'),
@@ -74,7 +78,7 @@ class _TransactionsSearchDesktopViewState
                 : (int? pageSize) {
                     setState(() {
                       _transactionPagingService.pageSize = pageSize!;
-                      _transactionPagingService.performSearch();
+                      _transactionPagingService.performSearch(resetPaging: true);
                     });
                   },
             items:
@@ -148,6 +152,9 @@ class _TransactionsSearchDesktopViewState
                       );
                     },
                     itemBuilder: (context, transaction) {
+                      final accountName =
+                          accountNamesById[transaction.accountId] ?? 'Unknown account';
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: SizedBox(
@@ -159,10 +166,7 @@ class _TransactionsSearchDesktopViewState
                                 SizedBox(
                                   width: 80,
                                   child: Text(
-                                    _accountRepository.accounts
-                                        .firstWhere((element) =>
-                                            element.id == transaction.accountId)
-                                        .name,
+                                    accountName,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

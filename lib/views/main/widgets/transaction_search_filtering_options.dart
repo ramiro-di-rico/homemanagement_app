@@ -223,7 +223,7 @@ class _TransactionSearchFilteringOptionsSheetState
 
   Future doFiltering() async {
     _transactionPagingService.name = _nameTextEditingController.text;
-    await _transactionPagingService.performSearch();
+    await _transactionPagingService.performSearch(resetPaging: true);
   }
 
   void refresh() {

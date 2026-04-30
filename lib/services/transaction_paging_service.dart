@@ -29,7 +29,12 @@ class TransactionPagingService extends ChangeNotifier  {
   DateTime? endDate = null;
   TransactionType? transactionType = null;
 
-  Future performSearch() async {
+  Future performSearch({bool resetPaging = false}) async {
+    if (resetPaging) {
+      currentPage = 1;
+      transactions.clear();
+    }
+
     filtering = true;
     loading = true;
     _calculateAmountOfFilters();
@@ -39,8 +44,13 @@ class TransactionPagingService extends ChangeNotifier  {
         currentPage, pageSize, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies);
 
     if (results.isNotEmpty) {
-      // Todo STILL shows duplicates
-      transactions.addAll(results.where((element) => !transactions.any((transaction) => transaction.id == element.id)));
+      if (resetPaging) {
+        transactions.addAll(results);
+      } else {
+        // Keep de-duplication for incremental paging loads.
+        transactions.addAll(results.where((element) =>
+            !transactions.any((transaction) => transaction.id == element.id)));
+      }
     }
 
     loading = false;
@@ -63,6 +73,7 @@ class TransactionPagingService extends ChangeNotifier  {
     loading = false;
     currentPage = 1;
     transactions.clear();
+    selectedFilters = 0;
     notifyListeners();
   }
 
