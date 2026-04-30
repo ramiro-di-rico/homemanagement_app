@@ -33,7 +33,14 @@ class _AccountSheetDesktopState extends State<AccountSheetDesktop> {
   void initState() {
     super.initState();
     this.keyboardFactory = KeyboardFactory(context: context);
-    currencies.addAll(this.currencyRepository.currencies.map((c) => c.name));
+      currencies.addAll(this.currencyRepository.currencies.map((c) => c.name).toList());
+      // Ensure unique currency names for the dropdown items
+      Set<String> uniqueCurrencies = <String>{};
+      for (var currency in this.currencyRepository.currencies) {
+        uniqueCurrencies.add(currency.name);
+      }
+      this.currencies.clear(); // Clear the initial list
+      this.currencies.addAll(uniqueCurrencies);
     account = widget.accountModel ??
         AccountModel.empty(this.currencyRepository.currencies.first.id);
     isEditMode = widget.accountModel != null;
