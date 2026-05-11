@@ -107,10 +107,11 @@ class TransactionService {
     await apiServiceFactory.upload(apiName + '/import', file);
   }
 
-  Future<void> bulkAdd(List<TransactionModel> transactions) async {
+  Future<List<AccountModel>> bulkAdd(List<TransactionModel> transactions) async {
     var body = json.encode({
       'transactions': transactions.map((t) => t.toJson()).toList(),
     });
-    await apiServiceFactory.apiPost('$apiName/bulk', body);
+    var data = await apiServiceFactory.postWithReturn('$apiName/bulk', body);
+    return (data as List).map((e) => AccountModel.fromJson(e)).toList();
   }
 }

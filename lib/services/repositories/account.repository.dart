@@ -131,4 +131,14 @@ class AccountRepository extends ChangeNotifier {
     account.balance = targetAccount.balance;
     _loadAccounts(_internalAccounts);
   }
+
+  setBalances(List<AccountModel> targetAccounts) {
+    for (var targetAccount in targetAccounts) {
+      var account = this._internalAccounts.firstWhere(
+          (element) => element.id == targetAccount.id,
+          orElse: () => AccountModel.empty(0));
+      account.balance = targetAccount.balance;
+    }
+    _loadAccounts(_internalAccounts);
+  }
 }

@@ -117,7 +117,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
     });
 
     try {
-      await _transactionService.bulkAdd(List.from(_pendingTransactions));
+      final updatedAccounts = await _transactionService.bulkAdd(List.from(_pendingTransactions));
+      _accountRepository.setBalances(updatedAccounts);
       setState(() {
         _successMessage = '${_pendingTransactions.length} transaction(s) submitted successfully.';
         _pendingTransactions.clear();
