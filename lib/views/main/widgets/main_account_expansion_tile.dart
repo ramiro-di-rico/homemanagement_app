@@ -16,6 +16,7 @@ import 'package:home_management_app/views/main/widgets/account.sheet.dart';
 import 'package:home_management_app/views/main/widgets/main_account.sheet.dart';
 import 'package:home_management_app/views/mixins/notifier_mixin.dart';
 import 'package:file_picker/file_picker.dart';
+import '../../accounts/widgets/add_transaction_sheet_desktop.dart';
 
 class MainAccountExpansionTile extends StatefulWidget {
   final MainAccountModel mainAccount;
@@ -485,15 +486,19 @@ class _MainAccountExpansionTileState extends State<MainAccountExpansionTile>
     showModalBottomSheet<void>(
         context: context,
         isScrollControlled: true,
+        constraints: BoxConstraints(
+          maxHeight: 1000,
+          maxWidth: 1200,
+        ),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
         builder: (context) {
           return SizedBox(
-            height: 420,
+            height: 100,
             child: AnimatedPadding(
                 padding: MediaQuery.of(context).viewInsets,
                 duration: Duration(seconds: 1),
-                child: AddTransactionSheet(account)),
+                child: AddTransactionSheetDesktop(account)),
           );
         });
   }
