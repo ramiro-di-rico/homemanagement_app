@@ -7,11 +7,12 @@ class DropdownComponent extends StatefulWidget {
   final String currentValue;
   final bool isExpanded;
 
-  DropdownComponent(
-      {required this.items,
-      required this.onChanged,
-      required this.currentValue,
-      this.isExpanded = false});
+  DropdownComponent({
+    required this.items,
+    required this.onChanged,
+    required this.currentValue,
+    this.isExpanded = false,
+  });
 
   @override
   _DropdownComponentState createState() => _DropdownComponentState();
@@ -32,30 +33,28 @@ class _DropdownComponentState extends State<DropdownComponent> {
   Widget build(BuildContext context) {
     return DropdownButton(
       value: value,
-      items: this
-          .widget
-          .items
-          .map(
-            (e) => DropdownMenuItem<String>(
-              child: Text(e),
-              value: e,
-            ),
-          )
+      items: this.widget.items
+          .map((e) => DropdownMenuItem<String>(child: Text(e), value: e))
           .toList(),
       onChanged: onValueChanged,
       isExpanded: widget.isExpanded,
       itemHeight: 65,
       style: TextStyle(
-          color: context.isDarkMode() ? Colors.white : Colors.black,
-          fontSize: 16,
-          overflow: TextOverflow.ellipsis),
+        color: context.isDarkMode() ? Colors.white : Colors.black,
+        fontSize: 16,
+        overflow: TextOverflow.ellipsis,
+      ),
     );
   }
 
   onValueChanged(String? value) {
+    if (value == null) {
+      return;
+    }
+
     setState(() {
       this.value = value;
-      this.widget.onChanged.call(value!);
+      this.widget.onChanged.call(value);
     });
   }
 }

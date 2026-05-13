@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:home_management_app/views/main/settings-widgets/user-settings-widget.dart';
 
 import 'logging_view.dart';
+import 'settings-widgets/authentication_settings_widget.dart';
 import 'settings-widgets/categories_list_widget.dart';
 import 'settings-widgets/feature-toggles.widget.dart';
 import 'settings-widgets/reminders/reminders_list_desktop.dart';
-import 'settings-widgets/two-factor-authentication.widget.dart';
-import 'settings-widgets/user_info_widget.dart';
-import 'settings-widgets/user_language_widget.dart';
+import 'settings-widgets/user-settings-widget.dart';
 
 class SettingsDesktopView extends StatefulWidget {
   const SettingsDesktopView({super.key});
@@ -23,18 +21,14 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-      ),
+      appBar: AppBar(title: Text('Settings')),
       body: SafeArea(
         child: !_preferencesLoaded
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
+            ? Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-              child: SizedBox(
-                height: 1200,
-                child: Column(
+                child: SizedBox(
+                  height: 1200,
+                  child: Column(
                     children: [
                       Expanded(
                         child: Row(
@@ -45,11 +39,9 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  UserInfoWidget(),
+                                  AuthenticationSettingsWidget(),
                                   //PreferredCurrency(),
-                                  UserLanguageWidget(),
                                   FeatureTogglesWidget(),
-                                  TwoFactorAuthenticationWidget(),
                                   UserSettingsWidget(),
                                   SizedBox(height: 20),
                                   ReminderListView(),
@@ -73,17 +65,14 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                 ],
                               ),
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: CategoriesListWidget(),
-                            ),
+                            Expanded(flex: 1, child: CategoriesListWidget()),
                           ],
                         ),
                       ),
                     ],
                   ),
+                ),
               ),
-            ),
       ),
     );
   }

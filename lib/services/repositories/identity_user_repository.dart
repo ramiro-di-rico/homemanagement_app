@@ -1,8 +1,7 @@
-
 import '../../models/view-models/my_user_view_model.dart';
 import '../endpoints/identity_user_service.dart';
 
-class IdentityUserRepository{
+class IdentityUserRepository {
   IdentityUserService _identityUserApi;
   late MyUserViewModel? _currentUser = null;
 
@@ -11,5 +10,17 @@ class IdentityUserRepository{
   Future<MyUserViewModel?> getUser() async {
     _currentUser = _currentUser ?? await _identityUserApi.getUser();
     return _currentUser;
+  }
+
+  Future<MyUserViewModel> updateLanguage(
+    String language,
+    String timeZone,
+  ) async {
+    final updatedUser = await _identityUserApi.updateLanguage(
+      language,
+      timeZone,
+    );
+    _currentUser = updatedUser;
+    return updatedUser;
   }
 }
