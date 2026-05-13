@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:home_management_app/views/main/settings-widgets/user-settings-widget.dart';
 
-import '../../services/repositories/preferences.repository.dart';
 import 'logging_view.dart';
 import 'settings-widgets/categories_list_widget.dart';
-import 'settings-widgets/daily-backup.widget.dart';
 import 'settings-widgets/feature-toggles.widget.dart';
-import 'settings-widgets/preferred-currency-widget.dart';
 import 'settings-widgets/reminders/reminders_list_desktop.dart';
 import 'settings-widgets/two-factor-authentication.widget.dart';
 import 'settings-widgets/user_info_widget.dart';
@@ -54,10 +50,8 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                   UserLanguageWidget(),
                                   FeatureTogglesWidget(),
                                   TwoFactorAuthenticationWidget(),
-                                  DailyBackupWidget(),
-                                  SizedBox(height: 20),
                                   UserSettingsWidget(),
-                                  //SizedBox(height: 20),
+                                  SizedBox(height: 20),
                                   ReminderListView(),
                                   Padding(
                                     padding: EdgeInsets.all(10),

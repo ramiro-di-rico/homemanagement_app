@@ -22,8 +22,26 @@ class UserSettingsService {
   }
 
   Future update(UserSettings userSettings) async {
-    var msg = jsonEncode(userSettings);
+    var msg = jsonEncode(_toJson(userSettings));
     await apiServiceFactory.apiPut('UserSettings', msg);
     notifierService.notify('User Settings updated');
   }
+
+  Future updateCurrency(UserSettings userSettings) async {
+    var msg = jsonEncode(_toJson(userSettings));
+    await apiServiceFactory.apiPut('UserSettings/currency', msg);
+    notifierService.notify('Preferred currency updated');
+  }
+
+  Future updateBackupFrequency(UserSettings userSettings) async {
+    var msg = jsonEncode(_toJson(userSettings));
+    await apiServiceFactory.apiPatch('UserSettings/backup-frequency', msg);
+    notifierService.notify('Backup frequency updated');
+  }
+
+  Map<String, dynamic> _toJson(UserSettings userSettings) => {
+    'csvDelimiter': userSettings.csvDelimiter,
+    'currency': userSettings.currency,
+    'backupFrequency': userSettings.backupFrequency.value,
+  };
 }

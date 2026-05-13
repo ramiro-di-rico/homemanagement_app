@@ -97,28 +97,41 @@ class ApiServiceFactory {
         : json.decode(response.body);
   }
 
+  Future apiPatch(String api, String body) async {
+    await _autoAuthenticateIfNeeded();
+
+    var response = await http.patch(backendEndpoint.resolve(api),
+        headers: _getHeaders(), body: body);
+
+    if (!_isSuccesFullResponse(response)) {
+      throw Exception('Failed to patch to $api');
+    }
+
+    return response.body.isEmpty
+        ? null
+        : json.decode(response.body);
+  }
+
   Future apiDelete(String api, String id) async {
     await _autoAuthenticateIfNeeded();
 
     var response = await http.delete(backendEndpoint.resolve('$api/$id'),
         headers: _getHeaders());
-
-    var isSuccessful = response.statusCode >= 200 && response.statusCode < 299;
     if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to delete to $api');
     }
   }
 
-  Future upload(String Api, dynamic file) async {
+  Future upload(String api, dynamic file) async {
     await _autoAuthenticateIfNeeded();
 
-    var request = http.MultipartRequest('POST', backendEndpoint.resolve(Api))
+    var request = http.MultipartRequest('POST', backendEndpoint.resolve(api))
       ..files.add(file);
     request.headers.addAll(_getHeaders());
 
     var response = await request.send();
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      throw Exception('Failed to upload to $Api');
+      throw Exception('Failed to upload to $api');
     }
   }
 

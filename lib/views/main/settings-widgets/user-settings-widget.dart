@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../custom/components/dropdown.component.dart';
+import '../../../services/repositories/currency.repository.dart';
 import '../../../models/user-settings.dart';
 import '../../../services/endpoints/user-settings-service.dart';
 import '../../mixins/notifier_mixin.dart';
@@ -16,19 +17,24 @@ class UserSettingsWidget extends StatefulWidget {
 class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMixin {
 
   final UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
+  final CurrencyRepository _currencyRepository = GetIt.I<CurrencyRepository>();
   late UserSettings userSettings;
   String selectedDelimiter = '';
+  String selectedCurrency = '';
+  String selectedBackupFrequency = '';
+  final List<String> currencies = [];
 
   @override
   void initState() {
     super.initState();
+    currencies.addAll(_currencyRepository.currencies.map((c) => c.name));
     load();
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 120,
+      height: 260,
       child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,6 +67,48 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                children: [
+                  Text('Preferred Currency'),
+                  Spacer(),
+                  selectedCurrency.isEmpty || currencies.isEmpty
+                      ? CircularProgressIndicator()
+                      : SizedBox(
+                          height: 50,
+                          width: 100,
+                          child: DropdownComponent(
+                            items: currencies,
+                            onChanged: onCurrencyChanged,
+                            currentValue: selectedCurrency,
+                          ),
+                        ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                children: [
+                  Text(
+                    'Backup Frequency',
+                  ),
+                  Spacer(),
+                  selectedBackupFrequency.isEmpty
+                  ? CircularProgressIndicator()
+                  : SizedBox(
+                    height: 50,
+                    width: 100,
+                    child: DropdownComponent(
+                        items: ['Weekly', 'Monthly'],
+                        onChanged: onBackupFrequencyChanged,
+                        currentValue: selectedBackupFrequency,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -73,11 +121,29 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
     setState(() {
       userSettings = result;
       selectedDelimiter = userSettings.csvDelimiter;
+      selectedCurrency = userSettings.currency;
+      selectedBackupFrequency = userSettings.backupFrequency.label;
+
+      if (selectedCurrency.isEmpty && currencies.isNotEmpty) {
+        selectedCurrency = currencies.first;
+      }
     });
   }
 
   onDelimiterChanged(String csvDelimiterChangedValue) {
     userSettings.csvDelimiter = csvDelimiterChangedValue;
     _userSettingsService.update(userSettings);
+  }
+
+  onCurrencyChanged(String currencyChangedValue) {
+    userSettings.currency = currencyChangedValue;
+    _userSettingsService.updateCurrency(userSettings);
+  }
+
+  onBackupFrequencyChanged(String backupFrequencyChangedValue) {
+    userSettings.backupFrequency = backupFrequencyChangedValue == 'Monthly'
+        ? BackupFrequency.monthly
+        : BackupFrequency.weekly;
+    _userSettingsService.updateBackupFrequency(userSettings);
   }
 }
