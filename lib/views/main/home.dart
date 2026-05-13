@@ -142,22 +142,22 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icon(Icons.refresh))
                 ]
               : this.bottomBarNavigationIndex == 0
-                  ? [
-                      IconButton(
-                        onPressed: () {
-                          context.go(BulkTransactionsScreen.fullPath);
-                        },
-                        icon: Icon(Icons.playlist_add),
-                        tooltip: 'Bulk transactions',
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          context.go(StatisticsView.fullPath);
-                        },
-                        icon: Icon(Icons.bar_chart),
-                        tooltip: 'Statistics',
-                      )
-                    ]
+                ? [
+                    IconButton(
+                      onPressed: () {
+                        context.go(BulkTransactionsScreen.fullPath);
+                      },
+                      icon: Icon(Icons.playlist_add),
+                      tooltip: 'Bulk transactions',
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        context.go(StatisticsView.fullPath);
+                      },
+                      icon: Icon(Icons.bar_chart),
+                      tooltip: 'Statistics',
+                    )
+                  ]
               : [],
     );
   }
