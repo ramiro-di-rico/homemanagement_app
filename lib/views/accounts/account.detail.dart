@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -10,10 +11,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../models/account.dart';
 import '../../models/category.dart';
 import '../../models/transaction.dart';
+import '../../services/endpoints/transaction.service.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/transaction.repository.dart';
-import '../main/home.dart';
 import '../mixins/notifier_mixin.dart';
 import 'account-details-behaviors/account-list-scrolling-behavior.dart';
 import 'account-details-behaviors/transaction-list-skeleton-behavior.dart';
@@ -21,6 +22,7 @@ import 'account-metrics.dart';
 import 'widgets/account-app-bar.dart';
 import 'widgets/account.info.dart';
 import 'widgets/add.transaction.sheet.dart';
+import '../main/widgets/account.sheet.dart';
 import 'widgets/transaction-row-skeleton.dart';
 import 'widgets/transaction.row.info.dart';
 
@@ -40,6 +42,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   late AccountModel account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
+  TransactionService transactionService = GetIt.I<TransactionService>();
   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
   TextEditingController filteringNameController = TextEditingController();
@@ -91,6 +94,38 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
       appBar: AccountAppBar(
         account: account,
         actions: [
+          MenuAnchor(
+            builder: (BuildContext context, MenuController controller, Widget? child) {
+              return IconButton(
+                onPressed: () {
+                  if (controller.isOpen) {
+                    controller.close();
+                  } else {
+                    controller.open();
+                  }
+                },
+                icon: const Icon(Icons.more_vert),
+                tooltip: 'Show menu',
+              );
+            },
+            menuChildren: [
+              MenuItemButton(
+                leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
+                onPressed: () => _editAccount(account),
+                child: Text('Edit Account'),
+              ),
+              MenuItemButton(
+                leadingIcon: Icon(account.archive ? Icons.unarchive : Icons.archive, color: Colors.pinkAccent),
+                onPressed: () => _archiveAccount(account),
+                child: Text(account.archive ? 'Unarchive' : 'Archive'),
+              ),
+              MenuItemButton(
+                leadingIcon: Icon(Icons.upload_file, color: Colors.blueGrey),
+                onPressed: () => _importTransactions(account),
+                child: Text('Import Transactions'),
+              ),
+            ],
+          ),
           Visibility(
             visible: resultsFiltered,
             child: IconButton(
@@ -313,5 +348,62 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
 
   void applyNameFiltering() {
     transactionRepository.applyFilterByName(filteringNameController.text);
+  }
+
+  void _editAccount(AccountModel account) {
+    showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        builder: (context) {
+          return SizedBox(
+            height: 250,
+            child: AnimatedPadding(
+                padding: MediaQuery.of(context).viewInsets,
+                duration: Duration(seconds: 1),
+                child: AccountSheet(accountModel: account)),
+          );
+        });
+  }
+
+  Future<void> _archiveAccount(AccountModel account) async {
+    await accountRepository.archive(account);
+  }
+
+  Future<void> _importTransactions(AccountModel account) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result != null) {
+        PlatformFile file = result.files.first;
+        var fileContent = await file.xFile.readAsString();
+
+        if (fileContent.isNotEmpty) {
+          await transactionService.import(account.id, fileContent);
+          await accountRepository.refresh();
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Transactions imported successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to import transactions'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
