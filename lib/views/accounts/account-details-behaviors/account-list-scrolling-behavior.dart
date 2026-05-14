@@ -19,7 +19,12 @@ mixin AccountListScrollingBehavior<T extends StatefulWidget> on State<T> impleme
   }
 
   void onScroll() {
-    if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+    if (!scrollController.hasClients) {
+      return;
+    }
+
+    final position = scrollController.position;
+    if (position.extentAfter < 300) {
       nextPage();
     }
   }

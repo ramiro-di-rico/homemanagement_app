@@ -62,6 +62,7 @@ class _TransactionsSearchDesktopViewState
 
   @override
   Widget build(BuildContext context) {
+    final isCompact = MediaQuery.of(context).size.width < 700;
     final accountNamesById = {
       for (final account in _accountRepository.accounts) account.id: account.name
     };
@@ -69,57 +70,109 @@ class _TransactionsSearchDesktopViewState
     return Scaffold(
       appBar: AppBar(
         title: Text('Search transactions'),
-        actions: [
-          DropdownButton<int>(
-            value: _transactionPagingService.pageSize,
-            icon: Icon(Icons.arrow_downward),
-            onChanged: !_transactionPagingService.filtering
-                ? null
-                : (int? pageSize) {
-                    setState(() {
-                      _transactionPagingService.pageSize = pageSize!;
-                      _transactionPagingService.performSearch(resetPaging: true);
-                    });
-                  },
-            items:
-                [10, 20, 30, 50, 100].map<DropdownMenuItem<int>>((int value) {
-              return DropdownMenuItem<int>(
-                value: value,
-                child: Text(value.toString()),
-              );
-            }).toList(),
-          ),
-          IconButton(
-              onPressed: !_transactionPagingService.filtering
-                  ? null
-                  : _platform.isDownloadEnabled()
-                      ? () {
-                          var csvContent =
+        actions: isCompact
+            ? [
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'pageSize':
+                        _showPageSizePicker();
+                        break;
+                      case 'export':
+                        if (_transactionPagingService.filtering &&
+                            _platform.isDownloadEnabled()) {
+                          final csvContent =
                               _transactionPagingService.generateCsvContent();
                           _platform.saveFile('transactions', 'csv', csvContent);
                         }
-                      : null,
-              icon: Icon(Icons.file_download),
-              tooltip: 'Export transactions'),
-          IconButton(
-              onPressed: () {
-                setState(() {
-                  _transactionPagingService.clearFilters();
-                });
-              },
-              icon: Icon(Icons.filter_alt_off),
-              tooltip: 'Clear filters'),
-          IconButton(
-            onPressed: () {
-              displayFilteringOptions();
-            },
-            icon: Icon(_transactionPagingService.filtering
-                ? _filteringNumber
-                    .elementAt(_transactionPagingService.selectedFilters)
-                : Icons.filter_alt_outlined),
-            tooltip: 'Filter transactions',
-          )
-        ],
+                        break;
+                      case 'clear':
+                        setState(() {
+                          _transactionPagingService.clearFilters();
+                        });
+                        break;
+                      case 'filter':
+                        displayFilteringOptions();
+                        break;
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'pageSize',
+                      child: Text('Page size'),
+                    ),
+                    PopupMenuItem(
+                      value: 'export',
+                      enabled:
+                          _transactionPagingService.filtering &&
+                              _platform.isDownloadEnabled(),
+                      child: Text('Export transactions'),
+                    ),
+                    PopupMenuItem(
+                      value: 'clear',
+                      child: Text('Clear filters'),
+                    ),
+                    PopupMenuItem(
+                      value: 'filter',
+                      child: Text('Filter transactions'),
+                    ),
+                  ],
+                ),
+              ]
+            : [
+                DropdownButton<int>(
+                  value: _transactionPagingService.pageSize,
+                  icon: Icon(Icons.arrow_downward),
+                  onChanged: !_transactionPagingService.filtering
+                      ? null
+                      : (int? pageSize) {
+                          setState(() {
+                            _transactionPagingService.pageSize = pageSize!;
+                            _transactionPagingService.performSearch(
+                                resetPaging: true);
+                          });
+                        },
+                  items: [10, 20, 30, 50, 100]
+                      .map<DropdownMenuItem<int>>((int value) {
+                    return DropdownMenuItem<int>(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList(),
+                ),
+                IconButton(
+                    onPressed: !_transactionPagingService.filtering
+                        ? null
+                        : _platform.isDownloadEnabled()
+                            ? () {
+                                final csvContent =
+                                    _transactionPagingService
+                                        .generateCsvContent();
+                                _platform.saveFile(
+                                    'transactions', 'csv', csvContent);
+                              }
+                            : null,
+                    icon: Icon(Icons.file_download),
+                    tooltip: 'Export transactions'),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _transactionPagingService.clearFilters();
+                      });
+                    },
+                    icon: Icon(Icons.filter_alt_off),
+                    tooltip: 'Clear filters'),
+                IconButton(
+                  onPressed: () {
+                    displayFilteringOptions();
+                  },
+                  icon: Icon(_transactionPagingService.filtering
+                      ? _filteringNumber
+                          .elementAt(_transactionPagingService.selectedFilters)
+                      : Icons.filter_alt_outlined),
+                  tooltip: 'Filter transactions',
+                )
+              ],
       ),
       body: Container(
         child: !_transactionPagingService.filtering
@@ -157,47 +210,68 @@ class _TransactionsSearchDesktopViewState
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: SizedBox(
-                          height: 60,
-                          child: Card(
-                            child: Row(
-                              children: [
-                                SizedBox(width: 20),
-                                SizedBox(
-                                  width: 80,
-                                  child: Text(
-                                    accountName,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                        child: Card(
+                          child: isCompact
+                              ? ListTile(
+                                  title: Text(
+                                    transaction.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                                SizedBox(width: 100),
-                                SizedBox(
-                                  width: 120,
-                                  child: Text(
-                                    transaction.categoryName,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  subtitle: Text(
+                                    '$accountName · ${transaction.categoryName}',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                                SizedBox(width: 80),
-                                Text(transaction.name),
-                                Spacer(),
-                                Text(transaction.price.toString(),
+                                  trailing: Text(
+                                    transaction.price.toString(),
                                     style: TextStyle(
                                       color: transaction.transactionType ==
                                               TransactionType.Income
                                           ? Colors.greenAccent
                                           : Colors.redAccent,
-                                    )),
-                                SizedBox(width: 20),
-                              ],
-                            ),
-                          ),
+                                    ),
+                                  ),
+                                )
+                              : SizedBox(
+                                  height: 60,
+                                  child: Row(
+                                    children: [
+                                      SizedBox(width: 20),
+                                      SizedBox(
+                                        width: 80,
+                                        child: Text(
+                                          accountName,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 100),
+                                      SizedBox(
+                                        width: 120,
+                                        child: Text(
+                                          transaction.categoryName,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 80),
+                                      Expanded(child: Text(transaction.name)),
+                                      Text(transaction.price.toString(),
+                                          style: TextStyle(
+                                            color: transaction.transactionType ==
+                                                    TransactionType.Income
+                                                ? Colors.greenAccent
+                                                : Colors.redAccent,
+                                          )),
+                                      SizedBox(width: 20),
+                                    ],
+                                  ),
+                                ),
                         ),
                       );
                     }),
@@ -209,8 +283,8 @@ class _TransactionsSearchDesktopViewState
     showModalBottomSheet(
         context: context,
         constraints: BoxConstraints(
-          maxHeight: 1000,
-          maxWidth: 1000,
+          maxHeight: MediaQuery.of(context).size.height * 0.92,
+          maxWidth: MediaQuery.of(context).size.width,
         ),
         isScrollControlled: true,
         shape: RoundedRectangleBorder(
@@ -227,7 +301,42 @@ class _TransactionsSearchDesktopViewState
 
   @override
   void nextPage() {
+    if (_transactionPagingService.loading || !_transactionPagingService.hasMore) {
+      return;
+    }
+
     _transactionPagingService.currentPage++;
     _transactionPagingService.performSearch();
+  }
+
+  void _showPageSizePicker() {
+    showModalBottomSheet<int>(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final pageSize in [10, 20, 30, 50, 100])
+                ListTile(
+                  title: Text(pageSize.toString()),
+                  onTap: () {
+                    Navigator.pop(context, pageSize);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    ).then((pageSize) {
+      if (pageSize == null || !_transactionPagingService.filtering) {
+        return;
+      }
+
+      setState(() {
+        _transactionPagingService.pageSize = pageSize;
+        _transactionPagingService.performSearch(resetPaging: true);
+      });
+    });
   }
 }

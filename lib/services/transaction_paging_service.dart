@@ -5,9 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../models/category.dart';
 import '../models/transaction.dart';
-import '../views/main/widgets/transaction_search_filtering_options.dart';
 import 'endpoints/transaction.service.dart';
-import 'repositories/account.repository.dart';
 
 class TransactionPagingService extends ChangeNotifier  {
 
@@ -16,6 +14,7 @@ class TransactionPagingService extends ChangeNotifier  {
 
   bool filtering = false;
   bool loading = false;
+  bool hasMore = true;
   int currentPage = 1;
   int pageSize = 10;
   int selectedFilters = 0;
@@ -33,6 +32,7 @@ class TransactionPagingService extends ChangeNotifier  {
     if (resetPaging) {
       currentPage = 1;
       transactions.clear();
+      hasMore = true;
     }
 
     filtering = true;
@@ -42,6 +42,8 @@ class TransactionPagingService extends ChangeNotifier  {
 
     var results = await _transactionService.filter(
         currentPage, pageSize, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies);
+
+    hasMore = results.length == pageSize;
 
     if (results.isNotEmpty) {
       if (resetPaging) {
@@ -69,10 +71,11 @@ class TransactionPagingService extends ChangeNotifier  {
     selectedCategories.clear();
     selectedCurrencies.clear();
     transactionType = null;
-    filtering = false;
-    loading = false;
-    currentPage = 1;
-    transactions.clear();
+      filtering = false;
+      loading = false;
+      hasMore = true;
+      currentPage = 1;
+      transactions.clear();
     selectedFilters = 0;
     notifyListeners();
   }
