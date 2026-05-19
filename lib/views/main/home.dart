@@ -13,6 +13,7 @@ import '../../services/endpoints/user-settings-service.dart';
 import 'account.list.dart';
 import 'main_account.list.dart';
 import 'dashboard.dart';
+import 'settings-widgets/reminders/reminders_list_content.dart';
 import 'transactions_search_desktop_view.dart';
 import 'widgets/main_account.sheet.dart';
 import 'settings.dart';
@@ -45,7 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Color> selectedItemsColor = [
     Colors.greenAccent,
     Colors.pinkAccent,
-    Colors.blueAccent
+    Colors.blueAccent,
+    Colors.orangeAccent,
   ];
   int bottomBarNavigationIndex = 0;
   bool hasNotifications = false;
@@ -76,6 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Widget> children = [
       Dashboard(),
       useMainAccounts ? MainAccountListScreen() : AccountListScreen(),
+      Padding(
+        padding: const EdgeInsets.all(10),
+        child: ReminderListContent(),
+      ),
       SettingsScreen(),
     ];
 
@@ -108,7 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
           label: useMainAccounts ? 'Main Accounts' : 'Accounts',
           icon: Icon(useMainAccounts ? Icons.account_balance : Icons.account_balance_wallet),
         ),
-        BottomNavigationBarItem(label: 'Settings', icon: Icon(Icons.settings))
+        BottomNavigationBarItem(label: 'Reminders', icon: Icon(Icons.notifications)),
+        BottomNavigationBarItem(label: 'Settings', icon: Icon(Icons.settings)),
       ],
     );
   }
@@ -134,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? Icons.visibility_off
                       : Icons.visibility))
             ]
-          : this.bottomBarNavigationIndex == 2
+          : this.bottomBarNavigationIndex == 3
               ? [
                   IconButton(
                       onPressed: () {
@@ -194,6 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
               });
         },
       ),
+      createLogoutButton(),
       createLogoutButton(),
     ]);
   }
