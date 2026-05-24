@@ -26,13 +26,13 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
   int? selectedAccountId;
   bool showFilters = false;
   BudgetState? selectedBudgetState;
-  List<BudgetState> budgetStates = BudgetState.values;
 
   @override
   void initState() {
     super.initState();
     _budgetRepository.addListener(refreshState);
-    selectedBudgetState = BudgetState.Active;
+    selectedBudgetState = null;
+    doFiltering();
   }
 
   @override
@@ -152,7 +152,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                       }),
                                 ),
                                 SizedBox(width: 20),
-                                DropdownButton<BudgetState>(
+                                DropdownButton<BudgetState?>(
                                   value: selectedBudgetState,
                                   onChanged: (BudgetState? newValue) {
                                     setState(() {
@@ -160,15 +160,21 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                       doFiltering();
                                     });
                                   },
-                                  items: BudgetState.values
-                                      .map<DropdownMenuItem<BudgetState>>(
-                                          (BudgetState state) {
-                                    return DropdownMenuItem<BudgetState>(
-                                      value: state,
-                                      child: Text(
-                                          state.toString().split('.').last),
-                                    );
-                                  }).toList(),
+                                  items: [
+                                    DropdownMenuItem<BudgetState?>(
+                                      value: null,
+                                      child: Text('All'),
+                                    ),
+                                    ...BudgetState.values
+                                        .map<DropdownMenuItem<BudgetState?>>(
+                                            (BudgetState state) {
+                                      return DropdownMenuItem<BudgetState?>(
+                                        value: state,
+                                        child: Text(
+                                            state.toString().split('.').last),
+                                      );
+                                    }).toList(),
+                                  ],
                                 )
                               ],
                             ),
