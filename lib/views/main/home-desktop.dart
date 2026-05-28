@@ -11,6 +11,7 @@ import '../../services/repositories/preferences.repository.dart';
 import '../../services/endpoints/user-settings-service.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
+import '../invites/invite_management_screen.dart';
 import 'account-list-desktop.dart';
 import 'main-account-list-desktop.dart';
 import 'budget_desktop_view.dart';
@@ -71,6 +72,13 @@ class _HomeDesktopState extends State<HomeDesktop> {
               context.go(BulkTransactionsScreen.fullPath);
             },
             tooltip: 'Bulk transactions',
+          ),
+          IconButton(
+            icon: Icon(Icons.mail_outline),
+            onPressed: () {
+              context.go(InviteManagementScreen.fullPath);
+            },
+            tooltip: 'Invitations',
           ),
           IconButton(
             icon: Icon(Icons.bar_chart),

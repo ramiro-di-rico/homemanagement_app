@@ -9,6 +9,7 @@ import '../../services/repositories/main_account.repository.dart';
 import '../../services/repositories/preferences.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
+import '../invites/invite_management_screen.dart';
 import '../../services/endpoints/user-settings-service.dart';
 import 'account.list.dart';
 import 'main_account.list.dart';
@@ -164,6 +165,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                       icon: Icon(Icons.playlist_add),
                       tooltip: 'Bulk transactions',
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        context.go(InviteManagementScreen.fullPath);
+                      },
+                      icon: Icon(Icons.mail_outline),
+                      tooltip: 'Invitations',
                     ),
                     IconButton(
                       onPressed: () {
