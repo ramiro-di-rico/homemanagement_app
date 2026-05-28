@@ -24,6 +24,17 @@ class InviteManagementScreen extends StatefulWidget {
   State<InviteManagementScreen> createState() => _InviteManagementScreenState();
 }
 
+enum InviteSortField {
+  createdAt,
+  expiresAt,
+}
+
+enum InviteExpirationFilter {
+  all,
+  withExpiration,
+  withoutExpiration,
+}
+
 class _InviteManagementScreenState extends State<InviteManagementScreen> {
   final InviteRepository _inviteRepository = GetIt.I<InviteRepository>();
   final AccountRepository _accountRepository = GetIt.I<AccountRepository>();
@@ -39,6 +50,11 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
   int? _expandedInviteId;
   String? _message;
   bool _messageIsError = false;
+  InviteSortField _sortField = InviteSortField.createdAt;
+  InviteExpirationFilter _expirationFilter = InviteExpirationFilter.all;
+  int? _filterAccountId;
+  int? _filterCategoryId;
+  InviteStatus? _filterStatus;
 
   final Map<int, List<InviteTransactionSubmissionModel>> _submissionsByInvite = {};
   final Map<int, bool> _loadingSubmissions = {};
@@ -290,7 +306,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final invites = _inviteRepository.invites;
+    final invites = _getVisibleInvites();
 
     return Scaffold(
       appBar: AppBar(
@@ -316,12 +332,22 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                         children: [
                           SizedBox(width: 420, child: _buildCreateCard()),
                           const SizedBox(width: 12),
-                          Expanded(child: _buildInviteList(invites)),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                _buildFilterCard(),
+                                const SizedBox(height: 12),
+                                _buildInviteList(invites),
+                              ],
+                            ),
+                          ),
                         ],
                       )
                     : Column(
                         children: [
                           _buildCreateCard(),
+                          const SizedBox(height: 12),
+                          _buildFilterCard(),
                           const SizedBox(height: 12),
                           _buildInviteList(invites),
                         ],
@@ -480,6 +506,230 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
     return Column(
       children: invites.map(_buildInviteTile).toList(),
     );
+  }
+
+  Widget _buildFilterCard() {
+    final accounts = _accountRepository.accounts;
+    final categories = _categoryRepository.getActiveCategories();
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Sort and filter', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                SizedBox(
+                  width: 220,
+                  child: DropdownButtonFormField<InviteSortField>(
+                    initialValue: _sortField,
+                    decoration: const InputDecoration(
+                      labelText: 'Order by',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: InviteSortField.createdAt,
+                        child: Text('Created date'),
+                      ),
+                      DropdownMenuItem(
+                        value: InviteSortField.expiresAt,
+                        child: Text('Expiration date'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value == null) {
+                        return;
+                      }
+
+                      setState(() {
+                        _sortField = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 240,
+                  child: DropdownButtonFormField<InviteExpirationFilter>(
+                    initialValue: _expirationFilter,
+                    decoration: const InputDecoration(
+                      labelText: 'Expiration filter',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: InviteExpirationFilter.all,
+                        child: Text('All invites'),
+                      ),
+                      DropdownMenuItem(
+                        value: InviteExpirationFilter.withExpiration,
+                        child: Text('Has expiration'),
+                      ),
+                      DropdownMenuItem(
+                        value: InviteExpirationFilter.withoutExpiration,
+                        child: Text('No expiration'),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      if (value == null) {
+                        return;
+                      }
+
+                      setState(() {
+                        _expirationFilter = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 220,
+                  child: DropdownButtonFormField<int?>(
+                    initialValue: _filterAccountId,
+                    decoration: const InputDecoration(
+                      labelText: 'Account',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem<int?>(value: null, child: Text('All accounts')),
+                      ...accounts.map(
+                        (account) => DropdownMenuItem<int?>(
+                          value: account.id,
+                          child: Text(account.name),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _filterAccountId = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 220,
+                  child: DropdownButtonFormField<int?>(
+                    initialValue: _filterCategoryId,
+                    decoration: const InputDecoration(
+                      labelText: 'Category',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem<int?>(value: null, child: Text('All categories')),
+                      ...categories.map(
+                        (category) => DropdownMenuItem<int?>(
+                          value: category.id,
+                          child: Text(category.name),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _filterCategoryId = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 220,
+                  child: DropdownButtonFormField<InviteStatus?>(
+                    initialValue: _filterStatus,
+                    decoration: const InputDecoration(
+                      labelText: 'Status',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: [
+                      const DropdownMenuItem<InviteStatus?>(value: null, child: Text('All statuses')),
+                      ...InviteStatus.values.map(
+                        (status) => DropdownMenuItem<InviteStatus?>(
+                          value: status,
+                          child: Text(_inviteStatusLabel(status)),
+                        ),
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _filterStatus = value;
+                      });
+                    },
+                  ),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _sortField = InviteSortField.createdAt;
+                      _expirationFilter = InviteExpirationFilter.all;
+                      _filterAccountId = null;
+                      _filterCategoryId = null;
+                      _filterStatus = null;
+                    });
+                  },
+                  icon: const Icon(Icons.filter_alt_off_outlined),
+                  label: const Text('Clear filters'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<InviteModel> _getVisibleInvites() {
+    final invites = List<InviteModel>.from(_inviteRepository.invites);
+
+    final filtered = invites.where((invite) {
+      if (_expirationFilter == InviteExpirationFilter.withExpiration && invite.expiresAt == null) {
+        return false;
+      }
+
+      if (_expirationFilter == InviteExpirationFilter.withoutExpiration && invite.expiresAt != null) {
+        return false;
+      }
+
+      if (_filterAccountId != null && invite.accountId != _filterAccountId) {
+        return false;
+      }
+
+      if (_filterCategoryId != null && invite.categoryId != _filterCategoryId) {
+        return false;
+      }
+
+      if (_filterStatus != null && invite.status != _filterStatus) {
+        return false;
+      }
+
+      return true;
+    }).toList();
+
+    filtered.sort((a, b) {
+      if (_sortField == InviteSortField.expiresAt) {
+        final aExpires = a.expiresAt;
+        final bExpires = b.expiresAt;
+
+        if (aExpires == null && bExpires == null) {
+          return b.createdAt.compareTo(a.createdAt);
+        }
+
+        if (aExpires == null) {
+          return 1;
+        }
+
+        if (bExpires == null) {
+          return -1;
+        }
+
+        return aExpires.compareTo(bExpires);
+      }
+
+      return b.createdAt.compareTo(a.createdAt);
+    });
+
+    return filtered;
   }
 
   Widget _buildInviteTile(InviteModel invite) {
