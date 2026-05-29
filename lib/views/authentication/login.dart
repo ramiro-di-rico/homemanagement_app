@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
 import '../mixins/notifier_mixin.dart';
+import 'invite_qr_scanner_screen.dart';
 import 'registration.dart';
 import 'user-controls-mixins/authentication-behavior.dart';
 import 'user-controls-mixins/email-behavior.dart';
@@ -20,6 +22,30 @@ class _LoginViewState extends State<LoginView>
         EmailBehavior,
         PasswordBehavior,
         NotifierMixin {
+  bool get _canScanInviteWithCamera {
+    if (kIsWeb) {
+      return false;
+    }
+
+    final platform = defaultTargetPlatform;
+    return platform == TargetPlatform.android ||
+        platform == TargetPlatform.iOS;
+  }
+
+  Future<void> _openInviteScanner() async {
+    final route = await Navigator.of(context).push<String>(
+      MaterialPageRoute(
+        builder: (_) => const InviteQrScannerScreen(),
+      ),
+    );
+
+    if (!mounted || route == null) {
+      return;
+    }
+
+    context.go(route);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,12 +95,41 @@ class _LoginViewState extends State<LoginView>
                               onPressed: autoAuthenticate,
                             ),
                           ),
+                          if (_canScanInviteWithCamera)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: ElevatedButton(
+                                onPressed: _openInviteScanner,
+                                child: const Icon(
+                                  Icons.qr_code_scanner,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
                         ],
                       )
-                    : ElevatedButton(
-                        child: Icon(Icons.send, color: Colors.white),
-                        onPressed:
-                            userViewModel.isValid ? onButtonPressed : null,
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            child: Icon(Icons.send, color: Colors.white),
+                            onPressed:
+                                userViewModel.isValid ? onButtonPressed : null,
+                          ),
+                          if (_canScanInviteWithCamera)
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: ElevatedButton(
+                                onPressed: _openInviteScanner,
+                                child: const Icon(
+                                  Icons.qr_code_scanner,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
             ],
           ),

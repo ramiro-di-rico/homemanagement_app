@@ -37,7 +37,7 @@ class DeepLinkService {
   }
 
   void _handleUri(Uri uri) {
-    final route = _mapUriToRoute(uri);
+    final route = mapUriToRoute(uri);
     if (route == null || _router == null) {
       return;
     }
@@ -47,7 +47,16 @@ class DeepLinkService {
     });
   }
 
-  String? _mapUriToRoute(Uri uri) {
+  String? mapLinkToRoute(String link) {
+    final parsedUri = Uri.tryParse(link.trim());
+    if (parsedUri == null) {
+      return null;
+    }
+
+    return mapUriToRoute(parsedUri);
+  }
+
+  String? mapUriToRoute(Uri uri) {
     final segments = <String>[];
 
     if (uri.scheme == 'https' || uri.scheme == 'http') {
