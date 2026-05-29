@@ -5,6 +5,9 @@ import 'services/endpoints/main_account.service.dart';
 import 'services/endpoints/budget_http_service.dart';
 import 'services/endpoints/identity.service.dart';
 import 'services/endpoints/identity_user_service.dart';
+import 'services/endpoints/invite.service.dart';
+import 'services/endpoints/public_invite.service.dart';
+import 'services/deep_link_service.dart';
 import 'services/endpoints/recurring_transaction_service.dart';
 import 'services/endpoints/reminder_service.dart';
 import 'services/endpoints/user-settings-service.dart';
@@ -15,6 +18,7 @@ import 'services/repositories/account.repository.dart';
 import 'services/repositories/budget_repository.dart';
 import 'services/repositories/category.repository.dart';
 import 'services/repositories/identity_user_repository.dart';
+import 'services/repositories/invite.repository.dart';
 import 'services/repositories/notification.repository.dart';
 import 'services/repositories/preferences.repository.dart';
 import 'services/repositories/currency.repository.dart';
@@ -38,6 +42,7 @@ import 'services/endpoints/metrics.service.dart';
 import 'services/endpoints/transaction.service.dart';
 import 'services/security/password_reset_service.dart';
 import 'services/transaction_paging_service.dart';
+import 'services/invite_link_service.dart';
 
 void main() {
   var platform = PlatformStrategy.createPlatform();
@@ -96,6 +101,11 @@ void registerServices() {
       caching: GetIt.I<Caching>()));
 
   GetIt.instance.registerFactory(() => IdentityUserService(authenticationService: GetIt.I<AuthenticationService>()));
+
+  GetIt.instance.registerFactory(() => InviteService(
+      authenticationService: GetIt.I<AuthenticationService>()));
+
+  GetIt.instance.registerFactory(() => PublicInviteService());
 
   GetIt.instance.registerFactory(() => RecurringTransactionService(authenticationService: GetIt.I<AuthenticationService>()));
 
@@ -173,11 +183,15 @@ void registerSingletons(PlatformContext platformContext) {
       IdentityUserService(authenticationService: authenticationService));
 
   var transactionPagingService = TransactionPagingService(transactionService);
+  var inviteRepository = InviteRepository(
+      inviteService: InviteService(authenticationService: authenticationService),
+      notifierService: errorNotifierService);
   var recurringTransactionRepository = RecurringTransactionRepository(
       RecurringTransactionService(authenticationService: authenticationService),
       errorNotifierService);
 
   var passwordResetService = PasswordResetService();
+  var deepLinkService = DeepLinkService();
 
   var budgetRepository = BudgetRepository(errorNotifierService, BudgetHttpService(apiServiceFactory: ApiServiceFactory(authenticationService: authenticationService)));
 
@@ -201,9 +215,12 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(errorNotifierService);
   GetIt.instance.registerSingleton(identityUserRepository);
   GetIt.instance.registerSingleton(transactionPagingService);
+  GetIt.instance.registerSingleton(inviteRepository);
   GetIt.instance.registerSingleton(recurringTransactionRepository);
   GetIt.instance.registerSingleton(passwordResetService);
+  GetIt.instance.registerSingleton(deepLinkService);
   GetIt.instance.registerSingleton(budgetRepository);
   GetIt.instance.registerSingleton(reminderRepository);
   GetIt.instance.registerSingleton(mainAccountRepository);
+  GetIt.instance.registerSingleton(InviteLinkService());
 }

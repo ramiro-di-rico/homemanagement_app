@@ -12,6 +12,8 @@ import 'views/authentication/login.dart';
 import 'views/authentication/registration-desktop.dart';
 import 'views/authentication/registration.dart';
 import 'views/authentication/reset_password_view.dart';
+import 'views/invites/invite_management_screen.dart';
+import 'views/invites/public_invite_screen.dart';
 import 'views/main/budget_desktop_view.dart';
 import 'views/main/home-desktop.dart';
 import 'views/main/home.dart';
@@ -36,6 +38,12 @@ class Routing{
           path: RegistrationScreen.fullPath,
           builder: (context, state) =>
           !isDesktop ? RegistrationScreen() : RegistrationDesktop(),
+        ),
+        GoRoute(
+          path: PublicInviteScreen.fullPath,
+          builder: (context, state) => PublicInviteScreen(
+            token: state.pathParameters['token'] ?? '',
+          ),
         ),
         GoRoute(
             path: HomeScreen.fullPath,
@@ -79,6 +87,10 @@ class Routing{
                 path: BulkTransactionsScreen.path,
                 builder: (context, state) => const BulkTransactionsScreen(),
               ),
+              GoRoute(
+                path: InviteManagementScreen.path,
+                builder: (context, state) => const InviteManagementScreen(),
+              ),
             ]),
         GoRoute(
           path: TwoFactorAuthenticationView.fullPath,
@@ -111,6 +123,11 @@ class Routing{
           passwordResetService.setResetPasswordQueryParams(
               emailQueryParam.toString(), tokenQueryParam.toString());
           return ResetPasswordView.fullPath + passwordResetService.resetPasswordQueryParams();
+        }
+
+        final isPublicInviteRoute = state.matchedLocation.startsWith('/public/invites/');
+        if (isPublicInviteRoute) {
+          return null;
         }
 
         if (!authenticationService.isAuthenticated()){

@@ -49,5 +49,18 @@
 	<string>Why is my app authenticating using face id?</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.example.homemanagementApp.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>homemanagementapp</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
