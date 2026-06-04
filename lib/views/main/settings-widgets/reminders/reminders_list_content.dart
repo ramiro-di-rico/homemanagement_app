@@ -15,27 +15,28 @@ class ReminderListContent extends StatefulWidget {
 class _ReminderListContentState extends State<ReminderListContent> {
   final ReminderRepository _reminderRepository =
       GetIt.instance<ReminderRepository>();
-  List<Reminder> _reminders = [];
 
   @override
   void initState() {
     super.initState();
-    _loadReminders();
-    _reminderRepository.addListener(_loadReminders);
+    _reminderRepository.addListener(_onRepositoryChanged);
+    _reminderRepository.getReminders();
   }
 
   @override
   void dispose() {
-    _reminderRepository.removeListener(_loadReminders);
+    _reminderRepository.removeListener(_onRepositoryChanged);
     super.dispose();
   }
 
-  Future<void> _loadReminders() async {
-    final reminders = await _reminderRepository.getReminders();
-    if (!mounted) return;
-    setState(() {
-      _reminders = reminders;
-    });
+  void _onRepositoryChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _refresh() async {
+    await _reminderRepository.getReminders(forceRefresh: true);
   }
 
   Future<void> _toggleCompletion(Reminder reminder, bool isCompleted) async {
@@ -49,7 +50,6 @@ class _ReminderListContentState extends State<ReminderListContent> {
       isCompleted,
     );
     await _reminderRepository.updateReminder(reminder.id, updatedReminder);
-    _loadReminders();
   }
 
   void _showReminderSheet({Reminder? reminder}) {
@@ -78,8 +78,11 @@ class _ReminderListContentState extends State<ReminderListContent> {
 
   @override
   Widget build(BuildContext context) {
+    final reminders = _reminderRepository.reminders;
+    final isLoading = _reminderRepository.isLoading;
+
     return RefreshIndicator(
-      onRefresh: _loadReminders,
+      onRefresh: _refresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
@@ -115,27 +118,42 @@ class _ReminderListContentState extends State<ReminderListContent> {
               ),
             ),
           ),
-          for (final reminder in _reminders)
-            Card(
-              child: ListTile(
-                leading: Checkbox(
-                  value: reminder.isCompleted,
-                  onChanged: (value) =>
-                      _toggleCompletion(reminder, value ?? false),
-                ),
-                title: Text(
-                  reminder.title,
-                  style: TextStyle(
-                    decoration: reminder.isCompleted
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-                    color: reminder.isCompleted ? Colors.grey : null,
-                  ),
-                ),
-                trailing: Text(reminder.frequencyString),
-                onTap: () => _showReminderSheet(reminder: reminder),
+          if (isLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(),
               ),
-            ),
+            )
+          else if (reminders.isEmpty)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text('No reminders found'),
+              ),
+            )
+          else
+            for (final reminder in reminders)
+              Card(
+                child: ListTile(
+                  leading: Checkbox(
+                    value: reminder.isCompleted,
+                    onChanged: (value) =>
+                        _toggleCompletion(reminder, value ?? false),
+                  ),
+                  title: Text(
+                    reminder.title,
+                    style: TextStyle(
+                      decoration: reminder.isCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                      color: reminder.isCompleted ? Colors.grey : null,
+                    ),
+                  ),
+                  trailing: Text(reminder.frequencyString),
+                  onTap: () => _showReminderSheet(reminder: reminder),
+                ),
+              ),
         ],
       ),
     );

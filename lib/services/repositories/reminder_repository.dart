@@ -7,13 +7,23 @@ class ReminderRepository extends ChangeNotifier {
   final ReminderService _reminderService;
   final NotifierService _notifierService;
   List<Reminder> _cachedReminders = [];
+  bool _isLoading = false;
 
   ReminderRepository(this._reminderService, this._notifierService);
 
-  Future<List<Reminder>> getReminders() async {
-    if (_cachedReminders.isEmpty) {
-      _cachedReminders = await _reminderService.getReminders();
+  bool get isLoading => _isLoading;
+  List<Reminder> get reminders => _cachedReminders;
+
+  Future<List<Reminder>> getReminders({bool forceRefresh = false}) async {
+    if (_cachedReminders.isEmpty || forceRefresh) {
+      _isLoading = true;
       notifyListeners();
+      try {
+        _cachedReminders = await _reminderService.getReminders();
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
     return _cachedReminders;
   }
