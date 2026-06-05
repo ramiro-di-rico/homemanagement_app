@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import '../../../extensions/datehelper.dart';
 import '../../../models/http-models/balance_history_response.dart';
 import '../../../services/repositories/account.repository.dart';
@@ -37,14 +38,14 @@ class _BalanceHistoricalChartWidgetState
     }
 
     return data.isEmpty
-        ? const Card(
+        ? Card(
             child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.history, size: 48, color: Colors.grey),
                 SizedBox(height: 10),
-                Text('No balance history available yet'),
+                Text(AppLocalizations.of(context)!.noBalanceHistory),
               ],
             ),
           ))
@@ -53,15 +54,15 @@ class _BalanceHistoricalChartWidgetState
               children: [
                 ListTile(
                   leading: const Icon(Icons.history),
-                  title: const Text('Balance History'),
+                  title: Text(AppLocalizations.of(context)!.balanceHistory),
                   trailing: DropdownButton<int?>(
                     value: selectedCurrencyId,
-                    hint: const Text('All Currencies'),
+                    hint: Text(AppLocalizations.of(context)!.allCurrencies),
                     underline: const SizedBox(),
                     items: [
-                      const DropdownMenuItem<int?>(
+                      DropdownMenuItem<int?>(
                         value: null,
-                        child: Text('All'),
+                        child: Text(AppLocalizations.of(context)!.all),
                       ),
                       ...currencyRepository.currencies.map((currency) {
                         return DropdownMenuItem<int?>(
@@ -146,7 +147,7 @@ class _BalanceHistoricalChartWidgetState
           ),
         ),
         bottomTitles: AxisTitles(
-          axisNameWidget: const Text('Months'),
+          axisNameWidget: Text(AppLocalizations.of(context)!.months),
           sideTitles: SideTitles(
             showTitles: true,
             interval: 1,

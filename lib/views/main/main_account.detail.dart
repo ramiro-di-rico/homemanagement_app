@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/main_account.dart';
 import 'package:home_management_app/services/endpoints/transaction.service.dart';
@@ -125,7 +126,7 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
                       SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: _showAddAccountDialog,
-                        child: Text('Add Account'),
+                        child: Text(AppLocalizations.of(context)!.addAccount),
                       ),
                     ],
                   ),
@@ -199,30 +200,30 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
                                     }
                                   },
                                   icon: const Icon(Icons.more_vert),
-                                  tooltip: 'Show menu',
+                                  tooltip: AppLocalizations.of(context)!.showMenu,
                                 );
                               },
                               menuChildren: [
                                 MenuItemButton(
                                     leadingIcon: Icon(Icons.add, color: Colors.greenAccent),
-                                    child: Text('Add Transaction',
+                                    child: Text(AppLocalizations.of(context)!.addTransaction,
                                         style: TextStyle(color: Colors.greenAccent)),
                                     onPressed: () => _addTransaction(account)),
                                 MenuItemButton(
                                   leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
-                                  child: Text('Edit',
+                                  child: Text(AppLocalizations.of(context)!.editAccount,
                                       style: TextStyle(color: Colors.blueAccent)),
                                   onPressed: () => _editAccount(account),
                                 ),
                                 MenuItemButton(
                                   leadingIcon: Icon(account.isHidden ? Icons.visibility : Icons.visibility_off, color: Colors.blueAccent),
-                                  child: Text(account.isHidden ? 'Show' : 'Hide',
+                                  child: Text(account.isHidden ? AppLocalizations.of(context)!.show : AppLocalizations.of(context)!.hide,
                                       style: TextStyle(color: Colors.blueAccent)),
                                   onPressed: () => _hideAccount(account),
                                 ),
                                 MenuItemButton(
                                   leadingIcon: Icon(Icons.archive, color: Colors.pinkAccent),
-                                  child: Text(account.archive ? 'Unarchive' : 'Archive',
+                                  child: Text(account.archive ? AppLocalizations.of(context)!.unarchive : AppLocalizations.of(context)!.archive,
                                       style: TextStyle(color: Colors.pinkAccent)),
                                   onPressed: () => _archiveAccount(account),
                                 ),
@@ -231,20 +232,20 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
                                     Icons.delete,
                                     color: Colors.redAccent,
                                   ),
-                                  child: Text('Delete',
+                                  child: Text(AppLocalizations.of(context)!.delete,
                                       style: TextStyle(color: Colors.redAccent)),
                                   onPressed: () => _deleteAccount(account),
                                 ),
                                 MenuItemButton(
                                   leadingIcon: Icon(Icons.upload, color: Colors.orangeAccent),
-                                  child: Text('Import Transactions',
+                                  child: Text(AppLocalizations.of(context)!.importTransactions,
                                       style: TextStyle(color: Colors.orangeAccent)),
                                   onPressed: () => _importTransactions(account),
                                 ),
                                 Divider(),
                                 MenuItemButton(
                                   leadingIcon: Icon(Icons.remove_circle_outline, color: Colors.red),
-                                  child: Text('Unassign',
+                                  child: Text(AppLocalizations.of(context)!.unassign,
                                       style: TextStyle(color: Colors.red)),
                                   onPressed: () => _removeAccount(account),
                                 ),
@@ -282,14 +283,14 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Add Account to ${widget.mainAccount.name}', style: TextStyle(fontSize: 18)),
+        title: Text(AppLocalizations.of(context)!.addAccountTo(widget.mainAccount.name), style: TextStyle(fontSize: 18)),
         contentPadding: EdgeInsets.symmetric(vertical: 20),
         content: Container(
           width: double.maxFinite,
           child: availableAccounts.isEmpty
               ? Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Text('No more accounts available to add.', textAlign: TextAlign.center),
+                  child: Text(AppLocalizations.of(context)!.noMoreAccountsAvailable, textAlign: TextAlign.center),
                 )
               : ListView.separated(
                   shrinkWrap: true,
@@ -319,7 +320,7 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
         ),
         actions: [
           TextButton(
-            child: Text('Close'),
+            child: Text(AppLocalizations.of(context)!.close),
             onPressed: () => Navigator.pop(context),
           )
         ],
@@ -435,11 +436,11 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
     bool confirm = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Delete Account'),
-            content: Text('Are you sure you want to delete ${account.name}?'),
+            title: Text(AppLocalizations.of(context)!.deleteAccount),
+            content: Text(AppLocalizations.of(context)!.areYouSureDelete(account.name)),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Cancel')),
-              TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Delete', style: TextStyle(color: Colors.red))),
+              TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppLocalizations.of(context)!.cancel)),
+              TextButton(onPressed: () => Navigator.pop(context, true), child: Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.red))),
             ],
           ),
         ) ??
@@ -452,7 +453,7 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
           setState(() {
             childAccounts.removeWhere((a) => a.id == account.id);
           });
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${account.name} deleted')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.deleted(account.name))));
         }
       } catch (e) {
         // Error handled by repository
@@ -477,7 +478,7 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Transactions imported successfully'),
+                content: Text(AppLocalizations.of(context)!.transactionsImportedSuccessfully),
                 backgroundColor: Colors.green,
               ),
             );
@@ -488,7 +489,7 @@ class _MainAccountDetailScreenState extends State<MainAccountDetailScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to import transactions'),
+            content: Text(AppLocalizations.of(context)!.failedToImportTransactions),
             backgroundColor: Colors.red,
           ),
         );

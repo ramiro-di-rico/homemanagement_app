@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../../models/recurring_transaction.dart';
 import '../../../models/transaction.dart';
@@ -63,7 +64,7 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                   child: Row(
                     children: [
                       Text(
-                        'Recurring Transactions',
+                        AppLocalizations.of(context)!.recurringTransactions,
                         style: TextStyle(fontSize: 20),
                       ),
                       SizedBox(width: 12),
@@ -74,7 +75,7 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                             controller: _searchController,
                             decoration: InputDecoration(
                               isDense: true,
-                              hintText: 'Search recurring transactions',
+                              hintText: AppLocalizations.of(context)!.searchRecurringTransactions,
                               prefixIcon: Icon(Icons.search),
                               suffixIcon: _query.isNotEmpty
                                   ? IconButton(
@@ -93,7 +94,7 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                       ),
                       SizedBox(width: 12),
                       IconButton(
-                        tooltip: 'Add recurring transaction',
+                        tooltip: AppLocalizations.of(context)!.addRecurringTransaction,
                         icon: Icon(Icons.add),
                         onPressed: () {
                           showModalBottomSheet<void>(
@@ -126,7 +127,7 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                 child: Container(
                   height: 330,
                   child: visibleRecurring.isEmpty
-                      ? Center(child: Text('No recurring transactions found'))
+                      ? Center(child: Text(AppLocalizations.of(context)!.noRecurringTransactionsFound))
                       : ListView.builder(
                           shrinkWrap: true,
                           itemCount: visibleRecurring.length,
@@ -151,12 +152,12 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                               Spacer(),
                               Chip(
                                   label: Text(account == null
-                                      ? 'Account not set'
+                                      ? AppLocalizations.of(context)!.accountNotSet
                                       : account.name)),
                               SizedBox(width: 10),
                               Chip(
                                   label: Text(category == null
-                                      ? 'Category not set'
+                                      ? AppLocalizations.of(context)!.categoryNotSet
                                       : category.name)),
                             ],
                           ),
@@ -202,25 +203,25 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                             },
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'create_transaction',
                                 child: Row(
                                   children: [
                                     Icon(Icons.add, color: Colors.greenAccent),
                                     SizedBox(width: 10),
-                                    Text('Create Transaction',
+                                    Text(AppLocalizations.of(context)!.createTransaction,
                                         style: TextStyle(
                                             color: Colors.greenAccent)),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'delete',
                                 child: Row(
                                   children: [
                                     Icon(Icons.delete, color: Colors.redAccent),
                                     SizedBox(width: 10),
-                                    Text('Delete',
+                                    Text(AppLocalizations.of(context)!.delete,
                                         style:
                                             TextStyle(color: Colors.redAccent)),
                                   ],
@@ -231,7 +232,7 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                           subtitle: Row(
                             children: [
                               recurringTransaction.price == null
-                                  ? Text('Price not set')
+                                  ? Text(AppLocalizations.of(context)!.priceNotSet)
                                   : Text(
                                       recurringTransaction.price.toString(),
                                       style: TextStyle(
@@ -246,8 +247,8 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                               Text(
                                 recurringTransaction.recurrence ==
                                         Recurrence.Monthly
-                                    ? 'Monthly'
-                                    : 'Annually',
+                                    ? AppLocalizations.of(context)!.monthly
+                                    : AppLocalizations.of(context)!.annually,
                               ),
                             ],
                           ),

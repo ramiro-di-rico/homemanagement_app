@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
@@ -166,11 +167,11 @@ class _AccountListScreenState extends State<AccountListScreen> with NotifierMixi
         accounts.remove(item);
       });
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removed(item.name))));
     } catch (ex) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-        'Failed to remove ${item.name}',
+        AppLocalizations.of(context)!.failedToRemove(item.name),
         style: TextStyle(color: Colors.redAccent),
       )));
     }

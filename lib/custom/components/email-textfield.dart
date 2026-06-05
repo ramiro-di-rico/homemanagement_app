@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 class EmailTextField extends StatefulWidget {
   final Function(String) onTextChanged;
@@ -25,7 +26,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
-        labelText: 'Email or username',
+        labelText: AppLocalizations.of(context)!.emailOrUsername,
         prefixIcon: Icon(Icons.email),
       ),
       onChanged: widget.onTextChanged,

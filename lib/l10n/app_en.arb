@@ -40,5 +40,165 @@
   "settings": "Settings",
   "authenticationSettings": "Authentication Settings",
   "username": "Username",
-  "enableTwoFactorAuthentication": "Enable Two Factor Authentication"
+  "enableTwoFactorAuthentication": "Enable Two Factor Authentication",
+  "balance": "Balance",
+  "noBalanceInformation": "No balance information available",
+  "overall": "Overall",
+  "noTransactionsRecorded": "No transactions recorded yet",
+  "count": "Count",
+  "total": "Total",
+  "income": "Income",
+  "outcome": "Outcome",
+  "expense": "Expense",
+  "noBalanceHistory": "No balance history available yet",
+  "balanceHistory": "Balance History",
+  "allCurrencies": "All Currencies",
+  "all": "All",
+  "months": "Months",
+  "removed": "{name} removed",
+  "@removed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToRemove": "Failed to remove {name}",
+  "@failedToRemove": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "showMenu": "Show menu",
+  "editAccount": "Edit Account",
+  "unarchive": "Unarchive",
+  "archive": "Archive",
+  "importTransactions": "Import Transactions",
+  "noTransactionsFoundForAccount": "No transactions found for this account",
+  "filterByName": "Filter by name",
+  "transactionsImportedSuccessfully": "Transactions imported successfully",
+  "failedToImportTransactions": "Failed to import transactions",
+  "signIn": "Sign in",
+  "logout": "Logout",
+  "dontHaveAccount": "You don't have an account yet ?",
+  "createOne": "Create one",
+  "emailOrUsername": "Email or username",
+  "password": "Password",
+  "addAccount": "Add Account",
+  "addTransaction": "Add Transaction",
+  "delete": "Delete",
+  "unassign": "Unassign",
+  "addAccountTo": "Add Account to {name}",
+  "@addAccountTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "noMoreAccountsAvailable": "No more accounts available to add.",
+  "close": "Close",
+  "deleteAccount": "Delete Account",
+  "areYouSureDelete": "Are you sure you want to delete {name}?",
+  "@areYouSureDelete": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "deleted": "{name} deleted",
+  "@deleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "budget": "Budget",
+  "searchTransactions": "Search transactions",
+  "bulkTransactions": "Bulk transactions",
+  "loggingView": "Logging View",
+  "statistics": "Statistics",
+  "name": "Name",
+  "show": "Show",
+  "hide": "Hide",
+  "add": "Add",
+  "edit": "Edit",
+  "rejectSubmissions": "Reject submissions",
+  "reject": "Reject",
+  "invitationQr": "Invitation QR",
+  "invitations": "Invitations",
+  "createInvitation": "Create invitation",
+  "invitationDescription": "One account, one invitation. External users submit transactions for later approval.",
+  "clearDate": "Clear date",
+  "noInvitationsYet": "No invitations yet.",
+  "sortAndFilter": "Sort and filter",
+  "createdDate": "Created date",
+  "expirationDate": "Expiration date",
+  "allInvites": "All invites",
+  "hasExpiration": "Has expiration",
+  "noExpiration": "No expiration",
+  "allAccounts": "All accounts",
+  "allCategories": "All categories",
+  "allStatuses": "All statuses",
+  "invitation": "Invitation",
+  "invitationUnavailable": "This invitation is unavailable.",
+  "categoryName": "Category: {name}",
+  "@categoryName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statusLabel": "Status: {status}",
+  "@statusLabel": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresLabel": "Expires: {date}",
+  "@expiresLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "submitTransaction": "Submit transaction",
+  "submitForApproval": "Submit for approval",
+  "accountLabel": "Account: {name}",
+  "@accountLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "exportTransactions": "Export transactions",
+  "downloadImportTemplate": "Download import template",
+  "templateDownloaded": "Template downloaded",
+  "failedToDownloadTemplate": "Failed to download template",
+  "registration": "Registration",
+  "authenticationError": "Authentication error.",
+  "couldNotAuthenticateAfterRegistration": "Could not authenticate user after registration.",
+  "showAllAccounts": "Show all accounts",
+  "hideAccounts": "Hide accounts",
+  "searchAccounts": "Search accounts",
+  "developerMode": "Developer Mode",
+  "recurringTransactions": "Recurring Transactions",
+  "searchRecurringTransactions": "Search recurring transactions",
+  "addRecurringTransaction": "Add recurring transaction",
+  "noRecurringTransactionsFound": "No recurring transactions found",
+  "accountNotSet": "Account not set",
+  "categoryNotSet": "Category not set",
+  "createTransaction": "Create Transaction",
+  "priceNotSet": "Price not set",
+  "annually": "Annually"
 }

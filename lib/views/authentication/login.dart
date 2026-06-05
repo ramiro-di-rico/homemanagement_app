@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import '../mixins/notifier_mixin.dart';
 import 'invite_qr_scanner_screen.dart';
 import 'registration.dart';
@@ -50,7 +51,7 @@ class _LoginViewState extends State<LoginView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign in'),
+        title: Text(AppLocalizations.of(context)!.signIn),
       ),
       body: SafeArea(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -147,12 +148,12 @@ class _LoginViewState extends State<LoginView>
                       padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
                       child: Row(
                         children: [
-                          Text('You don' 't have an account yet ?'),
+                          Text(AppLocalizations.of(context)!.dontHaveAccount),
                           TextButton(
                             onPressed: () {
                               context.go(RegistrationScreen.fullPath);
                             },
-                            child: Text('Create one'),
+                            child: Text(AppLocalizations.of(context)!.createOne),
                           )
                         ],
                       ),

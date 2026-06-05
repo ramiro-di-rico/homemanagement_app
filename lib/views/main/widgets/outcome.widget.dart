@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/main-card.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/services/endpoints/metrics.service.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -39,7 +40,7 @@ class _OutcomeWidgetState extends State<OutcomeWidget> with TrendingMixin {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Outcome'),
+                Text(AppLocalizations.of(context)!.outcome),
                 Text(label),
                 Icon(
                   this.icon,

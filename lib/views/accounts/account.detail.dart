@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -105,24 +106,24 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
                   }
                 },
                 icon: const Icon(Icons.more_vert),
-                tooltip: 'Show menu',
+                tooltip: AppLocalizations.of(context)!.showMenu,
               );
             },
             menuChildren: [
               MenuItemButton(
                 leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
                 onPressed: () => _editAccount(account),
-                child: Text('Edit Account'),
+                child: Text(AppLocalizations.of(context)!.editAccount),
               ),
               MenuItemButton(
                 leadingIcon: Icon(account.archive ? Icons.unarchive : Icons.archive, color: Colors.pinkAccent),
                 onPressed: () => _archiveAccount(account),
-                child: Text(account.archive ? 'Unarchive' : 'Archive'),
+                child: Text(account.archive ? AppLocalizations.of(context)!.unarchive : AppLocalizations.of(context)!.archive),
               ),
               MenuItemButton(
                 leadingIcon: Icon(Icons.upload_file, color: Colors.blueGrey),
                 onPressed: () => _importTransactions(account),
-                child: Text('Import Transactions'),
+                child: Text(AppLocalizations.of(context)!.importTransactions),
               ),
             ],
           ),
@@ -173,7 +174,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
                                   Icon(Icons.receipt_long_outlined,
                                       size: 48, color: Colors.grey),
                                   SizedBox(height: 10),
-                                  Text('No transactions found for this account'),
+                                  Text(AppLocalizations.of(context)!.noTransactionsFoundForAccount),
                                 ],
                               ))
                             : GroupedListView<TransactionModel, DateTime>(
@@ -241,7 +242,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
                         focusNode: filteringTextFocusNode,
                         controller: filteringNameController,
                         decoration: InputDecoration(
-                            hintText: 'Filter by name',
+                            hintText: AppLocalizations.of(context)!.filterByName,
                             focusedBorder:
                                 displayFilteringBox ? null : InputBorder.none,
                             enabledBorder: InputBorder.none),
@@ -399,7 +400,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Transactions imported successfully'),
+                content: Text(AppLocalizations.of(context)!.transactionsImportedSuccessfully),
                 backgroundColor: Colors.green,
               ),
             );
@@ -410,7 +411,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to import transactions'),
+            content: Text(AppLocalizations.of(context)!.failedToImportTransactions),
             backgroundColor: Colors.red,
           ),
         );

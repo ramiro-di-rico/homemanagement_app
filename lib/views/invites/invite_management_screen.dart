@@ -2,6 +2,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -238,7 +239,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Reject submissions'),
+          title: Text(AppLocalizations.of(context)!.rejectSubmissions),
           content: TextField(
             controller: controller,
             maxLines: 3,
@@ -250,11 +251,11 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, controller.text.trim()),
-              child: const Text('Reject'),
+              child: Text(AppLocalizations.of(context)!.reject),
             ),
           ],
         );
@@ -276,7 +277,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Invitation QR'),
+          title: Text(AppLocalizations.of(context)!.invitationQr),
           content: SizedBox(
             width: 320,
             child: Column(
@@ -296,7 +297,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(AppLocalizations.of(context)!.close),
             ),
           ],
         );
@@ -310,7 +311,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Invitations'),
+        title: Text(AppLocalizations.of(context)!.invitations),
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -370,9 +371,9 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Create invitation', style: Theme.of(context).textTheme.titleLarge),
+            Text(AppLocalizations.of(context)!.createInvitation, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
-            const Text('One account, one invitation. External users submit transactions for later approval.'),
+            Text(AppLocalizations.of(context)!.invitationDescription),
             const SizedBox(height: 16),
             if (_message != null) ...[
               Material(
@@ -466,7 +467,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.person_add_alt_1_outlined),
-                    label: const Text('Create invitation'),
+                    label: Text(AppLocalizations.of(context)!.createInvitation),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -476,7 +477,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                       _selectedExpiry = null;
                     });
                   },
-                  child: const Text('Clear date'),
+                  child: Text(AppLocalizations.of(context)!.clearDate),
                 ),
               ],
             ),
@@ -488,7 +489,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
 
   Widget _buildInviteList(List<InviteModel> invites) {
     if (invites.isEmpty) {
-      return const Card(
+      return Card(
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Column(
@@ -496,7 +497,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
             children: [
               Icon(Icons.mail_outline, size: 48, color: Colors.grey),
               SizedBox(height: 12),
-              Text('No invitations yet.'),
+              Text(AppLocalizations.of(context)!.noInvitationsYet),
             ],
           ),
         ),
@@ -518,7 +519,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Sort and filter', style: Theme.of(context).textTheme.titleMedium),
+            Text(AppLocalizations.of(context)!.sortAndFilter, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12,
@@ -532,14 +533,14 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                       labelText: 'Order by',
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: InviteSortField.createdAt,
-                        child: Text('Created date'),
+                        child: Text(AppLocalizations.of(context)!.createdDate),
                       ),
                       DropdownMenuItem(
                         value: InviteSortField.expiresAt,
-                        child: Text('Expiration date'),
+                        child: Text(AppLocalizations.of(context)!.expirationDate),
                       ),
                     ],
                     onChanged: (value) {
@@ -561,18 +562,18 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                       labelText: 'Expiration filter',
                       border: OutlineInputBorder(),
                     ),
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: InviteExpirationFilter.all,
-                        child: Text('All invites'),
+                        child: Text(AppLocalizations.of(context)!.allInvites),
                       ),
                       DropdownMenuItem(
                         value: InviteExpirationFilter.withExpiration,
-                        child: Text('Has expiration'),
+                        child: Text(AppLocalizations.of(context)!.hasExpiration),
                       ),
                       DropdownMenuItem(
                         value: InviteExpirationFilter.withoutExpiration,
-                        child: Text('No expiration'),
+                        child: Text(AppLocalizations.of(context)!.noExpiration),
                       ),
                     ],
                     onChanged: (value) {
@@ -595,7 +596,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem<int?>(value: null, child: Text('All accounts')),
+                      DropdownMenuItem<int?>(value: null, child: Text(AppLocalizations.of(context)!.allAccounts)),
                       ...accounts.map(
                         (account) => DropdownMenuItem<int?>(
                           value: account.id,
@@ -619,7 +620,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem<int?>(value: null, child: Text('All categories')),
+                      DropdownMenuItem<int?>(value: null, child: Text(AppLocalizations.of(context)!.allCategories)),
                       ...categories.map(
                         (category) => DropdownMenuItem<int?>(
                           value: category.id,
@@ -643,7 +644,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: [
-                      const DropdownMenuItem<InviteStatus?>(value: null, child: Text('All statuses')),
+                      DropdownMenuItem<InviteStatus?>(value: null, child: Text(AppLocalizations.of(context)!.allStatuses)),
                       ...InviteStatus.values.map(
                         (status) => DropdownMenuItem<InviteStatus?>(
                           value: status,

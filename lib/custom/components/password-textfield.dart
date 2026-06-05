@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 class PasswordTextField extends StatefulWidget {
   final Function(String) onTextChanged;
@@ -31,7 +32,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(15)),
           ),
-          labelText: 'Password',
+          labelText: AppLocalizations.of(context)!.password,
           suffixIcon: TextButton(
             child: Icon(hidePassword ? Icons.visibility : Icons.visibility_off),
             onPressed: changePasswordVisibility,

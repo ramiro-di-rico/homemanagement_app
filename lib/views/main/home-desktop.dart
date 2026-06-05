@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../services/repositories/account.repository.dart';
 import '../../services/repositories/budget_repository.dart';
@@ -54,51 +55,52 @@ class _HomeDesktopState extends State<HomeDesktop> {
 
   @override
   Widget build(BuildContext context) {
+    var l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Management'),
+        title: Text(l10n.appTitle),
         actions: [
           IconButton(
             icon: Icon(Icons.manage_search),
             onPressed: () {
               context.go(TransactionsSearchDesktopView.fullPath);
             },
-            tooltip: 'Search transactions',
+            tooltip: l10n.searchTransactions,
           ),
           IconButton(
             icon: Icon(Icons.playlist_add),
             onPressed: () {
               context.go(BulkTransactionsScreen.fullPath);
             },
-            tooltip: 'Bulk transactions',
+            tooltip: l10n.bulkTransactions,
           ),
           IconButton(
             icon: Icon(Icons.mail_outline),
             onPressed: () {
               context.go(InviteManagementScreen.fullPath);
             },
-            tooltip: 'Invitations',
+            tooltip: l10n.invitations,
           ),
           IconButton(
             icon: Icon(Icons.bar_chart),
             onPressed: () {
               context.go(StatisticsView.fullPath);
             },
-            tooltip: 'Statistics',
+            tooltip: l10n.statistics,
           ),
           IconButton(
               onPressed: () {
                 context.go(BudgetDesktopView.fullPath);
               },
               icon: Icon(Icons.track_changes),
-              tooltip: 'Budget'),
+              tooltip: l10n.budget),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () async {
               await context.push(SettingsScreen.fullPath);
               _loadUseMainAccounts();
             },
-            tooltip: 'Settings',
+            tooltip: l10n.settings,
           ),
           IconButton(
             icon: Icon(Icons.logout),
@@ -106,7 +108,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
               GetIt.I<AuthenticationService>().logout();
               context.go(LoginView.fullPath);
             },
-            tooltip: 'Logout',
+            tooltip: l10n.logout,
           ),
         ],
       ),

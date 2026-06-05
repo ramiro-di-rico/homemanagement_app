@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/views/accounts/widgets/add_transaction_sheet_desktop.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -82,7 +83,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account: ${account.name}'),
+        title: Text(AppLocalizations.of(context)!.accountLabel(account.name)),
         actions: [
           MenuAnchor(
             builder: (BuildContext context, MenuController controller, Widget? child) {
@@ -102,17 +103,17 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
               MenuItemButton(
                 leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
                 onPressed: () => _editAccount(account),
-                child: Text('Edit Account'),
+                child: Text(AppLocalizations.of(context)!.editAccount),
               ),
               MenuItemButton(
                 leadingIcon: Icon(account.archive ? Icons.unarchive : Icons.archive, color: Colors.pinkAccent),
                 onPressed: () => _archiveAccount(account),
-                child: Text(account.archive ? 'Unarchive' : 'Archive'),
+                child: Text(account.archive ? AppLocalizations.of(context)!.unarchive : AppLocalizations.of(context)!.archive),
               ),
               MenuItemButton(
                 leadingIcon: Icon(Icons.upload_file, color: Colors.blueGrey),
                 onPressed: () => _importTransactions(account),
-                child: Text('Import Transactions'),
+                child: Text(AppLocalizations.of(context)!.importTransactions),
               ),
             ],
           ),
@@ -335,7 +336,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Transactions imported successfully'),
+                content: Text(AppLocalizations.of(context)!.transactionsImportedSuccessfully),
                 backgroundColor: Colors.green,
               ),
             );

@@ -157,28 +157,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       context.go(TransactionsSearchDesktopView.fullPath);
                     },
                     icon: Icon(Icons.manage_search),
-                    tooltip: 'Search transactions',
+                    tooltip: l10n.searchTransactions,
                   ),
                   IconButton(
                       onPressed: () {
                         context.go(BulkTransactionsScreen.fullPath);
                       },
                       icon: Icon(Icons.playlist_add),
-                      tooltip: 'Bulk transactions',
+                      tooltip: l10n.bulkTransactions,
                     ),
                     IconButton(
                       onPressed: () {
                         context.go(InviteManagementScreen.fullPath);
                       },
                       icon: Icon(Icons.mail_outline),
-                      tooltip: 'Invitations',
+                      tooltip: l10n.invitations,
                     ),
                     IconButton(
                       onPressed: () {
                         context.go(StatisticsView.fullPath);
                       },
                       icon: Icon(Icons.bar_chart),
-                      tooltip: 'Statistics',
+                      tooltip: l10n.statistics,
                     )
                   ]
               : [],
@@ -215,8 +215,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget createLogoutButton() {
+    var l10n = AppLocalizations.of(context)!;
     return FloatingActionButton(
       child: Icon(Icons.exit_to_app),
+      tooltip: l10n.logout,
       onPressed: () {
         authenticationService.logout();
         context.go(LoginView.fullPath);
