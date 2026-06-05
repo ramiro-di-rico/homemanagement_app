@@ -52,4 +52,74 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settings => 'Ajustes';
+
+  @override
+  String get authenticationSettings => 'Ajustes de Autenticación';
+
+  @override
+  String get username => 'Nombre de Usuario';
+
+  @override
+  String get enableTwoFactorAuthentication =>
+      'Habilitar Autenticación de Dos Factores';
+}
+
+/// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
+class AppLocalizationsEsAr extends AppLocalizationsEs {
+  AppLocalizationsEsAr() : super('es_AR');
+
+  @override
+  String get appTitle => 'Gestión del Hogar';
+
+  @override
+  String get userSettings => 'Ajustes de Usuario';
+
+  @override
+  String get csvDelimiter => 'Delimitador CSV';
+
+  @override
+  String get preferredCurrency => 'Moneda Preferida';
+
+  @override
+  String get backupFrequency => 'Frecuencia de Respaldo';
+
+  @override
+  String get weekly => 'Semanal';
+
+  @override
+  String get monthly => 'Mensual';
+
+  @override
+  String get appLanguage => 'Idioma de la Aplicación';
+
+  @override
+  String get english => 'Inglés';
+
+  @override
+  String get spanish => 'Español';
+
+  @override
+  String get dashboard => 'Panel de Control';
+
+  @override
+  String get accounts => 'Cuentas';
+
+  @override
+  String get mainAccounts => 'Cuentas Principales';
+
+  @override
+  String get reminders => 'Recordatorios';
+
+  @override
+  String get settings => 'Ajustes';
+
+  @override
+  String get authenticationSettings => 'Ajustes de Autenticación';
+
+  @override
+  String get username => 'Nombre de Usuario';
+
+  @override
+  String get enableTwoFactorAuthentication =>
+      'Habilitar Autenticación de Dos Factores';
 }

@@ -45,11 +45,12 @@ class PreferencesRepository extends ChangeNotifier {
     return pref.value;
   }
 
-  String getCurrentLanguage()
-  {
-    if (this.preferences.length == 0) return '';
+  String getCurrentLanguage() {
+    if (this.preferences.isNotEmpty) {
+      return this.preferences.firstWhere((element) => element.name == language).value;
+    }
 
-    return this.preferences.firstWhere((element) => element.name == language).value;
+    return userRepository.preferences?.getString(language) ?? '';
   }
 
   bool getUseMainAccounts() {
@@ -62,7 +63,11 @@ class PreferencesRepository extends ChangeNotifier {
   }
 
   Future update(PreferenceModel preference) async {
-    await this.preferenceService.update(preference);
+    if (preference.name == language) {
+      await userRepository.preferences?.setString(language, preference.value);
+    } else {
+      await this.preferenceService.update(preference);
+    }
     this.preferences.removeWhere((element) => element.name == preference.name);
     this.preferences.add(preference);
     this.notifierService.notify('Preference updated');

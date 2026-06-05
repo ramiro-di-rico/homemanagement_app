@@ -52,4 +52,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
+
+  @override
+  String get authenticationSettings => 'Authentication Settings';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get enableTwoFactorAuthentication =>
+      'Enable Two Factor Authentication';
 }

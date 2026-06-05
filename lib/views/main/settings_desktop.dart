@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 
-import 'package:home_management_app/views/main/settings-widgets/user_language_widget.dart';
 import 'logging_view.dart';
 import 'settings-widgets/authentication_settings_widget.dart';
 import 'settings-widgets/categories_list_widget.dart';
@@ -42,7 +41,6 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  UserLanguageWidget(),
                                   AuthenticationSettingsWidget(),
                                   //PreferredCurrency(),
                                   FeatureTogglesWidget(),

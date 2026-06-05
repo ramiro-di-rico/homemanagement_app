@@ -37,5 +37,8 @@
   "accounts": "Accounts",
   "mainAccounts": "Main Accounts",
   "reminders": "Reminders",
-  "settings": "Settings"
+  "settings": "Settings",
+  "authenticationSettings": "Authentication Settings",
+  "username": "Username",
+  "enableTwoFactorAuthentication": "Enable Two Factor Authentication"
 }

@@ -13,13 +13,10 @@ class IdentityUserService {
   IdentityUserService({required this.authenticationService});
 
   Future<MyUserViewModel> getUser() async {
+    await _autoAuthenticateIfNeeded();
     var response = await http.get(
       Uri.https(this.url, usersMy),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${authenticationService.getUserToken()}',
-      },
+      headers: _getHeaders(),
     );
 
     if (response.statusCode == 200) {
@@ -34,13 +31,10 @@ class IdentityUserService {
     String language,
     String timeZone,
   ) async {
+    await _autoAuthenticateIfNeeded();
     var response = await http.put(
       Uri.https(this.url, usersMy),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ${authenticationService.getUserToken()}',
-      },
+      headers: _getHeaders(),
       body: jsonEncode(<String, String>{
         'language': language,
         'timeZone': timeZone,
@@ -57,5 +51,21 @@ class IdentityUserService {
     }
 
     throw Exception('Failed to update language');
+  }
+
+  Map<String, String> _getHeaders() {
+    var token = authenticationService.getUserToken();
+    return <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+
+  Future _autoAuthenticateIfNeeded() async {
+    if (!authenticationService.isAuthenticated() &&
+        authenticationService.canAutoAuthenticate()) {
+      await authenticationService.autoAuthenticate();
+    }
   }
 }

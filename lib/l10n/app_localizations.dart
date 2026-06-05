@@ -96,6 +96,7 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('es'),
+    Locale('es', 'AR'),
   ];
 
   /// The title of the application
@@ -187,6 +188,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
+
+  /// No description provided for @authenticationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication Settings'**
+  String get authenticationSettings;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @enableTwoFactorAuthentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Two Factor Authentication'**
+  String get enableTwoFactorAuthentication;
 }
 
 class _AppLocalizationsDelegate
@@ -207,6 +226,18 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'es':
+      {
+        switch (locale.countryCode) {
+          case 'AR':
+            return AppLocalizationsEsAr();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'en':

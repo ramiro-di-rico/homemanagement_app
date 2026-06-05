@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/views/main/settings-widgets/authentication_settings_widget.dart';
 import 'package:home_management_app/views/main/settings-widgets/user-settings-widget.dart';
 import 'package:home_management_app/views/main/settings-widgets/feature-toggles.widget.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
-import 'package:home_management_app/views/main/settings-widgets/user_language_widget.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           Padding(
             padding: EdgeInsets.all(10),
-            child: UserLanguageWidget(),
+            child: AuthenticationSettingsWidget(),
           ),
           Padding(
             padding: EdgeInsets.all(10),
