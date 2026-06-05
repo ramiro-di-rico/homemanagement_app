@@ -22,6 +22,7 @@ class _BalanceHistoricalChartWidgetState
   CurrencyRepository currencyRepository = GetIt.I.get<CurrencyRepository>();
   List<BalanceHistoryResponse> data = [];
   int? selectedCurrencyId;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -31,8 +32,22 @@ class _BalanceHistoricalChartWidgetState
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Card(child: Center(child: CircularProgressIndicator()));
+    }
+
     return data.isEmpty
-        ? const Card(child: Center(child: CircularProgressIndicator()))
+        ? const Card(
+            child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.history, size: 48, color: Colors.grey),
+                SizedBox(height: 10),
+                Text('No balance history available yet'),
+              ],
+            ),
+          ))
         : Card(
             child: Column(
               children: [
@@ -187,9 +202,12 @@ class _BalanceHistoricalChartWidgetState
       var result = await metricService.getBalanceHistory();
       setState(() {
         data = result;
+        isLoading = false;
       });
     } catch (e) {
-      // Handle error
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

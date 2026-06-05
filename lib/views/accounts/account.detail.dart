@@ -165,7 +165,18 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
                               },
                             ),
                           )
-                        : GroupedListView<TransactionModel, DateTime>(
+                        : transactions.isEmpty
+                            ? Center(
+                                child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.receipt_long_outlined,
+                                      size: 48, color: Colors.grey),
+                                  SizedBox(height: 10),
+                                  Text('No transactions found for this account'),
+                                ],
+                              ))
+                            : GroupedListView<TransactionModel, DateTime>(
                             order: GroupedListOrder.DESC,
                             controller: scrollController,
                             physics: ScrollPhysics(),

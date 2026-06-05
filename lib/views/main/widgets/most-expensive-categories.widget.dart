@@ -105,7 +105,19 @@ class _MostExpensiveCategoriesChartState
               enabled: loading,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(10, 10, 40, 10),
-                child: BarChart(buildChart()),
+                child: !loading && metrics.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.category_outlined,
+                                size: 48, color: Colors.grey),
+                            SizedBox(height: 10),
+                            Text('No categories data available'),
+                          ],
+                        ),
+                      )
+                    : BarChart(buildChart()),
               ),
             ),
           ),

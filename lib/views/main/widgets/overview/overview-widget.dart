@@ -19,8 +19,20 @@ class OverviewWidget extends StatelessWidget {
       child: Card(
           child: Column(children: [
         ListTile(leading: Icon(Icons.donut_large), title: Text('Overall')),
-        Expanded(
-          child: Row(children: [
+        overall != null && overall!.totalTransactions == 0
+            ? Expanded(
+                child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.pie_chart_outline, size: 48, color: Colors.grey),
+                    SizedBox(height: 10),
+                    Text('No transactions recorded yet'),
+                  ],
+                ),
+              ))
+            : Expanded(
+                child: Row(children: [
             Expanded(
               child: Column(
                 children: [
@@ -87,25 +99,27 @@ class OverviewWidget extends StatelessWidget {
             )
           ]),
         ),
-        SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Indicator(
-              color: Colors.orange[200]!,
-              text: 'Income',
-              isSquare: true,
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Indicator(
-              color: Colors.teal[200]!,
-              text: 'Expense',
-              isSquare: true,
-            ),
-          ],
-        ),
+        if (overall == null || overall!.totalTransactions > 0) ...[
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Indicator(
+                color: Colors.orange[200]!,
+                text: 'Income',
+                isSquare: true,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Indicator(
+                color: Colors.teal[200]!,
+                text: 'Expense',
+                isSquare: true,
+              ),
+            ],
+          ),
+        ],
         SizedBox(height: 10),
       ])),
     );

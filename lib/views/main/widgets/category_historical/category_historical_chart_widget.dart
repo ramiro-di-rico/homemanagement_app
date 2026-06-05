@@ -26,6 +26,7 @@ class _CategoryHistoricalChartWidgetState
   DateTime dateFrom = DateTime.now().subtract(Duration(days: 60));
   DateTime dateTo = DateTime.now();
   int take = 5;
+  bool loading = true;
   List<Color> lineColors = [
     Colors.lime[600] ?? Colors.lime,
     Colors.pink[200] ?? Colors.pink,
@@ -48,8 +49,23 @@ class _CategoryHistoricalChartWidgetState
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return const Card(child: Center(child: CircularProgressIndicator()));
+    }
+
     return data.isEmpty
-        ? Card(child: Center(child: Text('No data available')))
+        ? const Card(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.show_chart, size: 48, color: Colors.grey),
+                  SizedBox(height: 10),
+                  Text('No historical category data available'),
+                ],
+              ),
+            ),
+          )
         : Card(
             child: Column(
               children: [
@@ -134,7 +150,7 @@ class _CategoryHistoricalChartWidgetState
                   if (monthData.month == month && touchedSpot.y == monthData.total) {
                     var total = formatValue(monthData.total);
                     return LineTooltipItem(
-                      '${category.name} ${total}',
+                      '${category.name} $total',
                       TextStyle(color: lineColors[dataIndex]),
                     );
                   }
@@ -153,11 +169,21 @@ class _CategoryHistoricalChartWidgetState
   }
 
   Future load() async {
-    var result = await categoryMetricService.getCategoryHistoricalResponses(
-        dateFrom, dateTo, take);
     setState(() {
-      data.addAll(result);
+      loading = true;
     });
+    try {
+      var result = await categoryMetricService.getCategoryHistoricalResponses(
+          dateFrom, dateTo, take);
+      setState(() {
+        data.addAll(result);
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        loading = false;
+      });
+    }
   }
 
   String formatValue(double value) {

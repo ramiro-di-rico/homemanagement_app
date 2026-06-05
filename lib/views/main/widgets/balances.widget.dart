@@ -13,6 +13,7 @@ class BalanceWidget extends StatefulWidget {
 class _BalanceWidgetState extends State<BalanceWidget> {
   MetricService metricService = GetIt.instance<MetricService>();
   List<Breakdown> breakdown = List.empty();
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -40,16 +41,20 @@ Widget build(BuildContext context) {
               ),
             ),
           Expanded( // Wrap the list view in Expanded to fill remaining vertical space
-            child: ListView.builder(
-              itemCount: breakdown.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              leading: Text(breakdown[index].name, style: TextStyle(fontSize: 16),), // Now wrapped with style in the next step
-              trailing: Text(convertToCurrency(breakdown[index].value), style: TextStyle(fontSize: 16)), // Now wrapped with style in the next step
-              dense: true,
-            );
-          },
-            ),
+            child: isLoading 
+              ? Center(child: CircularProgressIndicator())
+              : breakdown.isEmpty
+                ? Center(child: Text("No balance information available"))
+                : ListView.builder(
+                  itemCount: breakdown.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Text(breakdown[index].name, style: TextStyle(fontSize: 16),), // Now wrapped with style in the next step
+                  trailing: Text(convertToCurrency(breakdown[index].value), style: TextStyle(fontSize: 16)), // Now wrapped with style in the next step
+                  dense: true,
+                );
+              },
+                ),
           )
         ],
       ),
@@ -57,10 +62,17 @@ Widget build(BuildContext context) {
 }
 
   void fetchBreakdown() async {
-    var result = await metricService.getBreakdown();
-    setState(() {
-      breakdown = result;
-    });
+    try {
+      var result = await metricService.getBreakdown();
+      setState(() {
+        breakdown = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   String convertToCurrency(double value) {

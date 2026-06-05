@@ -125,12 +125,13 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
               SingleChildScrollView(
                 child: Container(
                   height: 330,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: visibleRecurring.length,
-                    itemBuilder: (context, index) {
-                      if (visibleRecurring.isEmpty) return Container();
-                      var recurringTransaction = visibleRecurring[index];
+                  child: visibleRecurring.isEmpty
+                      ? Center(child: Text('No recurring transactions found'))
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: visibleRecurring.length,
+                          itemBuilder: (context, index) {
+                            var recurringTransaction = visibleRecurring[index];
                       var account = _accountRepository.accounts
                           .where((account) =>
                               account.id == recurringTransaction.accountId)
