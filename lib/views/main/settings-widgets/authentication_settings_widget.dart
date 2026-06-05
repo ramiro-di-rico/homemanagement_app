@@ -3,10 +3,8 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../../custom/components/dropdown.component.dart';
-import '../../../models/preference.dart';
 import '../../../models/view-models/my_user_view_model.dart';
 import '../../../services/repositories/identity_user_repository.dart';
-import '../../../services/repositories/preferences.repository.dart';
 
 class AuthenticationSettingsWidget extends StatefulWidget {
   const AuthenticationSettingsWidget({super.key});
@@ -20,8 +18,6 @@ class _AuthenticationSettingsWidgetState
     extends State<AuthenticationSettingsWidget> {
   final IdentityUserRepository identityUserRepository =
       GetIt.I<IdentityUserRepository>();
-  final PreferencesRepository preferencesRepository =
-      GetIt.I<PreferencesRepository>();
 
   MyUserViewModel? _userInfo;
   bool twoFactorEnabled = false;
@@ -39,11 +35,11 @@ class _AuthenticationSettingsWidgetState
     var l10n = AppLocalizations.of(context)!;
     final Map<String, String> localizedLanguages = {
       l10n.english: 'en',
-      l10n.spanish: 'es-ar',
+      l10n.spanish: 'es-AR',
     };
 
     final resolvedLanguage = localizedLanguages.keys.firstWhere(
-      (key) => localizedLanguages[key] == _userInfo?.language,
+      (key) => localizedLanguages[key]?.toLowerCase() == _userInfo?.language?.toLowerCase(),
       orElse: () => l10n.english,
     );
 
@@ -132,7 +128,6 @@ class _AuthenticationSettingsWidgetState
         languageCode,
         _userInfo?.timeZone ?? 'UTC',
       );
-      await preferencesRepository.update(PreferenceModel(PreferencesRepository.language, languageCode));
       if (mounted) {
         setState(() {
           _userInfo = updatedUser;

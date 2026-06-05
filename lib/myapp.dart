@@ -6,7 +6,7 @@ import 'routing.dart';
 import 'services/infra/platform/platform_context.dart';
 import 'services/infra/platform/platform_type.dart';
 import 'services/deep_link_service.dart';
-import 'services/repositories/preferences.repository.dart';
+import 'services/repositories/identity_user_repository.dart';
 import 'services/security/authentication.service.dart';
 import 'services/security/password_reset_service.dart';
 import 'themes/dark_theme.dart';
@@ -27,25 +27,26 @@ class MyApp extends StatelessWidget {
     var authenticationService = GetIt.I.get<AuthenticationService>();
     var passwordResetService = GetIt.I.get<PasswordResetService>();
     var deepLinkService = GetIt.I.get<DeepLinkService>();
-    var preferencesRepository = GetIt.I.get<PreferencesRepository>();
+    var identityUserRepository = GetIt.I.get<IdentityUserRepository>();
     final router = Routing.createRoutes(isDesktop, authenticationService, passwordResetService);
     deepLinkService.attachRouter(router);
 
     return ListenableBuilder(
-      listenable: preferencesRepository,
+      listenable: identityUserRepository,
       builder: (context, _) {
-        var languageCode = preferencesRepository.getCurrentLanguage();
+        var languageCode = identityUserRepository.getCurrentLanguage();
         Locale? locale;
         if (languageCode.isNotEmpty) {
           if (languageCode.contains('-')) {
             var parts = languageCode.split('-');
-            locale = Locale(parts[0], parts[1]);
+            locale = Locale(parts[0], parts[1].toUpperCase());
           } else {
             locale = Locale(languageCode);
           }
         }
 
         return MaterialApp.router(
+          key: ValueKey(locale?.toString() ?? 'default'),
           routerConfig: router,
           debugShowCheckedModeBanner: false,
           onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,

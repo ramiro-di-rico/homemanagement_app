@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import '../../../services/repositories/preferences.repository.dart';
+import '../../../services/repositories/identity_user_repository.dart';
 
 class FeatureTogglesWidget extends StatefulWidget {
   const FeatureTogglesWidget({super.key});
@@ -10,13 +10,13 @@ class FeatureTogglesWidget extends StatefulWidget {
 }
 
 class _FeatureTogglesWidgetState extends State<FeatureTogglesWidget> {
-  final PreferencesRepository _preferencesRepository = GetIt.I<PreferencesRepository>();
+  final IdentityUserRepository _identityUserRepository = GetIt.I<IdentityUserRepository>();
   bool useMainAccounts = false;
 
   @override
   void initState() {
     super.initState();
-    useMainAccounts = _preferencesRepository.getUseMainAccounts();
+    useMainAccounts = _identityUserRepository.getUseMainAccounts();
   }
 
   @override
@@ -46,7 +46,7 @@ class _FeatureTogglesWidgetState extends State<FeatureTogglesWidget> {
                     setState(() {
                       useMainAccounts = value;
                     });
-                    _preferencesRepository.setUseMainAccounts(value);
+                    _identityUserRepository.setUseMainAccounts(value);
                   },
                 ),
               ],

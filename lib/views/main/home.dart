@@ -7,7 +7,6 @@ import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/repositories/identity_user_repository.dart';
 import '../../services/repositories/main_account.repository.dart';
-import '../../services/repositories/preferences.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import '../invites/invite_management_screen.dart';
@@ -34,10 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   AuthenticationService authenticationService =
       GetIt.I<AuthenticationService>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
-  PreferencesRepository _preferencesRepository = GetIt.I<PreferencesRepository>();
+  IdentityUserRepository _identityUserRepository = GetIt.I<IdentityUserRepository>();
   bool useMainAccounts = false;
-  IdentityUserRepository _identityUserRepository =
-      GetIt.I<IdentityUserRepository>();
 
   List<Widget> children = [
     Dashboard(),
@@ -69,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _loadUseMainAccounts() {
     setState(() {
-      useMainAccounts = _preferencesRepository.getUseMainAccounts();
+      useMainAccounts = _identityUserRepository.getUseMainAccounts();
     });
   }
 
