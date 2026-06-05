@@ -19,6 +19,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
   final UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
   final CurrencyRepository _currencyRepository = GetIt.I<CurrencyRepository>();
   late UserSettings userSettings;
+  bool _settingsLoaded = false;
   String selectedDelimiter = '';
   String selectedCurrency = '';
   String selectedBackupFrequency = '';
@@ -27,8 +28,26 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
   @override
   void initState() {
     super.initState();
-    currencies.addAll(_currencyRepository.currencies.map((c) => c.name));
+    _currencyRepository.addListener(_onCurrenciesChanged);
+    _onCurrenciesChanged();
     load();
+  }
+
+  @override
+  void dispose() {
+    _currencyRepository.removeListener(_onCurrenciesChanged);
+    super.dispose();
+  }
+
+  void _onCurrenciesChanged() {
+    setState(() {
+      currencies.clear();
+      currencies.addAll(_currencyRepository.currencies.map((c) => c.name));
+
+      if (_settingsLoaded && selectedCurrency.isEmpty && currencies.isNotEmpty) {
+        selectedCurrency = currencies.first;
+      }
+    });
   }
 
   @override
@@ -57,7 +76,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
                   ? CircularProgressIndicator()
                   : SizedBox(
                     height: 50,
-                    width: 50,
+                    width: 70,
                     child: DropdownComponent(
                         items: [';', ',', '|'],
                         onChanged: onDelimiterChanged,
@@ -77,7 +96,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
                       ? CircularProgressIndicator()
                       : SizedBox(
                           height: 50,
-                          width: 100,
+                          width: 150,
                           child: DropdownComponent(
                             items: currencies,
                             onChanged: onCurrencyChanged,
@@ -99,7 +118,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
                   ? CircularProgressIndicator()
                   : SizedBox(
                     height: 50,
-                    width: 100,
+                    width: 150,
                     child: DropdownComponent(
                         items: ['Weekly', 'Monthly'],
                         onChanged: onBackupFrequencyChanged,
@@ -120,6 +139,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
 
     setState(() {
       userSettings = result;
+      _settingsLoaded = true;
       selectedDelimiter = userSettings.csvDelimiter;
       selectedCurrency = userSettings.currency;
       selectedBackupFrequency = userSettings.backupFrequency.label;

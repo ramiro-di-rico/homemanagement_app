@@ -20,6 +20,7 @@ class PreferencesRepository extends ChangeNotifier {
 
   Future load() async {
     var result = await this.preferenceService.fetch();
+    this.preferences.clear();
     this.preferences.addAll(result);
     notifyListeners();
   }

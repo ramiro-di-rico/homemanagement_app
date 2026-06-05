@@ -24,9 +24,21 @@ class _DropdownComponentState extends State<DropdownComponent> {
   @override
   void initState() {
     super.initState();
-    this.value = widget.currentValue.isNotEmpty
+    this.value = widget.currentValue.isNotEmpty && widget.items.contains(widget.currentValue)
         ? widget.currentValue
-        : this.widget.items.first;
+        : (this.widget.items.isNotEmpty ? this.widget.items.first : null);
+  }
+
+  @override
+  void didUpdateWidget(covariant DropdownComponent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.currentValue != oldWidget.currentValue || widget.items != oldWidget.items) {
+      setState(() {
+        this.value = widget.currentValue.isNotEmpty && widget.items.contains(widget.currentValue)
+            ? widget.currentValue
+            : (this.widget.items.isNotEmpty ? this.widget.items.first : null);
+      });
+    }
   }
 
   @override
@@ -38,7 +50,6 @@ class _DropdownComponentState extends State<DropdownComponent> {
           .toList(),
       onChanged: onValueChanged,
       isExpanded: widget.isExpanded,
-      itemHeight: 65,
       style: TextStyle(
         color: context.isDarkMode() ? Colors.white : Colors.black,
         fontSize: 16,

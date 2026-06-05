@@ -12,7 +12,9 @@ class CurrencyRepository extends ChangeNotifier {
 
   Future load() async {
     var result = await this.currencyService.fetchCurrencies();
+    currencies.clear();
     currencies.addAll(result);
+    notifyListeners();
   }
 
   Future update() async {

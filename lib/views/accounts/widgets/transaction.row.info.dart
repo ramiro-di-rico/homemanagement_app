@@ -93,7 +93,14 @@ class TransactionRowInfo extends StatelessWidget {
                       SizedBox(
                         width: 120,
                         child: Chip(
-                          label: Text(category.name),
+                          label: Text(
+                              category.name,
+                              style: TextStyle(
+                                  color: category.color.fromHex().computeLuminance() > 0.5
+                                      ? Colors.black
+                                      : Colors.white
+                              )
+                          ),
                           backgroundColor: category.color.fromHex(),
                         ),
                       ),

@@ -34,15 +34,16 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
     return Column(
       children: [
         Card(
+          color: Theme.of(context).cardColor,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
             child: Row(
                 children: [
-                  Text('Active', style: TextStyle(fontSize: 18)),
+                  SizedBox(width: 50, child: Text('Active', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                   SizedBox(width: 30),
-                  Text('Can be measured', style: TextStyle(fontSize: 18)),
+                  SizedBox(width: 150, child: Text('Can be measured', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                   SizedBox(width: 30),
-                  Text('Name', style: TextStyle(fontSize: 18)),
+                  Text('Name', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   Spacer(),
                   IconButton(
                     onPressed: () {
@@ -84,21 +85,42 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                 itemCount: _categoryRepository.categories.length,
                 itemBuilder: (context, index) {
                   var category = _categoryRepository.categories[index];
+                  final backgroundColor = category.color.fromHex();
+                  final contentColor = _getContentColor(backgroundColor);
                   return Card(
-                    color: category.color.fromHex(),
+                    color: backgroundColor,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: Row(
                         children: [
-                          Checkbox(value: category.isActive, onChanged: (value) {}),
-                          SizedBox(width: 50),
-                          Checkbox(value: category.measurable, onChanged: (value) {}),
-                          SizedBox(width: 140),
+                          SizedBox(
+                              width: 50,
+                              child: Checkbox(
+                                  value: category.isActive,
+                                  checkColor: backgroundColor,
+                                  activeColor: contentColor,
+                                  side: BorderSide(color: contentColor, width: 2),
+                                  onChanged: (value) {}
+                              )
+                          ),
+                          SizedBox(width: 30),
+                          SizedBox(
+                              width: 150,
+                              child: Checkbox(
+                                  value: category.measurable,
+                                  checkColor: backgroundColor,
+                                  activeColor: contentColor,
+                                  side: BorderSide(color: contentColor, width: 2),
+                                  onChanged: (value) {}
+                              )
+                          ),
+                          SizedBox(width: 30),
                           Expanded(
                             child: Text(
                                 category.name,
                               style: TextStyle(
                                 fontSize: 18,
+                                color: contentColor,
                               ),
                             ),
                             flex: 1,
@@ -153,7 +175,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                                     controller.open();
                                   }
                                 },
-                                icon: const Icon(Icons.more_vert),
+                                icon: Icon(Icons.more_vert, color: contentColor),
                               );
                             },
                           ),
@@ -170,6 +192,10 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
         ),
       ],
     );
+  }
+
+  Color _getContentColor(Color background) {
+    return background.computeLuminance() > 0.5 ? Colors.black : Colors.white;
   }
 
   void refreshList() {
