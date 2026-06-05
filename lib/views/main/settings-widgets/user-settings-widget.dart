@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../custom/components/dropdown.component.dart';
@@ -52,6 +53,8 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
 
   @override
   Widget build(BuildContext context) {
+    var l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: 260,
       child: Card(
@@ -61,7 +64,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
-                'User Settings',
+                l10n.userSettings,
               ),
             ),
             Padding(
@@ -69,7 +72,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
               child: Row(
                 children: [
                   Text(
-                    'CSV Delimiter',
+                    l10n.csvDelimiter,
                   ),
                   Spacer(),
                   selectedDelimiter.isEmpty
@@ -90,7 +93,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Row(
                 children: [
-                  Text('Preferred Currency'),
+                  Text(l10n.preferredCurrency),
                   Spacer(),
                   selectedCurrency.isEmpty || currencies.isEmpty
                       ? CircularProgressIndicator()
@@ -111,7 +114,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
               child: Row(
                 children: [
                   Text(
-                    'Backup Frequency',
+                    l10n.backupFrequency,
                   ),
                   Spacer(),
                   selectedBackupFrequency.isEmpty
@@ -120,7 +123,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
                     height: 50,
                     width: 150,
                     child: DropdownComponent(
-                        items: ['Weekly', 'Monthly'],
+                        items: [l10n.weekly, l10n.monthly],
                         onChanged: onBackupFrequencyChanged,
                         currentValue: selectedBackupFrequency,
                     ),
@@ -136,13 +139,16 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
 
   Future<void> load() async {
     var result = await _userSettingsService.fetchUserSettings();
+    var l10n = AppLocalizations.of(context)!;
 
     setState(() {
       userSettings = result;
       _settingsLoaded = true;
       selectedDelimiter = userSettings.csvDelimiter;
       selectedCurrency = userSettings.currency;
-      selectedBackupFrequency = userSettings.backupFrequency.label;
+      selectedBackupFrequency = userSettings.backupFrequency == BackupFrequency.monthly
+          ? l10n.monthly
+          : l10n.weekly;
 
       if (selectedCurrency.isEmpty && currencies.isNotEmpty) {
         selectedCurrency = currencies.first;
@@ -161,7 +167,8 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
   }
 
   onBackupFrequencyChanged(String backupFrequencyChangedValue) {
-    userSettings.backupFrequency = backupFrequencyChangedValue == 'Monthly'
+    var l10n = AppLocalizations.of(context)!;
+    userSettings.backupFrequency = backupFrequencyChangedValue == l10n.monthly
         ? BackupFrequency.monthly
         : BackupFrequency.weekly;
     _userSettingsService.updateBackupFrequency(userSettings);

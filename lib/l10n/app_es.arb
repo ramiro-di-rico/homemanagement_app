@@ -1,0 +1,17 @@
+{
+  "appTitle": "Gestión del Hogar",
+  "userSettings": "Ajustes de Usuario",
+  "csvDelimiter": "Delimitador CSV",
+  "preferredCurrency": "Moneda Preferida",
+  "backupFrequency": "Frecuencia de Respaldo",
+  "weekly": "Semanal",
+  "monthly": "Mensual",
+  "appLanguage": "Idioma de la Aplicación",
+  "english": "Inglés",
+  "spanish": "Español",
+  "dashboard": "Panel de Control",
+  "accounts": "Cuentas",
+  "mainAccounts": "Cuentas Principales",
+  "reminders": "Recordatorios",
+  "settings": "Ajustes"
+}

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../custom/components/dropdown.component.dart';
+import '../../../models/preference.dart';
 import '../../../services/repositories/identity_user_repository.dart';
+import '../../../services/repositories/preferences.repository.dart';
 import '../../mixins/notifier_mixin.dart';
 
 class UserLanguageWidget extends StatefulWidget {
@@ -14,12 +17,8 @@ class UserLanguageWidget extends StatefulWidget {
 
 class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMixin {
   IdentityUserRepository identityUserRepository = GetIt.I<IdentityUserRepository>();
-  String selectedLanguage = '';
-
-  Map<String, String> languages = {
-    'English': 'en',
-    'Spanish': 'es-ar',
-  };
+  PreferencesRepository preferencesRepository = GetIt.I<PreferencesRepository>();
+  String selectedLanguageCode = '';
 
   @override
   void initState() {
@@ -29,8 +28,17 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
 
   @override
   Widget build(BuildContext context) {
-    // TODO - dropdown not being refresh to reflect current language
-    print(selectedLanguage);
+    var l10n = AppLocalizations.of(context)!;
+    Map<String, String> languages = {
+      l10n.english: 'en',
+      l10n.spanish: 'es',
+    };
+
+    String selectedLanguageLabel = languages.keys.firstWhere(
+      (key) => languages[key] == selectedLanguageCode,
+      orElse: () => l10n.english,
+    );
+
     return SizedBox(
       height: 100,
       child: Column(
@@ -41,13 +49,13 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
               child: Row(
                 children: [
                   Text(
-                    'App Language',
+                    l10n.appLanguage,
                   ),
                   Spacer(),
                   DropdownComponent(
-                    items: ['English', 'Spanish'],
-                    onChanged: onLanguageChanged,
-                    currentValue: selectedLanguage,
+                    items: [l10n.english, l10n.spanish],
+                    onChanged: (val) => onLanguageChanged(val, languages),
+                    currentValue: selectedLanguageLabel,
                   ),
                 ],
               ),
@@ -58,15 +66,23 @@ class _UserLanguageWidgetState extends State<UserLanguageWidget> with NotifierMi
     );
   }
 
-  onLanguageChanged(String languageChanged) {
+  onLanguageChanged(String languageLabel, Map<String, String> languages) async {
+    var languageCode = languages[languageLabel] ?? 'en';
+    await preferencesRepository.update(PreferenceModel(PreferencesRepository.language, languageCode));
+    setState(() {
+      selectedLanguageCode = languageCode;
+    });
   }
 
   Future load() async {
-    var model = await identityUserRepository.getUser();
-    var language = model?.language ?? 'en';
+    var language = preferencesRepository.getCurrentLanguage();
+    if (language.isEmpty) {
+      var model = await identityUserRepository.getUser();
+      language = model?.language ?? 'en';
+    }
+
     setState(() {
-      selectedLanguage = languages.keys.firstWhere((key) => languages[key] == language);
+      selectedLanguageCode = language;
     });
-    print('Language loaded: $selectedLanguage');
   }
 }

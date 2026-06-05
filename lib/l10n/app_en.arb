@@ -1,0 +1,41 @@
+{
+  "appTitle": "Home Management",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "userSettings": "User Settings",
+  "@userSettings": {
+    "description": "User Settings section title"
+  },
+  "csvDelimiter": "CSV Delimiter",
+  "@csvDelimiter": {
+    "description": "Label for CSV Delimiter setting"
+  },
+  "preferredCurrency": "Preferred Currency",
+  "@preferredCurrency": {
+    "description": "Label for Preferred Currency setting"
+  },
+  "backupFrequency": "Backup Frequency",
+  "@backupFrequency": {
+    "description": "Label for Backup Frequency setting"
+  },
+  "weekly": "Weekly",
+  "@weekly": {
+    "description": "Weekly backup frequency"
+  },
+  "monthly": "Monthly",
+  "@monthly": {
+    "description": "Monthly backup frequency"
+  },
+  "appLanguage": "App Language",
+  "@appLanguage": {
+    "description": "Label for App Language setting"
+  },
+  "english": "English",
+  "spanish": "Spanish",
+  "dashboard": "Dashboard",
+  "accounts": "Accounts",
+  "mainAccounts": "Main Accounts",
+  "reminders": "Reminders",
+  "settings": "Settings"
+}

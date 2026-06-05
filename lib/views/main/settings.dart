@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/views/main/settings-widgets/user-settings-widget.dart';
 import 'package:home_management_app/views/main/settings-widgets/feature-toggles.widget.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
+import 'package:home_management_app/views/main/settings-widgets/user_language_widget.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -18,9 +19,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
       child: Column(
         children: [
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: UserLanguageWidget(),
+          ),
           Padding(
             padding: EdgeInsets.all(10),
             child: UserSettingsWidget(),
