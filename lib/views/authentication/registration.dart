@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
 import 'package:home_management_app/views/authentication/user-controls-mixins/password-strength-behavior.dart';
+import 'package:home_management_app/views/authentication/2fa_view.dart';
 import 'package:home_management_app/views/main/home.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 
@@ -35,9 +37,48 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                     await authenticationService.register(userViewModel.email, userViewModel.password);
 
                 if (result) {
-                  await authenticationService.authenticate(userViewModel);
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, HomeScreen.fullPath, (route) => false);
+                  var authenticatedSuccessfully = await authenticationService.authenticate(userViewModel);
+                  if (authenticatedSuccessfully) {
+                    context.go(HomeScreen.fullPath);
+                  } else {
+                    if (authenticationService.user?.twoFactorRequired == true) {
+                      context.go(TwoFactorAuthenticationView.fullPath);
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Authentication error.'),
+                              content: Text('Could not authenticate user after registration.'),
+                              actions: [
+                                TextButton(
+                                  child: Text('ok'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
+                            );
+                          });
+                    }
+                  }
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Registration error.'),
+                          content: Text('Could not register user.'),
+                          actions: [
+                            TextButton(
+                              child: Text('ok'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        );
+                      });
                 }
               },
               child: Icon(Icons.check),

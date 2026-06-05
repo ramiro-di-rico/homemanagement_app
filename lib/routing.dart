@@ -126,7 +126,10 @@ class Routing{
         }
 
         final isPublicInviteRoute = state.matchedLocation.startsWith('/public/invites/');
-        if (isPublicInviteRoute) {
+        final isRegistrationRoute = state.matchedLocation == RegistrationScreen.fullPath;
+        final isLoginRoute = state.matchedLocation == LoginView.fullPath;
+
+        if (isPublicInviteRoute || isRegistrationRoute || isLoginRoute) {
           return null;
         }
 

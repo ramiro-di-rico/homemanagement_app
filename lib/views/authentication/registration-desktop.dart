@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
+import '2fa_view.dart';
 
 import '../../custom/components/email-textfield.dart';
 import '../../custom/components/password-textfield.dart';
@@ -23,6 +24,58 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
         PasswordBehavior,
         PasswordStrengthBehavior,
         NotifierMixin {
+  @override
+  Future<void> onButtonPressed() async {
+    if (!this.userViewModel.isValid) {
+      return;
+    }
+
+    setAuthenticatingStatus(true);
+
+    var registrationResult = await this.authenticationService.register(
+        this.userViewModel.email, this.userViewModel.password);
+
+    if (registrationResult) {
+      var authenticatedSuccessfully =
+          await this.authenticationService.authenticate(this.userViewModel);
+
+      setAuthenticatingStatus(false);
+
+      if (authenticatedSuccessfully) {
+        await successFullAuthentication();
+      } else {
+        if (this.authenticationService.user?.twoFactorRequired == true) {
+          this.context.go(TwoFactorAuthenticationView.fullPath);
+        } else {
+          _showErrorDialog('Authentication error.', 'Could not authenticate user.');
+        }
+      }
+    } else {
+      setAuthenticatingStatus(false);
+      _showErrorDialog('Registration error.', 'Could not register user.');
+    }
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+        context: this.context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(message),
+            actions: [
+              TextButton(
+                child: Text('ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
