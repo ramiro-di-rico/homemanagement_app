@@ -2,6 +2,29 @@
 
 A Flutter-based application for managing home budgets and accounts.
 
+## Run in Browser (Web)
+
+Web support is enabled for this repository. On Linux, Flutter usually expects
+`google-chrome`, but this setup can also work with Chromium.
+
+Use the helper script:
+
+```bash
+./scripts/run_web.sh
+```
+
+The script auto-detects a local Chrome/Chromium binary and runs:
+
+```bash
+flutter run -d chrome
+```
+
+You can still set a custom browser explicitly:
+
+```bash
+CHROME_EXECUTABLE=/path/to/chrome ./scripts/run_web.sh
+```
+
 ## Linux Support
 
 This project provides scripts for building a self-contained Linux package and installing it for the current user.

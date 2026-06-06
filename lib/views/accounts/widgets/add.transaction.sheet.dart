@@ -53,13 +53,22 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     this.nameController.removeListener(onNameChanged);
     priceController.removeListener(onPriceChanged);
     this.nameController.dispose();
+    priceController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(bottom: keyboardInset),
+      child: SingleChildScrollView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
         children: [
           //first row
           Padding(
@@ -181,6 +190,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
             ),
           )
         ],
+      ),
       ),
     );
   }
