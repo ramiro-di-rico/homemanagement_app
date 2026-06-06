@@ -362,6 +362,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noRecurringTransactionsFound => 'No recurring transactions found';
 
   @override
+  String get pageSize => 'Page size';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String get filterTransactions => 'Filter transactions';
+
+  @override
+  String get selectFilterToDisplayTransactions =>
+      'Select a filter to display transactions';
+
+  @override
+  String get searchTransactionByName => 'Search transaction by name';
+
+  @override
+  String get selectOption => 'Select';
+
+  @override
+  String get selectCurrency => 'Select currency';
+
+  @override
+  String get selectAccount => 'Select account';
+
+  @override
+  String get selectAccounts => 'Select accounts';
+
+  @override
+  String get selectCategory => 'Select category';
+
+  @override
+  String get selectCategories => 'Select categories';
+
+  @override
+  String get selectAll => 'Select all';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get ok => 'Ok';
+
+  @override
+  String get unknownAccount => 'Unknown account';
+
+  @override
   String get accountNotSet => 'Account not set';
 
   @override

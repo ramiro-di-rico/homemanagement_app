@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../../../models/category.dart';
 import '../../../../services/repositories/category.repository.dart';
@@ -52,9 +53,10 @@ class _CategoryDialogSelectionState extends State<CategoryDialogSelection> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return AlertDialog(
       title: Text(
-          widget.multipleSelection ? 'Select categories' : 'Select category'),
+          widget.multipleSelection ? localizations.selectCategories : localizations.selectCategory),
       content: SizedBox(
         height: 400,
         width: 200,
@@ -76,7 +78,7 @@ class _CategoryDialogSelectionState extends State<CategoryDialogSelection> {
                           .toList());
                     });
                   },
-                  title: Text('Select all'),
+                  title: Text(localizations.selectAll),
               ),
             ) : Container(),
             SizedBox(height: 20),
@@ -139,13 +141,13 @@ class _CategoryDialogSelectionState extends State<CategoryDialogSelection> {
             widget.onSelectedCategoriesChanged([]);
             Navigator.of(context).pop();
           },
-          child: Text('Clear'),
+          child: Text(localizations.clear),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Ok'),
+          child: Text(localizations.ok),
         ),
       ],
     );

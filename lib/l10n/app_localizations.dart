@@ -759,6 +759,102 @@ abstract class AppLocalizations {
   /// **'No recurring transactions found'**
   String get noRecurringTransactionsFound;
 
+  /// No description provided for @pageSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Page size'**
+  String get pageSize;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFilters;
+
+  /// No description provided for @filterTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter transactions'**
+  String get filterTransactions;
+
+  /// No description provided for @selectFilterToDisplayTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a filter to display transactions'**
+  String get selectFilterToDisplayTransactions;
+
+  /// No description provided for @searchTransactionByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Search transaction by name'**
+  String get searchTransactionByName;
+
+  /// No description provided for @selectOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectOption;
+
+  /// No description provided for @selectCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Select currency'**
+  String get selectCurrency;
+
+  /// No description provided for @selectAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Select account'**
+  String get selectAccount;
+
+  /// No description provided for @selectAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Select accounts'**
+  String get selectAccounts;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select category'**
+  String get selectCategory;
+
+  /// No description provided for @selectCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Select categories'**
+  String get selectCategories;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get selectAll;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'Ok'**
+  String get ok;
+
+  /// No description provided for @unknownAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown account'**
+  String get unknownAccount;
+
   /// No description provided for @accountNotSet.
   ///
   /// In en, this message translates to:

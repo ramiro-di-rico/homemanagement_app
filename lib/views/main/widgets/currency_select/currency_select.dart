@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/services/repositories/currency.repository.dart';
 
 import '../../../../models/currency.dart';
@@ -24,8 +25,9 @@ class _CurrencySelectState extends State<CurrencySelect> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return DropdownButton<CurrencyModel>(
-      hint: Text('Select currency'),
+      hint: Text(localizations.selectCurrency),
       value: widget.selectedCurrencies.isNotEmpty ? widget.selectedCurrencies.first : null,
       items: _currencyRepository.currencies.map((currency) {
         return DropdownMenuItem<CurrencyModel>(

@@ -365,6 +365,55 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se encontraron transacciones recurrentes';
 
   @override
+  String get pageSize => 'Tamaño de página';
+
+  @override
+  String get clearFilters => 'Limpiar filtros';
+
+  @override
+  String get filterTransactions => 'Filtrar transacciones';
+
+  @override
+  String get selectFilterToDisplayTransactions =>
+      'Selecciona un filtro para mostrar transacciones';
+
+  @override
+  String get searchTransactionByName => 'Buscar transacción por nombre';
+
+  @override
+  String get selectOption => 'Seleccionar';
+
+  @override
+  String get selectCurrency => 'Seleccionar moneda';
+
+  @override
+  String get selectAccount => 'Seleccionar cuenta';
+
+  @override
+  String get selectAccounts => 'Seleccionar cuentas';
+
+  @override
+  String get selectCategory => 'Seleccionar categoría';
+
+  @override
+  String get selectCategories => 'Seleccionar categorías';
+
+  @override
+  String get selectAll => 'Seleccionar todo';
+
+  @override
+  String get filter => 'Filtrar';
+
+  @override
+  String get clear => 'Limpiar';
+
+  @override
+  String get ok => 'Aceptar';
+
+  @override
+  String get unknownAccount => 'Cuenta desconocida';
+
+  @override
   String get accountNotSet => 'Cuenta no establecida';
 
   @override
@@ -739,6 +788,55 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get noRecurringTransactionsFound =>
       'No se encontraron transacciones recurrentes';
+
+  @override
+  String get pageSize => 'Tamaño de página';
+
+  @override
+  String get clearFilters => 'Limpiar filtros';
+
+  @override
+  String get filterTransactions => 'Filtrar transacciones';
+
+  @override
+  String get selectFilterToDisplayTransactions =>
+      'Seleccioná un filtro para mostrar transacciones';
+
+  @override
+  String get searchTransactionByName => 'Buscar transacción por nombre';
+
+  @override
+  String get selectOption => 'Seleccionar';
+
+  @override
+  String get selectCurrency => 'Seleccionar moneda';
+
+  @override
+  String get selectAccount => 'Seleccionar cuenta';
+
+  @override
+  String get selectAccounts => 'Seleccionar cuentas';
+
+  @override
+  String get selectCategory => 'Seleccionar categoría';
+
+  @override
+  String get selectCategories => 'Seleccionar categorías';
+
+  @override
+  String get selectAll => 'Seleccionar todo';
+
+  @override
+  String get filter => 'Filtrar';
+
+  @override
+  String get clear => 'Limpiar';
+
+  @override
+  String get ok => 'Aceptar';
+
+  @override
+  String get unknownAccount => 'Cuenta desconocida';
 
   @override
   String get accountNotSet => 'Cuenta no establecida';
