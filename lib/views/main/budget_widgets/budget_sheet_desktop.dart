@@ -1,6 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/budget.dart';
@@ -55,6 +56,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       child: Column(
         children: [
@@ -65,7 +67,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
               SizedBox(
                 width: 300,
                 child: TextField(
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: InputDecoration(labelText: localizations.budgetName),
                   controller: _nameController,
                 ),
               ),
@@ -73,7 +75,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
               SizedBox(
                 width: 150,
                 child: TextField(
-                  decoration: InputDecoration(labelText: 'Amount'),
+                  decoration: InputDecoration(labelText: localizations.budgetAmount),
                   controller: _amountController,
                 ),
               ),
@@ -132,7 +134,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                 width: 180,
                 child: DateTimeField(
                   decoration: InputDecoration(
-                    label: Text('Start Date'),
+                    label: Text(localizations.budgetStartDate),
                     icon: Icon(Icons.date_range),
                   ),
                   format: DateFormat("dd MMM yyyy"),
@@ -157,7 +159,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                 width: 180,
                 child: DateTimeField(
                   decoration: InputDecoration(
-                    label: Text('End Date'),
+                    label: Text(localizations.budgetEndDate),
                     icon: Icon(Icons.date_range),
                   ),
                   format: DateFormat("dd MMM yyyy"),
@@ -196,7 +198,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
 
                     Navigator.pop(context);
                   },
-                  child: Text('Save'),
+                  child: Text(localizations.save),
                 ),
               ),
             ],

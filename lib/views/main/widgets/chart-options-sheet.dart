@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 
 import '../../../custom/components/dropdown.component.dart';
@@ -43,10 +44,15 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     take = widget.take;
     selectedMonth = widget.selectedMonth - 1;
-    selectedAccount = widget.selectedAccount;
+    selectedAccount = widget.selectedAccount.isEmpty ? 'All Accounts' : widget.selectedAccount;
+    accounts.clear();
+    accounts.add(localizations.allAccounts);
     accounts.addAll(accountRepository.accounts.map((x) => x.name).toList());
+    final currentAccountLabel =
+        selectedAccount == 'All Accounts' ? localizations.allAccounts : selectedAccount;
     return Column(children: [
       Padding(
         padding: const EdgeInsets.all(8.0),
@@ -56,9 +62,9 @@ class _ChartOptionsSheetState extends State<ChartOptionsSheet> {
             DropdownComponent(
                 items: accounts,
                 onChanged: (accountName) async {
-                  selectedAccount = accountName;
+                  selectedAccount = accountName == localizations.allAccounts ? 'All Accounts' : accountName;
                 },
-                currentValue: selectedAccount),
+                currentValue: currentAccountLabel),
             DropdownComponent(
                 items: months,
                 onChanged: (month) async {

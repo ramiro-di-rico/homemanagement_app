@@ -2,6 +2,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/account.dart';
@@ -58,24 +59,25 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   }
 
   void _addToQueue() {
+    final localizations = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final priceText = _priceController.text.trim();
 
     if (_selectedAccount == null) {
-      setState(() => _errorMessage = 'Please select an account.');
+      setState(() => _errorMessage = localizations.pleaseSelectAccount);
       return;
     }
     if (_selectedCategory == null) {
-      setState(() => _errorMessage = 'Please select a category.');
+      setState(() => _errorMessage = localizations.pleaseSelectCategory);
       return;
     }
     if (name.length < 3) {
-      setState(() => _errorMessage = 'Name must be at least 3 characters.');
+      setState(() => _errorMessage = localizations.nameMustBeAtLeast3Characters);
       return;
     }
     final price = double.tryParse(priceText);
     if (price == null || price <= 0) {
-      setState(() => _errorMessage = 'Enter a valid price.');
+      setState(() => _errorMessage = localizations.enterValidPrice);
       return;
     }
 
@@ -105,8 +107,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   }
 
   Future<void> _submitAll() async {
+    final localizations = AppLocalizations.of(context)!;
     if (_pendingTransactions.isEmpty) {
-      setState(() => _errorMessage = 'Add at least one transaction before submitting.');
+      setState(() => _errorMessage = localizations.addAtLeastOneTransactionBeforeSubmitting);
       return;
     }
 
@@ -120,11 +123,11 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
       final updatedAccounts = await _transactionService.bulkAdd(List.from(_pendingTransactions));
       _accountRepository.setBalances(updatedAccounts);
       setState(() {
-        _successMessage = '${_pendingTransactions.length} transaction(s) submitted successfully.';
+        _successMessage = localizations.transactionsSubmittedSuccessfully(_pendingTransactions.length.toString());
         _pendingTransactions.clear();
       });
     } catch (e) {
-      setState(() => _errorMessage = 'Failed to submit transactions: $e');
+      setState(() => _errorMessage = localizations.failedToSubmitTransactions(e.toString()));
     } finally {
       setState(() => _isSubmitting = false);
     }
@@ -132,9 +135,10 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bulk Transactions'),
+        title: Text(localizations.bulkTransactionsTitle),
         actions: [
           if (_pendingTransactions.isNotEmpty)
             Padding(
@@ -153,12 +157,12 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.cloud_upload_outlined),
-            label: const Text('Submit all'),
+            label: Text(localizations.submitAll),
           ),
           if (_pendingTransactions.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep_outlined),
-              tooltip: 'Clear queue',
+              tooltip: localizations.clearQueue,
               onPressed: () => setState(() => _pendingTransactions.clear()),
             ),
         ],
@@ -176,7 +180,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                     actions: [
                       TextButton(
                         onPressed: () => setState(() => _errorMessage = null),
-                        child: const Text('Dismiss'),
+                        child: Text(localizations.dismiss),
                       ),
                     ],
                   ),
@@ -187,7 +191,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                     actions: [
                       TextButton(
                         onPressed: () => setState(() => _successMessage = null),
-                        child: const Text('Dismiss'),
+                        child: Text(localizations.dismiss),
                       ),
                     ],
                   ),
@@ -247,19 +251,20 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   Widget _buildForm() {
     final accounts = _accountRepository.accounts;
     final categories = _categoryRepository.getActiveCategories();
+    final localizations = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Add Transaction', style: Theme.of(context).textTheme.titleMedium),
+        Text(localizations.addTransaction, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 16),
 
         // Account
         DropdownButtonFormField<AccountModel>(
           value: _selectedAccount,
-          decoration: const InputDecoration(
-            labelText: 'Account',
+          decoration: InputDecoration(
+            labelText: localizations.transactionAccount,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.account_balance_wallet_outlined),
           ),
@@ -273,8 +278,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         // Category
         DropdownButtonFormField<CategoryModel>(
           value: _selectedCategory,
-          decoration: const InputDecoration(
-            labelText: 'Category',
+          decoration: InputDecoration(
+            labelText: localizations.transactionCategory,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.category_outlined),
           ),
@@ -288,8 +293,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         // Name
         TextField(
           controller: _nameController,
-          decoration: const InputDecoration(
-            labelText: 'Description',
+          decoration: InputDecoration(
+            labelText: localizations.transactionDescription,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.edit_outlined),
           ),
@@ -303,8 +308,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}')),
           ],
-          decoration: const InputDecoration(
-            labelText: 'Amount',
+          decoration: InputDecoration(
+            labelText: localizations.transactionAmount,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.attach_money),
           ),
@@ -314,8 +319,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         // Date
         DateTimeField(
           format: DateFormat('dd MMM yyyy'),
-          decoration: const InputDecoration(
-            labelText: 'Date',
+          decoration: InputDecoration(
+            labelText: localizations.transactionDate,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.date_range),
           ),
@@ -336,14 +341,14 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         // Type
         DropdownButtonFormField<TransactionType>(
           value: _selectedType,
-          decoration: const InputDecoration(
-            labelText: 'Type',
+          decoration: InputDecoration(
+            labelText: localizations.transactionType,
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.swap_vert),
           ),
-          items: const [
-            DropdownMenuItem(value: TransactionType.Outcome, child: Text('Outcome')),
-            DropdownMenuItem(value: TransactionType.Income, child: Text('Income')),
+          items: [
+            DropdownMenuItem(value: TransactionType.Outcome, child: Text(localizations.outcome)),
+            DropdownMenuItem(value: TransactionType.Income, child: Text(localizations.income)),
           ],
           onChanged: (v) => setState(() => _selectedType = v!),
         ),
@@ -354,7 +359,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
           child: FilledButton.icon(
             onPressed: _addToQueue,
             icon: const Icon(Icons.add),
-            label: const Text('Add to queue'),
+            label: Text(localizations.addToQueue),
             style: FilledButton.styleFrom(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               padding: const EdgeInsets.symmetric(vertical: 14),
@@ -366,17 +371,18 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   }
 
   Widget _buildQueue() {
+    final localizations = AppLocalizations.of(context)!;
     if (_pendingTransactions.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 12),
+          children: [
+            const Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
+            const SizedBox(height: 12),
             Text(
-              'No transactions queued yet.\nFill in the form and press "Add to queue".',
+              localizations.noTransactionsQueuedYet,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: const TextStyle(color: Colors.grey),
             ),
           ],
         ),
@@ -389,7 +395,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
-            'Queued (${_pendingTransactions.length})',
+            localizations.queuedTransactions(_pendingTransactions.length.toString()),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -434,7 +440,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                     IconButton(
                       icon: const Icon(Icons.delete_outline, size: 20),
                       onPressed: () => _removeFromQueue(index),
-                      tooltip: 'Remove',
+                      tooltip: localizations.remove,
                       color: Colors.grey,
                     ),
                   ],

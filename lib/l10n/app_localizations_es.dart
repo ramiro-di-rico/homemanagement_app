@@ -365,6 +365,178 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se encontraron transacciones recurrentes';
 
   @override
+  String get submitAll => 'Enviar todo';
+
+  @override
+  String get clearQueue => 'Limpiar cola';
+
+  @override
+  String get dismiss => 'Cerrar';
+
+  @override
+  String get pleaseSelectAccount => 'Por favor selecciona una cuenta.';
+
+  @override
+  String get pleaseSelectCategory => 'Por favor selecciona una categoría.';
+
+  @override
+  String get nameMustBeAtLeast3Characters =>
+      'El nombre debe tener al menos 3 caracteres.';
+
+  @override
+  String get enterValidPrice => 'Ingresa un precio válido.';
+
+  @override
+  String get addAtLeastOneTransactionBeforeSubmitting =>
+      'Agrega al menos una transacción antes de enviar.';
+
+  @override
+  String transactionsSubmittedSuccessfully(Object count) {
+    return '$count transacción(es) enviada(s) con éxito.';
+  }
+
+  @override
+  String failedToSubmitTransactions(Object error) {
+    return 'Error al enviar las transacciones: $error';
+  }
+
+  @override
+  String get addToQueue => 'Agregar a la cola';
+
+  @override
+  String get noTransactionsQueuedYet =>
+      'Todavía no hay transacciones en la cola.\nCompleta el formulario y presiona \"Agregar a la cola\".';
+
+  @override
+  String queuedTransactions(Object count) {
+    return 'En cola ($count)';
+  }
+
+  @override
+  String get remove => 'Quitar';
+
+  @override
+  String get transactionAccount => 'Cuenta';
+
+  @override
+  String get transactionCategory => 'Categoría';
+
+  @override
+  String get transactionDescription => 'Descripción';
+
+  @override
+  String get transactionAmount => 'Monto';
+
+  @override
+  String get transactionDate => 'Fecha';
+
+  @override
+  String get transactionType => 'Tipo';
+
+  @override
+  String get bulkTransactionsTitle => 'Transacciones masivas';
+
+  @override
+  String get budgets => 'Presupuestos';
+
+  @override
+  String get showFilters => 'Mostrar filtros';
+
+  @override
+  String get hideFilters => 'Ocultar filtros';
+
+  @override
+  String get addBudget => 'Agregar presupuesto';
+
+  @override
+  String get budgetStateNew => 'Nuevo';
+
+  @override
+  String get budgetStateActive => 'Activo';
+
+  @override
+  String get budgetStateArchived => 'Archivado';
+
+  @override
+  String get budgetsListEmpty => 'La lista de presupuestos está vacía';
+
+  @override
+  String budgetTarget(Object amount) {
+    return 'Objetivo del presupuesto: $amount';
+  }
+
+  @override
+  String startDate(Object date) {
+    return 'Inicio: $date';
+  }
+
+  @override
+  String endDate(Object date) {
+    return 'Fin: $date';
+  }
+
+  @override
+  String get copy => 'Copiar';
+
+  @override
+  String get notAvailable => 'N/D';
+
+  @override
+  String get budgetName => 'Nombre';
+
+  @override
+  String get budgetAmount => 'Monto';
+
+  @override
+  String get budgetStartDate => 'Fecha de inicio';
+
+  @override
+  String get budgetEndDate => 'Fecha de fin';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get spent => 'Gastado';
+
+  @override
+  String get budgeted => 'Presupuestado';
+
+  @override
+  String get remaining => 'Restante';
+
+  @override
+  String get categories => 'Categorías';
+
+  @override
+  String get noCategoriesDataAvailable =>
+      'No hay datos de categorías disponibles';
+
+  @override
+  String get categoryHistoricalChart => 'Gráfico histórico de categorías';
+
+  @override
+  String lastMonths(Object count) {
+    return 'Últimos $count meses';
+  }
+
+  @override
+  String get noHistoricalCategoryDataAvailable =>
+      'No hay datos históricos de categorías disponibles';
+
+  @override
+  String get dateFrom => 'Fecha desde';
+
+  @override
+  String get dateTo => 'Fecha hasta';
+
+  @override
+  String get itemsToTake => 'Cantidad de elementos';
+
+  @override
+  String get apply => 'Aplicar';
+
+  @override
   String get pageSize => 'Tamaño de página';
 
   @override
@@ -788,6 +960,178 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get noRecurringTransactionsFound =>
       'No se encontraron transacciones recurrentes';
+
+  @override
+  String get submitAll => 'Enviar todo';
+
+  @override
+  String get clearQueue => 'Limpiar cola';
+
+  @override
+  String get dismiss => 'Cerrar';
+
+  @override
+  String get pleaseSelectAccount => 'Por favor seleccioná una cuenta.';
+
+  @override
+  String get pleaseSelectCategory => 'Por favor seleccioná una categoría.';
+
+  @override
+  String get nameMustBeAtLeast3Characters =>
+      'El nombre debe tener al menos 3 caracteres.';
+
+  @override
+  String get enterValidPrice => 'Ingresá un precio válido.';
+
+  @override
+  String get addAtLeastOneTransactionBeforeSubmitting =>
+      'Agregá al menos una transacción antes de enviar.';
+
+  @override
+  String transactionsSubmittedSuccessfully(Object count) {
+    return '$count transacción(es) enviada(s) con éxito.';
+  }
+
+  @override
+  String failedToSubmitTransactions(Object error) {
+    return 'Error al enviar las transacciones: $error';
+  }
+
+  @override
+  String get addToQueue => 'Agregar a la cola';
+
+  @override
+  String get noTransactionsQueuedYet =>
+      'Todavía no hay transacciones en la cola.\nCompletá el formulario y presioná \"Agregar a la cola\".';
+
+  @override
+  String queuedTransactions(Object count) {
+    return 'En cola ($count)';
+  }
+
+  @override
+  String get remove => 'Quitar';
+
+  @override
+  String get transactionAccount => 'Cuenta';
+
+  @override
+  String get transactionCategory => 'Categoría';
+
+  @override
+  String get transactionDescription => 'Descripción';
+
+  @override
+  String get transactionAmount => 'Monto';
+
+  @override
+  String get transactionDate => 'Fecha';
+
+  @override
+  String get transactionType => 'Tipo';
+
+  @override
+  String get bulkTransactionsTitle => 'Transacciones masivas';
+
+  @override
+  String get budgets => 'Presupuestos';
+
+  @override
+  String get showFilters => 'Mostrar filtros';
+
+  @override
+  String get hideFilters => 'Ocultar filtros';
+
+  @override
+  String get addBudget => 'Agregar presupuesto';
+
+  @override
+  String get budgetStateNew => 'Nuevo';
+
+  @override
+  String get budgetStateActive => 'Activo';
+
+  @override
+  String get budgetStateArchived => 'Archivado';
+
+  @override
+  String get budgetsListEmpty => 'La lista de presupuestos está vacía';
+
+  @override
+  String budgetTarget(Object amount) {
+    return 'Objetivo del presupuesto: $amount';
+  }
+
+  @override
+  String startDate(Object date) {
+    return 'Inicio: $date';
+  }
+
+  @override
+  String endDate(Object date) {
+    return 'Fin: $date';
+  }
+
+  @override
+  String get copy => 'Copiar';
+
+  @override
+  String get notAvailable => 'N/D';
+
+  @override
+  String get budgetName => 'Nombre';
+
+  @override
+  String get budgetAmount => 'Monto';
+
+  @override
+  String get budgetStartDate => 'Fecha de inicio';
+
+  @override
+  String get budgetEndDate => 'Fecha de fin';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get spent => 'Gastado';
+
+  @override
+  String get budgeted => 'Presupuestado';
+
+  @override
+  String get remaining => 'Restante';
+
+  @override
+  String get categories => 'Categorías';
+
+  @override
+  String get noCategoriesDataAvailable =>
+      'No hay datos de categorías disponibles';
+
+  @override
+  String get categoryHistoricalChart => 'Gráfico histórico de categorías';
+
+  @override
+  String lastMonths(Object count) {
+    return 'Últimos $count meses';
+  }
+
+  @override
+  String get noHistoricalCategoryDataAvailable =>
+      'No hay datos históricos de categorías disponibles';
+
+  @override
+  String get dateFrom => 'Fecha desde';
+
+  @override
+  String get dateTo => 'Fecha hasta';
+
+  @override
+  String get itemsToTake => 'Cantidad de elementos';
+
+  @override
+  String get apply => 'Aplicar';
 
   @override
   String get pageSize => 'Tamaño de página';

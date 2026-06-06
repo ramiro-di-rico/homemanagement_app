@@ -362,6 +362,177 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noRecurringTransactionsFound => 'No recurring transactions found';
 
   @override
+  String get submitAll => 'Submit all';
+
+  @override
+  String get clearQueue => 'Clear queue';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get pleaseSelectAccount => 'Please select an account.';
+
+  @override
+  String get pleaseSelectCategory => 'Please select a category.';
+
+  @override
+  String get nameMustBeAtLeast3Characters =>
+      'Name must be at least 3 characters.';
+
+  @override
+  String get enterValidPrice => 'Enter a valid price.';
+
+  @override
+  String get addAtLeastOneTransactionBeforeSubmitting =>
+      'Add at least one transaction before submitting.';
+
+  @override
+  String transactionsSubmittedSuccessfully(Object count) {
+    return '$count transaction(s) submitted successfully.';
+  }
+
+  @override
+  String failedToSubmitTransactions(Object error) {
+    return 'Failed to submit transactions: $error';
+  }
+
+  @override
+  String get addToQueue => 'Add to queue';
+
+  @override
+  String get noTransactionsQueuedYet =>
+      'No transactions queued yet.\nFill in the form and press \"Add to queue\".';
+
+  @override
+  String queuedTransactions(Object count) {
+    return 'Queued ($count)';
+  }
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get transactionAccount => 'Account';
+
+  @override
+  String get transactionCategory => 'Category';
+
+  @override
+  String get transactionDescription => 'Description';
+
+  @override
+  String get transactionAmount => 'Amount';
+
+  @override
+  String get transactionDate => 'Date';
+
+  @override
+  String get transactionType => 'Type';
+
+  @override
+  String get bulkTransactionsTitle => 'Bulk Transactions';
+
+  @override
+  String get budgets => 'Budgets';
+
+  @override
+  String get showFilters => 'Show Filters';
+
+  @override
+  String get hideFilters => 'Hide Filters';
+
+  @override
+  String get addBudget => 'Add Budget';
+
+  @override
+  String get budgetStateNew => 'New';
+
+  @override
+  String get budgetStateActive => 'Active';
+
+  @override
+  String get budgetStateArchived => 'Archived';
+
+  @override
+  String get budgetsListEmpty => 'Budgets list is empty';
+
+  @override
+  String budgetTarget(Object amount) {
+    return 'Budget target: $amount';
+  }
+
+  @override
+  String startDate(Object date) {
+    return 'Start: $date';
+  }
+
+  @override
+  String endDate(Object date) {
+    return 'End: $date';
+  }
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get budgetName => 'Name';
+
+  @override
+  String get budgetAmount => 'Amount';
+
+  @override
+  String get budgetStartDate => 'Start Date';
+
+  @override
+  String get budgetEndDate => 'End Date';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get spent => 'Spent';
+
+  @override
+  String get budgeted => 'Budgeted';
+
+  @override
+  String get remaining => 'Remaining';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get noCategoriesDataAvailable => 'No categories data available';
+
+  @override
+  String get categoryHistoricalChart => 'Category Historical Chart';
+
+  @override
+  String lastMonths(Object count) {
+    return 'Last $count months';
+  }
+
+  @override
+  String get noHistoricalCategoryDataAvailable =>
+      'No historical category data available';
+
+  @override
+  String get dateFrom => 'Date From';
+
+  @override
+  String get dateTo => 'Date To';
+
+  @override
+  String get itemsToTake => 'Items to Take';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
   String get pageSize => 'Page size';
 
   @override

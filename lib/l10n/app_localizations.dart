@@ -759,6 +759,312 @@ abstract class AppLocalizations {
   /// **'No recurring transactions found'**
   String get noRecurringTransactionsFound;
 
+  /// No description provided for @submitAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit all'**
+  String get submitAll;
+
+  /// No description provided for @clearQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear queue'**
+  String get clearQueue;
+
+  /// No description provided for @dismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// No description provided for @pleaseSelectAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an account.'**
+  String get pleaseSelectAccount;
+
+  /// No description provided for @pleaseSelectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category.'**
+  String get pleaseSelectCategory;
+
+  /// No description provided for @nameMustBeAtLeast3Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 3 characters.'**
+  String get nameMustBeAtLeast3Characters;
+
+  /// No description provided for @enterValidPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid price.'**
+  String get enterValidPrice;
+
+  /// No description provided for @addAtLeastOneTransactionBeforeSubmitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one transaction before submitting.'**
+  String get addAtLeastOneTransactionBeforeSubmitting;
+
+  /// No description provided for @transactionsSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} transaction(s) submitted successfully.'**
+  String transactionsSubmittedSuccessfully(Object count);
+
+  /// No description provided for @failedToSubmitTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit transactions: {error}'**
+  String failedToSubmitTransactions(Object error);
+
+  /// No description provided for @addToQueue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to queue'**
+  String get addToQueue;
+
+  /// No description provided for @noTransactionsQueuedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions queued yet.\nFill in the form and press \"Add to queue\".'**
+  String get noTransactionsQueuedYet;
+
+  /// No description provided for @queuedTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued ({count})'**
+  String queuedTransactions(Object count);
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @transactionAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get transactionAccount;
+
+  /// No description provided for @transactionCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get transactionCategory;
+
+  /// No description provided for @transactionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get transactionDescription;
+
+  /// No description provided for @transactionAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get transactionAmount;
+
+  /// No description provided for @transactionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get transactionDate;
+
+  /// No description provided for @transactionType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get transactionType;
+
+  /// No description provided for @bulkTransactionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk Transactions'**
+  String get bulkTransactionsTitle;
+
+  /// No description provided for @budgets.
+  ///
+  /// In en, this message translates to:
+  /// **'Budgets'**
+  String get budgets;
+
+  /// No description provided for @showFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Filters'**
+  String get showFilters;
+
+  /// No description provided for @hideFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Filters'**
+  String get hideFilters;
+
+  /// No description provided for @addBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Budget'**
+  String get addBudget;
+
+  /// No description provided for @budgetStateNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get budgetStateNew;
+
+  /// No description provided for @budgetStateActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get budgetStateActive;
+
+  /// No description provided for @budgetStateArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get budgetStateArchived;
+
+  /// No description provided for @budgetsListEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Budgets list is empty'**
+  String get budgetsListEmpty;
+
+  /// No description provided for @budgetTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget target: {amount}'**
+  String budgetTarget(Object amount);
+
+  /// No description provided for @startDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start: {date}'**
+  String startDate(Object date);
+
+  /// No description provided for @endDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End: {date}'**
+  String endDate(Object date);
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
+
+  /// No description provided for @budgetName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get budgetName;
+
+  /// No description provided for @budgetAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get budgetAmount;
+
+  /// No description provided for @budgetStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get budgetStartDate;
+
+  /// No description provided for @budgetEndDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get budgetEndDate;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @spent.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get spent;
+
+  /// No description provided for @budgeted.
+  ///
+  /// In en, this message translates to:
+  /// **'Budgeted'**
+  String get budgeted;
+
+  /// No description provided for @remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get remaining;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @noCategoriesDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories data available'**
+  String get noCategoriesDataAvailable;
+
+  /// No description provided for @categoryHistoricalChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Historical Chart'**
+  String get categoryHistoricalChart;
+
+  /// No description provided for @lastMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Last {count} months'**
+  String lastMonths(Object count);
+
+  /// No description provided for @noHistoricalCategoryDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No historical category data available'**
+  String get noHistoricalCategoryDataAvailable;
+
+  /// No description provided for @dateFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Date From'**
+  String get dateFrom;
+
+  /// No description provided for @dateTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Date To'**
+  String get dateTo;
+
+  /// No description provided for @itemsToTake.
+  ///
+  /// In en, this message translates to:
+  /// **'Items to Take'**
+  String get itemsToTake;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
   /// No description provided for @pageSize.
   ///
   /// In en, this message translates to:

@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/extensions/hex_color_extension.dart';
 import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/endpoints/category.service.metric.dart';
@@ -62,13 +63,14 @@ class _MostExpensiveCategoriesChartState
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
         child: Card(
       child: Column(
         children: [
           ListTile(
             leading: Icon(Icons.bar_chart),
-            title: Text('Categories'),
+            title: Text(localizations.categories),
             trailing: IconButton(
               icon: Icon(Icons.menu),
               onPressed: () {
@@ -113,7 +115,7 @@ class _MostExpensiveCategoriesChartState
                             Icon(Icons.category_outlined,
                                 size: 48, color: Colors.grey),
                             SizedBox(height: 10),
-                            Text('No categories data available'),
+                            Text(localizations.noCategoriesDataAvailable),
                           ],
                         ),
                       )
