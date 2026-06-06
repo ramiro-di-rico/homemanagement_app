@@ -1,6 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/formatters/localized_number_input_formatter.dart';
 import 'package:intl/intl.dart';
 import '../../../models/account.dart';
 import '../../../models/category.dart';
@@ -33,6 +34,8 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
   final List<CategoryModel> _selectedCategories = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  String? _localeCode;
+  bool _syncingPriceText = false;
   bool saving = false;
 
   @override
@@ -43,9 +46,6 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
 
     _priceController.addListener(onPriceChanged);
     _nameController.addListener(onNameChanged);
-
-    if (_recurringTransaction.price != null)
-      _priceController.text = _recurringTransaction.price.toString();
 
     if (_recurringTransaction.accountId != null) {
       _selectedAccounts.add(_accountRepository.accounts.firstWhere(
@@ -59,9 +59,35 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final localeCode = Localizations.localeOf(context).toString();
+    if (_localeCode == localeCode) {
+      return;
+    }
+
+    _localeCode = localeCode;
+
+    if (_recurringTransaction.price != null) {
+      _syncingPriceText = true;
+      try {
+        _priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
+          _recurringTransaction.price!,
+          localeCode,
+        );
+      } finally {
+        _syncingPriceText = false;
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _priceController.removeListener(onPriceChanged);
     _nameController.removeListener(onNameChanged);
+    _priceController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -86,7 +112,12 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                   width: 100,
                   child: TextField(
                     decoration: InputDecoration(labelText: 'Price'),
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      LocalizedNumberInputFormatter(
+                        locale: Localizations.localeOf(context).toString(),
+                      ),
+                    ],
                     controller: _priceController,
                   ),
                 ),
@@ -243,7 +274,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                       } else {
                         await _recurringTransactionRepository.update(_recurringTransaction);
                       }
-                    } on Exception catch (e) {
+                    } on Exception {
                     }
                     setState(() {
                       saving = false;
@@ -263,10 +294,23 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
   }
 
   void onPriceChanged() {
+    if (_syncingPriceText) {
+      return;
+    }
+
     if (_priceController.text.isEmpty) {
       _recurringTransaction.price = null;
     } else {
-      _recurringTransaction.price = double.parse(_priceController.text);
+      final price = LocalizedNumberInputFormatterHelper.parseDouble(
+        _priceController.text,
+        Localizations.localeOf(context).toString(),
+      );
+
+      if (price == null) {
+        return;
+      }
+
+      _recurringTransaction.price = price;
     }
   }
 

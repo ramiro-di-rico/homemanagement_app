@@ -1,8 +1,8 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
+import 'package:home_management_app/custom/formatters/localized_number_input_formatter.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/invite.dart';
@@ -71,7 +71,11 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
 
   Future<void> _submit() async {
     final description = _descriptionController.text.trim();
-    final amount = double.tryParse(_amountController.text.trim());
+    final localeCode = Localizations.localeOf(context).toString();
+    final amount = LocalizedNumberInputFormatterHelper.parseDouble(
+      _amountController.text.trim(),
+      localeCode,
+    );
 
     if (_invite == null || !_invite!.isActive) {
       setState(() {
@@ -237,7 +241,9 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
               enabled: isActive && !_isSubmitting,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}')),
+                LocalizedNumberInputFormatter(
+                  locale: Localizations.localeOf(context).toString(),
+                ),
               ],
               decoration: const InputDecoration(
                 labelText: 'Amount',

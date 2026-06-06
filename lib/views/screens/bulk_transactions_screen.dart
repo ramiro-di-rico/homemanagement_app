@@ -1,7 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/formatters/localized_number_input_formatter.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
@@ -75,7 +75,10 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
       setState(() => _errorMessage = localizations.nameMustBeAtLeast3Characters);
       return;
     }
-    final price = double.tryParse(priceText);
+    final price = LocalizedNumberInputFormatterHelper.parseDouble(
+      priceText,
+      Localizations.localeOf(context).toString(),
+    );
     if (price == null || price <= 0) {
       setState(() => _errorMessage = localizations.enterValidPrice);
       return;
@@ -262,7 +265,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
         // Account
         DropdownButtonFormField<AccountModel>(
-          value: _selectedAccount,
+          initialValue: _selectedAccount,
           decoration: InputDecoration(
             labelText: localizations.transactionAccount,
             border: OutlineInputBorder(),
@@ -277,7 +280,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
         // Category
         DropdownButtonFormField<CategoryModel>(
-          value: _selectedCategory,
+          initialValue: _selectedCategory,
           decoration: InputDecoration(
             labelText: localizations.transactionCategory,
             border: OutlineInputBorder(),
@@ -306,7 +309,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
           controller: _priceController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}')),
+            LocalizedNumberInputFormatter(
+              locale: Localizations.localeOf(context).toString(),
+            ),
           ],
           decoration: InputDecoration(
             labelText: localizations.transactionAmount,
@@ -340,7 +345,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
         // Type
         DropdownButtonFormField<TransactionType>(
-          value: _selectedType,
+          initialValue: _selectedType,
           decoration: InputDecoration(
             labelText: localizations.transactionType,
             border: OutlineInputBorder(),
