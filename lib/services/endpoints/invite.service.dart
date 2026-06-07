@@ -39,6 +39,10 @@ class InviteService {
     return InviteModel.fromJson(data);
   }
 
+  Future<void> delete(int inviteId) async {
+    await apiServiceFactory.apiDelete(apiName, inviteId.toString());
+  }
+
   Future<List<InviteTransactionSubmissionModel>> processSubmissions(
     int inviteId,
     List<ProcessInviteTransactionSubmissionItemRequest> submissions,

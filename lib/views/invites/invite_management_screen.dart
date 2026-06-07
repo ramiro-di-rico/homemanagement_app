@@ -175,6 +175,36 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
     }
   }
 
+  Future<void> _deleteInvite(InviteModel invite) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.delete),
+        content: Text(AppLocalizations.of(context)!.areYouSureDelete(invite.accountName)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(AppLocalizations.of(context)!.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await _inviteRepository.delete(invite.id);
+      _setMessage('Invitation deleted.');
+      await _loadInvites();
+    } catch (ex) {
+      _setMessage('Failed to delete invitation.', isError: true);
+    }
+  }
+
   Future<void> _processSelected(
     InviteModel invite,
     InviteTransactionSubmissionDecision decision,
@@ -767,6 +797,11 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
               onPressed: invite.isRevocable ? () => _revokeInvite(invite) : null,
               icon: const Icon(Icons.block_outlined),
               tooltip: 'Revoke',
+            ),
+            IconButton(
+              onPressed: () => _deleteInvite(invite),
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              tooltip: AppLocalizations.of(context)!.delete,
             ),
           ],
         ),
