@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import 'logging_view.dart';
 import 'settings-widgets/authentication_settings_widget.dart';
@@ -20,8 +21,9 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
 
   @override
   Widget build(BuildContext context) {
+    var l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text('Settings')),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: SafeArea(
         child: !_preferencesLoaded
             ? Center(child: CircularProgressIndicator())

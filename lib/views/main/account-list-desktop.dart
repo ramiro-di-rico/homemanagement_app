@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import '../../models/account.dart';
 import '../../services/endpoints/transaction.service.dart';
 import '../../services/infra/platform/platform_context.dart';
@@ -81,8 +82,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                 // Leading icon button (archive visibility toggle)
                 IconButton(
                   tooltip: showHidden
-                      ? 'Show all accounts'
-                      : 'Hide accounts',
+                      ? AppLocalizations.of(context)!.showAllAccounts
+                      : AppLocalizations.of(context)!.hideAccounts,
                   icon: Icon(
                       showHidden ? Icons.visibility : Icons.visibility_off),
                   onPressed: () {
@@ -94,7 +95,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                 ),
                 // Title
                 Text(
-                  'Accounts',
+                  AppLocalizations.of(context)!.accounts,
                   style: TextStyle(fontSize: 20),
                 ),
                 SizedBox(width: 12),
@@ -106,7 +107,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                       controller: _searchController,
                       decoration: InputDecoration(
                         isDense: true,
-                        hintText: 'Search accounts',
+                        hintText: AppLocalizations.of(context)!.searchAccounts,
                         prefixIcon: Icon(Icons.search),
                         suffixIcon: _query.isNotEmpty
                             ? IconButton(
@@ -126,7 +127,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                 SizedBox(width: 12),
                 // Trailing add icon button
                 IconButton(
-                  tooltip: 'Add account',
+                  tooltip: AppLocalizations.of(context)!.addAccount,
                   icon: Icon(Icons.add),
                   onPressed: () {
                     showModalBottomSheet<void>(
@@ -212,13 +213,13 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               }
                             },
                             icon: const Icon(Icons.more_vert),
-                            tooltip: 'Show menu',
+                            tooltip: AppLocalizations.of(context)!.showMenu,
                           );
                         },
                         menuChildren: [
                           MenuItemButton(
                               leadingIcon: Icon(Icons.add, color: Colors.greenAccent),
-                              child: Text('Add',
+                              child: Text(AppLocalizations.of(context)!.add,
                                   style: TextStyle(color: Colors.greenAccent)),
                               onPressed: () {
                                 showModalBottomSheet<void>(
@@ -243,7 +244,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               }),
                           MenuItemButton(
                             leadingIcon: Icon(Icons.edit, color: Colors.blueAccent),
-                            child: Text('Edit',
+                            child: Text(AppLocalizations.of(context)!.edit,
                                 style: TextStyle(color: Colors.blueAccent)),
                             onPressed: () {
                               showModalBottomSheet<void>(
@@ -265,7 +266,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                           ),
                           MenuItemButton(
                             leadingIcon: Icon(item.isHidden ? Icons.visibility : Icons.visibility_off, color: Colors.blueAccent),
-                            child: Text(item.isHidden ? 'Show' : 'Hide',
+                            child: Text(item.isHidden ? AppLocalizations.of(context)!.show : AppLocalizations.of(context)!.hide,
                                 style: TextStyle(color: Colors.blueAccent)),
                             onPressed: () {
                               accountsRepo.hide(item);
@@ -273,7 +274,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                           ),
                           MenuItemButton(
                             leadingIcon: Icon(Icons.archive, color: Colors.pinkAccent),
-                            child: Text(item.archive ? 'Unarchive' : 'Archive',
+                            child: Text(item.archive ? AppLocalizations.of(context)!.unarchive : AppLocalizations.of(context)!.archive,
                                 style: TextStyle(color: Colors.pinkAccent)),
                             onPressed: () {
                               accountsRepo.archive(item);
@@ -284,7 +285,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               Icons.delete,
                               color: Colors.redAccent,
                             ),
-                            child: Text('Delete',
+                            child: Text(AppLocalizations.of(context)!.delete,
                                 style: TextStyle(color: Colors.redAccent)),
                             onPressed: () {
                               remove(item, index);
@@ -294,7 +295,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               ? MenuItemButton(
                                   leadingIcon:
                                       Icon(Icons.download, color: Colors.blueAccent),
-                                  child: Text('Export transactions',
+                                  child: Text(AppLocalizations.of(context)!.exportTransactions,
                                       style: TextStyle(color: Colors.blueAccent)),
                                   onPressed: () async {
                                     var csvContent =
@@ -307,7 +308,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               ? MenuItemButton(
                                   leadingIcon:
                                       Icon(Icons.description, color: Colors.orangeAccent),
-                                  child: Text('Download import template',
+                                  child: Text(AppLocalizations.of(context)!.downloadImportTemplate,
                                       style: TextStyle(color: Colors.orangeAccent)),
                                   onPressed: () async {
                                     try {
@@ -315,14 +316,14 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                                       await platform.saveFile('transactions_template', 'csv', csvContent);
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text('Template downloaded'),
+                                          content: Text(AppLocalizations.of(context)!.templateDownloaded),
                                           backgroundColor: Colors.green,
                                         ),
                                       );
                                     } catch (e) {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text('Failed to download template'),
+                                          content: Text(AppLocalizations.of(context)!.failedToDownloadTemplate),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
@@ -334,7 +335,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               ? MenuItemButton(
                                   leadingIcon:
                                       Icon(Icons.upload, color: Colors.greenAccent),
-                                  child: Text('Import transactions',
+                                  child: Text(AppLocalizations.of(context)!.importTransactions,
                                       style: TextStyle(color: Colors.greenAccent)),
                                   onPressed: () async {
 
@@ -348,7 +349,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                                     refreshAccounts();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('Transactions imported successfully'),
+                                        content: Text(AppLocalizations.of(context)!.transactionsImportedSuccessfully),
                                         backgroundColor: Colors.green,
                                       ),
                                     );
@@ -376,11 +377,11 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
         accounts.remove(item);
       });
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(item.name + ' removed')));
+          .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removed(item.name))));
     } catch (ex) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
-        'Failed to remove ${item.name}',
+        AppLocalizations.of(context)!.failedToRemove(item.name),
         style: TextStyle(color: Colors.redAccent),
       )));
     }

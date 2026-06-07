@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/repositories/account.repository.dart';
@@ -6,7 +7,6 @@ import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/repositories/identity_user_repository.dart';
 import '../../services/repositories/main_account.repository.dart';
-import '../../services/repositories/preferences.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import '../invites/invite_management_screen.dart';
@@ -33,10 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   AuthenticationService authenticationService =
       GetIt.I<AuthenticationService>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
-  PreferencesRepository _preferencesRepository = GetIt.I<PreferencesRepository>();
+  IdentityUserRepository _identityUserRepository = GetIt.I<IdentityUserRepository>();
   bool useMainAccounts = false;
-  IdentityUserRepository _identityUserRepository =
-      GetIt.I<IdentityUserRepository>();
 
   List<Widget> children = [
     Dashboard(),
@@ -68,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _loadUseMainAccounts() {
     setState(() {
-      useMainAccounts = _preferencesRepository.getUseMainAccounts();
+      useMainAccounts = _identityUserRepository.getUseMainAccounts();
     });
   }
 
@@ -97,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   BottomNavigationBar buildBottomNavigationBar(BuildContext context) {
+    var l10n = AppLocalizations.of(context)!;
     return BottomNavigationBar(
       currentIndex: bottomBarNavigationIndex,
       backgroundColor: Theme.of(context).bottomAppBarTheme.color,
@@ -108,23 +107,24 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       items: [
         BottomNavigationBarItem(
-          label: 'Dashboard',
+          label: l10n.dashboard,
           icon: Icon(Icons.dashboard),
         ),
         BottomNavigationBarItem(
-          label: useMainAccounts ? 'Main Accounts' : 'Accounts',
+          label: useMainAccounts ? l10n.mainAccounts : l10n.accounts,
           icon: Icon(useMainAccounts ? Icons.account_balance : Icons.account_balance_wallet),
         ),
-        BottomNavigationBarItem(label: 'Reminders', icon: Icon(Icons.notifications)),
-        BottomNavigationBarItem(label: 'Settings', icon: Icon(Icons.settings)),
+        BottomNavigationBarItem(label: l10n.reminders, icon: Icon(Icons.notifications)),
+        BottomNavigationBarItem(label: l10n.settings, icon: Icon(Icons.settings)),
       ],
     );
   }
 
   AppBar buildAppBar() {
     MainAccountRepository _mainAccountRepository = GetIt.I<MainAccountRepository>();
+    var l10n = AppLocalizations.of(context)!;
     return AppBar(
-      title: Text('Home Management'),
+      title: Text(l10n.appTitle),
       actions: this.bottomBarNavigationIndex == 1
           ? [
               TextButton(
@@ -157,28 +157,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       context.go(TransactionsSearchDesktopView.fullPath);
                     },
                     icon: Icon(Icons.manage_search),
-                    tooltip: 'Search transactions',
+                    tooltip: l10n.searchTransactions,
                   ),
                   IconButton(
                       onPressed: () {
                         context.go(BulkTransactionsScreen.fullPath);
                       },
                       icon: Icon(Icons.playlist_add),
-                      tooltip: 'Bulk transactions',
+                      tooltip: l10n.bulkTransactions,
                     ),
                     IconButton(
                       onPressed: () {
                         context.go(InviteManagementScreen.fullPath);
                       },
                       icon: Icon(Icons.mail_outline),
-                      tooltip: 'Invitations',
+                      tooltip: l10n.invitations,
                     ),
                     IconButton(
                       onPressed: () {
                         context.go(StatisticsView.fullPath);
                       },
                       icon: Icon(Icons.bar_chart),
-                      tooltip: 'Statistics',
+                      tooltip: l10n.statistics,
                     )
                   ]
               : [],
@@ -215,8 +215,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget createLogoutButton() {
+    var l10n = AppLocalizations.of(context)!;
     return FloatingActionButton(
       child: Icon(Icons.exit_to_app),
+      tooltip: l10n.logout,
       onPressed: () {
         authenticationService.logout();
         context.go(LoginView.fullPath);

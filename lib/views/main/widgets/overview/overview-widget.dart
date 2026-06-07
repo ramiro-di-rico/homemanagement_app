@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:home_management_app/converters/shorten-big-number.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/models/overall.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../converters/int-shorten-converter.dart';
@@ -18,7 +19,7 @@ class OverviewWidget extends StatelessWidget {
     return Container(
       child: Card(
           child: Column(children: [
-        ListTile(leading: Icon(Icons.donut_large), title: Text('Overall')),
+        ListTile(leading: Icon(Icons.donut_large), title: Text(AppLocalizations.of(context)!.overall)),
         overall != null && overall!.totalTransactions == 0
             ? Expanded(
                 child: Center(
@@ -27,7 +28,7 @@ class OverviewWidget extends StatelessWidget {
                   children: [
                     Icon(Icons.pie_chart_outline, size: 48, color: Colors.grey),
                     SizedBox(height: 10),
-                    Text('No transactions recorded yet'),
+                    Text(AppLocalizations.of(context)!.noTransactionsRecorded),
                   ],
                 ),
               ))
@@ -36,7 +37,7 @@ class OverviewWidget extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Text('Count'),
+                  Text(AppLocalizations.of(context)!.count),
                   SizedBox(height: 10),
                   Expanded(
                       child: Skeletonizer(
@@ -69,7 +70,7 @@ class OverviewWidget extends StatelessWidget {
                   Expanded(
                     child: Column(
                       children: [
-                        Text('Total'),
+                        Text(AppLocalizations.of(context)!.total),
                         SizedBox(height: 10),
                         Expanded(
                             child: Skeletonizer(
@@ -106,7 +107,7 @@ class OverviewWidget extends StatelessWidget {
             children: [
               Indicator(
                 color: Colors.orange[200]!,
-                text: 'Income',
+                text: AppLocalizations.of(context)!.income,
                 isSquare: true,
               ),
               SizedBox(
@@ -114,7 +115,7 @@ class OverviewWidget extends StatelessWidget {
               ),
               Indicator(
                 color: Colors.teal[200]!,
-                text: 'Expense',
+                text: AppLocalizations.of(context)!.expense,
                 isSquare: true,
               ),
             ],

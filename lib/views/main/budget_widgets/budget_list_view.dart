@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/budget.dart';
@@ -43,6 +44,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       height: 600,
       child: SingleChildScrollView(
@@ -54,7 +56,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                     const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
                 child: Row(
                   children: [
-                    Text('Budgets'),
+                    Text(localizations.budgets),
                     Spacer(),
                     ElevatedButton(
                       onPressed: () {
@@ -62,8 +64,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                           showFilters = !showFilters;
                         });
                       },
-                      child:
-                          Text(showFilters ? 'Hide Filters' : 'Show Filters'),
+                      child: Text(showFilters ? localizations.hideFilters : localizations.showFilters),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -88,7 +89,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                               );
                             });
                       },
-                      child: Text('Add Budget'),
+                      child: Text(localizations.addBudget),
                     ),
                   ],
                 ),
@@ -163,15 +164,14 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                   items: [
                                     DropdownMenuItem<BudgetState?>(
                                       value: null,
-                                      child: Text('All'),
+                                      child: Text(localizations.all),
                                     ),
                                     ...BudgetState.values
                                         .map<DropdownMenuItem<BudgetState?>>(
                                             (BudgetState state) {
                                       return DropdownMenuItem<BudgetState?>(
                                         value: state,
-                                        child: Text(
-                                            state.toString().split('.').last),
+                                        child: Text(state.toString().split('.').last),
                                       );
                                     }).toList(),
                                   ],
@@ -186,7 +186,7 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
             _budgetRepository.budgets.isEmpty
                 ? Card(
                     child: ListTile(
-                      title: Text('Budgets list is empty'),
+                      title: Text(localizations.budgetsListEmpty),
                     ),
                   )
                 : ListView.builder(
@@ -197,10 +197,10 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                       var dateFormat = 'dd-MM-yyyy';
                       var startDate = budget.startDate != null
                           ? DateFormat(dateFormat).format(budget.startDate!)
-                          : 'N/A';
+                          : localizations.notAvailable;
                       var endDate = budget.endDate != null
                           ? DateFormat(dateFormat).format(budget.endDate!)
-                          : 'N/A';
+                          : localizations.notAvailable;
 
                       var category = budget.categoryId != null
                           ? _categoryRepository.categories.firstWhere(
@@ -213,35 +213,26 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                           : null;
                       return Card(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  SizedBox(
-                                      width: 200, child: Text(budget.name)),
-                                  Text(
-                                      "Budget target: ${budget.amount.formatWithDot()}")
+                                  SizedBox(width: 200, child: Text(budget.name)),
+                                  Text('Budget target: ${budget.amount.formatWithDot()}'),
                                 ],
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Row(
                                 children: [
-                                  SizedBox(
-                                      width: 200,
-                                      child: Text('Start: ${startDate}')),
-                                  SizedBox(
-                                      width: 200,
-                                      child: Text('End: ${endDate}')),
-                                  Spacer(),
+                                  SizedBox(width: 200, child: Text('Start: $startDate')),
+                                  SizedBox(width: 200, child: Text('End: $endDate')),
+                                  const Spacer(),
                                   SizedBox(
                                     width: 150,
                                     child: Chip(
-                                      color: WidgetStateProperty.resolveWith(
-                                          (states) {
+                                      color: WidgetStateProperty.resolveWith((states) {
                                         switch (budget.state) {
                                           case BudgetState.New:
                                             return Colors.blue;
@@ -253,102 +244,81 @@ class _BudgetListViewState extends State<BudgetListView> with NotifierMixin {
                                             return Colors.grey;
                                         }
                                       }),
-                                      label: Text(budget.state
-                                          .toString()
-                                          .split('.')
-                                          .last),
+                                      label: Text(
+                                        budget.state == BudgetState.New
+                                            ? localizations.budgetStateNew
+                                            : budget.state == BudgetState.Active
+                                                ? localizations.budgetStateActive
+                                                : localizations.budgetStateArchived,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   SizedBox(
                                     width: 150,
-                                    child: Chip(
-                                      label: Text(category?.name ?? 'N/A'),
-                                    ),
+                                    child: Chip(label: Text(category?.name ?? localizations.notAvailable)),
                                   ),
                                   SizedBox(
                                     width: 150,
-                                    child: Chip(
-                                      label: Text(account?.name ?? 'N/A'),
-                                    ),
+                                    child: Chip(label: Text(account?.name ?? localizations.notAvailable)),
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Open the budget sheet to create a copy of the current budget
                                       showModalBottomSheet<void>(
-                                          context: context,
-                                          constraints: BoxConstraints(
-                                            maxHeight: 1000,
-                                            maxWidth: 1200,
-                                          ),
-                                          isScrollControlled: true,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.vertical(
-                                                      top: Radius.circular(
-                                                          25.0))),
-                                          builder: (context) {
-                                            return SizedBox(
-                                              height: 175,
-                                              child: AnimatedPadding(
-                                                  padding:
-                                                      MediaQuery.of(context)
-                                                          .viewInsets,
-                                                  duration:
-                                                      Duration(seconds: 1),
-                                                  child: BudgetSheetDesktop(
-                                                    budget:
-                                                        BudgetModel.duplicate(
-                                                            budget),
-                                                  )),
-                                            );
-                                          });
+                                        context: context,
+                                        constraints: const BoxConstraints(maxHeight: 1000, maxWidth: 1200),
+                                        isScrollControlled: true,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+                                        ),
+                                        builder: (context) {
+                                          return SizedBox(
+                                            height: 175,
+                                            child: AnimatedPadding(
+                                              padding: MediaQuery.of(context).viewInsets,
+                                              duration: const Duration(seconds: 1),
+                                              child: BudgetSheetDesktop(
+                                                budget: BudgetModel.duplicate(budget),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
-                                    child: Text('Copy'),
+                                    child: Text(localizations.copy),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Open the budget sheet
                                       showModalBottomSheet<void>(
-                                          context: context,
-                                          constraints: BoxConstraints(
-                                            maxHeight: 1000,
-                                            maxWidth: 1200,
-                                          ),
-                                          isScrollControlled: true,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.vertical(
-                                                      top: Radius.circular(
-                                                          25.0))),
-                                          builder: (context) {
-                                            return SizedBox(
-                                              height: 175,
-                                              child: AnimatedPadding(
-                                                  padding:
-                                                      MediaQuery.of(context)
-                                                          .viewInsets,
-                                                  duration:
-                                                      Duration(seconds: 1),
-                                                  child: BudgetSheetDesktop(
-                                                    budget: budget,
-                                                  )),
-                                            );
-                                          });
+                                        context: context,
+                                        constraints: const BoxConstraints(maxHeight: 1000, maxWidth: 1200),
+                                        isScrollControlled: true,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+                                        ),
+                                        builder: (context) {
+                                          return SizedBox(
+                                            height: 175,
+                                            child: AnimatedPadding(
+                                              padding: MediaQuery.of(context).viewInsets,
+                                              duration: const Duration(seconds: 1),
+                                              child: BudgetSheetDesktop(budget: budget),
+                                            ),
+                                          );
+                                        },
+                                      );
                                     },
-                                    child: Text('Edit'),
+                                    child: Text(localizations.edit),
                                   ),
                                   ElevatedButton(
-                                    onPressed: () {
-                                      _budgetRepository.removeBudget(budget);
-                                    },
-                                    child: Text('Delete'),
+                                    onPressed: () => _budgetRepository.removeBudget(budget),
+                                    child: Text(localizations.delete),
                                   ),
                                 ],
                               ),

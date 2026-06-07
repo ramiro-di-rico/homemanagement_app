@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../../../models/category.dart';
 import 'category_dialog_selection.dart';
@@ -33,6 +34,7 @@ class _CategorySelectState extends State<CategorySelect> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: () {
         showDialog(
@@ -71,8 +73,8 @@ class _CategorySelectState extends State<CategorySelect> {
                   enabled: false,
                   decoration: InputDecoration(
                     labelText: widget.multipleSelection
-                        ? 'Select categories'
-                        : 'Select category',
+                        ? localizations.selectCategories
+                        : localizations.selectCategory,
                     border: InputBorder.none,
                   ),
                 ),

@@ -1,7 +1,8 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
+import 'package:home_management_app/custom/formatters/localized_number_input_formatter.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/invite.dart';
@@ -70,7 +71,11 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
 
   Future<void> _submit() async {
     final description = _descriptionController.text.trim();
-    final amount = double.tryParse(_amountController.text.trim());
+    final localeCode = Localizations.localeOf(context).toString();
+    final amount = LocalizedNumberInputFormatterHelper.parseDouble(
+      _amountController.text.trim(),
+      localeCode,
+    );
 
     if (_invite == null || !_invite!.isActive) {
       setState(() {
@@ -133,7 +138,7 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Invitation'),
+        title: Text(AppLocalizations.of(context)!.invitation),
       ),
       body: SafeArea(
         child: _isLoading
@@ -160,10 +165,10 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
                         _buildSubmissionResult(_lastSubmission!),
                       ],
                     ] else
-                      const Card(
+                      Card(
                         child: Padding(
                           padding: EdgeInsets.all(24),
-                          child: Text('This invitation is unavailable.'),
+                          child: Text(AppLocalizations.of(context)!.invitationUnavailable),
                         ),
                       ),
                   ],
@@ -199,9 +204,9 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
           children: [
             Text(invite.accountName, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 8),
-            Text('Category: ${invite.categoryName}'),
-            Text('Status: ${_inviteStatusLabel(invite.status)}'),
-            Text('Expires: $expiresText'),
+            Text(AppLocalizations.of(context)!.categoryName(invite.categoryName)),
+            Text(AppLocalizations.of(context)!.statusLabel(_inviteStatusLabel(invite.status))),
+            Text(AppLocalizations.of(context)!.expiresLabel(expiresText)),
             const SizedBox(height: 12),
             SelectableText(widget.token),
           ],
@@ -219,7 +224,7 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Submit transaction', style: Theme.of(context).textTheme.titleLarge),
+            Text(AppLocalizations.of(context)!.submitTransaction, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             TextField(
               controller: _descriptionController,
@@ -236,7 +241,9 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
               enabled: isActive && !_isSubmitting,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?\.?\d{0,2}')),
+                LocalizedNumberInputFormatter(
+                  locale: Localizations.localeOf(context).toString(),
+                ),
               ],
               decoration: const InputDecoration(
                 labelText: 'Amount',
@@ -277,9 +284,9 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.swap_vert),
               ),
-              items: const [
-                DropdownMenuItem(value: TransactionType.Outcome, child: Text('Outcome')),
-                DropdownMenuItem(value: TransactionType.Income, child: Text('Income')),
+              items: [
+                DropdownMenuItem(value: TransactionType.Outcome, child: Text(AppLocalizations.of(context)!.outcome)),
+                DropdownMenuItem(value: TransactionType.Income, child: Text(AppLocalizations.of(context)!.income)),
               ],
               onChanged: !isActive || _isSubmitting
                   ? null
@@ -305,7 +312,7 @@ class _PublicInviteScreenState extends State<PublicInviteScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.send_outlined),
-                label: const Text('Submit for approval'),
+                label: Text(AppLocalizations.of(context)!.submitForApproval),
               ),
             ),
           ],

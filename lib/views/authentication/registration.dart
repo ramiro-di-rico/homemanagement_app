@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/custom/components/email-textfield.dart';
 import 'package:home_management_app/custom/components/password-textfield.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/views/authentication/user-controls-mixins/password-strength-behavior.dart';
 import 'package:home_management_app/views/authentication/2fa_view.dart';
 import 'package:home_management_app/views/main/home.dart';
@@ -28,7 +29,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registration'),
+        title: Text(AppLocalizations.of(context)!.registration),
       ),
       floatingActionButton: enableButton
           ? FloatingActionButton(
@@ -48,11 +49,11 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text('Authentication error.'),
-                              content: Text('Could not authenticate user after registration.'),
+                              title: Text(AppLocalizations.of(context)!.authenticationError),
+                              content: Text(AppLocalizations.of(context)!.couldNotAuthenticateAfterRegistration),
                               actions: [
                                 TextButton(
-                                  child: Text('ok'),
+                                  child: Text(AppLocalizations.of(context)!.close),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },

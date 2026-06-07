@@ -1,6 +1,7 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/views/main/widgets/currency_select/currency_select.dart';
 import 'package:intl/intl.dart';
 
@@ -39,6 +40,7 @@ class _TransactionSearchFilteringOptionsSheetState
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final isCompact = MediaQuery.of(context).size.width < 700;
     _selectedCategoriesTextEditingController.text = _transactionPagingService
         .selectedCategories
@@ -60,7 +62,7 @@ class _TransactionSearchFilteringOptionsSheetState
                 TextField(
                   controller: _nameTextEditingController,
                   decoration: InputDecoration(
-                    labelText: 'Search transaction by name',
+                    labelText: localizations.searchTransactionByName,
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -112,12 +114,16 @@ class _TransactionSearchFilteringOptionsSheetState
                       SizedBox(height: 12),
                       DropdownButtonFormField<String>(
                         initialValue: _transactionPagingService.transactionType == null
-                            ? 'Select'
+                            ? localizations.selectOption
                             : _transactionPagingService.transactionType ==
                                     TransactionType.Income
-                                ? 'Income'
-                                : 'Outcome',
-                        items: ['Select', 'Outcome', 'Income']
+                                ? localizations.income
+                                : localizations.outcome,
+                        items: [
+                          localizations.selectOption,
+                          localizations.outcome,
+                          localizations.income,
+                        ]
                             .map((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -126,12 +132,12 @@ class _TransactionSearchFilteringOptionsSheetState
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            if (newValue == 'Select') {
+                            if (newValue == localizations.selectOption) {
                               _transactionPagingService.transactionType = null;
                               return;
                             }
                             _transactionPagingService.transactionType =
-                                newValue == 'Income'
+                                newValue == localizations.income
                                     ? TransactionType.Income
                                     : TransactionType.Outcome;
                           });
@@ -188,7 +194,7 @@ class _TransactionSearchFilteringOptionsSheetState
                               doFiltering();
                               Navigator.pop(context);
                             },
-                            child: Text('Filter')),
+                            child: Text(localizations.filter)),
                       ),
                     ],
                   )
@@ -248,13 +254,17 @@ class _TransactionSearchFilteringOptionsSheetState
                             child: DropdownButton<String>(
                               value: _transactionPagingService.transactionType ==
                                       null
-                                  ? 'Select'
+                                  ? localizations.selectOption
                                   : _transactionPagingService
                                               .transactionType ==
                                           TransactionType.Income
-                                      ? 'Income'
-                                      : 'Outcome',
-                              items: ['Select', 'Outcome', 'Income']
+                                      ? localizations.income
+                                      : localizations.outcome,
+                              items: [
+                                localizations.selectOption,
+                                localizations.outcome,
+                                localizations.income,
+                              ]
                                   .map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
@@ -263,13 +273,13 @@ class _TransactionSearchFilteringOptionsSheetState
                               }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  if (newValue == 'Select') {
+                                  if (newValue == localizations.selectOption) {
                                     _transactionPagingService.transactionType =
                                         null;
                                     return;
                                   }
                                   _transactionPagingService.transactionType =
-                                      newValue == 'Income'
+                                      newValue == localizations.income
                                           ? TransactionType.Income
                                           : TransactionType.Outcome;
                                 });
@@ -344,7 +354,7 @@ class _TransactionSearchFilteringOptionsSheetState
                               doFiltering();
                               Navigator.pop(context);
                             },
-                            child: Text('Filter')),
+                            child: Text(localizations.filter)),
                       ),
                     ],
                   )

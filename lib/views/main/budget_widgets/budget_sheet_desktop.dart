@@ -1,6 +1,8 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/custom/formatters/localized_number_input_formatter.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/budget.dart';
@@ -30,6 +32,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
   bool isEditMode = false;
   bool isDuplicate = false;
   late BudgetModel budget;
+  String? _localeCode;
 
   @override
   void initState() {
@@ -43,7 +46,22 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
           : BudgetModel.empty();
 
     _nameController.text = budget.name;
-    _amountController.text = budget.amount.toString();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final localeCode = Localizations.localeOf(context).toString();
+    if (_localeCode == localeCode) {
+      return;
+    }
+
+    _localeCode = localeCode;
+    _amountController.text = LocalizedNumberInputFormatterHelper.formatDouble(
+      budget.amount,
+      localeCode,
+    );
   }
 
   @override
@@ -55,6 +73,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       child: Column(
         children: [
@@ -65,7 +84,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
               SizedBox(
                 width: 300,
                 child: TextField(
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: InputDecoration(labelText: localizations.budgetName),
                   controller: _nameController,
                 ),
               ),
@@ -73,7 +92,13 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
               SizedBox(
                 width: 150,
                 child: TextField(
-                  decoration: InputDecoration(labelText: 'Amount'),
+                  decoration: InputDecoration(labelText: localizations.budgetAmount),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    LocalizedNumberInputFormatter(
+                      locale: Localizations.localeOf(context).toString(),
+                    ),
+                  ],
                   controller: _amountController,
                 ),
               ),
@@ -132,7 +157,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                 width: 180,
                 child: DateTimeField(
                   decoration: InputDecoration(
-                    label: Text('Start Date'),
+                    label: Text(localizations.budgetStartDate),
                     icon: Icon(Icons.date_range),
                   ),
                   format: DateFormat("dd MMM yyyy"),
@@ -157,7 +182,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                 width: 180,
                 child: DateTimeField(
                   decoration: InputDecoration(
-                    label: Text('End Date'),
+                    label: Text(localizations.budgetEndDate),
                     icon: Icon(Icons.date_range),
                   ),
                   format: DateFormat("dd MMM yyyy"),
@@ -184,7 +209,16 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
                 child: ElevatedButton(
                   onPressed: () {
                     budget.name = _nameController.text;
-                    budget.amount = double.parse(_amountController.text);
+                    final amount = LocalizedNumberInputFormatterHelper.parseDouble(
+                      _amountController.text,
+                      Localizations.localeOf(context).toString(),
+                    );
+
+                    if (amount == null) {
+                      return;
+                    }
+
+                    budget.amount = amount;
 
                     if (isEditMode) {
                       _budgetRepository.updateBudget(budget);
@@ -196,7 +230,7 @@ class _BudgetSheetDesktopState extends State<BudgetSheetDesktop> {
 
                     Navigator.pop(context);
                   },
-                  child: Text('Save'),
+                  child: Text(localizations.save),
                 ),
               ),
             ],

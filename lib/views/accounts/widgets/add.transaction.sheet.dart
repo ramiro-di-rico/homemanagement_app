@@ -1,11 +1,11 @@
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
 import '../../../custom/components/app-textfield.dart';
 import '../../../custom/components/dropdown.component.dart';
+import '../../../custom/formatters/localized_number_input_formatter.dart';
 import '../../../models/account.dart';
 import '../../../models/transaction.dart';
 import '../../../services/repositories/category.repository.dart';
@@ -31,6 +31,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   TextEditingController priceController = TextEditingController();
   AccountModel accountModel = AccountModel.empty(0);
   TransactionModel transactionModel = TransactionModel.empty(0, 0);
+  String? _localeCode;
+  bool _syncingPriceText = false;
 
   bool isEditing = false;
 
@@ -45,7 +47,29 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     nameController.addListener(onNameChanged);
     priceController.addListener(onPriceChanged);
     nameController.text = transactionModel.name;
-    priceController.text = isEditing ? transactionModel.price.toString() : "";
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final localeCode = Localizations.localeOf(context).toString();
+    if (_localeCode == localeCode) {
+      return;
+    }
+
+    _localeCode = localeCode;
+    _syncingPriceText = true;
+    try {
+      priceController.text = isEditing
+          ? LocalizedNumberInputFormatterHelper.formatDouble(
+              transactionModel.price,
+              localeCode,
+            )
+          : "";
+    } finally {
+      _syncingPriceText = false;
+    }
   }
 
   @override
@@ -91,8 +115,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                         keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^(\d+)?\.?\d{0,2}'))
+                          LocalizedNumberInputFormatter(
+                            locale: _localeCode ??
+                                Localizations.localeOf(context).toString(),
+                          ),
                         ],
                         decoration:
                             InputDecoration(icon: Icon(Icons.attach_money)),
@@ -201,8 +227,23 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   }
 
   void onPriceChanged() {
+    if (_syncingPriceText) {
+      return;
+    }
+
     if (priceController.text.isNotEmpty) {
-      transactionModel.price = double.parse(priceController.text);
+      final localeCode =
+          _localeCode ?? Localizations.localeOf(context).toString();
+      final parsedPrice = LocalizedNumberInputFormatterHelper.parseDouble(
+        priceController.text,
+        localeCode,
+      );
+
+      if (parsedPrice == null) {
+        return;
+      }
+
+      transactionModel.price = parsedPrice;
       setState(() {});
     }
   }

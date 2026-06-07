@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/models/metrics/breakdown.dart';
 import 'package:intl/intl.dart';
 
@@ -34,7 +35,7 @@ Widget build(BuildContext context) {
                   Icon(Icons.account_balance, color: Colors.blueGrey, size: 24), // Added Icon for balance
                   SizedBox(width: 10), // Spacing between icon and title text
                    Text(
-                     'Balance',
+                     AppLocalizations.of(context)!.balance,
                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), // Increased title font size
                    ),
                 ],
@@ -44,7 +45,7 @@ Widget build(BuildContext context) {
             child: isLoading 
               ? Center(child: CircularProgressIndicator())
               : breakdown.isEmpty
-                ? Center(child: Text("No balance information available"))
+                ? Center(child: Text(AppLocalizations.of(context)!.noBalanceInformation))
                 : ListView.builder(
                   itemCount: breakdown.length,
               itemBuilder: (context, index) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import 'budget_widgets/budget_list_view.dart';
 import 'budget_widgets/budget_metric_widget.dart';
@@ -15,9 +16,10 @@ class _BudgetDesktopViewState extends State<BudgetDesktopView> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Budget'),
+        title: Text(localizations.budget),
       ),
       body: SafeArea(
         child: Container(

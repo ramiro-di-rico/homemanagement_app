@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import '../../../../models/account.dart';
 import '../../../../services/repositories/account.repository.dart';
 import 'account_select_model.dart';
@@ -50,9 +51,10 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return AlertDialog(
       title:
-          Text(widget.multipleSelection ? 'Select accounts' : 'Select account'),
+          Text(widget.multipleSelection ? localizations.selectAccounts : localizations.selectAccount),
       content: SizedBox(
         height: 400,
         width: 200,
@@ -98,7 +100,7 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
       ),
       actions: [
         TextButton(
-          child: Text('clear'),
+          child: Text(localizations.clear),
           onPressed: () {
             _selectedAccount = null;
             widget.onSelectedAccountsChanged([]);
@@ -106,7 +108,7 @@ class _AccountDialogSelectionState extends State<AccountDialogSelection> {
           },
         ),
         TextButton(
-          child: Text('ok'),
+          child: Text(localizations.ok),
           onPressed: () {
             Navigator.of(context).pop();
           },

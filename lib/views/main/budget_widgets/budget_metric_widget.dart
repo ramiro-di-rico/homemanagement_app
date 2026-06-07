@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../../services/repositories/budget_repository.dart';
 import '../../../extensions/number_format_extension.dart';
@@ -26,42 +27,41 @@ class _BudgetMetricWidgetState extends State<BudgetMetricWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       height: 600,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-              children: drawMetrics(),
+              children: drawMetrics(localizations),
           ),
         ),
       ),
     );
   }
 
-  List<Widget> drawMetrics() {
+  List<Widget> drawMetrics(AppLocalizations localizations) {
     List<Widget> rows = [];
     rows.add(Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20),
         child: Row(
           children: [
-            SizedBox(
-                width: 100,
-                child: Text('Name')),
+            SizedBox(width: 100, child: Text(localizations.name)),
             SizedBox(width: 20),
             SizedBox(
               width: 200,
-              child: Text('Spent'),
+                child: Text(localizations.spent),
             ),
             SizedBox(width: 20),
             SizedBox(
                 width: 80,
-                child: Text('Budgeted')),
+                child: Text(localizations.budgeted)),
             SizedBox(width: 20),
             SizedBox(
                 width: 80,
-                child: Text('Remaining')
+                child: Text(localizations.remaining)
             )
           ],
         ),

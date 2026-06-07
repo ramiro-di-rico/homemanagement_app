@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import 'widgets/category_historical/category_historical_chart_widget.dart';
 import 'widgets/most-expensive-categories.widget.dart';
@@ -11,9 +12,10 @@ class StatisticsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Statistics'),
+        title: Text(localizations.statistics),
       ),
       body: SafeArea(
         child: LayoutBuilder(

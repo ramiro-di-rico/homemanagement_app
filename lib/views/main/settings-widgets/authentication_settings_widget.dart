@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../../custom/components/dropdown.component.dart';
 import '../../../models/view-models/my_user_view_model.dart';
@@ -20,11 +21,8 @@ class _AuthenticationSettingsWidgetState
 
   MyUserViewModel? _userInfo;
   bool twoFactorEnabled = false;
-  String selectedLanguage = 'English';
   bool _isLoadingUserInfo = true;
   bool _isSavingLanguage = false;
-
-  final Map<String, String> languages = {'English': 'en', 'Spanish': 'es-ar'};
 
   @override
   void initState() {
@@ -34,28 +32,39 @@ class _AuthenticationSettingsWidgetState
 
   @override
   Widget build(BuildContext context) {
+    var l10n = AppLocalizations.of(context)!;
+    final Map<String, String> localizedLanguages = {
+      l10n.english: 'en',
+      l10n.spanish: 'es-AR',
+    };
+
+    final resolvedLanguage = localizedLanguages.keys.firstWhere(
+      (key) => localizedLanguages[key]?.toLowerCase() == _userInfo?.language?.toLowerCase(),
+      orElse: () => l10n.english,
+    );
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Text(
-                'Authentication Settings',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                l10n.authenticationSettings,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
             ),
             ListTile(
-              title: const Text('Username'),
+              title: Text(l10n.username),
               subtitle: Text(_userInfo?.username ?? ''),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
                 children: [
-                  const Text('App Language'),
+                  Text(l10n.appLanguage),
                   const Spacer(),
                   _isLoadingUserInfo || _isSavingLanguage
                       ? const SizedBox(
@@ -64,9 +73,9 @@ class _AuthenticationSettingsWidgetState
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : DropdownComponent(
-                          items: const ['English', 'Spanish'],
-                          onChanged: onLanguageChanged,
-                          currentValue: selectedLanguage,
+                          items: [l10n.english, l10n.spanish],
+                          onChanged: (val) => onLanguageChanged(val, localizedLanguages),
+                          currentValue: resolvedLanguage,
                         ),
                 ],
               ),
@@ -74,7 +83,7 @@ class _AuthenticationSettingsWidgetState
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: ListTile(
-                title: const Text('Enable Two Factor Authentication'),
+                title: Text(l10n.enableTwoFactorAuthentication),
                 trailing: Switch(value: twoFactorEnabled, onChanged: onChecked),
               ),
             ),
@@ -87,15 +96,9 @@ class _AuthenticationSettingsWidgetState
   Future<void> load() async {
     try {
       final userInfo = await identityUserRepository.getUser();
-      final language = userInfo?.language ?? 'en';
-      final resolvedLanguage = languages.keys.firstWhere(
-        (key) => languages[key] == language,
-        orElse: () => 'English',
-      );
 
       setState(() {
         _userInfo = userInfo;
-        selectedLanguage = resolvedLanguage;
       });
     } finally {
       if (mounted) {
@@ -112,33 +115,28 @@ class _AuthenticationSettingsWidgetState
     });
   }
 
-  Future<void> onLanguageChanged(String languageChanged) async {
-    final previousLanguage = selectedLanguage;
+  Future<void> onLanguageChanged(String languageLabel, Map<String, String> languages) async {
+    final languageCode = languages[languageLabel];
+    if (languageCode == null) return;
 
     setState(() {
-      selectedLanguage = languageChanged;
       _isSavingLanguage = true;
     });
 
     try {
-      final languageCode = languages[languageChanged];
-      print(languageCode);
-      if (languageCode == null) {
-        throw Exception('Unknown language');
-      }
-
-      await identityUserRepository.updateLanguage(
+      final updatedUser = await identityUserRepository.updateLanguage(
         languageCode,
         _userInfo?.timeZone ?? 'UTC',
       );
+      if (mounted) {
+        setState(() {
+          _userInfo = updatedUser;
+        });
+      }
     } catch (_) {
       if (!mounted) {
         return;
       }
-
-      setState(() {
-        selectedLanguage = previousLanguage;
-      });
     } finally {
       if (mounted) {
         setState(() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/views/main/settings-widgets/authentication_settings_widget.dart';
 import 'package:home_management_app/views/main/settings-widgets/user-settings-widget.dart';
 import 'package:home_management_app/views/main/settings-widgets/feature-toggles.widget.dart';
 import 'package:home_management_app/views/main/logging_view.dart';
@@ -18,9 +19,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
       child: Column(
         children: [
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: AuthenticationSettingsWidget(),
+          ),
           Padding(
             padding: EdgeInsets.all(10),
             child: UserSettingsWidget(),

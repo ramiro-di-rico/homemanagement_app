@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 
 import '../../../../models/http-models/category_historical_response.dart';
@@ -49,19 +50,20 @@ class _CategoryHistoricalChartWidgetState
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (loading) {
       return const Card(child: Center(child: CircularProgressIndicator()));
     }
 
     return data.isEmpty
-        ? const Card(
+        ? Card(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.show_chart, size: 48, color: Colors.grey),
                   SizedBox(height: 10),
-                  Text('No historical category data available'),
+                  Text(localizations.noHistoricalCategoryDataAvailable),
                 ],
               ),
             ),
@@ -71,8 +73,8 @@ class _CategoryHistoricalChartWidgetState
               children: [
                 ListTile(
                     leading : Icon(Icons.show_chart),
-                    title: Text('Category Historical Chart'),
-                    subtitle: Text('Last ${calculateMonthDifference()} months'),
+                    title: Text(localizations.categoryHistoricalChart),
+                    subtitle: Text(localizations.lastMonths(calculateMonthDifference().toString())),
                     trailing: IconButton(
                       icon: Icon(Icons.menu),
                       onPressed: () {
@@ -83,7 +85,7 @@ class _CategoryHistoricalChartWidgetState
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(25, 20, 40, 20),
-                    child: LineChart(buildChartData()),
+                    child: LineChart(buildChartData(context)),
                   ),
                 ),
               ],
@@ -91,15 +93,16 @@ class _CategoryHistoricalChartWidgetState
           );
   }
 
-  LineChartData buildChartData() {
+  LineChartData buildChartData(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return LineChartData(
       gridData: FlGridData(show: false),
       titlesData: FlTitlesData(
         leftTitles: AxisTitles(
           sideTitles: SideTitles(reservedSize: 50, showTitles: true),
         ),
-        bottomTitles: AxisTitles(
-          axisNameWidget: Text('Months'),
+         bottomTitles: AxisTitles(
+            axisNameWidget: Text(localizations.months),
           sideTitles: SideTitles(
               interval: 1,
               getTitlesWidget: (value, titleMeta) {

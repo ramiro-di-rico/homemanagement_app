@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 import '../../../../models/account.dart';
 import 'account_dialog_selection.dart';
@@ -35,6 +36,7 @@ class _AccountSelectState extends State<AccountSelect> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: () {
         showDialog(
@@ -71,8 +73,8 @@ class _AccountSelectState extends State<AccountSelect> {
                   controller: _selectedAccountsTextEditingController,
                   decoration: InputDecoration(
                     labelText: widget.multipleSelection
-                        ? 'Select accounts'
-                        : 'Select account',
+                        ? localizations.selectAccounts
+                        : localizations.selectAccount,
                     border: InputBorder.none,
                   ),
                 ),

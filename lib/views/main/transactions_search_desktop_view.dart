@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/transaction.dart';
@@ -62,6 +63,7 @@ class _TransactionsSearchDesktopViewState
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final isCompact = MediaQuery.of(context).size.width < 700;
     final accountNamesById = {
       for (final account in _accountRepository.accounts) account.id: account.name
@@ -69,7 +71,7 @@ class _TransactionsSearchDesktopViewState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search transactions'),
+        title: Text(localizations.searchTransactions),
         actions: isCompact
             ? [
                 PopupMenuButton<String>(
@@ -99,22 +101,22 @@ class _TransactionsSearchDesktopViewState
                   itemBuilder: (context) => [
                     PopupMenuItem(
                       value: 'pageSize',
-                      child: Text('Page size'),
+                      child: Text(localizations.pageSize),
                     ),
                     PopupMenuItem(
                       value: 'export',
                       enabled:
                           _transactionPagingService.filtering &&
                               _platform.isDownloadEnabled(),
-                      child: Text('Export transactions'),
+                      child: Text(localizations.exportTransactions),
                     ),
                     PopupMenuItem(
                       value: 'clear',
-                      child: Text('Clear filters'),
+                      child: Text(localizations.clearFilters),
                     ),
                     PopupMenuItem(
                       value: 'filter',
-                      child: Text('Filter transactions'),
+                      child: Text(localizations.filterTransactions),
                     ),
                   ],
                 ),
@@ -153,7 +155,7 @@ class _TransactionsSearchDesktopViewState
                               }
                             : null,
                     icon: Icon(Icons.file_download),
-                    tooltip: 'Export transactions'),
+                    tooltip: localizations.exportTransactions),
                 IconButton(
                     onPressed: () {
                       setState(() {
@@ -161,7 +163,7 @@ class _TransactionsSearchDesktopViewState
                       });
                     },
                     icon: Icon(Icons.filter_alt_off),
-                    tooltip: 'Clear filters'),
+                    tooltip: localizations.clearFilters),
                 IconButton(
                   onPressed: () {
                     displayFilteringOptions();
@@ -170,13 +172,13 @@ class _TransactionsSearchDesktopViewState
                       ? _filteringNumber
                           .elementAt(_transactionPagingService.selectedFilters)
                       : Icons.filter_alt_outlined),
-                  tooltip: 'Filter transactions',
+                  tooltip: localizations.filterTransactions,
                 )
               ],
       ),
       body: Container(
         child: !_transactionPagingService.filtering
-            ? Center(child: Text('Select a filter to display transactions'))
+            ? Center(child: Text(localizations.selectFilterToDisplayTransactions))
             : _transactionPagingService.loading
                 ? Center(child: CircularProgressIndicator())
                 : GroupedListView<TransactionModel, DateTime>(
@@ -206,7 +208,7 @@ class _TransactionsSearchDesktopViewState
                     },
                     itemBuilder: (context, transaction) {
                       final accountName =
-                          accountNamesById[transaction.accountId] ?? 'Unknown account';
+                          accountNamesById[transaction.accountId] ?? localizations.unknownAccount;
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),

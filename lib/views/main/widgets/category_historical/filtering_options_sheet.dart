@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 class FilterOptionsSheet extends StatefulWidget {
   final DateTime initialDateFrom;
@@ -32,13 +33,14 @@ class _FilterOptionsSheetState extends State<FilterOptionsSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: Text('Date From'),
+            title: Text(localizations.dateFrom),
             trailing: IconButton(
               icon: Icon(Icons.calendar_today),
               onPressed: () async {
@@ -58,7 +60,7 @@ class _FilterOptionsSheetState extends State<FilterOptionsSheet> {
             subtitle: Text('${dateFrom.toLocal()}'.split(' ')[0]),
           ),
           ListTile(
-            title: Text('Date To'),
+            title: Text(localizations.dateTo),
             trailing: IconButton(
               icon: Icon(Icons.calendar_today),
               onPressed: () async {
@@ -78,7 +80,7 @@ class _FilterOptionsSheetState extends State<FilterOptionsSheet> {
             subtitle: Text('${dateTo.toLocal()}'.split(' ')[0]),
           ),
           ListTile(
-            title: Text('Items to Take'),
+            title: Text(localizations.itemsToTake),
             trailing: DropdownButton<int>(
               value: take,
               onChanged: (int? newValue) {
@@ -100,7 +102,7 @@ class _FilterOptionsSheetState extends State<FilterOptionsSheet> {
               widget.onApply(dateFrom, dateTo, take);
               Navigator.pop(context);
             },
-            child: Text('Apply'),
+            child: Text(localizations.apply),
           ),
         ],
       ),
