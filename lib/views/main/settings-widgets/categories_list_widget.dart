@@ -34,17 +34,25 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
     return Column(
       children: [
         Card(
-          color: Theme.of(context).cardColor,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[900]
+              : Colors.grey[200],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(
+              color: Theme.of(context).dividerColor.withAlpha(50),
+              width: 1,
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
             child: Row(
                 children: [
-                  SizedBox(width: 50, child: Text('Active', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
-                  SizedBox(width: 30),
-                  SizedBox(width: 150, child: Text('Can be measured', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
-                  SizedBox(width: 30),
-                  Text('Name', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  Spacer(),
+                  SizedBox(width: 60, child: Text('Active', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                  SizedBox(width: 20),
+                  SizedBox(width: 150, child: Text('Can be measured', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                  SizedBox(width: 20),
+                  Expanded(child: Text('Name', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
                   IconButton(
                     onPressed: () {
                       showModalBottomSheet(
@@ -94,7 +102,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                       child: Row(
                         children: [
                           SizedBox(
-                              width: 50,
+                              width: 60,
                               child: Checkbox(
                                   value: category.isActive,
                                   checkColor: backgroundColor,
@@ -103,7 +111,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                                   onChanged: (value) {}
                               )
                           ),
-                          SizedBox(width: 30),
+                          SizedBox(width: 20),
                           SizedBox(
                               width: 150,
                               child: Checkbox(
@@ -114,7 +122,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                                   onChanged: (value) {}
                               )
                           ),
-                          SizedBox(width: 30),
+                          SizedBox(width: 20),
                           Expanded(
                             child: Text(
                                 category.name,
