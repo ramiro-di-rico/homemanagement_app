@@ -158,10 +158,10 @@ class AuthenticationService {
     }
   }
 
-  Future<bool> register(String email, String password) async {
+  Future<bool> register(String email, String password, [String language = 'en']) async {
     var pass = await _cryptographyService.encryptToAES(password);
 
-    var result = await _identityService.register(email, pass);
+    var result = await _identityService.register(email, pass, language);
 
     return result;
   }

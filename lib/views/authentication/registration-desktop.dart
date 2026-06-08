@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '2fa_view.dart';
@@ -32,8 +33,13 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
 
     setAuthenticatingStatus(true);
 
+    var locale = PlatformDispatcher.instance.locale.languageCode;
+    if (locale != 'en' && locale != 'es') {
+      locale = 'en';
+    }
+
     var registrationResult = await this.authenticationService.register(
-        this.userViewModel.email, this.userViewModel.password);
+        this.userViewModel.email, this.userViewModel.password, locale);
 
     if (registrationResult) {
       var authenticatedSuccessfully =

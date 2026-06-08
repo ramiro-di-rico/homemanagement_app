@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
@@ -34,8 +35,13 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       floatingActionButton: enableButton
           ? FloatingActionButton(
               onPressed: () async {
+                var locale = PlatformDispatcher.instance.locale.languageCode;
+                if (locale != 'en' && locale != 'es') {
+                  locale = 'en';
+                }
+
                 var result =
-                    await authenticationService.register(userViewModel.email, userViewModel.password);
+                    await authenticationService.register(userViewModel.email, userViewModel.password, locale);
 
                 if (result) {
                   var authenticatedSuccessfully = await authenticationService.authenticate(userViewModel);

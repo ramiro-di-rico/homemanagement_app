@@ -51,10 +51,10 @@ class IdentityService {
     }
   }
 
-  Future<bool> register(String email, String password) async {
+  Future<bool> register(String email, String password, [String language = 'en']) async {
     var response = await http.post(Uri.https(this.url, this.registrationApi),
         headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{'email': email, 'password': password}));
+        body: jsonEncode(<String, String>{'email': email, 'password': password, 'language': language}));
 
     return response.statusCode == 200;
   }
