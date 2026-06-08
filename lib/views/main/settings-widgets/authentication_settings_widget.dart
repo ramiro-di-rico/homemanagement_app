@@ -36,6 +36,7 @@ class _AuthenticationSettingsWidgetState
     final Map<String, String> localizedLanguages = {
       l10n.english: 'en',
       l10n.spanish: 'es-AR',
+      l10n.italian: 'it',
     };
 
     final resolvedLanguage = localizedLanguages.keys.firstWhere(
@@ -73,7 +74,7 @@ class _AuthenticationSettingsWidgetState
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : DropdownComponent(
-                          items: [l10n.english, l10n.spanish],
+                          items: [l10n.english, l10n.spanish, l10n.italian],
                           onChanged: (val) => onLanguageChanged(val, localizedLanguages),
                           currentValue: resolvedLanguage,
                         ),
