@@ -37,6 +37,7 @@ class _AuthenticationSettingsWidgetState
       l10n.english: 'en',
       l10n.spanish: 'es-AR',
       l10n.italian: 'it',
+      l10n.portuguese: 'pt',
     };
 
     final resolvedLanguage = localizedLanguages.keys.firstWhere(
@@ -74,7 +75,7 @@ class _AuthenticationSettingsWidgetState
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : DropdownComponent(
-                          items: [l10n.english, l10n.spanish, l10n.italian],
+                           items: [l10n.english, l10n.spanish, l10n.italian, l10n.portuguese],
                           onChanged: (val) => onLanguageChanged(val, localizedLanguages),
                           currentValue: resolvedLanguage,
                         ),
