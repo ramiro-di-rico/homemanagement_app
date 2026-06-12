@@ -9,7 +9,7 @@ import '../../services/repositories/identity_user_repository.dart';
 import '../../services/repositories/main_account.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
-import '../invites/invite_management_screen.dart';
+import '../invites/invite_management_screen.dart' as invite_screen;
 import '../../services/endpoints/user-settings-service.dart';
 import 'account.list.dart';
 import 'main_account.list.dart';
@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     IconButton(
                       onPressed: () {
-                        context.go(InviteManagementScreen.fullPath);
+                        context.go(invite_screen.InviteManagementScreen.fullPath);
                       },
                       icon: Icon(Icons.mail_outline),
                       tooltip: l10n.invitations,

@@ -50,14 +50,14 @@ class InviteRepository extends ChangeNotifier {
     }
   }
 
-  Future<void> delete(int inviteId) async {
+  Future<void> delete(List<int> inviteIds) async {
     try {
-      await inviteService.delete(inviteId);
-      invites.removeWhere((item) => item.id == inviteId);
+      await inviteService.delete(inviteIds);
+      invites.removeWhere((item) => inviteIds.contains(item.id));
       notifyListeners();
-      notifierService.notify('Invitation deleted');
+      notifierService.notify('Invitation${inviteIds.length > 1 ? 's' : ''} deleted');
     } catch (ex) {
-      notifierService.notify('Failed to delete invitation', isError: true);
+      notifierService.notify('Failed to delete invitation${inviteIds.length > 1 ? 's' : ''}', isError: true);
       rethrow;
     }
   }

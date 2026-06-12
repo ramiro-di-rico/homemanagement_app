@@ -112,11 +112,14 @@ class ApiServiceFactory {
         : json.decode(response.body);
   }
 
-  Future apiDelete(String api, String id) async {
+  Future apiDelete(String api, String id, {String? body}) async {
     await _autoAuthenticateIfNeeded();
 
-    var response = await http.delete(backendEndpoint.resolve('$api/$id'),
-        headers: _getHeaders());
+    var response = await http.delete(
+      backendEndpoint.resolve('$api/$id'),
+      headers: _getHeaders(),
+      body: body,
+    );
     if (!_isSuccesFullResponse(response)) {
       throw Exception('Failed to delete to $api');
     }

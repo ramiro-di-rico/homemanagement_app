@@ -48,7 +48,9 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
   bool _isCreating = false;
   bool _isLoading = true;
   bool _isProcessing = false;
-  int? _expandedInviteId;
+  bool _isSelectionMode = false;
+  final Set<int> _selectedInviteIds = {};
+
   String? _message;
   bool _messageIsError = false;
   InviteSortField _sortField = InviteSortField.createdAt;
@@ -57,6 +59,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
   int? _filterCategoryId;
   InviteStatus? _filterStatus;
 
+  int? _expandedInviteId;
   final Map<int, List<InviteTransactionSubmissionModel>> _submissionsByInvite = {};
   final Map<int, bool> _loadingSubmissions = {};
   final Map<int, Set<int>> _selectedSubmissionIds = {};
@@ -175,6 +178,42 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
     }
   }
 
+  Future<void> _deleteInvites() async {
+    if (_selectedInviteIds.isEmpty) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.delete),
+        content: Text(AppLocalizations.of(context)!.areYouSureDelete('the selected invitations')),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(AppLocalizations.of(context)!.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await _inviteRepository.delete(_selectedInviteIds.toList());
+      _setMessage('Invitations deleted.');
+      setState(() {
+        _isSelectionMode = false;
+        _selectedInviteIds.clear();
+      });
+      await _loadInvites();
+    } catch (ex) {
+      _setMessage('Failed to delete invitations.', isError: true);
+    }
+  }
+
   Future<void> _deleteInvite(InviteModel invite) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -197,7 +236,7 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
     if (confirmed != true) return;
 
     try {
-      await _inviteRepository.delete(invite.id);
+      await _inviteRepository.delete([invite.id]);
       _setMessage('Invitation deleted.');
       await _loadInvites();
     } catch (ex) {
@@ -535,7 +574,37 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
     }
 
     return Column(
-      children: invites.map(_buildInviteTile).toList(),
+      children: [
+        if (_isSelectionMode)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${_selectedInviteIds.length} selected',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _isSelectionMode = false;
+                      _selectedInviteIds.clear();
+                    });
+                  },
+                  child: Text(AppLocalizations.of(context)!.cancel),
+                ),
+                FilledButton.icon(
+                  onPressed: _selectedInviteIds.isEmpty ? null : _deleteInvites,
+                  icon: const Icon(Icons.delete_outline),
+                  label: Text(AppLocalizations.of(context)!.delete),
+                ),
+              ],
+            ),
+          ),
+        ...invites.map(_buildInviteTile),
+      ],
     );
   }
 
@@ -549,7 +618,22 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(AppLocalizations.of(context)!.sortAndFilter, style: Theme.of(context).textTheme.titleMedium),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(AppLocalizations.of(context)!.sortAndFilter, style: Theme.of(context).textTheme.titleMedium),
+                if (!_isSelectionMode)
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _isSelectionMode = true;
+                      });
+                    },
+                    icon: const Icon(Icons.select_all),
+                    label: const Text('Select'),
+                  ),
+              ],
+            ),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12,
@@ -772,147 +856,175 @@ class _InviteManagementScreenState extends State<InviteManagementScreen> {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ExpansionTile(
-        key: PageStorageKey('invite_${invite.id}'),
-        initiallyExpanded: _expandedInviteId == invite.id,
-        onExpansionChanged: (expanded) => _toggleExpanded(invite, expanded),
-        title: Text(invite.accountName),
-        subtitle: Text(
-          '${invite.categoryName}  •  ${_inviteStatusLabel(invite.status)}  •  Pending: $pendingCount',
-        ),
-        trailing: Wrap(
-          spacing: 4,
-          children: [
-            IconButton(
-              onPressed: () => _copyLink(invite),
-              icon: const Icon(Icons.link),
-              tooltip: 'Copy link',
-            ),
-            IconButton(
-              onPressed: () => _showQrCode(invite),
-              icon: const Icon(Icons.qr_code_2_outlined),
-              tooltip: 'Show QR',
-            ),
-            IconButton(
-              onPressed: invite.isRevocable ? () => _revokeInvite(invite) : null,
-              icon: const Icon(Icons.block_outlined),
-              tooltip: 'Revoke',
-            ),
-            IconButton(
-              onPressed: () => _deleteInvite(invite),
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
-              tooltip: AppLocalizations.of(context)!.delete,
-            ),
-          ],
-        ),
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: _isSelectionMode
+          ? ListTile(
+              leading: Checkbox(
+                value: _selectedInviteIds.contains(invite.id),
+                onChanged: (value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectedInviteIds.add(invite.id);
+                    } else {
+                      _selectedInviteIds.remove(invite.id);
+                    }
+                  });
+                },
+              ),
+              title: Text(invite.accountName),
+              subtitle: Text(
+                '${invite.categoryName}  •  ${_inviteStatusLabel(invite.status)}  •  Pending: $pendingCount',
+              ),
+              onTap: () {
+                setState(() {
+                  if (_selectedInviteIds.contains(invite.id)) {
+                    _selectedInviteIds.remove(invite.id);
+                  } else {
+                    _selectedInviteIds.add(invite.id);
+                  }
+                });
+              },
+            )
+          : ExpansionTile(
+              key: PageStorageKey('invite_${invite.id}'),
+              initiallyExpanded: _expandedInviteId == invite.id,
+              onExpansionChanged: (expanded) => _toggleExpanded(invite, expanded),
+              title: Text(invite.accountName),
+              subtitle: Text(
+                '${invite.categoryName}  •  ${_inviteStatusLabel(invite.status)}  •  Pending: $pendingCount',
+              ),
+              trailing: Wrap(
+                spacing: 4,
+                children: [
+                  IconButton(
+                    onPressed: () => _copyLink(invite),
+                    icon: const Icon(Icons.link),
+                    tooltip: 'Copy link',
+                  ),
+                  IconButton(
+                    onPressed: () => _showQrCode(invite),
+                    icon: const Icon(Icons.qr_code_2_outlined),
+                    tooltip: 'Show QR',
+                  ),
+                  IconButton(
+                    onPressed: invite.isRevocable ? () => _revokeInvite(invite) : null,
+                    icon: const Icon(Icons.block_outlined),
+                    tooltip: 'Revoke',
+                  ),
+                  IconButton(
+                    onPressed: () => _deleteInvite(invite),
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    tooltip: AppLocalizations.of(context)!.delete,
+                  ),
+                ],
+              ),
+              childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               children: [
-                Text(
-                  'Share URL',
-                  style: Theme.of(context).textTheme.labelMedium,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Share URL',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        url,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Token',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        invite.token,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Text('Created: ${DateFormat('dd MMM yyyy, HH:mm').format(invite.createdAt)}'),
+                      Text('Expires: ${invite.expiresAt == null ? 'No expiration' : DateFormat('dd MMM yyyy, HH:mm').format(invite.expiresAt!)}'),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  url,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    FilledButton.icon(
+                      onPressed: _isProcessing || selectedIds.isEmpty
+                          ? null
+                          : () => _processSelected(invite, InviteTransactionSubmissionDecision.approve),
+                      icon: const Icon(Icons.check_circle_outline),
+                      label: const Text('Approve selected'),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      onPressed: _isProcessing || selectedIds.isEmpty
+                          ? null
+                          : () => _processSelected(invite, InviteTransactionSubmissionDecision.reject),
+                      icon: const Icon(Icons.cancel_outlined),
+                      label: const Text('Reject selected'),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton.icon(
+                      onPressed: loading ? null : () => _loadInviteSubmissions(invite.id),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Refresh'),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Token',
-                  style: Theme.of(context).textTheme.labelMedium,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  invite.token,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 8),
-                Text('Created: ${DateFormat('dd MMM yyyy, HH:mm').format(invite.createdAt)}'),
-                Text('Expires: ${invite.expiresAt == null ? 'No expiration' : DateFormat('dd MMM yyyy, HH:mm').format(invite.expiresAt!)}'),
+                const SizedBox(height: 12),
+                if (loading)
+                  const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: CircularProgressIndicator(),
+                  )
+                else if (submissions.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text('No transaction submissions yet.'),
+                  )
+                else
+                  Column(
+                    children: submissions.map((submission) {
+                      final canSelect = submission.isPending;
+                      final isSelected = selectedIds.contains(submission.id);
+
+                      return CheckboxListTile(
+                        value: isSelected,
+                        onChanged: !canSelect
+                            ? null
+                            : (value) {
+                              setState(() {
+                                if (value == true) {
+                                  selectedIds.add(submission.id);
+                                } else {
+                                  selectedIds.remove(submission.id);
+                                }
+                              });
+                            },
+                        title: Text(submission.description),
+                        subtitle: Text(
+                          '${submission.amount.toStringAsFixed(2)}  •  '
+                          '${DateFormat('dd MMM yyyy').format(submission.date)}  •  '
+                          '${_submissionStatusLabel(submission.status)}'
+                          '${submission.failureReason.isNotEmpty ? '\nReason: ${submission.failureReason}' : ''}',
+                        ),
+                        secondary: Icon(
+                          submission.transactionType == TransactionType.Income
+                              ? Icons.arrow_downward
+                              : Icons.arrow_upward,
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                      );
+                    }).toList(),
+                  ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              FilledButton.icon(
-                onPressed: _isProcessing || selectedIds.isEmpty
-                    ? null
-                    : () => _processSelected(invite, InviteTransactionSubmissionDecision.approve),
-                icon: const Icon(Icons.check_circle_outline),
-                label: const Text('Approve selected'),
-              ),
-              const SizedBox(width: 8),
-              OutlinedButton.icon(
-                onPressed: _isProcessing || selectedIds.isEmpty
-                    ? null
-                    : () => _processSelected(invite, InviteTransactionSubmissionDecision.reject),
-                icon: const Icon(Icons.cancel_outlined),
-                label: const Text('Reject selected'),
-              ),
-              const SizedBox(width: 8),
-              TextButton.icon(
-                onPressed: loading ? null : () => _loadInviteSubmissions(invite.id),
-                icon: const Icon(Icons.refresh),
-                label: const Text('Refresh'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          if (loading)
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: CircularProgressIndicator(),
-            )
-          else if (submissions.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('No transaction submissions yet.'),
-            )
-          else
-            Column(
-              children: submissions.map((submission) {
-                final canSelect = submission.isPending;
-                final isSelected = selectedIds.contains(submission.id);
-
-                return CheckboxListTile(
-                  value: isSelected,
-                  onChanged: !canSelect
-                      ? null
-                      : (value) {
-                          setState(() {
-                            if (value == true) {
-                              selectedIds.add(submission.id);
-                            } else {
-                              selectedIds.remove(submission.id);
-                            }
-                          });
-                        },
-                  title: Text(submission.description),
-                  subtitle: Text(
-                    '${submission.amount.toStringAsFixed(2)}  •  '
-                    '${DateFormat('dd MMM yyyy').format(submission.date)}  •  '
-                    '${_submissionStatusLabel(submission.status)}'
-                    '${submission.failureReason.isNotEmpty ? '\nReason: ${submission.failureReason}' : ''}',
-                  ),
-                  secondary: Icon(
-                    submission.transactionType == TransactionType.Income
-                        ? Icons.arrow_downward
-                        : Icons.arrow_upward,
-                  ),
-                  controlAffinity: ListTileControlAffinity.leading,
-                );
-              }).toList(),
-            ),
-        ],
-      ),
     );
   }
 

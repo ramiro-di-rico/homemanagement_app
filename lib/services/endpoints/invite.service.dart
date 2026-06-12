@@ -39,8 +39,12 @@ class InviteService {
     return InviteModel.fromJson(data);
   }
 
-  Future<void> delete(int inviteId) async {
-    await apiServiceFactory.apiDelete(apiName, inviteId.toString());
+  Future<void> delete(List<int> inviteIds) async {
+    final body = json.encode({
+      'ids': inviteIds,
+      'deleteExpired': true,
+    });
+    await apiServiceFactory.apiDelete(apiName, '', body: body);
   }
 
   Future<List<InviteTransactionSubmissionModel>> processSubmissions(
