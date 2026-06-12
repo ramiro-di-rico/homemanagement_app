@@ -2,6 +2,7 @@ import 'package:home_management_app/models/metrics/categories.metric.dart';
 import 'package:home_management_app/services/security/authentication.service.dart';
 import 'dart:convert';
 
+import '../../models/http-models/category_comparison_response.dart';
 import '../../models/http-models/category_historical_response.dart';
 import 'api-mixin.dart';
 import '../infra/caching.dart';
@@ -91,6 +92,34 @@ class CategoryMetricService with HttpApiServiceMixin {
       return body.map((dynamic item) => CategoryHistoricalResponse.fromJson(item)).toList();
     } else {
       throw Exception('Failed to fetch category historical responses.');
+    }
+  }
+
+  Future<List<CategoryComparisonResponse>> getCategoryComparison(
+      DateTime referenceDate, int take) async {
+    var key =
+        "getCategoryComparison-${referenceDate.toIso8601String()}-$take";
+    if (caching.exists(key)) {
+      return caching.fetch(key) as List<CategoryComparisonResponse>;
+    }
+
+    var response = await httpGet(
+      createUri('Dashboard/categories/comparison', queryParameters: {
+        'referenceDate': referenceDate.toIso8601String(),
+        'take': take.toString(),
+      }),
+      authenticationService.getUserToken(),
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> body = jsonDecode(response.body);
+      var result = body
+          .map((dynamic item) => CategoryComparisonResponse.fromJson(item))
+          .toList();
+      caching.add(key, result);
+      return result;
+    } else {
+      throw Exception('Failed to fetch category comparison.');
     }
   }
 }

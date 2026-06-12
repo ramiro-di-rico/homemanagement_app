@@ -1206,6 +1206,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Annually'**
   String get annually;
+
+  /// No description provided for @categoryComparisonChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Comparison'**
+  String get categoryComparisonChart;
+
+  /// No description provided for @noCategoryComparisonDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No category comparison data available'**
+  String get noCategoryComparisonDataAvailable;
+
+  /// No description provided for @currentMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Current month'**
+  String get currentMonth;
+
+  /// No description provided for @lastMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Last month'**
+  String get lastMonth;
+
+  /// No description provided for @referenceDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference date'**
+  String get referenceDate;
+
+  /// No description provided for @percentageChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage change'**
+  String get percentageChange;
 }
 
 class _AppLocalizationsDelegate

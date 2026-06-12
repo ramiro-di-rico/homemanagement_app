@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 
+import 'widgets/category_comparison/category_comparison_chart_widget.dart';
 import 'widgets/category_historical/category_historical_chart_widget.dart';
 import 'widgets/most-expensive-categories.widget.dart';
 
@@ -23,25 +24,35 @@ class StatisticsView extends StatelessWidget {
             final isWide = constraints.maxWidth >= 1100;
 
             if (isWide) {
-              return Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      SizedBox(
                         height: 420,
-                        child: MostExpensiveCategoriesChart(),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: MostExpensiveCategoriesChart(),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: CategoryHistoricalChartWidget(),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: SizedBox(
+                      SizedBox(
                         height: 420,
-                        child: CategoryHistoricalChartWidget(),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: CategoryComparisonChartWidget(),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             }
@@ -61,6 +72,13 @@ class StatisticsView extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.all(10),
                       child: CategoryHistoricalChartWidget(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 420,
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: CategoryComparisonChartWidget(),
                     ),
                   ),
                 ],

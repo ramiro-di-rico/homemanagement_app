@@ -182,5 +182,11 @@
   "categoryNotSet": "Categoría no establecida",
   "createTransaction": "Crear Transacción",
   "priceNotSet": "Precio no establecido",
-  "annually": "Anualmente"
+  "annually": "Anualmente",
+  "categoryComparisonChart": "Comparación de Categorías",
+  "noCategoryComparisonDataAvailable": "No hay datos de comparación de categorías disponibles",
+  "currentMonth": "Mes actual",
+  "lastMonth": "Mes anterior",
+  "referenceDate": "Fecha de referencia",
+  "percentageChange": "Cambio porcentual"
 }

@@ -605,6 +605,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get annually => 'Anualmente';
+
+  @override
+  String get categoryComparisonChart => 'Comparación de Categorías';
+
+  @override
+  String get noCategoryComparisonDataAvailable =>
+      'No hay datos de comparación de categorías disponibles';
+
+  @override
+  String get currentMonth => 'Mes actual';
+
+  @override
+  String get lastMonth => 'Mes anterior';
+
+  @override
+  String get referenceDate => 'Fecha de referencia';
+
+  @override
+  String get percentageChange => 'Cambio porcentual';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1202,4 +1221,23 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get annually => 'Anualmente';
+
+  @override
+  String get categoryComparisonChart => 'Comparación de Categorías';
+
+  @override
+  String get noCategoryComparisonDataAvailable =>
+      'No hay datos de comparación de categorías disponibles';
+
+  @override
+  String get currentMonth => 'Mes actual';
+
+  @override
+  String get lastMonth => 'Mes anterior';
+
+  @override
+  String get referenceDate => 'Fecha de referencia';
+
+  @override
+  String get percentageChange => 'Cambio porcentual';
 }

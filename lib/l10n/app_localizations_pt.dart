@@ -604,4 +604,23 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get annually => 'Anualmente';
+
+  @override
+  String get categoryComparisonChart => 'Comparação de Categorias';
+
+  @override
+  String get noCategoryComparisonDataAvailable =>
+      'Não há dados de comparação de categorias disponíveis';
+
+  @override
+  String get currentMonth => 'Mês atual';
+
+  @override
+  String get lastMonth => 'Mês anterior';
+
+  @override
+  String get referenceDate => 'Data de referência';
+
+  @override
+  String get percentageChange => 'Variação percentual';
 }

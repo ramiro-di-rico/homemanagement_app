@@ -601,4 +601,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get annually => 'Annually';
+
+  @override
+  String get categoryComparisonChart => 'Category Comparison';
+
+  @override
+  String get noCategoryComparisonDataAvailable =>
+      'No category comparison data available';
+
+  @override
+  String get currentMonth => 'Current month';
+
+  @override
+  String get lastMonth => 'Last month';
+
+  @override
+  String get referenceDate => 'Reference date';
+
+  @override
+  String get percentageChange => 'Percentage change';
 }
