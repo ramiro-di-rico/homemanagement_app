@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/extensions/datehelper.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
@@ -10,6 +11,7 @@ import '../../services/infra/platform/platform_context.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/transaction_paging_service.dart';
 import '../accounts/account-details-behaviors/account-list-scrolling-behavior.dart';
+import 'transactions_search_statistics_view.dart';
 import 'widgets/transaction_search_filtering_options.dart';
 
 class TransactionsSearchDesktopView extends StatefulWidget {
@@ -74,6 +76,16 @@ class _TransactionsSearchDesktopViewState
         title: Text(localizations.searchTransactions),
         actions: isCompact
             ? [
+                IconButton(
+                  onPressed: !_transactionPagingService.filtering
+                      ? null
+                      : () {
+                          context.go(
+                              TransactionsSearchStatisticsView.fullPath);
+                        },
+                  icon: Icon(Icons.bar_chart),
+                  tooltip: localizations.transactionsSearchStatistics,
+                ),
                 PopupMenuButton<String>(
                   onSelected: (value) {
                     switch (value) {
@@ -156,6 +168,15 @@ class _TransactionsSearchDesktopViewState
                             : null,
                     icon: Icon(Icons.file_download),
                     tooltip: localizations.exportTransactions),
+                IconButton(
+                  onPressed: !_transactionPagingService.filtering
+                      ? null
+                      : () {
+                          context.go(TransactionsSearchStatisticsView.fullPath);
+                        },
+                  icon: Icon(Icons.bar_chart),
+                  tooltip: localizations.transactionsSearchStatistics,
+                ),
                 IconButton(
                     onPressed: () {
                       setState(() {

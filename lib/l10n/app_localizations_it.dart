@@ -625,4 +625,31 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get percentageChange => 'Variazione percentuale';
+
+  @override
+  String get transactionsSearchStatistics => 'Statistiche di ricerca';
+
+  @override
+  String get transactionCounts => 'Numero di transazioni';
+
+  @override
+  String get transactionTotals => 'Totali delle transazioni';
+
+  @override
+  String get totalIncome => 'Entrate totali';
+
+  @override
+  String get totalOutcome => 'Uscite totali';
+
+  @override
+  String get transactionsByCategory => 'Transazioni per categoria';
+
+  @override
+  String get transactionsByAccount => 'Transazioni per conto';
+
+  @override
+  String get noAccountsDataAvailable => 'Nessun dato dei conti disponibile';
+
+  @override
+  String get refresh => 'Aggiorna';
 }

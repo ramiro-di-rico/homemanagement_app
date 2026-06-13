@@ -623,4 +623,31 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get percentageChange => 'Variação percentual';
+
+  @override
+  String get transactionsSearchStatistics => 'Estatísticas da pesquisa';
+
+  @override
+  String get transactionCounts => 'Quantidade de transações';
+
+  @override
+  String get transactionTotals => 'Totais das transações';
+
+  @override
+  String get totalIncome => 'Receitas totais';
+
+  @override
+  String get totalOutcome => 'Despesas totais';
+
+  @override
+  String get transactionsByCategory => 'Transações por categoria';
+
+  @override
+  String get transactionsByAccount => 'Transações por conta';
+
+  @override
+  String get noAccountsDataAvailable => 'Não há dados de contas disponíveis';
+
+  @override
+  String get refresh => 'Atualizar';
 }
