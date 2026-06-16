@@ -23,9 +23,9 @@ class _LoginViewState extends State<LoginView>
         EmailBehavior,
         PasswordBehavior,
         NotifierMixin {
-  bool get _canScanInviteWithCamera {
+  bool _canScanInviteWithCamera(BuildContext context) {
     if (kIsWeb) {
-      return false;
+      return MediaQuery.of(context).size.width <= 720;
     }
 
     final platform = defaultTargetPlatform;
@@ -96,7 +96,7 @@ class _LoginViewState extends State<LoginView>
                               onPressed: autoAuthenticate,
                             ),
                           ),
-                          if (_canScanInviteWithCamera)
+                          if (_canScanInviteWithCamera(context))
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
@@ -118,7 +118,7 @@ class _LoginViewState extends State<LoginView>
                             onPressed:
                                 userViewModel.isValid ? onButtonPressed : null,
                           ),
-                          if (_canScanInviteWithCamera)
+                          if (_canScanInviteWithCamera(context))
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
