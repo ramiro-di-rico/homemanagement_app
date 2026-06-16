@@ -620,4 +620,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get percentageChange => 'Percentage change';
+
+  @override
+  String get transactionsSearchStatistics => 'Search Statistics';
+
+  @override
+  String get transactionCounts => 'Transaction counts';
+
+  @override
+  String get transactionTotals => 'Transaction totals';
+
+  @override
+  String get totalIncome => 'Total income';
+
+  @override
+  String get totalOutcome => 'Total outcome';
+
+  @override
+  String get transactionsByCategory => 'Transactions by category';
+
+  @override
+  String get transactionsByAccount => 'Transactions by account';
+
+  @override
+  String get noAccountsDataAvailable => 'No accounts data available';
+
+  @override
+  String get refresh => 'Refresh';
 }

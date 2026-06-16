@@ -19,9 +19,12 @@ class TransactionPagingService extends ChangeNotifier  {
   int pageSize = 10;
   int selectedFilters = 0;
   List<TransactionModel> transactions = List.empty(growable: true);
+  List<TransactionModel> allFilteredTransactions = List.empty(growable: true);
   List<AccountModel> selectedAccounts = List.empty(growable: true);
   List<CategoryModel> selectedCategories = List.empty(growable: true);
   List<CurrencyModel> selectedCurrencies = List.empty(growable: true);
+
+  bool loadingStats = false;
 
   String? name = null;
   DateTime? startDate = null;
@@ -76,7 +79,27 @@ class TransactionPagingService extends ChangeNotifier  {
       hasMore = true;
       currentPage = 1;
       transactions.clear();
+      allFilteredTransactions.clear();
     selectedFilters = 0;
+    notifyListeners();
+  }
+
+  Future loadAllForStats() async {
+    if (!filtering) {
+      allFilteredTransactions = List.empty(growable: true);
+      notifyListeners();
+      return;
+    }
+
+    loadingStats = true;
+    notifyListeners();
+
+    final results = await _transactionService.filter(
+        1, 10000, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies);
+
+    allFilteredTransactions = results;
+
+    loadingStats = false;
     notifyListeners();
   }
 

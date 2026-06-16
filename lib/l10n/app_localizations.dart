@@ -1242,6 +1242,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Percentage change'**
   String get percentageChange;
+
+  /// No description provided for @transactionsSearchStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Statistics'**
+  String get transactionsSearchStatistics;
+
+  /// No description provided for @transactionCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction counts'**
+  String get transactionCounts;
+
+  /// No description provided for @transactionTotals.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction totals'**
+  String get transactionTotals;
+
+  /// No description provided for @totalIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Total income'**
+  String get totalIncome;
+
+  /// No description provided for @totalOutcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Total outcome'**
+  String get totalOutcome;
+
+  /// No description provided for @transactionsByCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions by category'**
+  String get transactionsByCategory;
+
+  /// No description provided for @transactionsByAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions by account'**
+  String get transactionsByAccount;
+
+  /// No description provided for @noAccountsDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No accounts data available'**
+  String get noAccountsDataAvailable;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
 }
 
 class _AppLocalizationsDelegate

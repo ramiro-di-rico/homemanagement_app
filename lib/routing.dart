@@ -22,6 +22,7 @@ import 'views/main/settings.dart';
 import 'views/main/settings_desktop.dart';
 import 'views/main/statistics_view.dart';
 import 'views/main/transactions_search_desktop_view.dart';
+import 'views/main/transactions_search_statistics_view.dart';
 import 'views/screens/bulk_transactions_screen.dart';
 
 class Routing{
@@ -53,6 +54,11 @@ class Routing{
               GoRoute(
                 path: TransactionsSearchDesktopView.path,
                 builder: (context, state) => TransactionsSearchDesktopView(),
+              ),
+              GoRoute(
+                path: TransactionsSearchStatisticsView.path,
+                builder: (context, state) =>
+                    const TransactionsSearchStatisticsView(),
               ),
               GoRoute(
                   path: AccountDetailScreen.path,

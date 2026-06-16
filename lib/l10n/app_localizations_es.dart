@@ -624,6 +624,33 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get percentageChange => 'Cambio porcentual';
+
+  @override
+  String get transactionsSearchStatistics => 'Estadísticas de búsqueda';
+
+  @override
+  String get transactionCounts => 'Cantidad de transacciones';
+
+  @override
+  String get transactionTotals => 'Totales de transacciones';
+
+  @override
+  String get totalIncome => 'Ingresos totales';
+
+  @override
+  String get totalOutcome => 'Egresos totales';
+
+  @override
+  String get transactionsByCategory => 'Transacciones por categoría';
+
+  @override
+  String get transactionsByAccount => 'Transacciones por cuenta';
+
+  @override
+  String get noAccountsDataAvailable => 'No hay datos de cuentas disponibles';
+
+  @override
+  String get refresh => 'Actualizar';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1240,4 +1267,31 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get percentageChange => 'Cambio porcentual';
+
+  @override
+  String get transactionsSearchStatistics => 'Estadísticas de búsqueda';
+
+  @override
+  String get transactionCounts => 'Cantidad de transacciones';
+
+  @override
+  String get transactionTotals => 'Totales de transacciones';
+
+  @override
+  String get totalIncome => 'Ingresos totales';
+
+  @override
+  String get totalOutcome => 'Egresos totales';
+
+  @override
+  String get transactionsByCategory => 'Transacciones por categoría';
+
+  @override
+  String get transactionsByAccount => 'Transacciones por cuenta';
+
+  @override
+  String get noAccountsDataAvailable => 'No hay datos de cuentas disponibles';
+
+  @override
+  String get refresh => 'Actualizar';
 }

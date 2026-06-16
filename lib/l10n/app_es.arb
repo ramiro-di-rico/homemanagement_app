@@ -189,5 +189,14 @@
   "currentMonth": "Mes actual",
   "lastMonth": "Mes anterior",
   "referenceDate": "Fecha de referencia",
-  "percentageChange": "Cambio porcentual"
+  "percentageChange": "Cambio porcentual",
+  "transactionsSearchStatistics": "Estadísticas de búsqueda",
+  "transactionCounts": "Cantidad de transacciones",
+  "transactionTotals": "Totales de transacciones",
+  "totalIncome": "Ingresos totales",
+  "totalOutcome": "Egresos totales",
+  "transactionsByCategory": "Transacciones por categoría",
+  "transactionsByAccount": "Transacciones por cuenta",
+  "noAccountsDataAvailable": "No hay datos de cuentas disponibles",
+  "refresh": "Actualizar"
 }
