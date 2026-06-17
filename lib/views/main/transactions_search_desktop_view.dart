@@ -11,6 +11,7 @@ import '../../services/infra/platform/platform_context.dart';
 import '../../services/repositories/account.repository.dart';
 import '../../services/transaction_paging_service.dart';
 import '../accounts/account-details-behaviors/account-list-scrolling-behavior.dart';
+import '../accounts/widgets/manage_transaction_tags_sheet.dart';
 import 'transactions_search_statistics_view.dart';
 import 'widgets/transaction_search_filtering_options.dart';
 
@@ -234,113 +235,139 @@ class _TransactionsSearchDesktopViewState
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Card(
-                          child: isCompact
-                              ? ListTile(
-                                  title: Text(
-                                    transaction.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        '$accountName · ${transaction.categoryName}',
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      if (transaction.tags.isNotEmpty)
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 4),
-                                          child: Wrap(
-                                            spacing: 4,
-                                            runSpacing: 4,
-                                            children: transaction.tags
-                                                .map((tag) => Chip(
-                                                      label: Text(
-                                                        tag.name,
-                                                        style: const TextStyle(
-                                                            fontSize: 11),
-                                                      ),
-                                                      visualDensity:
-                                                          VisualDensity.compact,
-                                                      materialTapTargetSize:
-                                                          MaterialTapTargetSize
-                                                              .shrinkWrap,
-                                                      padding: EdgeInsets.zero,
-                                                    ))
-                                                .toList(),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  trailing: Text(
-                                    transaction.price.toString(),
-                                    style: TextStyle(
-                                      color: transaction.transactionType ==
-                                              TransactionType.Income
-                                          ? Colors.greenAccent
-                                          : Colors.redAccent,
+                          clipBehavior: Clip.antiAlias,
+                          child: InkWell(
+                            onTap: () => openManageTags(transaction),
+                            child: isCompact
+                                ? ListTile(
+                                    title: Text(
+                                      transaction.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                )
-                              : SizedBox(
-                                  height: 60,
-                                  child: Row(
-                                    children: [
-                                      SizedBox(width: 20),
-                                      SizedBox(
-                                        width: 80,
-                                        child: Text(
-                                          accountName,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          '$accountName · ${transaction.categoryName}',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      ),
-                                      SizedBox(width: 100),
-                                      SizedBox(
-                                        width: 120,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              transaction.categoryName,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                        if (transaction.tags.isNotEmpty)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 4),
+                                            child: Wrap(
+                                              spacing: 4,
+                                              runSpacing: 4,
+                                              children: transaction.tags
+                                                  .map((tag) => Chip(
+                                                        label: Text(
+                                                          tag.name,
+                                                          style: const TextStyle(
+                                                              fontSize: 11),
+                                                        ),
+                                                        visualDensity:
+                                                            VisualDensity.compact,
+                                                        materialTapTargetSize:
+                                                            MaterialTapTargetSize
+                                                                .shrinkWrap,
+                                                        padding: EdgeInsets.zero,
+                                                      ))
+                                                  .toList(),
                                             ),
-                                            if (transaction.tags.isNotEmpty)
-                                              Padding(
-                                                padding: const EdgeInsets.only(top: 2),
-                                                child: Text(
-                                                  transaction.tagNames.join(', '),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                  style: const TextStyle(
-                                                      fontSize: 12, color: Colors.grey),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(width: 80),
-                                      Expanded(child: Text(transaction.name)),
-                                      Text(transaction.price.toString(),
+                                          ),
+                                      ],
+                                    ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          transaction.price.toString(),
                                           style: TextStyle(
                                             color: transaction.transactionType ==
                                                     TransactionType.Income
                                                 ? Colors.greenAccent
                                                 : Colors.redAccent,
-                                          )),
-                                      SizedBox(width: 20),
-                                    ],
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.label_outline,
+                                              size: 20),
+                                          tooltip: transaction.tags.isEmpty
+                                              ? localizations.addTag
+                                              : localizations.manageTransactionTags,
+                                          onPressed: () =>
+                                              openManageTags(transaction),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : SizedBox(
+                                    height: 60,
+                                    child: Row(
+                                      children: [
+                                        SizedBox(width: 20),
+                                        SizedBox(
+                                          width: 80,
+                                          child: Text(
+                                            accountName,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 100),
+                                        SizedBox(
+                                          width: 120,
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                transaction.categoryName,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              if (transaction.tags.isNotEmpty)
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: 2),
+                                                  child: Text(
+                                                    transaction.tagNames.join(', '),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        fontSize: 12, color: Colors.grey),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: 80),
+                                        Expanded(child: Text(transaction.name)),
+                                        Text(transaction.price.toString(),
+                                            style: TextStyle(
+                                              color: transaction.transactionType ==
+                                                      TransactionType.Income
+                                                  ? Colors.greenAccent
+                                                  : Colors.redAccent,
+                                            )),
+                                        IconButton(
+                                          icon: const Icon(Icons.label_outline),
+                                          tooltip: transaction.tags.isEmpty
+                                              ? localizations.addTag
+                                              : localizations.manageTransactionTags,
+                                          onPressed: () =>
+                                              openManageTags(transaction),
+                                        ),
+                                        SizedBox(width: 8),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                          ),
                         ),
                       );
                     }),
@@ -361,6 +388,22 @@ class _TransactionsSearchDesktopViewState
         builder: (context) {
           return TransactionSearchFilteringOptionsSheet();
         });
+  }
+
+  Future<void> openManageTags(TransactionModel transaction) async {
+    final saved = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (sheetContext) {
+        return ManageTransactionTagsSheet(transaction: transaction);
+      },
+    );
+    if (saved == true) {
+      _transactionPagingService.performSearch(resetPaging: true);
+    }
   }
 
   @override
