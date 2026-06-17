@@ -7,6 +7,7 @@ import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/repositories/identity_user_repository.dart';
 import '../../services/repositories/main_account.repository.dart';
+import '../../services/repositories/tag.repository.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
 import '../invites/invite_management_screen.dart' as invite_screen;
@@ -59,6 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<CategoryRepository>().load();
+    GetIt.I<TagRepository>().load();
 
     _identityUserRepository.getUser();
     _loadUseMainAccounts();

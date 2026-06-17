@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../models/account.dart';
+import 'package:home_management_app/models/tag.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/repositories/account.repository.dart';
+import 'package:home_management_app/services/repositories/tag.repository.dart';
 import 'package:home_management_app/services/endpoints/transaction.service.dart';
 
 import '../../models/transaction.page.dart';
@@ -12,6 +14,7 @@ class TransactionRepository extends ChangeNotifier {
   TransactionService transactionService;
   AccountRepository accountRepository;
   NotifierService errorNotifierService;
+  TagRepository? _tagRepository;
   List<AccountContainer> accountsContainer = [];
 
   final List<TransactionModel> transactions = [];
@@ -21,7 +24,11 @@ class TransactionRepository extends ChangeNotifier {
   String nameFiltering = '';
 
   TransactionRepository(
-      {required this.transactionService, required this.accountRepository, required this.errorNotifierService});
+      {required this.transactionService,
+      required this.accountRepository,
+      required this.errorNotifierService,
+      TagRepository? tagRepository})
+      : _tagRepository = tagRepository;
 
   Future add(TransactionModel transaction) async {
     var transactionResult = await this.transactionService.add(transaction);
@@ -151,6 +158,50 @@ class TransactionRepository extends ChangeNotifier {
     this.nameFiltering = nameFiltering;
     transactions.clear();
     await fetchPage();
+  }
+
+  Future<List<TagModel>> applyTagsToTransaction(
+      int transactionId, List<String> names) async {
+    final created = <TagModel>[];
+    final normalized = <String>[];
+    final seen = <String>{};
+    for (final raw in names) {
+      final trimmed = raw.trim();
+      if (trimmed.isEmpty) continue;
+      final key = trimmed.toLowerCase();
+      if (seen.contains(key)) continue;
+      seen.add(key);
+      normalized.add(trimmed);
+    }
+    if (_tagRepository != null) {
+      for (final name in normalized) {
+        final tag = await _tagRepository!.findOrCreate(name);
+        if (tag != null) {
+          created.add(tag);
+        }
+      }
+    } else {
+      for (final name in normalized) {
+        created.add(TagModel(0, name));
+      }
+    }
+    final updated = await transactionService.syncTags(
+        transactionId, normalized);
+    _replaceLocalTransaction(updated);
+    errorNotifierService.notify('Tags updated');
+    notifyListeners();
+    return updated.tags;
+  }
+
+  void _replaceLocalTransaction(TransactionModel updated) {
+    for (final container in accountsContainer) {
+      final index = container.transactions
+          .indexWhere((element) => element.id == updated.id);
+      if (index >= 0) {
+        container.transactions[index] = updated;
+      }
+    }
+    mapContainerToTransctions();
   }
 
   Future clearFilters() async {

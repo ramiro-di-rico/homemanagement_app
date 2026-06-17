@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_management_app/models/account.dart';
 import 'package:home_management_app/models/currency.dart';
+import 'package:home_management_app/models/tag.dart';
 import 'package:intl/intl.dart';
 
 import '../models/category.dart';
@@ -23,6 +24,7 @@ class TransactionPagingService extends ChangeNotifier  {
   List<AccountModel> selectedAccounts = List.empty(growable: true);
   List<CategoryModel> selectedCategories = List.empty(growable: true);
   List<CurrencyModel> selectedCurrencies = List.empty(growable: true);
+  List<TagModel> selectedTags = List.empty(growable: true);
 
   bool loadingStats = false;
 
@@ -43,8 +45,11 @@ class TransactionPagingService extends ChangeNotifier  {
     _calculateAmountOfFilters();
     notifyListeners();
 
+    final tagNames = selectedTags.map((t) => t.name).toList();
+
     var results = await _transactionService.filter(
-        currentPage, pageSize, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies);
+        currentPage, pageSize, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies,
+        tagNames: tagNames);
 
     hasMore = results.length == pageSize;
 
@@ -73,6 +78,7 @@ class TransactionPagingService extends ChangeNotifier  {
     selectedAccounts.clear();
     selectedCategories.clear();
     selectedCurrencies.clear();
+    selectedTags.clear();
     transactionType = null;
       filtering = false;
       loading = false;
@@ -94,8 +100,11 @@ class TransactionPagingService extends ChangeNotifier  {
     loadingStats = true;
     notifyListeners();
 
+    final tagNames = selectedTags.map((t) => t.name).toList();
+
     final results = await _transactionService.filter(
-        1, 10000, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies);
+        1, 10000, null, name, startDate, endDate, transactionType, selectedAccounts, selectedCategories, selectedCurrencies,
+        tagNames: tagNames);
 
     allFilteredTransactions = results;
 
@@ -123,6 +132,9 @@ class TransactionPagingService extends ChangeNotifier  {
     if (selectedCategories.isNotEmpty) {
       selectedFilters++;
     }
+    if (selectedTags.isNotEmpty) {
+      selectedFilters++;
+    }
   }
 
   String generateCsvContent() {
@@ -135,7 +147,8 @@ class TransactionPagingService extends ChangeNotifier  {
       'Date',
       'Category Id',
       'Category Name',
-      'Account Id'
+      'Account Id',
+      'Tags'
     ];
 
     // Convert headers to CSV format
@@ -143,6 +156,7 @@ class TransactionPagingService extends ChangeNotifier  {
 
     // Iterate over transactions and convert each to a CSV row
     for (var transaction in transactions) {
+      final tagCell = transaction.tagNames.join('|');
       List<String> row = [
         transaction.id.toString(),
         transaction.name,
@@ -151,7 +165,8 @@ class TransactionPagingService extends ChangeNotifier  {
         DateFormat('yyyy-MM-dd').format(transaction.date),
         transaction.categoryId.toString(),
         transaction.categoryName,
-        transaction.accountId.toString()
+        transaction.accountId.toString(),
+        tagCell
       ];
       csvContent += row.join(',') + '\n';
     }

@@ -241,10 +241,39 @@ class _TransactionsSearchDesktopViewState
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  subtitle: Text(
-                                    '$accountName · ${transaction.categoryName}',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        '$accountName · ${transaction.categoryName}',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      if (transaction.tags.isNotEmpty)
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 4),
+                                          child: Wrap(
+                                            spacing: 4,
+                                            runSpacing: 4,
+                                            children: transaction.tags
+                                                .map((tag) => Chip(
+                                                      label: Text(
+                                                        tag.name,
+                                                        style: const TextStyle(
+                                                            fontSize: 11),
+                                                      ),
+                                                      visualDensity:
+                                                          VisualDensity.compact,
+                                                      materialTapTargetSize:
+                                                          MaterialTapTargetSize
+                                                              .shrinkWrap,
+                                                      padding: EdgeInsets.zero,
+                                                    ))
+                                                .toList(),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                   trailing: Text(
                                     transaction.price.toString(),
@@ -274,12 +303,29 @@ class _TransactionsSearchDesktopViewState
                                       SizedBox(width: 100),
                                       SizedBox(
                                         width: 120,
-                                        child: Text(
-                                          transaction.categoryName,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              transaction.categoryName,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            if (transaction.tags.isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(top: 2),
+                                                child: Text(
+                                                  transaction.tagNames.join(', '),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                      fontSize: 12, color: Colors.grey),
+                                                ),
+                                              ),
+                                          ],
                                         ),
                                       ),
                                       SizedBox(width: 80),

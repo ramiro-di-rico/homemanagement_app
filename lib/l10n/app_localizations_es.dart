@@ -651,6 +651,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get refresh => 'Actualizar';
+
+  @override
+  String get tags => 'Etiquetas';
+
+  @override
+  String get addTag => 'Añadir etiqueta';
+
+  @override
+  String get selectTag => 'Seleccionar etiqueta';
+
+  @override
+  String get selectTags => 'Seleccionar etiquetas';
+
+  @override
+  String get createNewTag => 'Crear nueva etiqueta';
+
+  @override
+  String get noTagsAvailable => 'Aún no hay etiquetas disponibles';
+
+  @override
+  String get noTags => 'Sin etiquetas';
+
+  @override
+  String get manageTransactionTags => 'Gestionar etiquetas de la transacción';
+
+  @override
+  String transactionTagsTitle(String name) {
+    return 'Etiquetas: $name';
+  }
+
+  @override
+  String maxTagsReached(int max, int current) {
+    return 'Puedes adjuntar hasta $max etiquetas ($current seleccionadas).';
+  }
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1294,4 +1328,38 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get refresh => 'Actualizar';
+
+  @override
+  String get tags => 'Etiquetas';
+
+  @override
+  String get addTag => 'Agregar etiqueta';
+
+  @override
+  String get selectTag => 'Seleccionar etiqueta';
+
+  @override
+  String get selectTags => 'Seleccionar etiquetas';
+
+  @override
+  String get createNewTag => 'Crear nueva etiqueta';
+
+  @override
+  String get noTagsAvailable => 'Todavía no hay etiquetas disponibles';
+
+  @override
+  String get noTags => 'Sin etiquetas';
+
+  @override
+  String get manageTransactionTags => 'Gestionar etiquetas de la transacción';
+
+  @override
+  String transactionTagsTitle(String name) {
+    return 'Etiquetas: $name';
+  }
+
+  @override
+  String maxTagsReached(int max, int current) {
+    return 'Podés adjuntar hasta $max etiquetas ($current seleccionadas).';
+  }
 }

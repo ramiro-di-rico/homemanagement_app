@@ -197,5 +197,15 @@
   "transactionsByCategory": "Transacciones por categoría",
   "transactionsByAccount": "Transacciones por cuenta",
   "noAccountsDataAvailable": "No hay datos de cuentas disponibles",
-  "refresh": "Actualizar"
+  "refresh": "Actualizar",
+  "tags": "Etiquetas",
+  "addTag": "Agregar etiqueta",
+  "selectTag": "Seleccionar etiqueta",
+  "selectTags": "Seleccionar etiquetas",
+  "createNewTag": "Crear nueva etiqueta",
+  "noTagsAvailable": "Todavía no hay etiquetas disponibles",
+  "noTags": "Sin etiquetas",
+  "manageTransactionTags": "Gestionar etiquetas de la transacción",
+  "transactionTagsTitle": "Etiquetas: {name}",
+  "maxTagsReached": "Podés adjuntar hasta {max} etiquetas ({current} seleccionadas)."
 }
