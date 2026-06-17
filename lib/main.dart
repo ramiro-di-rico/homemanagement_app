@@ -24,6 +24,7 @@ import 'services/repositories/currency.repository.dart';
 import 'services/repositories/main_account.repository.dart';
 import 'services/repositories/recurring_transaction_repository.dart';
 import 'services/repositories/reminder_repository.dart';
+import 'services/repositories/tag.repository.dart';
 import 'services/repositories/transaction.repository.dart';
 import 'services/repositories/user.repository.dart';
 import 'services/endpoints/api.service.factory.dart';
@@ -37,6 +38,7 @@ import 'services/endpoints/notification.service.dart';
 import 'services/infra/cryptography.service.dart';
 import 'services/endpoints/currency.service.dart';
 import 'services/endpoints/metrics.service.dart';
+import 'services/endpoints/tag.service.dart';
 import 'services/endpoints/transaction.service.dart';
 import 'services/security/password_reset_service.dart';
 import 'services/transaction_paging_service.dart';
@@ -93,6 +95,12 @@ void registerServices() {
   GetIt.instance.registerFactory(() => CategoryMetricService(
       authenticationService: GetIt.I<AuthenticationService>(),
       caching: GetIt.I<Caching>()));
+
+  GetIt.instance.registerFactory(() => TagService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>()),
+      notifierService: GetIt.I<NotifierService>()));
 
   GetIt.instance.registerFactory(() => IdentityUserService(authenticationService: GetIt.I<AuthenticationService>()));
 
@@ -155,10 +163,17 @@ void registerSingletons(PlatformContext platformContext) {
   var transactionService =
       TransactionService(authenticationService: authenticationService);
 
+  var tagRepository = TagRepository(TagService(
+      authenticationService: authenticationService,
+      apiServiceFactory:
+          ApiServiceFactory(authenticationService: authenticationService),
+      notifierService: errorNotifierService));
+
   var transactionRepository = TransactionRepository(
       transactionService: transactionService,
       accountRepository: accountRepository,
-      errorNotifierService: errorNotifierService);
+      errorNotifierService: errorNotifierService,
+      tagRepository: tagRepository);
 
   var categoryRepository = CategoryRepository(CategoryService(
       authenticationService: authenticationService,
@@ -199,6 +214,7 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(notificationRepository);
   GetIt.instance.registerSingleton(transactionRepository);
   GetIt.instance.registerSingleton(categoryRepository);
+  GetIt.instance.registerSingleton(tagRepository);
   GetIt.instance.registerSingleton(errorNotifierService);
   GetIt.instance.registerSingleton(identityUserRepository);
   GetIt.instance.registerSingleton(transactionPagingService);

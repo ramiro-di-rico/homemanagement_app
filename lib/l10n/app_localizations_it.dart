@@ -652,4 +652,38 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get refresh => 'Aggiorna';
+
+  @override
+  String get tags => 'Etichette';
+
+  @override
+  String get addTag => 'Aggiungi etichetta';
+
+  @override
+  String get selectTag => 'Seleziona etichetta';
+
+  @override
+  String get selectTags => 'Seleziona etichette';
+
+  @override
+  String get createNewTag => 'Crea nuova etichetta';
+
+  @override
+  String get noTagsAvailable => 'Nessuna etichetta disponibile';
+
+  @override
+  String get noTags => 'Nessuna etichetta';
+
+  @override
+  String get manageTransactionTags => 'Gestisci etichette della transazione';
+
+  @override
+  String transactionTagsTitle(String name) {
+    return 'Etichette: $name';
+  }
+
+  @override
+  String maxTagsReached(int max, int current) {
+    return 'Puoi associare fino a $max etichette ($current selezionate).';
+  }
 }

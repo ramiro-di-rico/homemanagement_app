@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/extensions/hex_color_extension.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/models/category.dart';
 import 'package:home_management_app/models/transaction.dart';
 import 'package:home_management_app/services/repositories/transaction.repository.dart';
 
 import '../../../models/account.dart';
 import 'add.transaction.sheet.dart';
+import 'manage_transaction_tags_sheet.dart';
 
 class TransactionRowInfo extends StatelessWidget {
   final TransactionModel transaction;
@@ -26,6 +28,7 @@ class TransactionRowInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Slidable(
         endActionPane: ActionPane(
           motion: ScrollMotion(),
@@ -39,6 +42,13 @@ class TransactionRowInfo extends StatelessWidget {
               icon: Icons.copy,
               backgroundColor: Colors.lightBlueAccent,
               borderRadius: BorderRadius.circular(10),
+            ),
+            SlidableAction(
+              autoClose: true,
+              icon: Icons.label_outline,
+              backgroundColor: Colors.teal,
+              borderRadius: BorderRadius.circular(10),
+              onPressed: (context) => openManageTags(context),
             ),
             SlidableAction(
               autoClose: true,
@@ -71,11 +81,11 @@ class TransactionRowInfo extends StatelessWidget {
                             child: AddTransactionSheet(
                               account,
                               transactionModel: transaction,
-                            ),
-                        ),
+                            )),
                       );
                     });
               },
+              onLongPress: () => openManageTags(context),
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,12 +132,58 @@ class TransactionRowInfo extends StatelessWidget {
                       )
                     ],
                   ),
+                  if (transaction.tags.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: transaction.tags
+                            .map((tag) => Chip(
+                                  label: Text(
+                                    tag.name,
+                                    style: const TextStyle(fontSize: 11),
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  materialTapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  padding: EdgeInsets.zero,
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => openManageTags(context),
+                      icon: const Icon(Icons.label_outline, size: 16),
+                      label: Text(
+                        transaction.tags.isEmpty
+                            ? localizations.addTag
+                            : localizations.manageTransactionTags,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
         ),
         closeOnScroll: true);
+  }
+
+  Future openManageTags(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (sheetContext) {
+        return ManageTransactionTagsSheet(transaction: transaction);
+      },
+    );
   }
 
   Future remove(TransactionModel item, int index, BuildContext context) async {

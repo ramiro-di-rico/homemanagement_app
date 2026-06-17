@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import '../../models/account.dart';
 import '../../models/category.dart';
 import '../../models/http-models/transaction-with-balance.dart';
+import '../../models/tag.dart';
 import '../../models/transaction.dart';
 import '../../models/transaction.page.dart';
 import 'api.service.factory.dart';
@@ -38,7 +39,8 @@ class TransactionService {
 
   Future<List<TransactionModel>> filter(int currentPage, int pageSize,
       List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate,
-      TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories, List<CurrencyModel> currencies) async {
+      TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories, List<CurrencyModel> currencies,
+      {List<String>? tagNames}) async {
 
     var queryFilter = 'currentPage=${currentPage}&pageSize=${pageSize}';
 
@@ -74,6 +76,10 @@ class TransactionService {
       queryFilter += '&currencyId=' + currencies.first.id.toString();
     }
 
+    if (tagNames != null && tagNames.isNotEmpty) {
+      queryFilter += '&tagNames=' + tagNames.join('&tagNames=');
+    }
+
     dynamic data = await apiServiceFactory.apiGet(
         '$apiName/filter?${queryFilter}');
     var pageResult = TransactionPageModel.fromJson(data);
@@ -95,6 +101,16 @@ class TransactionService {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(
         apiName + '/' + transactionModel.id.toString(), body);
+  }
+
+  Future<TransactionModel> syncTags(int transactionId, List<String> names) async {
+    final body = json.encode(SyncTagsRequest(names).toJson());
+    final result = await apiServiceFactory.apiPut(
+        '$apiName/$transactionId/tags', body);
+    if (result is Map<String, dynamic>) {
+      return TransactionModel.fromJson(result);
+    }
+    throw Exception('Failed to sync tags for transaction $transactionId');
   }
 
   Future<String> export(int accountId) async {

@@ -647,4 +647,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refresh => 'Refresh';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get addTag => 'Add tag';
+
+  @override
+  String get selectTag => 'Select tag';
+
+  @override
+  String get selectTags => 'Select tags';
+
+  @override
+  String get createNewTag => 'Create new tag';
+
+  @override
+  String get noTagsAvailable => 'No tags available yet';
+
+  @override
+  String get noTags => 'No tags';
+
+  @override
+  String get manageTransactionTags => 'Manage transaction tags';
+
+  @override
+  String transactionTagsTitle(String name) {
+    return 'Tags: $name';
+  }
+
+  @override
+  String maxTagsReached(int max, int current) {
+    return 'You can attach up to $max tags ($current selected).';
+  }
 }

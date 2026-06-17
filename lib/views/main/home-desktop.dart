@@ -8,6 +8,7 @@ import '../../services/repositories/budget_repository.dart';
 import '../../services/repositories/category.repository.dart';
 import '../../services/repositories/currency.repository.dart';
 import '../../services/repositories/identity_user_repository.dart';
+import '../../services/repositories/tag.repository.dart';
 import '../../services/endpoints/user-settings-service.dart';
 import '../../services/security/authentication.service.dart';
 import '../authentication/login.dart';
@@ -42,6 +43,7 @@ class _HomeDesktopState extends State<HomeDesktop> {
     accountRepository.load();
     GetIt.I<CurrencyRepository>().load();
     GetIt.I<CategoryRepository>().load();
+    GetIt.I<TagRepository>().load();
     GetIt.I<IdentityUserRepository>().getUser();
     GetIt.I<BudgetRepository>().load();
     _loadUseMainAccounts();

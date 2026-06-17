@@ -1296,6 +1296,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh'**
   String get refresh;
+
+  /// No description provided for @tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// No description provided for @addTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Add tag'**
+  String get addTag;
+
+  /// No description provided for @selectTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Select tag'**
+  String get selectTag;
+
+  /// No description provided for @selectTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Select tags'**
+  String get selectTags;
+
+  /// No description provided for @createNewTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Create new tag'**
+  String get createNewTag;
+
+  /// No description provided for @noTagsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No tags available yet'**
+  String get noTagsAvailable;
+
+  /// No description provided for @noTags.
+  ///
+  /// In en, this message translates to:
+  /// **'No tags'**
+  String get noTags;
+
+  /// No description provided for @manageTransactionTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage transaction tags'**
+  String get manageTransactionTags;
+
+  /// No description provided for @transactionTagsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags: {name}'**
+  String transactionTagsTitle(String name);
+
+  /// No description provided for @maxTagsReached.
+  ///
+  /// In en, this message translates to:
+  /// **'You can attach up to {max} tags ({current} selected).'**
+  String maxTagsReached(int max, int current);
 }
 
 class _AppLocalizationsDelegate

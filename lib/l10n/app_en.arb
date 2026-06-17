@@ -286,5 +286,32 @@
   "transactionsByCategory": "Transactions by category",
   "transactionsByAccount": "Transactions by account",
   "noAccountsDataAvailable": "No accounts data available",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "tags": "Tags",
+  "addTag": "Add tag",
+  "selectTag": "Select tag",
+  "selectTags": "Select tags",
+  "createNewTag": "Create new tag",
+  "noTagsAvailable": "No tags available yet",
+  "noTags": "No tags",
+  "manageTransactionTags": "Manage transaction tags",
+  "transactionTagsTitle": "Tags: {name}",
+  "@transactionTagsTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "maxTagsReached": "You can attach up to {max} tags ({current} selected).",
+  "@maxTagsReached": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      },
+      "current": {
+        "type": "int"
+      }
+    }
+  }
 }

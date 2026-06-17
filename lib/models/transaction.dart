@@ -1,4 +1,5 @@
 import 'recurring_transaction.dart';
+import 'tag.dart';
 
 class TransactionModel {
   final int id;
@@ -7,19 +8,45 @@ class TransactionModel {
   double price;
   DateTime date;
   TransactionType transactionType;
+  List<TagModel> tags;
+
+  TransactionModel(
+      this.id,
+      this.accountId,
+      this.categoryId,
+      this.name,
+      this.price,
+      this.date,
+      this.transactionType,
+      {this.categoryName = "",
+      List<TagModel>? tags})
+      : tags = tags ?? <TagModel>[];
 
   TransactionModel duplicate() {
-    return TransactionModel(0, this.accountId, this.categoryId, this.name,
-        this.price, this.date, this.transactionType);
+    return TransactionModel(
+        0,
+        this.accountId,
+        this.categoryId,
+        this.name,
+        this.price,
+        this.date,
+        this.transactionType,
+        categoryName: this.categoryName,
+        tags: this.tags.map((t) => TagModel(t.id, t.name)).toList());
   }
 
   TransactionModel clone() {
-    return TransactionModel(id, this.accountId, this.categoryId, this.name,
-        this.price, this.date, this.transactionType);
+    return TransactionModel(
+        id,
+        this.accountId,
+        this.categoryId,
+        this.name,
+        this.price,
+        this.date,
+        this.transactionType,
+        categoryName: this.categoryName,
+        tags: this.tags.map((t) => TagModel(t.id, t.name)).toList());
   }
-
-  TransactionModel(this.id, this.accountId, this.categoryId, this.name,
-      this.price, this.date, this.transactionType, {this.categoryName = ""});
 
   factory TransactionModel.empty(int accountId, int categoryId) =>
       TransactionModel(0, accountId, categoryId, "", 0, DateTime.now(),
@@ -27,6 +54,11 @@ class TransactionModel {
 
   factory TransactionModel.fromJson(dynamic json) {
     var categoryName = json['categoryName'];
+    final tagList = (json['tags'] as List?) ?? const [];
+    final tags = tagList
+        .whereType<Map<String, dynamic>>()
+        .map((e) => TagModel.fromJson(e))
+        .toList();
     var model = TransactionModel(
         json['id'],
         json['accountId'],
@@ -34,8 +66,9 @@ class TransactionModel {
         json['name'],
         double.parse(json['price'].toString()),
         DateTime.parse(json['date']),
-        parse(json['transactionType'],
-        categoryName: categoryName));
+        parse(json['transactionType'], categoryName: categoryName),
+        categoryName: categoryName,
+        tags: tags);
     model.categoryName = categoryName;
     return model;
   }
@@ -59,6 +92,7 @@ class TransactionModel {
         'date': this.date.toIso8601String(),
         'transactionType':
             this.transactionType == TransactionType.Income ? 0 : 1,
+        'tags': this.tags.map((t) => t.toJson()).toList(),
       };
 
   static TransactionType parse(int value, {required categoryName}) =>
@@ -75,6 +109,8 @@ class TransactionModel {
   bool isValid() => name.length > 3 && categoryId > 0 && accountId > 0;
 
   bool isIncome() => transactionType == TransactionType.Income;
+
+  List<String> get tagNames => tags.map((t) => t.name).toList();
 }
 
 enum TransactionType { Income, Outcome }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/views/main/widgets/currency_select/currency_select.dart';
+import 'package:home_management_app/views/main/widgets/tag_select/tag_select.dart';
 import 'package:intl/intl.dart';
 
 import '../../../models/transaction.dart';
@@ -178,6 +179,17 @@ class _TransactionSearchFilteringOptionsSheetState
                           setState(() {});
                         },
                       ),
+                      SizedBox(height: 12),
+                      TagSelect(
+                        selectedTags: _transactionPagingService.selectedTags,
+                        multipleSelection: true,
+                        onSelectedTagsChanged: (selectedTags) {
+                          _transactionPagingService.selectedTags.clear();
+                          _transactionPagingService.selectedTags
+                              .addAll(selectedTags);
+                          setState(() {});
+                        },
+                      ),
                       SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
@@ -337,6 +349,17 @@ class _TransactionSearchFilteringOptionsSheetState
                             ),
                           ),
                         ],
+                      ),
+                      SizedBox(height: 16),
+                      TagSelect(
+                        selectedTags: _transactionPagingService.selectedTags,
+                        multipleSelection: true,
+                        onSelectedTagsChanged: (selectedTags) {
+                          _transactionPagingService.selectedTags.clear();
+                          _transactionPagingService.selectedTags
+                              .addAll(selectedTags);
+                          setState(() {});
+                        },
                       ),
                       SizedBox(height: 16),
                       SizedBox(
