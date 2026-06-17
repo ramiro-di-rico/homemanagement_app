@@ -110,6 +110,43 @@ class _TagDialogSelectionState extends State<TagDialogSelection> {
     }
   }
 
+  Future<void> _deleteTag(TagModel tag) async {
+    final localizations = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(localizations.delete),
+        content: Text(localizations.areYouSureDelete(tag.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(localizations.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(localizations.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await _tagRepository.delete(tag);
+      if (!mounted) return;
+      setState(() {
+        _available.removeWhere((t) => t.id == tag.id);
+        _selectedIds.remove(tag.id);
+        _selected.removeWhere((t) => t.id == tag.id);
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
+  }
+
   void _onAccept() {
     widget.onSelectedTagsChanged(_selected);
     Navigator.of(context).pop(_selected);
@@ -203,6 +240,12 @@ class _TagDialogSelectionState extends State<TagDialogSelection> {
                                     _toggle(tag);
                                   }
                                 },
+                          secondary: IconButton(
+                            icon: const Icon(Icons.delete_outline, size: 20),
+                            color: Colors.redAccent,
+                            tooltip: localizations.delete,
+                            onPressed: () => _deleteTag(tag),
+                          ),
                         );
                       },
                     ),
