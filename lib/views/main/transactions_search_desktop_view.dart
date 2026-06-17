@@ -303,22 +303,22 @@ class _TransactionsSearchDesktopViewState
                                       ],
                                     ),
                                   )
-                                : SizedBox(
-                                    height: 60,
+                                : ConstrainedBox(
+                                    constraints: const BoxConstraints(minHeight: 60),
                                     child: Row(
                                       children: [
-                                        SizedBox(width: 20),
+                                        const SizedBox(width: 20),
                                         SizedBox(
                                           width: 80,
                                           child: Text(
                                             accountName,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
-                                        SizedBox(width: 100),
+                                        const SizedBox(width: 100),
                                         SizedBox(
                                           width: 120,
                                           child: Column(
@@ -327,26 +327,38 @@ class _TransactionsSearchDesktopViewState
                                             children: [
                                               Text(
                                                 transaction.categoryName,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                               if (transaction.tags.isNotEmpty)
                                                 Padding(
-                                                  padding: const EdgeInsets.only(top: 2),
-                                                  child: Text(
-                                                    transaction.tagNames.join(', '),
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(
-                                                        fontSize: 12, color: Colors.grey),
+                                                  padding: const EdgeInsets.only(top: 4),
+                                                  child: Wrap(
+                                                    spacing: 4,
+                                                    runSpacing: 4,
+                                                    children: transaction.tags
+                                                        .map((tag) => Chip(
+                                                              label: Text(
+                                                                tag.name,
+                                                                style: const TextStyle(
+                                                                    fontSize: 11),
+                                                              ),
+                                                              visualDensity:
+                                                                  VisualDensity.compact,
+                                                              materialTapTargetSize:
+                                                                  MaterialTapTargetSize
+                                                                      .shrinkWrap,
+                                                              padding: EdgeInsets.zero,
+                                                            ))
+                                                        .toList(),
                                                   ),
                                                 ),
                                             ],
                                           ),
                                         ),
-                                        SizedBox(width: 80),
+                                        const SizedBox(width: 80),
                                         Expanded(child: Text(transaction.name)),
                                         Text(transaction.price.toString(),
                                             style: TextStyle(
