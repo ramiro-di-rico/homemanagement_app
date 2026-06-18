@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
           locale: locale,
           theme: LightTheme.create(),
           darkTheme: DarkTheme.create(),
-          themeMode: ThemeMode.system,
+          themeMode: identityUserRepository.themeMode,
         );
       },
     );

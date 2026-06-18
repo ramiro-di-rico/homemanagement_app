@@ -30,6 +30,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get monthly => 'Mensile';
 
   @override
+  String get themeMode => 'Tema';
+
+  @override
+  String get light => 'Chiaro';
+
+  @override
+  String get dark => 'Scuro';
+
+  @override
+  String get system => 'Sistema';
+
+  @override
   String get appLanguage => 'Lingua dell\'App';
 
   @override

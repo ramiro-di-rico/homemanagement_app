@@ -6,6 +6,7 @@ import 'package:home_management_app/ui/core/custom/components/dropdown.component
 import 'package:home_management_app/data/repositories/currency.repository.dart';
 import 'package:home_management_app/domain/models/user-settings.dart';
 import 'package:home_management_app/data/services/user-settings-service.dart';
+import 'package:home_management_app/data/repositories/identity_user_repository.dart';
 import 'package:home_management_app/ui/core/mixins/notifier_mixin.dart';
 
 class UserSettingsWidget extends StatefulWidget {
@@ -19,6 +20,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
 
   final UserSettingsService _userSettingsService = GetIt.I<UserSettingsService>();
   final CurrencyRepository _currencyRepository = GetIt.I<CurrencyRepository>();
+  final IdentityUserRepository _identityUserRepository = GetIt.I<IdentityUserRepository>();
   late UserSettings userSettings;
   bool _settingsLoaded = false;
   String selectedDelimiter = '';
@@ -56,7 +58,7 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
     var l10n = AppLocalizations.of(context)!;
 
     return SizedBox(
-      height: 260,
+      height: 320,
       child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,6 +71,34 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Text(
+                    l10n.themeMode,
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    height: 50,
+                    width: 150,
+                    child: DropdownComponent(
+                      items: [l10n.system, l10n.light, l10n.dark],
+                      onChanged: (value) {
+                        if (value == l10n.system) {
+                          _identityUserRepository.setThemeMode(ThemeMode.system);
+                        } else if (value == l10n.light) {
+                          _identityUserRepository.setThemeMode(ThemeMode.light);
+                        } else if (value == l10n.dark) {
+                          _identityUserRepository.setThemeMode(ThemeMode.dark);
+                        }
+                      },
+                      currentValue: _getThemeModeString(l10n),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: Row(
                 children: [
                   Text(
@@ -156,21 +186,33 @@ class _UserSettingsWidgetState extends State<UserSettingsWidget> with NotifierMi
     });
   }
 
-  onDelimiterChanged(String csvDelimiterChangedValue) {
+  void onDelimiterChanged(String csvDelimiterChangedValue) {
     userSettings.csvDelimiter = csvDelimiterChangedValue;
     _userSettingsService.update(userSettings);
   }
 
-  onCurrencyChanged(String currencyChangedValue) {
+  void onCurrencyChanged(String currencyChangedValue) {
     userSettings.currency = currencyChangedValue;
     _userSettingsService.updateCurrency(userSettings);
   }
 
-  onBackupFrequencyChanged(String backupFrequencyChangedValue) {
+  void onBackupFrequencyChanged(String backupFrequencyChangedValue) {
+    if (!mounted) return;
     var l10n = AppLocalizations.of(context)!;
     userSettings.backupFrequency = backupFrequencyChangedValue == l10n.monthly
         ? BackupFrequency.monthly
         : BackupFrequency.weekly;
     _userSettingsService.updateBackupFrequency(userSettings);
+  }
+
+  String _getThemeModeString(AppLocalizations l10n) {
+    switch (_identityUserRepository.themeMode) {
+      case ThemeMode.light:
+        return l10n.light;
+      case ThemeMode.dark:
+        return l10n.dark;
+      case ThemeMode.system:
+        return l10n.system;
+    }
   }
 }

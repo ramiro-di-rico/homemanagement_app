@@ -30,6 +30,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get monthly => 'Mensal';
 
   @override
+  String get themeMode => 'Theme Mode';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get dark => 'Dark';
+
+  @override
+  String get system => 'System';
+
+  @override
   String get appLanguage => 'Idioma do App';
 
   @override

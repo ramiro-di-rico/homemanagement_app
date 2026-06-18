@@ -24,6 +24,10 @@
     "description": "Weekly backup frequency"
   },
   "monthly": "Monthly",
+  "themeMode": "Theme Mode",
+  "light": "Light",
+  "dark": "Dark",
+  "system": "System",
   "@monthly": {
     "description": "Monthly backup frequency"
   },

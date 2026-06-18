@@ -30,6 +30,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get monthly => 'Mensual';
 
   @override
+  String get themeMode => 'Tema';
+
+  @override
+  String get light => 'Claro';
+
+  @override
+  String get dark => 'Oscuro';
+
+  @override
+  String get system => 'Sistema';
+
+  @override
   String get appLanguage => 'Idioma de la Aplicación';
 
   @override
