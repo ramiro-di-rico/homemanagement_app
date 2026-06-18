@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   List<Widget> floatingButtons = [];
   List<Color> selectedItemsColor = [
-    Colors.greenAccent,
+    Colors.teal,
     Colors.pinkAccent,
     Colors.blueAccent,
     Colors.orangeAccent,
@@ -98,10 +98,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   BottomNavigationBar buildBottomNavigationBar(BuildContext context) {
     var l10n = AppLocalizations.of(context)!;
+    var theme = Theme.of(context);
+    var navTheme = theme.bottomNavigationBarTheme;
     return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
       currentIndex: bottomBarNavigationIndex,
-      backgroundColor: Theme.of(context).bottomAppBarTheme.color,
+      backgroundColor: navTheme.backgroundColor,
       selectedItemColor: this.selectedItemsColor[bottomBarNavigationIndex],
+      unselectedItemColor: navTheme.unselectedItemColor,
+      showUnselectedLabels: true,
       onTap: (index) {
         setState(() {
           this.bottomBarNavigationIndex = index;
@@ -192,6 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
     this.floatingButtons.addAll([
       createLogoutButton(),
       FloatingActionButton(
+        heroTag: "add_button",
         child: Icon(Icons.add),
         onPressed: () {
           showModalBottomSheet<void>(
@@ -219,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget createLogoutButton() {
     var l10n = AppLocalizations.of(context)!;
     return FloatingActionButton(
+      heroTag: null,
       child: Icon(Icons.exit_to_app),
       tooltip: l10n.logout,
       onPressed: () {
