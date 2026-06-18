@@ -1,0 +1,108 @@
+import 'package:home_management_app/domain/models/metrics/breakdown.dart';
+import 'package:home_management_app/domain/models/metrics/metric.dart';
+import 'package:home_management_app/domain/models/overall.dart';
+import 'package:home_management_app/data/services/api-mixin.dart';
+import 'package:home_management_app/data/services/authentication.service.dart';
+import 'dart:convert';
+
+import 'package:home_management_app/data/models/balance_history_response.dart';
+import 'package:home_management_app/data/services/caching.dart';
+
+class MetricService with HttpApiServiceMixin {
+  AuthenticationService authenticationService;
+  Caching caching;
+  String cacheKey = 'overall';
+
+  MetricService({required this.authenticationService, required this.caching});
+
+  Future<Overall> getOverall() async {
+    if (this.caching.exists(cacheKey)) {
+      return this.caching.fetch(cacheKey) as Overall;
+    }
+
+    var response = await httpGet(
+        createUri('account/overall'), authenticationService.getUserToken());
+
+    if (response.statusCode == 200) {
+      var overallResult = Overall.fromJson(json.decode(response.body));
+      caching.add(cacheKey, overallResult);
+      return overallResult;
+    } else {
+      throw Exception('Failed to fetch overall.');
+    }
+  }
+
+  Future<Overall> getOverallByAccountId(int accountId) async {
+    var key = cacheKey + accountId.toString();
+    if (this.caching.exists(key)) {
+      return this.caching.fetch(key) as Overall;
+    }
+
+    var response = await httpGet(createUri('account/$accountId/overall'),
+        authenticationService.getUserToken());
+
+    if (response.statusCode == 200) {
+      var overallResult = Overall.fromJson(json.decode(response.body));
+      caching.add(key, overallResult);
+      return overallResult;
+    } else {
+      throw Exception('Failed to fetch overall.');
+    }
+  }
+
+  Future<Metric> getIncomeMetrics() async {
+    return await _getMetrics('incomes');
+  }
+
+  Future<Metric> getOutcomesMetrics() async {
+    return await _getMetrics('outcomes');
+  }
+
+  Future<Metric> _getMetrics(String type) async {
+    Metric metric;
+    if (this.caching.exists(type)) {
+      return this.caching.fetch(type) as Metric;
+    }
+
+    var response = await httpGet(
+        createUri('Account/$type'), authenticationService.getUserToken());
+
+    if (response.statusCode == 200) {
+      metric = Metric.fromJson(json.decode(response.body));
+      caching.add(type, metric);
+    } else {
+      throw Exception("Failed to fetch metric $type.");
+    }
+    return metric;
+  }
+
+  Future<List<Breakdown>> getBreakdown() async {
+    if (this.caching.exists('getBreakdown')) {
+      return this.caching.fetch('getBreakdown') as List<Breakdown>;
+    }
+
+    var response = await httpGet(
+        createUri('Account/breakdown?api-version=3'), authenticationService.getUserToken());
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      var breakdown = data.map((e) => Breakdown.fromJson(e)).toList();
+      caching.add('getBreakdown', breakdown);
+      return breakdown;
+    } else {
+      throw Exception("Failed to fetch breakdown.");
+    }
+  }
+
+  Future<List<BalanceHistoryResponse>> getBalanceHistory() async {
+    var response = await httpGet(
+        createUri('Account/balance-history'), authenticationService.getUserToken());
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((e) => BalanceHistoryResponse.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to fetch balance history.");
+    }
+  }
+}

@@ -3,14 +3,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'routing.dart';
-import 'services/infra/platform/platform_context.dart';
-import 'services/infra/platform/platform_type.dart';
-import 'services/deep_link_service.dart';
-import 'services/repositories/identity_user_repository.dart';
-import 'services/security/authentication.service.dart';
-import 'services/security/password_reset_service.dart';
-import 'themes/dark_theme.dart';
-import 'themes/light_theme.dart';
+import 'package:home_management_app/data/services/platform/platform_context.dart';
+import 'package:home_management_app/data/services/platform/platform_type.dart';
+import 'package:home_management_app/data/services/deep_link_service.dart';
+import 'package:home_management_app/data/repositories/identity_user_repository.dart';
+import 'package:home_management_app/data/services/authentication.service.dart';
+import 'package:home_management_app/data/services/password_reset_service.dart';
+import 'package:home_management_app/ui/core/themes/dark_theme.dart';
+import 'package:home_management_app/ui/core/themes/light_theme.dart';
 
 class MyApp extends StatelessWidget {
   final PlatformContext _platformContext;

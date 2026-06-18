@@ -1,0 +1,144 @@
+import 'package:flutter/material.dart';
+
+import 'package:home_management_app/domain/models/account.dart';
+import 'package:home_management_app/domain/models/metrics/account-metrics.dart';
+import 'package:home_management_app/domain/models/transaction.dart';
+import 'package:home_management_app/data/services/account.service.dart';
+import 'package:home_management_app/data/services/error_notifier_service.dart';
+
+class AccountRepository extends ChangeNotifier {
+  AccountService accountService;
+  NotifierService notifierService;
+  String cacheKey = 'accountsKey';
+  final List<AccountModel> _internalAccounts = [];
+  final List<AccountModel> accounts = [];
+  final List<AccountSeries> accountSeries = [];
+  bool showHidden = false;
+
+  AccountRepository({required this.accountService, required this.notifierService});
+
+  Future refresh() async => await load();
+
+  displayHidden(bool show) {
+    showHidden = show;
+    _loadAccounts(_internalAccounts);
+  }
+
+  List<AccountModel> getAllAccounts(){
+    return List.from(_internalAccounts);
+  }
+
+  Future load() async {
+    var result = await this.accountService.fetchAccounts();
+    this._internalAccounts.clear();
+    this._internalAccounts.addAll(result);
+    _loadAccounts(result);
+  }
+
+  _loadAccounts(List<AccountModel> result) {
+    this.accounts.clear();
+    this.accounts.addAll(showHidden
+        ? _internalAccounts
+        : _internalAccounts.where((element) => !element.isHidden).toList());
+    notifyListeners();
+  }
+
+  Future add(AccountModel accountModel) async {
+    try {
+      await this.accountService.add(accountModel);
+      this.accounts.add(accountModel);
+      notifyListeners();
+      notifierService.notify('Account ${accountModel.name} added successfully');
+    } catch (ex) {
+      print(ex);
+      notifierService.notify('Failed to add account ${accountModel.name}', isError: true);
+    }
+  }
+
+  Future update(AccountModel accountModel) async {
+    try {
+      await accountService.update(accountModel);
+      _loadAccounts(accounts);
+      notifierService.notify('Account ${accountModel.name} updated successfully');
+    } catch (ex) {
+      notifierService.notify('Failed to update account ${accountModel.name}', isError: true);
+      print(ex);
+    }
+  }
+
+  Future archive(AccountModel accountModel) async {
+    var archiveLabel = accountModel.archive ? 'archived' : 'unarchived';
+    try {
+      accountModel.archive = !accountModel.archive;
+      await accountService.update(accountModel);
+      _loadAccounts(accounts);
+      notifierService.notify('Account ${accountModel.name} $archiveLabel successfully');
+    } catch (ex) {
+      notifierService.notify('Failed to $archiveLabel account ${accountModel.name}', isError: true);
+      print(ex);
+    }
+  }
+
+  Future hide(AccountModel accountModel) async {
+    var hideLabel = accountModel.isHidden ? 'shown' : 'hidden';
+    try {
+      accountModel.isHidden = !accountModel.isHidden;
+      await accountService.update(accountModel);
+      _loadAccounts(accounts);
+      notifierService.notify('Account ${accountModel.name} $hideLabel successfully');
+    } catch (ex) {
+      notifierService.notify('Failed to $hideLabel account ${accountModel.name}', isError: true);
+      print(ex);
+    }
+  }
+
+  Future delete(AccountModel accountModel) async {
+    try {
+      await this.accountService.delete(accountModel);
+      this.accounts.remove(accountModel);
+      notifyListeners();
+      notifierService.notify('Account ${accountModel.name} deleted successfully');
+    } catch (ex) {
+      print(ex);
+      notifierService.notify('Failed to delete account ${accountModel.name}', isError: true);
+    }
+  }
+
+  updateBalance(int accountId, double value, TransactionType type) {
+    var account = this._internalAccounts.firstWhere(
+        (element) => element.id == accountId,
+        orElse: () => AccountModel.empty(0));
+    account.balance = type == TransactionType.Income
+        ? account.balance + value
+        : account.balance - value;
+    _loadAccounts(_internalAccounts);
+  }
+
+  revertBalance(int accountId, double value, TransactionType type) {
+    var account = this._internalAccounts.firstWhere(
+        (element) => element.id == accountId,
+        orElse: () => AccountModel.empty(0));
+    account.balance = type == TransactionType.Income
+        ? account.balance - value
+        : account.balance + value;
+    _loadAccounts(_internalAccounts);
+  }
+
+  setBalance(AccountModel targetAccount) {
+    var account = this._internalAccounts.firstWhere(
+        (element) => element.id == targetAccount.id,
+        orElse: () => AccountModel.empty(0));
+    account.balance = targetAccount.balance;
+    _loadAccounts(_internalAccounts);
+  }
+
+  setBalances(List<AccountModel> targetAccounts) {
+    for (var targetAccount in targetAccounts) {
+      var account = this._internalAccounts.firstWhere(
+          (element) => element.id == targetAccount.id,
+          orElse: () => AccountModel.empty(0));
+      account.balance = targetAccount.balance;
+    }
+    _loadAccounts(_internalAccounts);
+  }
+}

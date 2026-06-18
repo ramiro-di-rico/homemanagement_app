@@ -1,0 +1,124 @@
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+
+import 'package:home_management_app/ui/core/custom/keyboard.factory.dart';
+import 'package:home_management_app/ui/features/authentication/view_models/user-view-model.dart';
+import 'package:home_management_app/data/services/authentication.service.dart';
+import 'package:home_management_app/ui/features/home/views/home.dart';
+import 'package:home_management_app/ui/features/authentication/views/2fa_view.dart';
+
+mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
+  UserViewModel userViewModel = UserViewModel();
+  bool isAuthenticating = false;
+
+  AuthenticationService authenticationService =
+      GetIt.instance<AuthenticationService>();
+
+  KeyboardFactory? keyboardFactory;
+
+  void initState() {
+    super.initState();
+    this.keyboardFactory = KeyboardFactory(context: context);
+    loadUser();
+  }
+
+  void dispose() {
+    super.dispose();
+  }
+
+  Future loadUser() async {
+    setAuthenticatingStatus(true);
+    if (await authenticationService.init()) {
+      await successFullAuthentication();
+    }
+    setAuthenticatingStatus(false);
+  }
+
+  void setAuthenticatingStatus(bool status) {
+    setState(() {
+      this.isAuthenticating = status;
+    });
+  }
+
+  Future<void> onButtonPressed() async {
+    if (!this.userViewModel.isValid) {
+      return;
+    }
+
+    setAuthenticatingStatus(true);
+
+    var authenticatedSuccessfully =
+        await this.authenticationService.authenticate(this.userViewModel);
+
+    setAuthenticatingStatus(false);
+
+    if (!authenticatedSuccessfully &&
+        this.authenticationService.user?.twoFactorRequired == true) {
+      this.context.go(TwoFactorAuthenticationView.fullPath);
+      return;
+    }
+
+    if (authenticatedSuccessfully) {
+      await successFullAuthentication();
+    } else {
+      showDialog(
+          context: this.context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Authentication error.'),
+              actions: [
+                TextButton(
+                  child: Text('ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    }
+  }
+
+  Future successFullAuthentication() async {
+    if (!mounted) return;
+    this.context.go(HomeScreen.fullPath);
+  }
+
+  Future autoAuthenticate() async {
+    setAuthenticatingStatus(true);
+
+    var authenticatedSuccessfully =
+        await this.authenticationService.biometricsAuthenticate();
+
+    setAuthenticatingStatus(false);
+
+    if (!authenticatedSuccessfully &&
+        this.authenticationService.user?.twoFactorRequired == true) {
+      this.context.go(TwoFactorAuthenticationView.fullPath);
+      return;
+    }
+
+    if (authenticatedSuccessfully) {
+      await successFullAuthentication();
+    } else {
+      showDialog(
+          context: this.context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Authentication error.'),
+              actions: [
+                TextButton(
+                  child: Text('ok'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          });
+    }
+  }
+}

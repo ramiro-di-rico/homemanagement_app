@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:home_management_app/domain/models/category.dart';
+import 'package:home_management_app/data/services/category.service.dart';
+
+class CategoryRepository extends ChangeNotifier {
+  CategoryService categoryService;
+  final List<CategoryModel> categories = [];
+
+  CategoryRepository(this.categoryService);
+
+  Future load() async {
+    categories.clear();
+    var result = await categoryService.fetch();
+    categories.addAll(result);
+    categories.sort((a, b) => a.name.compareTo(b.name));
+    notifyListeners();
+  }
+
+  Future add(CategoryModel category) async {
+    var addedCategory = await categoryService.add(category);
+    categories.add(addedCategory);
+    categories.sort((a, b) => a.name.compareTo(b.name));
+    notifyListeners();
+  }
+
+  Future update(CategoryModel category) async {
+    await categoryService.update(category);
+    notifyListeners();
+  }
+
+  Future delete(CategoryModel category) async {
+    await categoryService.delete(category);
+    categories.removeWhere((element) => element.id == category.id);
+    categories.sort((a, b) => a.name.compareTo(b.name));
+    notifyListeners();
+  }
+
+  List<CategoryModel> getActiveCategories() {
+    var activeCategories = categories.where((element) => element.isActive).toList();
+    activeCategories.sort((a, b) => a.name.compareTo(b.name));
+    return activeCategories;
+  }
+}
