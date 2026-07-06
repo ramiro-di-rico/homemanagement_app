@@ -693,6 +693,14 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get bulkTag => 'Bulk Tag';
+
+  @override
+  String bulkTaggingTransactions(int count) {
+    return 'Tagging $count transactions';
+  }
+
+  @override
   String maxTagsReached(int max, int current) {
     return 'Você pode anexar até $max etiquetas ($current selecionadas).';
   }

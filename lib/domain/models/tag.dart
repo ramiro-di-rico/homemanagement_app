@@ -58,3 +58,15 @@ class SyncTagsRequest {
 
   Map<String, dynamic> toJson() => {'names': names};
 }
+
+class BulkSyncTagsRequest {
+  List<int> transactionIds;
+  List<String> names;
+
+  BulkSyncTagsRequest(this.transactionIds, this.names);
+
+  Map<String, dynamic> toJson() => {
+        'transactionIds': transactionIds,
+        'names': names,
+      };
+}

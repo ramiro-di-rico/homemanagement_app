@@ -113,6 +113,11 @@ class TransactionService {
     throw Exception('Failed to sync tags for transaction $transactionId');
   }
 
+  Future bulkSyncTags(List<int> transactionIds, List<String> names) async {
+    final body = json.encode(BulkSyncTagsRequest(transactionIds, names).toJson());
+    await apiServiceFactory.apiPut('$apiName/tags/bulk', body);
+  }
+
   Future<String> export(int accountId) async {
     var body = await apiServiceFactory.rawApiGet('$apiName/export?accountId=$accountId');
     return body;

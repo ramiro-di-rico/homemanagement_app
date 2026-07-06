@@ -1375,6 +1375,18 @@ abstract class AppLocalizations {
   /// **'Tags: {name}'**
   String transactionTagsTitle(String name);
 
+  /// No description provided for @bulkTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk Tag'**
+  String get bulkTag;
+
+  /// No description provided for @bulkTaggingTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Tagging {count} transactions'**
+  String bulkTaggingTransactions(int count);
+
   /// No description provided for @maxTagsReached.
   ///
   /// In en, this message translates to:

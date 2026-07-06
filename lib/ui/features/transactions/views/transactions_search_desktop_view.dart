@@ -14,6 +14,7 @@ import 'package:home_management_app/ui/features/accounts/views/account-details-b
 import 'package:home_management_app/ui/features/accounts/views/widgets/manage_transaction_tags_sheet.dart';
 import 'package:home_management_app/ui/features/statistics/views/transactions_search_statistics_view.dart';
 import 'package:home_management_app/ui/features/home/views/shared/transaction_search_filtering_options.dart';
+import 'package:home_management_app/ui/features/transactions/views/widgets/bulk_manage_transaction_tags_sheet.dart';
 
 class TransactionsSearchDesktopView extends StatefulWidget {
   static const String fullPath = '/home_screen/transactions_search_desktop_view';
@@ -33,6 +34,8 @@ class _TransactionsSearchDesktopViewState
       GetIt.I<TransactionPagingService>();
   AccountRepository _accountRepository = GetIt.I<AccountRepository>();
   PlatformContext _platform = GetIt.instance<PlatformContext>();
+
+  Set<int> _selectedTransactionIds = {};
 
   List<IconData> _filteringNumber = [
     Icons.filter_alt,
@@ -74,9 +77,27 @@ class _TransactionsSearchDesktopViewState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(localizations.searchTransactions),
+        title: _selectedTransactionIds.isEmpty
+            ? Text(localizations.searchTransactions)
+            : Text(localizations.bulkTaggingTransactions(_selectedTransactionIds.length)),
+        leading: _selectedTransactionIds.isEmpty
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () {
+                  setState(() {
+                    _selectedTransactionIds.clear();
+                  });
+                },
+              ),
         actions: isCompact
             ? [
+                if (_selectedTransactionIds.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.label),
+                    tooltip: localizations.bulkTag,
+                    onPressed: () => openBulkManageTags(),
+                  ),
                 IconButton(
                   onPressed: !_transactionPagingService.filtering
                       ? null
@@ -135,6 +156,12 @@ class _TransactionsSearchDesktopViewState
                 ),
               ]
             : [
+                if (_selectedTransactionIds.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.label),
+                    tooltip: localizations.bulkTag,
+                    onPressed: () => openBulkManageTags(),
+                  ),
                 DropdownButton<int>(
                   value: _transactionPagingService.pageSize,
                   icon: Icon(Icons.arrow_downward),
@@ -221,7 +248,39 @@ class _TransactionsSearchDesktopViewState
                                   borderRadius: BorderRadius.circular(10)),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(DateFormat.yMMMd().format(element)),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Checkbox(
+                                      visualDensity: VisualDensity.compact,
+                                      value: _transactionPagingService.transactions
+                                          .where((t) =>
+                                              t.date.toMidnight() ==
+                                              element.toMidnight())
+                                          .every((t) => _selectedTransactionIds
+                                              .contains(t.id)),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          final transactionsInGroup =
+                                              _transactionPagingService.transactions
+                                                  .where((t) =>
+                                                      t.date.toMidnight() ==
+                                                      element.toMidnight());
+                                          if (value == true) {
+                                            _selectedTransactionIds.addAll(
+                                                transactionsInGroup
+                                                    .map((t) => t.id));
+                                          } else {
+                                            _selectedTransactionIds.removeAll(
+                                                transactionsInGroup
+                                                    .map((t) => t.id));
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    Text(DateFormat.yMMMd().format(element)),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -240,6 +299,21 @@ class _TransactionsSearchDesktopViewState
                             onTap: () => openManageTags(transaction),
                             child: isCompact
                                 ? ListTile(
+                                    leading: Checkbox(
+                                      value: _selectedTransactionIds
+                                          .contains(transaction.id),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          if (value == true) {
+                                            _selectedTransactionIds
+                                                .add(transaction.id);
+                                          } else {
+                                            _selectedTransactionIds
+                                                .remove(transaction.id);
+                                          }
+                                        });
+                                      },
+                                    ),
                                     title: Text(
                                       transaction.name,
                                       maxLines: 1,
@@ -307,7 +381,23 @@ class _TransactionsSearchDesktopViewState
                                     constraints: const BoxConstraints(minHeight: 60),
                                     child: Row(
                                       children: [
-                                        const SizedBox(width: 20),
+                                        const SizedBox(width: 10),
+                                        Checkbox(
+                                          value: _selectedTransactionIds
+                                              .contains(transaction.id),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              if (value == true) {
+                                                _selectedTransactionIds
+                                                    .add(transaction.id);
+                                              } else {
+                                                _selectedTransactionIds
+                                                    .remove(transaction.id);
+                                              }
+                                            });
+                                          },
+                                        ),
+                                        const SizedBox(width: 10),
                                         SizedBox(
                                           width: 80,
                                           child: Text(
@@ -414,6 +504,26 @@ class _TransactionsSearchDesktopViewState
       },
     );
     if (saved == true) {
+      _transactionPagingService.performSearch(resetPaging: true);
+    }
+  }
+
+  Future<void> openBulkManageTags() async {
+    final saved = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (sheetContext) {
+        return BulkManageTransactionTagsSheet(
+            transactionIds: _selectedTransactionIds.toList());
+      },
+    );
+    if (saved == true) {
+      setState(() {
+        _selectedTransactionIds.clear();
+      });
       _transactionPagingService.performSearch(resetPaging: true);
     }
   }

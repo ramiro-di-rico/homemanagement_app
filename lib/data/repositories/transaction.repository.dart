@@ -193,6 +193,31 @@ class TransactionRepository extends ChangeNotifier {
     return updated.tags;
   }
 
+  Future<void> bulkApplyTagsToTransactions(
+      List<int> transactionIds, List<String> names) async {
+    final normalized = <String>[];
+    final seen = <String>{};
+    for (final raw in names) {
+      final trimmed = raw.trim();
+      if (trimmed.isEmpty) continue;
+      final key = trimmed.toLowerCase();
+      if (seen.contains(key)) continue;
+      seen.add(key);
+      normalized.add(trimmed);
+    }
+
+    if (_tagRepository != null) {
+      for (final name in normalized) {
+        await _tagRepository!.findOrCreate(name);
+      }
+    }
+
+    await transactionService.bulkSyncTags(transactionIds, normalized);
+
+    errorNotifierService.notify('Bulk tags updated');
+    notifyListeners();
+  }
+
   void _replaceLocalTransaction(TransactionModel updated) {
     for (final container in accountsContainer) {
       final index = container.transactions
