@@ -38,6 +38,8 @@ class _AddTransactionSheetDesktopState
   String? _localeCode;
   bool _syncingPriceText = false;
 
+  List<TransactionModel> suggestions = [];
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +50,16 @@ class _AddTransactionSheetDesktopState
     nameController.addListener(onNameChanged);
     priceController.addListener(onPriceChanged);
     nameController.text = transactionModel.name;
+    fetchSuggestions();
+  }
+
+  void fetchSuggestions() async {
+    final fetched = await transactionRepository.getSuggestions();
+    if (mounted) {
+      setState(() {
+        suggestions = fetched;
+      });
+    }
   }
 
   @override
@@ -91,10 +103,85 @@ class _AddTransactionSheetDesktopState
           SizedBox(width: 10),
           SizedBox(
             width: 300,
-            child: AppTextField(
-              label: 'Transaction Name',
-              editingController: nameController,
-              focus: true,
+            child: Autocomplete<TransactionModel>(
+              displayStringForOption: (TransactionModel option) => option.name,
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text == '') {
+                  return const Iterable<TransactionModel>.empty();
+                }
+                return suggestions.where((TransactionModel option) {
+                  return option.name
+                      .toLowerCase()
+                      .contains(textEditingValue.text.toLowerCase());
+                }).toList();
+              },
+              optionsViewOpenDirection: OptionsViewOpenDirection.up,
+              optionsViewBuilder: (context, onSelected, options) {
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Material(
+                        elevation: 4.0,
+                        borderRadius: BorderRadius.circular(15),
+                        clipBehavior: Clip.antiAlias,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: 260,
+                            maxWidth: constraints.maxWidth,
+                          ),
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: options.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final TransactionModel option =
+                                  options.elementAt(index);
+                              return ListTile(
+                                title: Text(option.name),
+                                subtitle: Text(
+                                  '${option.categoryName} - \$${option.price}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                                onTap: () => onSelected(option),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              onSelected: (TransactionModel selection) {
+                nameController.text = selection.name;
+                transactionModel.name = selection.name;
+                transactionModel.categoryId = selection.categoryId;
+                transactionModel.price = selection.price;
+                transactionModel.transactionType = selection.transactionType;
+                _syncingPriceText = true;
+                priceController.text =
+                    LocalizedNumberInputFormatterHelper.formatDouble(
+                  selection.price,
+                  _localeCode ?? Localizations.localeOf(context).toString(),
+                );
+                _syncingPriceText = false;
+                setState(() {});
+              },
+              fieldViewBuilder:
+                  (context, controller, focusNode, onFieldSubmitted) {
+                if (nameController.text != controller.text &&
+                    nameController.text.isNotEmpty &&
+                    controller.text.isEmpty) {
+                  controller.text = nameController.text;
+                }
+                return AppTextField(
+                  editingController: controller,
+                  customFocusNode: focusNode,
+                  label: 'Transaction Name',
+                  focus: true,
+                );
+              },
             ),
           ),
           SizedBox(width: 10),
@@ -216,6 +303,7 @@ class _AddTransactionSheetDesktopState
       await transactionRepository.add(transactionModel);
     }
 
+    if (!mounted) return;
     Navigator.pop(context);
   }
 }

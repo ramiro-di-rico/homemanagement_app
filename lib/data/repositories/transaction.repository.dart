@@ -18,6 +18,9 @@ class TransactionRepository extends ChangeNotifier {
   List<AccountContainer> accountsContainer = [];
 
   final List<TransactionModel> transactions = [];
+  List<TransactionModel>? _suggestionsCache;
+  DateTime? _suggestionsCachedAt;
+  static const Duration _suggestionsCacheTtl = Duration(minutes: 10);
   final int pageSize = 20;
   int currentAccountId = 0;
   TransactionPageModel page = TransactionPageModel.newPage(0, 1, 20);
@@ -47,6 +50,7 @@ class TransactionRepository extends ChangeNotifier {
       this.accountRepository.setBalance(transactionResult.targetAccount!);
     }
     
+    _invalidateSuggestionsCache();
     errorNotifierService.notify('Transaction ${transaction.name} added successfully');
     notifyListeners();
   }
@@ -62,6 +66,7 @@ class TransactionRepository extends ChangeNotifier {
     this.accountRepository.updateBalance(transactionModel.accountId,
         -transactionModel.price, transactionModel.transactionType);
 
+    _invalidateSuggestionsCache();
     errorNotifierService.notify('Transaction ${transactionModel.name} removed successfully');
     notifyListeners();
   }
@@ -81,6 +86,7 @@ class TransactionRepository extends ChangeNotifier {
     currentContainer.transactions[index] = transactionModel;
     mapContainerToTransctions();
 
+    _invalidateSuggestionsCache();
     errorNotifierService.notify('Transaction ${transactionModel.name} updated successfully');
     notifyListeners();
   }
@@ -252,6 +258,28 @@ class TransactionRepository extends ChangeNotifier {
     for (var t in container.transactions) {
       transactions.add(t.clone());
     }
+  }
+
+  Future<List<TransactionModel>> getSuggestions({bool forceRefresh = false}) async {
+    final now = DateTime.now();
+    final hasValidCache = !forceRefresh &&
+        _suggestionsCache != null &&
+        _suggestionsCachedAt != null &&
+        now.difference(_suggestionsCachedAt!) < _suggestionsCacheTtl;
+
+    if (hasValidCache) {
+      return _suggestionsCache!.map((e) => e.clone()).toList();
+    }
+
+    final fetched = await this.transactionService.suggested();
+    _suggestionsCache = fetched.map((e) => e.clone()).toList();
+    _suggestionsCachedAt = now;
+    return fetched;
+  }
+
+  void _invalidateSuggestionsCache() {
+    _suggestionsCache = null;
+    _suggestionsCachedAt = null;
   }
 
   AccountContainer _getCurrentContainer() => accountsContainer.firstWhere(

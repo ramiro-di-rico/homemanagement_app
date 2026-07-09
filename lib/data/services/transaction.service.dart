@@ -37,6 +37,11 @@ class TransactionService {
     return pageResult.items;
   }
 
+  Future<List<TransactionModel>> suggested() async {
+    dynamic data = await apiServiceFactory.apiGet('$apiName/suggested');
+    return (data as List).map((e) => TransactionModel.fromJson(e)).toList();
+  }
+
   Future<List<TransactionModel>> filter(int currentPage, int pageSize,
       List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate,
       TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories, List<CurrencyModel> currencies,

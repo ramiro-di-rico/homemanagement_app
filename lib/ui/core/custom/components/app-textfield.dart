@@ -5,9 +5,14 @@ class AppTextField extends TextField {
   final Function(String)? onTextChanged;
   final TextEditingController? editingController;
   final bool focus;
+  final FocusNode? customFocusNode;
 
   AppTextField(
-      {required this.label, this.onTextChanged, this.editingController, this.focus = false});
+      {required this.label,
+      this.onTextChanged,
+      this.editingController,
+      this.focus = false,
+      this.customFocusNode});
 
   @override
   TextInputType get keyboardType => TextInputType.name;
@@ -24,6 +29,9 @@ class AppTextField extends TextField {
 
   @override
   get onChanged => onTextChanged;
+
+  @override
+  FocusNode? get focusNode => customFocusNode;
 
   @override
   TextEditingController get controller =>
