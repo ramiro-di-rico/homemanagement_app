@@ -48,8 +48,13 @@ class _ReminderListContentState extends State<ReminderListContent> {
       reminder.frequency,
       reminder.notifyByEmail,
       isCompleted,
+      reminder.snoozedUntil,
     );
     await _reminderRepository.updateReminder(reminder.id, updatedReminder);
+  }
+
+  Future<void> _snoozeReminder(Reminder reminder, int days) async {
+    await _reminderRepository.snoozeReminder(reminder.id, days);
   }
 
   void _showReminderSheet({Reminder? reminder}) {
@@ -150,7 +155,23 @@ class _ReminderListContentState extends State<ReminderListContent> {
                       color: reminder.isCompleted ? Colors.grey : null,
                     ),
                   ),
-                  trailing: Text(reminder.frequencyString),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(reminder.frequencyString),
+                      if (!reminder.isCompleted)
+                        PopupMenuButton<int>(
+                          icon: const Icon(Icons.snooze),
+                          tooltip: 'Snooze',
+                          onSelected: (days) => _snoozeReminder(reminder, days),
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(value: 1, child: Text('1 day')),
+                            const PopupMenuItem(value: 2, child: Text('2 days')),
+                            const PopupMenuItem(value: 7, child: Text('1 week')),
+                          ],
+                        ),
+                    ],
+                  ),
                   onTap: () => _showReminderSheet(reminder: reminder),
                 ),
               ),

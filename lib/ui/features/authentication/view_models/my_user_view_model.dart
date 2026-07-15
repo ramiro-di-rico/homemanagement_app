@@ -5,6 +5,8 @@ class MyUserViewModel {
   final bool? active;
   final String? language;
   final String? timeZone;
+  final int? digestFrequency;
+  final String? preferredSendTime;
 
   MyUserViewModel({
     this.id,
@@ -13,6 +15,8 @@ class MyUserViewModel {
     this.active,
     this.language,
     this.timeZone,
+    this.digestFrequency,
+    this.preferredSendTime,
   });
 
   static Future<MyUserViewModel> fromJson(Map<String, dynamic> jsonModel) {
@@ -24,6 +28,8 @@ class MyUserViewModel {
         active: jsonModel['active'],
         language: jsonModel['language'],
         timeZone: jsonModel['timeZone'],
+        digestFrequency: jsonModel['digestFrequency'],
+        preferredSendTime: jsonModel['preferredSendTime'],
       ),
     );
   }

@@ -13,8 +13,9 @@ class Reminder {
   final Frequency frequency;
   final bool notifyByEmail;
   final bool isCompleted;
+  final DateTime? snoozedUntil;
 
-  Reminder(this.id, this.title, this.startDate, this.endDate, this.frequency, this.notifyByEmail, this.isCompleted);
+  Reminder(this.id, this.title, this.startDate, this.endDate, this.frequency, this.notifyByEmail, this.isCompleted, [this.snoozedUntil]);
 
   String get frequencyString {
     switch (frequency) {
@@ -38,6 +39,7 @@ class Reminder {
       Frequency.values.firstWhere((e) => e.index == json['frequency']),
       json['notifyByEmail'] as bool,
       json['isCompleted'] as bool? ?? false,
+      json['snoozedUntil'] != null ? DateTime.parse(json['snoozedUntil'] as String) : null,
     );
   }
 
@@ -50,6 +52,7 @@ class Reminder {
       'frequency': frequency.index,
       'notifyByEmail': notifyByEmail,
       'isCompleted': isCompleted,
+      'snoozedUntil': snoozedUntil?.toIso8601String(),
     };
   }
 }

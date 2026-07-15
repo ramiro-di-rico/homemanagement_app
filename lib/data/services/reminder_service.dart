@@ -10,10 +10,10 @@ class ReminderService {
   ReminderService(this._authenticationService);
 
   Future<List<Reminder>> getReminders() async {
-    final token = await _authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
     final response = await http.get(
       backendEndpoint,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: _getHeaders(),
     );
     if (response.statusCode == 200) {
       final List<dynamic> json = jsonDecode(response.body);
@@ -24,13 +24,10 @@ class ReminderService {
   }
 
   Future<Reminder> addReminder(Reminder reminder) async {
-    final token = await _authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
     final response = await http.post(
       backendEndpoint,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(),
       body: jsonEncode(reminder.toJson()),
     );
 
@@ -43,13 +40,10 @@ class ReminderService {
   }
 
   Future<Reminder> updateReminder(int id, Reminder reminder) async {
-    final token = await _authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
     final response = await http.put(
-      backendEndpoint.resolve("reminder"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
+      backendEndpoint.resolve("reminder/${id}"),
+      headers: _getHeaders(),
       body: jsonEncode(reminder.toJson()),
     );
 
@@ -62,7 +56,7 @@ class ReminderService {
   }
 
   Future<void> setAllCompleted(bool isCompleted) async {
-    final token = await _authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
     final uri = backendEndpoint.replace(
       path: '${backendEndpoint.path}/completed',
       queryParameters: {
@@ -71,9 +65,7 @@ class ReminderService {
     );
     final response = await http.patch(
       uri,
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: _getHeaders(),
     );
     var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;
     if (!okStatusCode) {
@@ -82,14 +74,64 @@ class ReminderService {
   }
 
   Future<void> deleteReminder(String id) async {
-    final token = await _authenticationService.getUserToken();
+    await _autoAuthenticateIfNeeded();
     final response = await http.delete(
       backendEndpoint.resolve("reminder/${id}"),
-      headers: {'Authorization': 'Bearer $token'},
+      headers: _getHeaders(),
     );
     var okStatusCode = response.statusCode > 200 && response.statusCode < 300;
     if (!okStatusCode) {
       throw Exception('Failed to delete reminder');
     }
+  }
+
+  Future<void> snoozeReminder(int id, int days) async {
+    await _autoAuthenticateIfNeeded();
+    final uri = backendEndpoint.replace(
+      path: '${backendEndpoint.path}/$id/snooze',
+      queryParameters: {'days': days.toString()},
+    );
+    final response = await http.patch(
+      uri,
+      headers: _getHeaders(),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to snooze reminder');
+    }
+  }
+
+  Future<void> updateNotificationPreferences(
+      String userId, int digestFrequency, String? preferredSendTime) async {
+    await _autoAuthenticateIfNeeded();
+    final uri = backendEndpoint.replace(
+      path: '/reminderapi/User/$userId/preferences',
+    );
+    final response = await http.patch(
+      uri,
+      headers: _getHeaders(),
+      body: jsonEncode({
+        'digestFrequency': digestFrequency,
+        'preferredSendTime': preferredSendTime,
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update notification preferences');
+    }
+  }
+
+  Future _autoAuthenticateIfNeeded() async {
+    if (!_authenticationService.isAuthenticated() &&
+        _authenticationService.canAutoAuthenticate()) {
+      await _authenticationService.autoAuthenticate();
+    }
+  }
+
+  Map<String, String> _getHeaders() {
+    final token = _authenticationService.getUserToken();
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
   }
 }
