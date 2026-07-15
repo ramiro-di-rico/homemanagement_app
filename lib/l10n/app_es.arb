@@ -212,5 +212,7 @@
   "noTags": "Sin etiquetas",
   "manageTransactionTags": "Gestionar etiquetas de la transacción",
   "transactionTagsTitle": "Etiquetas: {name}",
+  "bulkTag": "Etiquetado Masivo",
+  "bulkTaggingTransactions": "Etiquetando {count} transacciones",
   "maxTagsReached": "Puedes adjuntar hasta {max} etiquetas ({current} seleccionadas)."
 }

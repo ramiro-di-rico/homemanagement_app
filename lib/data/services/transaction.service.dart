@@ -37,6 +37,11 @@ class TransactionService {
     return pageResult.items;
   }
 
+  Future<List<TransactionModel>> suggested() async {
+    dynamic data = await apiServiceFactory.apiGet('$apiName/suggested');
+    return (data as List).map((e) => TransactionModel.fromJson(e)).toList();
+  }
+
   Future<List<TransactionModel>> filter(int currentPage, int pageSize,
       List<int>? accountIds, String? name, DateTime? startDate, DateTime? endDate,
       TransactionType? transactionType, List<AccountModel> accounts, List<CategoryModel> categories, List<CurrencyModel> currencies,
@@ -111,6 +116,11 @@ class TransactionService {
       return TransactionModel.fromJson(result);
     }
     throw Exception('Failed to sync tags for transaction $transactionId');
+  }
+
+  Future bulkSyncTags(List<int> transactionIds, List<String> names) async {
+    final body = json.encode(BulkSyncTagsRequest(transactionIds, names).toJson());
+    await apiServiceFactory.apiPut('$apiName/tags/bulk', body);
   }
 
   Future<String> export(int accountId) async {

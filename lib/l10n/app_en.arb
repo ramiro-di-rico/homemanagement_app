@@ -307,6 +307,15 @@
       }
     }
   },
+  "bulkTag": "Bulk Tag",
+  "bulkTaggingTransactions": "Tagging {count} transactions",
+  "@bulkTaggingTransactions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "maxTagsReached": "You can attach up to {max} tags ({current} selected).",
   "@maxTagsReached": {
     "placeholders": {
