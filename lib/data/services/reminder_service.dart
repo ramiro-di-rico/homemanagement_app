@@ -31,7 +31,7 @@ class ReminderService {
       body: jsonEncode(reminder.toJson()),
     );
 
-    var okStatusCode = response.statusCode > 200 && response.statusCode < 300;
+    var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;
     if (okStatusCode) {
       return Reminder.fromJson(jsonDecode(response.body));
     } else {
@@ -79,7 +79,7 @@ class ReminderService {
       backendEndpoint.resolve("reminder/${id}"),
       headers: _getHeaders(),
     );
-    var okStatusCode = response.statusCode > 200 && response.statusCode < 300;
+    var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;
     if (!okStatusCode) {
       throw Exception('Failed to delete reminder');
     }
@@ -95,7 +95,8 @@ class ReminderService {
       uri,
       headers: _getHeaders(),
     );
-    if (response.statusCode != 200) {
+    var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;
+    if (!okStatusCode) {
       throw Exception('Failed to snooze reminder');
     }
   }
@@ -114,8 +115,25 @@ class ReminderService {
         'preferredSendTime': preferredSendTime,
       }),
     );
-    if (response.statusCode != 200) {
+    var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;
+    if (!okStatusCode) {
       throw Exception('Failed to update notification preferences');
+    }
+  }
+
+  Future<Map<String, dynamic>> getNotificationPreferences() async {
+    await _autoAuthenticateIfNeeded();
+    final uri = backendEndpoint.replace(
+      path: '/reminderapi/user/me',
+    );
+    final response = await http.get(
+      uri,
+      headers: _getHeaders(),
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load notification preferences');
     }
   }
 

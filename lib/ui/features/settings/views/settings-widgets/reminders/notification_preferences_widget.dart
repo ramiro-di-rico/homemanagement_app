@@ -30,6 +30,7 @@ class _NotificationPreferencesWidgetState extends State<NotificationPreferencesW
     setState(() {
       _isLoading = true;
     });
+    // First load from Identity API to have the user object
     final user = await _identityUserRepository.getUser();
     if (user != null) {
       setState(() {
@@ -37,6 +38,18 @@ class _NotificationPreferencesWidgetState extends State<NotificationPreferencesW
         _sendTimeController.text = user.preferredSendTime ?? '';
       });
     }
+
+    // Override with Reminders API preferences if available
+    try {
+      final prefs = await _reminderRepository.getNotificationPreferences();
+      setState(() {
+        _digestFrequency = prefs['digestFrequency'] ?? _digestFrequency;
+        _sendTimeController.text = prefs['preferredSendTime'] ?? _sendTimeController.text;
+      });
+    } catch (e) {
+      // If reminders preferences fail, we keep the ones from Identity API
+    }
+
     setState(() {
       _isLoading = false;
     });

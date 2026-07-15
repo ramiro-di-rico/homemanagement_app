@@ -97,4 +97,13 @@ class ReminderRepository extends ChangeNotifier {
       _notifierService.notify(e.toString(), isError: true);
     }
   }
+
+  Future<Map<String, dynamic>> getNotificationPreferences() async {
+    try {
+      return await _reminderService.getNotificationPreferences();
+    } on Exception catch (e) {
+      _notifierService.notify(e.toString(), isError: true);
+      rethrow;
+    }
+  }
 }
