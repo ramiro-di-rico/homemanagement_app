@@ -6,6 +6,7 @@ import 'settings-widgets/authentication_settings_widget.dart';
 import 'settings-widgets/categories_list_widget.dart';
 import 'settings-widgets/feature-toggles.widget.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/reminders/reminders_list_desktop.dart';
+import 'package:home_management_app/ui/features/settings/views/settings-widgets/reminders/notification_preferences_widget.dart';
 import 'settings-widgets/user-settings-widget.dart';
 
 class SettingsDesktopView extends StatefulWidget {
@@ -45,7 +46,9 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                   //PreferredCurrency(),
                                   FeatureTogglesWidget(),
                                   UserSettingsWidget(),
-                                  SizedBox(height: 20),
+                                  const SizedBox(height: 20),
+                                  const NotificationPreferencesWidget(),
+                                  const SizedBox(height: 20),
                                   ReminderListView(),
                                   Padding(
                                     padding: EdgeInsets.all(10),

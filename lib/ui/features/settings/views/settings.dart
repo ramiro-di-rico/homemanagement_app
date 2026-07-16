@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/authentication_settings_widget.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/user-settings-widget.dart';
+import 'package:home_management_app/ui/features/settings/views/settings-widgets/reminders/notification_preferences_widget.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/feature-toggles.widget.dart';
 import 'package:home_management_app/ui/features/home/views/logging_view.dart';
 import 'settings-widgets/buid-info.wdiget.dart';
@@ -29,6 +30,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: EdgeInsets.all(10),
             child: UserSettingsWidget(),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: NotificationPreferencesWidget(),
           ),
           /*Padding(
             padding: EdgeInsets.all(10),

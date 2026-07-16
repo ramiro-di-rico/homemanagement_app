@@ -57,7 +57,7 @@ class ReminderRepository extends ChangeNotifier {
     try {
       await _reminderService.setAllCompleted(isCompleted);
       _cachedReminders = _cachedReminders
-          .map((r) => Reminder(r.id, r.title, r.startDate, r.endDate, r.frequency, r.notifyByEmail, isCompleted))
+          .map((r) => Reminder(r.id, r.title, r.startDate, r.endDate, r.frequency, r.notifyByEmail, isCompleted, r.snoozedUntil))
           .toList();
       notifyListeners();
       _notifierService.notify(isCompleted ? 'All reminders completed' : 'All reminders marked as not completed');
@@ -74,6 +74,36 @@ class ReminderRepository extends ChangeNotifier {
       _notifierService.notify('Reminder deleted');
     } on Exception catch (e) {
       _notifierService.notify(e.toString(), isError: true);
+    }
+  }
+
+  Future snoozeReminder(int id, int days) async {
+    try {
+      await _reminderService.snoozeReminder(id, days);
+      await getReminders(forceRefresh: true);
+      _notifierService.notify('Reminder snoozed for $days days');
+    } on Exception catch (e) {
+      _notifierService.notify(e.toString(), isError: true);
+    }
+  }
+
+  Future updateNotificationPreferences(
+      String userId, int digestFrequency, String? preferredSendTime) async {
+    try {
+      await _reminderService.updateNotificationPreferences(
+          userId, digestFrequency, preferredSendTime);
+      _notifierService.notify('Notification preferences updated');
+    } on Exception catch (e) {
+      _notifierService.notify(e.toString(), isError: true);
+    }
+  }
+
+  Future<Map<String, dynamic>> getNotificationPreferences() async {
+    try {
+      return await _reminderService.getNotificationPreferences();
+    } on Exception catch (e) {
+      _notifierService.notify(e.toString(), isError: true);
+      rethrow;
     }
   }
 }
