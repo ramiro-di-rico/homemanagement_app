@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:home_management_app/custom/formatters/localized_number_input_formatter.dart';
+import 'package:home_management_app/ui/core/custom/formatters/localized_number_input_formatter.dart';
 
 void main() {
   group('LocalizedNumberInputFormatterHelper', () {

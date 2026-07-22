@@ -47,6 +47,8 @@ class RecurringTransaction{
 
   static Recurrence parseRecurrence(int value) =>
       value == 0 ? Recurrence.Monthly : Recurrence.Annually;
+
+  bool isValid() => name.isNotEmpty && accountId != null && categoryId != null;
 }
 
 enum Recurrence {
