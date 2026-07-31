@@ -214,5 +214,12 @@
   "transactionTagsTitle": "Etiquetas: {name}",
   "bulkTag": "Etiquetado Masivo",
   "bulkTaggingTransactions": "Etiquetando {count} transacciones",
-  "maxTagsReached": "Puedes adjuntar hasta {max} etiquetas ({current} seleccionadas)."
+  "maxTagsReached": "Puedes adjuntar hasta {max} etiquetas ({current} seleccionadas).",
+  "transactionProjections": "Proyección de gastos",
+  "noProjectionDataAvailable": "No hay datos de proyección disponibles",
+  "projectedNextMonth": "Próximo mes",
+  "projectedNext3Months": "Próximos 3 meses",
+  "monthlyAverage": "Promedio mensual",
+  "basedOnLastMonths": "Basado en los últimos {count} meses",
+  "lookbackMonths": "Meses hacia atrás"
 }

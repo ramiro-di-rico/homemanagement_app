@@ -4,6 +4,7 @@ import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/home/views/shared/category_comparison/category_comparison_chart_widget.dart';
 import 'package:home_management_app/ui/features/home/views/shared/category_historical/category_historical_chart_widget.dart';
 import 'package:home_management_app/ui/features/home/views/shared/most-expensive-categories.widget.dart';
+import 'package:home_management_app/ui/features/home/views/shared/transaction_projection/transaction_projection_widget.dart';
 
 class StatisticsView extends StatelessWidget {
   static const String fullPath = '/home_screen/statistics';
@@ -51,6 +52,13 @@ class StatisticsView extends StatelessWidget {
                           child: CategoryComparisonChartWidget(),
                         ),
                       ),
+                      SizedBox(
+                        height: 500,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: TransactionProjectionChartWidget(),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -79,6 +87,13 @@ class StatisticsView extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.all(10),
                       child: CategoryComparisonChartWidget(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 500,
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: TransactionProjectionChartWidget(),
                     ),
                   ),
                 ],

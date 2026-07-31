@@ -705,6 +705,30 @@ class AppLocalizationsEs extends AppLocalizations {
   String maxTagsReached(int max, int current) {
     return 'Puedes adjuntar hasta $max etiquetas ($current seleccionadas).';
   }
+
+  @override
+  String get transactionProjections => 'Proyección de gastos';
+
+  @override
+  String get noProjectionDataAvailable =>
+      'No hay datos de proyección disponibles';
+
+  @override
+  String get projectedNextMonth => 'Próximo mes';
+
+  @override
+  String get projectedNext3Months => 'Próximos 3 meses';
+
+  @override
+  String get monthlyAverage => 'Promedio mensual';
+
+  @override
+  String basedOnLastMonths(int count) {
+    return 'Basado en los últimos $count meses';
+  }
+
+  @override
+  String get lookbackMonths => 'Meses hacia atrás';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1382,4 +1406,28 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String maxTagsReached(int max, int current) {
     return 'Podés adjuntar hasta $max etiquetas ($current seleccionadas).';
   }
+
+  @override
+  String get transactionProjections => 'Proyección de gastos';
+
+  @override
+  String get noProjectionDataAvailable =>
+      'No hay datos de proyección disponibles';
+
+  @override
+  String get projectedNextMonth => 'Próximo mes';
+
+  @override
+  String get projectedNext3Months => 'Próximos 3 meses';
+
+  @override
+  String get monthlyAverage => 'Promedio mensual';
+
+  @override
+  String basedOnLastMonths(int count) {
+    return 'Basado en los últimos $count meses';
+  }
+
+  @override
+  String get lookbackMonths => 'Meses hacia atrás';
 }

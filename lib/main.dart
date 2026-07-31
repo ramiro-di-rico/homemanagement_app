@@ -34,6 +34,7 @@ import 'package:home_management_app/data/services/caching.dart';
 import 'package:home_management_app/data/services/category.service.dart';
 import 'package:home_management_app/data/services/category.service.metric.dart';
 import 'package:home_management_app/data/services/dashboard.service.dart';
+import 'package:home_management_app/data/services/transaction_projection.service.dart';
 import 'package:home_management_app/data/services/notification.service.dart';
 import 'package:home_management_app/data/services/cryptography.service.dart';
 import 'package:home_management_app/data/services/currency.service.dart';
@@ -95,6 +96,9 @@ void registerServices() {
   GetIt.instance.registerFactory(() => CategoryMetricService(
       authenticationService: GetIt.I<AuthenticationService>(),
       caching: GetIt.I<Caching>()));
+
+  GetIt.instance.registerFactory(() => TransactionProjectionService(
+      authenticationService: GetIt.I<AuthenticationService>()));
 
   GetIt.instance.registerFactory(() => TagService(
       authenticationService: GetIt.I<AuthenticationService>(),

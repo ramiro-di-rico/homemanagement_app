@@ -209,5 +209,12 @@
   "noTags": "Sem etiquetas",
   "manageTransactionTags": "Gerenciar etiquetas da transação",
   "transactionTagsTitle": "Etiquetas: {name}",
-  "maxTagsReached": "Você pode anexar até {max} etiquetas ({current} selecionadas)."
+  "maxTagsReached": "Você pode anexar até {max} etiquetas ({current} selecionadas).",
+  "transactionProjections": "Projeção de despesas",
+  "noProjectionDataAvailable": "Nenhum dado de projeção disponível",
+  "projectedNextMonth": "Próximo mês",
+  "projectedNext3Months": "Próximos 3 meses",
+  "monthlyAverage": "Média mensal",
+  "basedOnLastMonths": "Baseado nos últimos {count} meses",
+  "lookbackMonths": "Meses retroativos"
 }

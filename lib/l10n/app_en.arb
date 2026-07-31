@@ -326,5 +326,19 @@
         "type": "int"
       }
     }
-  }
+  },
+  "transactionProjections": "Expense Projections",
+  "noProjectionDataAvailable": "No projection data available",
+  "projectedNextMonth": "Next month",
+  "projectedNext3Months": "Next 3 months",
+  "monthlyAverage": "Monthly average",
+  "basedOnLastMonths": "Based on the last {count} months",
+  "@basedOnLastMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lookbackMonths": "Lookback months"
 }

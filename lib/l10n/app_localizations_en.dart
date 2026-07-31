@@ -701,4 +701,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String maxTagsReached(int max, int current) {
     return 'You can attach up to $max tags ($current selected).';
   }
+
+  @override
+  String get transactionProjections => 'Expense Projections';
+
+  @override
+  String get noProjectionDataAvailable => 'No projection data available';
+
+  @override
+  String get projectedNextMonth => 'Next month';
+
+  @override
+  String get projectedNext3Months => 'Next 3 months';
+
+  @override
+  String get monthlyAverage => 'Monthly average';
+
+  @override
+  String basedOnLastMonths(int count) {
+    return 'Based on the last $count months';
+  }
+
+  @override
+  String get lookbackMonths => 'Lookback months';
 }

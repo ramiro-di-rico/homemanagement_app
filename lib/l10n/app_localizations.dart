@@ -1392,6 +1392,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can attach up to {max} tags ({current} selected).'**
   String maxTagsReached(int max, int current);
+
+  /// No description provided for @transactionProjections.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Projections'**
+  String get transactionProjections;
+
+  /// No description provided for @noProjectionDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No projection data available'**
+  String get noProjectionDataAvailable;
+
+  /// No description provided for @projectedNextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get projectedNextMonth;
+
+  /// No description provided for @projectedNext3Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Next 3 months'**
+  String get projectedNext3Months;
+
+  /// No description provided for @monthlyAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly average'**
+  String get monthlyAverage;
+
+  /// No description provided for @basedOnLastMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on the last {count} months'**
+  String basedOnLastMonths(int count);
+
+  /// No description provided for @lookbackMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Lookback months'**
+  String get lookbackMonths;
 }
 
 class _AppLocalizationsDelegate
