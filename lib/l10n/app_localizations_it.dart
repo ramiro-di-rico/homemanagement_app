@@ -368,6 +368,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchAccounts => 'Cerca conti';
 
   @override
+  String get searchCategories => 'Cerca categorie';
+
+  @override
   String get developerMode => 'Modalità Sviluppatore';
 
   @override

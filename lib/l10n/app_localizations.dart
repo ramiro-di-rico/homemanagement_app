@@ -769,6 +769,12 @@ abstract class AppLocalizations {
   /// **'Search accounts'**
   String get searchAccounts;
 
+  /// No description provided for @searchCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Search categories'**
+  String get searchCategories;
+
   /// No description provided for @developerMode.
   ///
   /// In en, this message translates to:

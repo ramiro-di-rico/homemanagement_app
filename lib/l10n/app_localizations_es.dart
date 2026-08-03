@@ -367,6 +367,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get searchAccounts => 'Buscar cuentas';
 
   @override
+  String get searchCategories => 'Buscar categorías';
+
+  @override
   String get developerMode => 'Modo Desarrollador';
 
   @override
@@ -1050,6 +1053,9 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get searchAccounts => 'Buscar cuentas';
+
+  @override
+  String get searchCategories => 'Buscar categorías';
 
   @override
   String get developerMode => 'Modo Desarrollador';
