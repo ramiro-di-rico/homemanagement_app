@@ -280,13 +280,16 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               accountsRepo.archive(item);
                             },
                           ),
+                          Divider(height: 1, thickness: 1),
                           MenuItemButton(
                             leadingIcon: Icon(
                               Icons.delete,
                               color: Colors.redAccent,
                             ),
                             child: Text(AppLocalizations.of(context)!.delete,
-                                style: TextStyle(color: Colors.redAccent)),
+                                style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontWeight: FontWeight.bold)),
                             onPressed: () {
                               remove(item, index);
                             },
