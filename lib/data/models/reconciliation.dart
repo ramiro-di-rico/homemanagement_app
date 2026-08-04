@@ -10,13 +10,23 @@ extension StatementFormatName on StatementFormat {
       };
 }
 
-/// How a statement row was tied to an existing transaction. Mirrors the backend `MatchKind`.
-enum MatchKind { reference, exactDate, dateTolerance }
+/// How a statement row was tied to an existing transaction. Mirrors the backend `MatchKind`, which
+/// travels as an integer, so the values are positional on both sides.
+enum MatchKind {
+  reference,
+  exactDate,
+  dateTolerance,
+
+  /// A value this version of the app does not know. Kept separate instead of guessing: claiming a
+  /// specific kind would be a silent lie if the backend ever adds or reorders one.
+  unknown
+}
 
 MatchKind _parseMatchKind(int value) => switch (value) {
       0 => MatchKind.reference,
       1 => MatchKind.exactDate,
-      _ => MatchKind.dateTolerance,
+      2 => MatchKind.dateTolerance,
+      _ => MatchKind.unknown,
     };
 
 /// A movement as reported by the bank.

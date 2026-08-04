@@ -9,6 +9,9 @@ import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
+/// Supplies the categories offered for the movements to create.
+typedef CategoriesProvider = List<CategoryModel> Function();
+
 /// Reconciles an account against the CSV statement the bank offers for download: shows what the bank
 /// reports and the app is missing, what the app has and the bank does not report, and applies only
 /// what the user selects.
@@ -18,16 +21,22 @@ class ReconciliationScreen extends StatefulWidget {
 
   final AccountModel account;
 
-  const ReconciliationScreen(this.account, {super.key});
+  /// Both default to the registered singletons; tests pass their own.
+  final ReconciliationController? controller;
+  final CategoriesProvider? categoriesProvider;
+
+  const ReconciliationScreen(this.account,
+      {super.key, this.controller, this.categoriesProvider});
 
   @override
   State<ReconciliationScreen> createState() => _ReconciliationScreenState();
 }
 
 class _ReconciliationScreenState extends State<ReconciliationScreen> {
-  final ReconciliationRepository _repository =
-      GetIt.I<ReconciliationRepository>();
-  final CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
+  late final ReconciliationController _repository =
+      widget.controller ?? GetIt.I<ReconciliationRepository>();
+  late final CategoriesProvider _categoriesProvider = widget.categoriesProvider ??
+      () => GetIt.I<CategoryRepository>().getActiveCategories();
 
   /// References of the statement rows to create. Every missing row starts selected.
   final Set<String> _selectedMissing = {};
@@ -39,6 +48,9 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
   final Set<int> _selectedExtra = {};
 
   bool _applying = false;
+
+  /// The preview the current selection was seeded from.
+  ReconciliationPreviewModel? _seededPreview;
 
   @override
   void initState() {
@@ -69,8 +81,12 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
+          // Ignore a preview belonging to another account: applying it here would create that
+          // account's movements on this one.
           final preview = _repository.preview;
-          if (preview == null) return _buildEmptyState(localizations);
+          if (preview == null || preview.accountId != widget.account.id) {
+            return _buildEmptyState(localizations);
+          }
 
           return _buildPreview(context, localizations, preview);
         },
@@ -102,8 +118,29 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
         ),
       );
 
+  /// Seeds the selection from the preview itself, so "every missing row starts selected with its
+  /// suggested category" holds however the preview arrived, not only through the file picker.
+  void _seedSelectionIfNeeded(ReconciliationPreviewModel preview) {
+    if (identical(_seededPreview, preview)) return;
+
+    _seededPreview = preview;
+    _selectedMissing
+      ..clear()
+      ..addAll(preview.missing.map((m) => m.row.reference));
+    _categoryByReference.clear();
+    for (final missing in preview.missing) {
+      if (missing.suggestedCategoryId != null) {
+        _categoryByReference[missing.row.reference] = missing.suggestedCategoryId!;
+      }
+    }
+    // Deleting is destructive, so nothing here is preselected.
+    _selectedExtra.clear();
+  }
+
   Widget _buildPreview(BuildContext context, AppLocalizations localizations,
       ReconciliationPreviewModel preview) {
+    _seedSelectionIfNeeded(preview);
+
     return DefaultTabController(
       length: 4,
       child: Column(
@@ -175,7 +212,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
 
   Widget _buildMissingTab(
       AppLocalizations localizations, ReconciliationPreviewModel preview) {
-    final categories = _categoryRepository.getActiveCategories();
+    final categories = _categoriesProvider();
 
     return _buildTab(
       hint: localizations.reconciliationMissingHint,
@@ -391,23 +428,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
       final fileContent = await result.files.first.xFile.readAsString();
       if (fileContent.isEmpty) return;
 
-      final preview = await _repository.loadPreview(
-          widget.account.id, fileContent);
-      if (preview == null) return;
-
-      setState(() {
-        _selectedMissing
-          ..clear()
-          ..addAll(preview.missing.map((m) => m.row.reference));
-        _categoryByReference.clear();
-        for (final missing in preview.missing) {
-          if (missing.suggestedCategoryId != null) {
-            _categoryByReference[missing.row.reference] =
-                missing.suggestedCategoryId!;
-          }
-        }
-        _selectedExtra.clear();
-      });
+      await _repository.loadPreview(widget.account.id, fileContent);
     } catch (e) {
       if (mounted) _showMessage(localizations.failedToReadStatement, isError: true);
     }
@@ -444,13 +465,18 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
 
     if (result == null) return;
 
-    _selectedMissing.clear();
-    _selectedExtra.clear();
-    _categoryByReference.clear();
+    // One message, not two: a second snackbar would immediately hide the first.
+    var message = localizations.reconciliationApplied(
+        result.createdCount, result.deletedCount);
+    final check = result.balanceCheck;
+    if (check != null) {
+      message = '$message · ${check.matches
+          ? localizations.reconciliationBalanceMatches
+          : localizations.reconciliationBalanceDifference(
+              _formatAmount(check.difference))}';
+    }
 
-    _showMessage(localizations.reconciliationApplied(
-        result.createdCount, result.deletedCount));
-    _showBalanceCheck(localizations, result);
+    _showMessage(message, isError: check != null && !check.matches);
   }
 
   Future<bool> _confirmDeletion(AppLocalizations localizations) async {
@@ -475,20 +501,6 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
     );
 
     return confirmed ?? false;
-  }
-
-  void _showBalanceCheck(
-      AppLocalizations localizations, ApplyReconciliationResultModel result) {
-    final check = result.balanceCheck;
-    if (check == null) return;
-
-    _showMessage(
-      check.matches
-          ? localizations.reconciliationBalanceMatches
-          : localizations.reconciliationBalanceDifference(
-              _formatAmount(check.difference)),
-      isError: !check.matches,
-    );
   }
 
   void _showMessage(String message, {bool isError = false}) {

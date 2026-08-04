@@ -5,9 +5,35 @@ import 'package:home_management_app/data/repositories/transaction.repository.dar
 import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
 
+/// What the reconciliation screen needs from its repository. Exists so the screen can be tested
+/// against a fake without building the whole service graph.
+abstract class ReconciliationController extends ChangeNotifier {
+  ReconciliationPreviewModel? get preview;
+
+  bool get isLoading;
+
+  bool get hasPreview;
+
+  Future<ReconciliationPreviewModel?> loadPreview(int accountId, String fileContent,
+      {StatementFormat format});
+
+  Future<ApplyReconciliationResultModel?> apply(
+    int accountId, {
+    List<ReconciliationTransactionToCreate> transactionsToCreate,
+    List<int> transactionIdsToDelete,
+    List<ReconciliationReferenceLink>? referencesToLink,
+    bool verifyBalance,
+  });
+
+  List<ReconciliationReferenceLink> pendingReferenceLinks();
+
+  void clear();
+}
+
 /// Drives the two steps of reconciling an account against a bank statement: a preview that only
 /// reads, and an apply that performs what the user selected on it.
-class ReconciliationRepository extends ChangeNotifier {
+class ReconciliationRepository extends ChangeNotifier
+    implements ReconciliationController {
   final TransactionService transactionService;
   final AccountRepository accountRepository;
   final TransactionRepository transactionRepository;
@@ -23,12 +49,16 @@ class ReconciliationRepository extends ChangeNotifier {
   ReconciliationPreviewModel? _preview;
   bool _loading = false;
 
+  @override
   ReconciliationPreviewModel? get preview => _preview;
 
+  @override
   bool get isLoading => _loading;
 
+  @override
   bool get hasPreview => _preview != null;
 
+  @override
   Future<ReconciliationPreviewModel?> loadPreview(
       int accountId, String fileContent,
       {StatementFormat format = StatementFormat.accountStatementCsv}) async {
@@ -56,6 +86,7 @@ class ReconciliationRepository extends ChangeNotifier {
   ///
   /// References of the heuristic matches are linked on every apply: they cost nothing and make the
   /// next reconciliation of the same statement a straight reference match.
+  @override
   Future<ApplyReconciliationResultModel?> apply(
     int accountId, {
     List<ReconciliationTransactionToCreate> transactionsToCreate = const [],
@@ -95,6 +126,7 @@ class ReconciliationRepository extends ChangeNotifier {
   }
 
   /// The matches of the current preview whose reference is not persisted yet.
+  @override
   List<ReconciliationReferenceLink> pendingReferenceLinks() =>
       (_preview?.matched ?? const [])
           .where((m) => m.requiresReferenceLink)
@@ -103,6 +135,7 @@ class ReconciliationRepository extends ChangeNotifier {
               externalReference: m.row.reference))
           .toList();
 
+  @override
   void clear() {
     _preview = null;
     notifyListeners();
