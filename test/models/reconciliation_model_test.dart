@@ -39,15 +39,18 @@ Map<String, dynamic> previewJson() => {
       ],
       'extra': [
         {
-          'id': 99,
-          'accountId': 3,
-          'categoryId': 1,
-          'name': 'Duplicado',
-          'price': 500.0,
-          'date': '2026-07-15T00:00:00Z',
-          'transactionType': 1,
-          'categoryName': 'Food',
-          'tags': [],
+          'transaction': {
+            'id': 99,
+            'accountId': 3,
+            'categoryId': 1,
+            'name': 'Duplicado',
+            'price': 500.0,
+            'date': '2026-07-15T00:00:00Z',
+            'transactionType': 1,
+            'categoryName': 'Food',
+            'tags': [],
+          },
+          'nearPeriodEdge': true,
         },
       ],
       'ambiguous': [
@@ -111,9 +114,10 @@ void main() {
     test('fromJson reads extra transactions as regular transactions', () {
       final preview = ReconciliationPreviewModel.fromJson(previewJson());
 
-      expect(preview.extra.first.id, 99);
-      expect(preview.extra.first.name, 'Duplicado');
-      expect(preview.extra.first.price, 500.0);
+      expect(preview.extra.first.transaction.id, 99);
+      expect(preview.extra.first.transaction.name, 'Duplicado');
+      expect(preview.extra.first.transaction.price, 500.0);
+      expect(preview.extra.first.nearPeriodEdge, isTrue);
     });
 
     test('fromJson reads the candidates of an ambiguous row', () {

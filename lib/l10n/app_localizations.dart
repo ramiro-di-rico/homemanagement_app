@@ -1560,6 +1560,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to read the statement'**
   String get failedToReadStatement;
+
+  /// No description provided for @reconciliationNearPeriodEdge.
+  ///
+  /// In en, this message translates to:
+  /// **'Could belong to a neighbouring statement — check before deleting'**
+  String get reconciliationNearPeriodEdge;
 }
 
 class _AppLocalizationsDelegate

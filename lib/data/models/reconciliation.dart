@@ -145,6 +145,26 @@ class ReconciliationAmbiguousModel {
       );
 }
 
+/// A transaction the bank does not report inside the period: a candidate for deletion.
+class ReconciliationExtraModel {
+  final TransactionModel transaction;
+
+  /// True when the transaction is close enough to a period edge that the neighbouring statement may be
+  /// the one reporting it. Deleting it on this statement's word alone would be wrong.
+  final bool nearPeriodEdge;
+
+  ReconciliationExtraModel({
+    required this.transaction,
+    required this.nearPeriodEdge,
+  });
+
+  factory ReconciliationExtraModel.fromJson(dynamic json) =>
+      ReconciliationExtraModel(
+        transaction: TransactionModel.fromJson(json['transaction']),
+        nearPeriodEdge: json['nearPeriodEdge'] ?? false,
+      );
+}
+
 class ReconciliationPreviewModel {
   final int accountId;
   final DateTime? periodStart;
@@ -154,7 +174,7 @@ class ReconciliationPreviewModel {
   final List<ReconciliationMissingModel> missing;
 
   /// Transactions the bank does not report inside the period: candidates for deletion.
-  final List<TransactionModel> extra;
+  final List<ReconciliationExtraModel> extra;
   final List<ReconciliationAmbiguousModel> ambiguous;
 
   ReconciliationPreviewModel({
@@ -181,7 +201,7 @@ class ReconciliationPreviewModel {
             : StatementBalancesModel.fromJson(json['statementBalances']),
         matched: _mapList(json['matched'], ReconciliationMatchedModel.fromJson),
         missing: _mapList(json['missing'], ReconciliationMissingModel.fromJson),
-        extra: _mapList(json['extra'], TransactionModel.fromJson),
+        extra: _mapList(json['extra'], ReconciliationExtraModel.fromJson),
         ambiguous:
             _mapList(json['ambiguous'], ReconciliationAmbiguousModel.fromJson),
       );

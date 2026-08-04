@@ -277,12 +277,13 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
       onSelectAll: (selected) => setState(() {
         _selectedExtra.clear();
         if (selected) {
-          _selectedExtra.addAll(preview.extra.map((t) => t.id));
+          _selectedExtra.addAll(preview.extra.map((e) => e.transaction.id));
         }
       }),
       localizations: localizations,
       itemBuilder: (context, index) {
-        final transaction = preview.extra[index];
+        final extra = preview.extra[index];
+        final transaction = extra.transaction;
 
         return CheckboxListTile(
           value: _selectedExtra.contains(transaction.id),
@@ -294,8 +295,29 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
             }
           }),
           title: Text(transaction.name),
-          subtitle: Text(
-              '${_formatDate(context, transaction.date)} · ${transaction.categoryName}'),
+          isThreeLine: extra.nearPeriodEdge,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  '${_formatDate(context, transaction.date)} · ${transaction.categoryName}'),
+              // Close to a period edge the statement is weak evidence: the neighbouring one may
+              // report this movement.
+              if (extra.nearPeriodEdge)
+                Row(
+                  children: [
+                    const Icon(Icons.warning_amber, size: 14, color: Colors.orange),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        localizations.reconciliationNearPeriodEdge,
+                        style: const TextStyle(fontSize: 11, color: Colors.orange),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
           secondary: _amountLabel(transaction.price, transaction.isIncome()),
         );
       },

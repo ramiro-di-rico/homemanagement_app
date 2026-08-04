@@ -813,6 +813,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get failedToReadStatement => 'No se pudo leer el extracto';
+
+  @override
+  String get reconciliationNearPeriodEdge =>
+      'Podría pertenecer a un extracto vecino — revisá antes de eliminar';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1598,4 +1602,8 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get failedToReadStatement => 'No se pudo leer el extracto';
+
+  @override
+  String get reconciliationNearPeriodEdge =>
+      'Podría pertenecer a un extracto vecino — revisá antes de eliminar';
 }

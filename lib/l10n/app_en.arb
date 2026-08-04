@@ -383,5 +383,6 @@
   },
   "reconciliationCategoryRequired": "Pick a category for every movement to create",
   "reconciliationNothingSelected": "Nothing selected to apply",
-  "failedToReadStatement": "Failed to read the statement"
+  "failedToReadStatement": "Failed to read the statement",
+  "reconciliationNearPeriodEdge": "Could belong to a neighbouring statement — check before deleting"
 }

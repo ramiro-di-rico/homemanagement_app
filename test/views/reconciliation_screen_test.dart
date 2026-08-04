@@ -195,6 +195,20 @@ void main() {
         findsOneWidget);
   });
 
+  testWidgets('an extra near the period edge is flagged before deleting',
+      (tester) async {
+    final controller =
+        FakeReconciliationController(preview: previewWith(nearPeriodEdge: true));
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Not in statement (1)'));
+    await tester.pumpAndSettle();
+
+    expect(
+        find.textContaining('Could belong to a neighbouring statement'),
+        findsOneWidget);
+  });
+
   testWidgets('a balance difference is reported after applying', (tester) async {
     final controller = FakeReconciliationController(preview: previewWith())
       ..applyResult = ApplyReconciliationResultModel(
@@ -246,7 +260,10 @@ List<bool?> checkboxValues(WidgetTester tester) => tester
 
 /// One missing row and one extra transaction, which is enough to exercise both selections.
 ReconciliationPreviewModel previewWith(
-        {int? suggestedCategoryId = 7, int accountId = 3, int extraCount = 1}) =>
+        {int? suggestedCategoryId = 7,
+        int accountId = 3,
+        int extraCount = 1,
+        bool nearPeriodEdge = false}) =>
     ReconciliationPreviewModel.fromJson({
       'accountId': accountId,
       'periodStart': '2026-07-01T00:00:00Z',
@@ -273,15 +290,18 @@ ReconciliationPreviewModel previewWith(
       'extra': List.generate(
           extraCount,
           (i) => {
-                'id': 99 + i,
-                'accountId': 3,
-                'categoryId': 1,
-                'name': 'Duplicado ${i + 1}',
-                'price': 500.0,
-                'date': '2026-07-15T00:00:00Z',
-                'transactionType': 1,
-                'categoryName': 'Comida',
-                'tags': [],
+                'transaction': {
+                  'id': 99 + i,
+                  'accountId': 3,
+                  'categoryId': 1,
+                  'name': 'Duplicado ${i + 1}',
+                  'price': 500.0,
+                  'date': '2026-07-15T00:00:00Z',
+                  'transactionType': 1,
+                  'categoryName': 'Comida',
+                  'tags': [],
+                },
+                'nearPeriodEdge': nearPeriodEdge,
               }),
       'ambiguous': [],
     });

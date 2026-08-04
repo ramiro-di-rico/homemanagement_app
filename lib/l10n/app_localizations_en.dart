@@ -806,4 +806,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToReadStatement => 'Failed to read the statement';
+
+  @override
+  String get reconciliationNearPeriodEdge =>
+      'Could belong to a neighbouring statement — check before deleting';
 }
