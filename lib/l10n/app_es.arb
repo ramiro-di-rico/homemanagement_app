@@ -241,5 +241,7 @@
   "reconciliationCategoryRequired": "Elegí una categoría para cada movimiento a crear",
   "reconciliationNothingSelected": "No hay nada seleccionado para aplicar",
   "failedToReadStatement": "No se pudo leer el extracto",
-  "reconciliationNearPeriodEdge": "Podría pertenecer a un extracto vecino — revisá antes de eliminar"
+  "reconciliationNearPeriodEdge": "Podría pertenecer a un extracto vecino — revisá antes de eliminar",
+  "reconciliationBalanceMatchesAsOf": "El saldo de la cuenta al {date} coincide con el extracto",
+  "reconciliationBalanceDifferenceAsOf": "Diferencia contra el extracto al {date}: {difference}"
 }

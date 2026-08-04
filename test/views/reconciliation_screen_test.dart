@@ -227,6 +227,31 @@ void main() {
         findsOneWidget);
   });
 
+  testWidgets('the balance message names the date it refers to',
+      (tester) async {
+    final controller = FakeReconciliationController(preview: previewWith())
+      ..applyResult = ApplyReconciliationResultModel(
+        createdCount: 1,
+        deletedCount: 0,
+        linkedCount: 0,
+        balanceCheck: BalanceCheckModel(
+          expected: 100,
+          actual: 120,
+          difference: 20,
+          matches: false,
+          asOf: DateTime.utc(2026, 7, 31),
+        ),
+      );
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Apply (1)'));
+    await tester.pumpAndSettle();
+
+    // Without the date, a difference against a past statement means nothing.
+    expect(find.textContaining('Difference against the statement at Jul 31, 2026'),
+        findsOneWidget);
+  });
+
   testWidgets('a preview of another account is not shown', (tester) async {
     final controller = FakeReconciliationController(preview: previewWith(accountId: 44));
     await pumpScreen(tester, controller);

@@ -384,5 +384,24 @@
   "reconciliationCategoryRequired": "Pick a category for every movement to create",
   "reconciliationNothingSelected": "Nothing selected to apply",
   "failedToReadStatement": "Failed to read the statement",
-  "reconciliationNearPeriodEdge": "Could belong to a neighbouring statement — check before deleting"
+  "reconciliationNearPeriodEdge": "Could belong to a neighbouring statement — check before deleting",
+  "reconciliationBalanceMatchesAsOf": "The account balance at {date} matches the statement",
+  "@reconciliationBalanceMatchesAsOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reconciliationBalanceDifferenceAsOf": "Difference against the statement at {date}: {difference}",
+  "@reconciliationBalanceDifferenceAsOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  }
 }

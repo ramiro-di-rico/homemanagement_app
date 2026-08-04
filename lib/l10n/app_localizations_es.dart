@@ -817,6 +817,16 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get reconciliationNearPeriodEdge =>
       'Podría pertenecer a un extracto vecino — revisá antes de eliminar';
+
+  @override
+  String reconciliationBalanceMatchesAsOf(String date) {
+    return 'El saldo de la cuenta al $date coincide con el extracto';
+  }
+
+  @override
+  String reconciliationBalanceDifferenceAsOf(String date, String difference) {
+    return 'Diferencia contra el extracto al $date: $difference';
+  }
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1606,4 +1616,14 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get reconciliationNearPeriodEdge =>
       'Podría pertenecer a un extracto vecino — revisá antes de eliminar';
+
+  @override
+  String reconciliationBalanceMatchesAsOf(String date) {
+    return 'El saldo de la cuenta al $date coincide con el extracto';
+  }
+
+  @override
+  String reconciliationBalanceDifferenceAsOf(String date, String difference) {
+    return 'Diferencia contra el extracto al $date: $difference';
+  }
 }

@@ -129,7 +129,9 @@ void main() {
     test('counts what is left to reconcile', () {
       final preview = ReconciliationPreviewModel.fromJson(previewJson());
 
-      expect(preview.pendingCount, 4);
+      // 2 missing + 1 ambiguous. The single extra is flagged near a period edge, so it is not
+      // something the user is expected to act on.
+      expect(preview.pendingCount, 3);
       expect(preview.isFullyReconciled, isFalse);
     });
 
@@ -143,6 +145,50 @@ void main() {
 
       expect(preview.isFullyReconciled, isTrue);
       expect(preview.pendingCount, 0);
+    });
+
+    test('an extra near a period edge does not count as pending', () {
+      // It most likely belongs to the neighbouring statement, and the advice is to leave it alone, so
+      // it must not keep the statement from reading as reconciled.
+      final json = previewJson()
+        ..['missing'] = []
+        ..['ambiguous'] = [];
+
+      final preview = ReconciliationPreviewModel.fromJson(json);
+
+      expect(preview.extra.length, 1);
+      expect(preview.extra.first.nearPeriodEdge, isTrue);
+      expect(preview.actionableExtra, isEmpty);
+      expect(preview.pendingCount, 0);
+      expect(preview.isFullyReconciled, isTrue);
+    });
+
+    test('an extra away from the edges does count as pending', () {
+      final json = previewJson()
+        ..['missing'] = []
+        ..['ambiguous'] = []
+        ..['extra'] = [
+          {
+            'transaction': {
+              'id': 99,
+              'accountId': 3,
+              'categoryId': 1,
+              'name': 'Duplicado',
+              'price': 500.0,
+              'date': '2026-07-15T00:00:00Z',
+              'transactionType': 1,
+              'categoryName': 'Food',
+              'tags': [],
+            },
+            'nearPeriodEdge': false,
+          },
+        ];
+
+      final preview = ReconciliationPreviewModel.fromJson(json);
+
+      expect(preview.actionableExtra.length, 1);
+      expect(preview.pendingCount, 1);
+      expect(preview.isFullyReconciled, isFalse);
     });
 
     test('fromJson tolerates missing lists and balances', () {
@@ -210,6 +256,7 @@ void main() {
           'actual': 114496.78,
           'difference': 0.0,
           'matches': true,
+          'asOf': '2026-07-31T00:00:00Z',
         },
       });
 
@@ -218,6 +265,7 @@ void main() {
       expect(result.linkedCount, 68);
       expect(result.changedCount, 4);
       expect(result.balanceCheck!.matches, isTrue);
+      expect(result.balanceCheck!.asOf, DateTime.parse('2026-07-31T00:00:00Z'));
     });
 
     test('fromJson tolerates an apply without balance check', () {

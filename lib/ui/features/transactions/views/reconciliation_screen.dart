@@ -492,10 +492,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
         result.createdCount, result.deletedCount);
     final check = result.balanceCheck;
     if (check != null) {
-      message = '$message · ${check.matches
-          ? localizations.reconciliationBalanceMatches
-          : localizations.reconciliationBalanceDifference(
-              _formatAmount(check.difference))}';
+      message = '$message · ${_balanceCheckMessage(localizations, check)}';
     }
 
     _showMessage(message, isError: check != null && !check.matches);
@@ -523,6 +520,25 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
     );
 
     return confirmed ?? false;
+  }
+
+  /// Names the date the compared balance refers to whenever the backend states it: the bank reports the
+  /// balance at the end of the period, so a difference means nothing without knowing which date it is.
+  String _balanceCheckMessage(
+      AppLocalizations localizations, BalanceCheckModel check) {
+    final asOf = check.asOf;
+    if (asOf == null) {
+      return check.matches
+          ? localizations.reconciliationBalanceMatches
+          : localizations.reconciliationBalanceDifference(
+              _formatAmount(check.difference));
+    }
+
+    final date = _formatDate(context, asOf);
+    return check.matches
+        ? localizations.reconciliationBalanceMatchesAsOf(date)
+        : localizations.reconciliationBalanceDifferenceAsOf(
+            date, _formatAmount(check.difference));
   }
 
   void _showMessage(String message, {bool isError = false}) {

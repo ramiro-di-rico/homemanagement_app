@@ -816,4 +816,14 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get reconciliationNearPeriodEdge =>
       'Could belong to a neighbouring statement — check before deleting';
+
+  @override
+  String reconciliationBalanceMatchesAsOf(String date) {
+    return 'The account balance at $date matches the statement';
+  }
+
+  @override
+  String reconciliationBalanceDifferenceAsOf(String date, String difference) {
+    return 'Difference against the statement at $date: $difference';
+  }
 }

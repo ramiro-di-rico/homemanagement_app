@@ -1566,6 +1566,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could belong to a neighbouring statement — check before deleting'**
   String get reconciliationNearPeriodEdge;
+
+  /// No description provided for @reconciliationBalanceMatchesAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'The account balance at {date} matches the statement'**
+  String reconciliationBalanceMatchesAsOf(String date);
+
+  /// No description provided for @reconciliationBalanceDifferenceAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference against the statement at {date}: {difference}'**
+  String reconciliationBalanceDifferenceAsOf(String date, String difference);
 }
 
 class _AppLocalizationsDelegate

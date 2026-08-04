@@ -206,10 +206,16 @@ class ReconciliationPreviewModel {
             _mapList(json['ambiguous'], ReconciliationAmbiguousModel.fromJson),
       );
 
-  bool get isFullyReconciled =>
-      missing.isEmpty && extra.isEmpty && ambiguous.isEmpty;
+  /// Extras the user is expected to act on. Rows flagged near a period edge are excluded: they are
+  /// most likely owned by the neighbouring statement, and the advice on them is to leave them alone.
+  List<ReconciliationExtraModel> get actionableExtra =>
+      extra.where((e) => !e.nearPeriodEdge).toList();
 
-  int get pendingCount => missing.length + extra.length + ambiguous.length;
+  bool get isFullyReconciled =>
+      missing.isEmpty && actionableExtra.isEmpty && ambiguous.isEmpty;
+
+  int get pendingCount =>
+      missing.length + actionableExtra.length + ambiguous.length;
 }
 
 /// A transaction to create out of a statement row.
