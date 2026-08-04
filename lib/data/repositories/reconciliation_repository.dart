@@ -105,6 +105,8 @@ class ReconciliationRepository extends ChangeNotifier
         referencesToLink: referencesToLink ?? pendingReferenceLinks(),
         expectedFinalBalance:
             verifyBalance ? _preview?.statementBalances?.finalBalance : null,
+        // The bank reports the balance at the end of the period, not today's.
+        periodEnd: verifyBalance ? _preview?.periodEnd : null,
       );
 
       // Balances and the transaction list both changed on the server.

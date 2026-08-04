@@ -353,7 +353,7 @@
   "reconciliationAmbiguousHint": "Movements that could match more than one transaction. Resolve these by hand from the transaction list.",
   "reconciliationFullyReconciled": "This statement is fully reconciled",
   "reconciliationConfirmDeleteTitle": "Delete transactions?",
-  "reconciliationConfirmDeleteMessage": "{count} transactions will be deleted permanently.",
+  "reconciliationConfirmDeleteMessage": "{count, plural, =1{1 transaction will be deleted permanently.} other{{count} transactions will be deleted permanently.}}",
   "@reconciliationConfirmDeleteMessage": {
     "placeholders": {
       "count": {

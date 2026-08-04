@@ -1522,7 +1522,7 @@ abstract class AppLocalizations {
   /// No description provided for @reconciliationConfirmDeleteMessage.
   ///
   /// In en, this message translates to:
-  /// **'{count} transactions will be deleted permanently.'**
+  /// **'{count, plural, =1{1 transaction will be deleted permanently.} other{{count} transactions will be deleted permanently.}}'**
   String reconciliationConfirmDeleteMessage(int count);
 
   /// No description provided for @reconciliationApplied.

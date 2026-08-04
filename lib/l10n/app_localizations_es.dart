@@ -780,7 +780,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String reconciliationConfirmDeleteMessage(int count) {
-    return 'Se van a eliminar $count transacciones de forma permanente.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se van a eliminar $count transacciones de forma permanente.',
+      one: 'Se va a eliminar 1 transacción de forma permanente.',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1559,7 +1565,13 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String reconciliationConfirmDeleteMessage(int count) {
-    return 'Se van a eliminar $count transacciones de forma permanente.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se van a eliminar $count transacciones de forma permanente.',
+      one: 'Se va a eliminar 1 transacción de forma permanente.',
+    );
+    return '$_temp0';
   }
 
   @override

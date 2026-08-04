@@ -149,7 +149,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Delete transactions?'), findsOneWidget);
-    expect(find.text('1 transactions will be deleted permanently.'),
+    // Singular: the message used to read "1 transactions".
+    expect(find.text('1 transaction will be deleted permanently.'),
         findsOneWidget);
 
     await tester.tap(find.text('Cancel'));
@@ -175,6 +176,23 @@ void main() {
     expect(controller.applyCallCount, 1);
     expect(controller.lastDeleted, [99]);
     expect(find.textContaining('created'), findsOneWidget);
+  });
+
+  testWidgets('the delete confirmation counts in plural too', (tester) async {
+    final controller =
+        FakeReconciliationController(preview: previewWith(extraCount: 2));
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Not in statement (2)'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Select all'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Apply (3)'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2 transactions will be deleted permanently.'),
+        findsOneWidget);
   });
 
   testWidgets('a balance difference is reported after applying', (tester) async {
@@ -228,7 +246,7 @@ List<bool?> checkboxValues(WidgetTester tester) => tester
 
 /// One missing row and one extra transaction, which is enough to exercise both selections.
 ReconciliationPreviewModel previewWith(
-        {int? suggestedCategoryId = 7, int accountId = 3}) =>
+        {int? suggestedCategoryId = 7, int accountId = 3, int extraCount = 1}) =>
     ReconciliationPreviewModel.fromJson({
       'accountId': accountId,
       'periodStart': '2026-07-01T00:00:00Z',
@@ -252,18 +270,18 @@ ReconciliationPreviewModel previewWith(
           'suggestedCategoryId': suggestedCategoryId,
         },
       ],
-      'extra': [
-        {
-          'id': 99,
-          'accountId': 3,
-          'categoryId': 1,
-          'name': 'Duplicado',
-          'price': 500.0,
-          'date': '2026-07-15T00:00:00Z',
-          'transactionType': 1,
-          'categoryName': 'Comida',
-          'tags': [],
-        },
-      ],
+      'extra': List.generate(
+          extraCount,
+          (i) => {
+                'id': 99 + i,
+                'accountId': 3,
+                'categoryId': 1,
+                'name': 'Duplicado ${i + 1}',
+                'price': 500.0,
+                'date': '2026-07-15T00:00:00Z',
+                'transactionType': 1,
+                'categoryName': 'Comida',
+                'tags': [],
+              }),
       'ambiguous': [],
     });

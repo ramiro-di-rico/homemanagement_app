@@ -153,6 +153,7 @@ class TransactionService {
     List<int> transactionIdsToDelete = const [],
     List<ReconciliationReferenceLink> referencesToLink = const [],
     double? expectedFinalBalance,
+    DateTime? periodEnd,
   }) async {
     var body = json.encode({
       'accountId': accountId,
@@ -161,6 +162,7 @@ class TransactionService {
       'transactionIdsToDelete': transactionIdsToDelete,
       'referencesToLink': referencesToLink.map((r) => r.toJson()).toList(),
       'expectedFinalBalance': expectedFinalBalance,
+      'periodEnd': periodEnd?.toIso8601String(),
     });
     var data = await apiServiceFactory.postWithReturn(
         '$apiName/reconciliation/apply', body);

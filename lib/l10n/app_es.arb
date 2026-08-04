@@ -234,7 +234,7 @@
   "reconciliationAmbiguousHint": "Movimientos que podrían corresponder a más de una transacción. Resolvelos a mano desde la lista de transacciones.",
   "reconciliationFullyReconciled": "Este extracto está completamente conciliado",
   "reconciliationConfirmDeleteTitle": "¿Eliminar transacciones?",
-  "reconciliationConfirmDeleteMessage": "Se van a eliminar {count} transacciones de forma permanente.",
+  "reconciliationConfirmDeleteMessage": "{count, plural, =1{Se va a eliminar 1 transacción de forma permanente.} other{Se van a eliminar {count} transacciones de forma permanente.}}",
   "reconciliationApplied": "{created} creadas, {deleted} eliminadas",
   "reconciliationBalanceMatches": "El saldo de la cuenta coincide con el extracto",
   "reconciliationBalanceDifference": "Diferencia contra el extracto: {difference}",

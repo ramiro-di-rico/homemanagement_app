@@ -257,11 +257,16 @@ class BalanceCheckModel {
   final double difference;
   final bool matches;
 
+  /// Date [actual] refers to. Null means today, which only compares fairly when the statement
+  /// period ends today.
+  final DateTime? asOf;
+
   BalanceCheckModel({
     required this.expected,
     required this.actual,
     required this.difference,
     required this.matches,
+    this.asOf,
   });
 
   factory BalanceCheckModel.fromJson(dynamic json) => BalanceCheckModel(
@@ -269,6 +274,7 @@ class BalanceCheckModel {
         actual: double.parse(json['actual'].toString()),
         difference: double.parse(json['difference'].toString()),
         matches: json['matches'] ?? false,
+        asOf: json['asOf'] == null ? null : DateTime.parse(json['asOf']),
       );
 }
 
