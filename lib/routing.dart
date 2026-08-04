@@ -21,6 +21,7 @@ import 'package:home_management_app/ui/features/home/views/logging_view.dart';
 import 'package:home_management_app/ui/features/settings/views/settings.dart';
 import 'package:home_management_app/ui/features/settings/views/settings_desktop.dart';
 import 'package:home_management_app/ui/features/statistics/views/statistics_view.dart';
+import 'package:home_management_app/ui/features/transactions/views/reconciliation_screen.dart';
 import 'package:home_management_app/ui/features/transactions/views/transactions_search_desktop_view.dart';
 import 'package:home_management_app/ui/features/statistics/views/transactions_search_statistics_view.dart';
 import 'package:home_management_app/ui/core/screens/bulk_transactions_screen.dart';
@@ -88,6 +89,11 @@ class Routing{
               GoRoute(
                 path: StatisticsView.path,
                 builder: (context, state) => const StatisticsView(),
+              ),
+              GoRoute(
+                path: ReconciliationScreen.path,
+                builder: (context, state) =>
+                    ReconciliationScreen(state.extra as AccountModel),
               ),
               GoRoute(
                 path: BulkTransactionsScreen.path,

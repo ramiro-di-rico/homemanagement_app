@@ -4,6 +4,8 @@ import 'package:get_it/get_it.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/ui/core/extensions/datehelper.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
+import 'package:home_management_app/ui/features/transactions/views/reconciliation_screen.dart';
 import 'package:home_management_app/ui/features/accounts/views/widgets/add_transaction_sheet_desktop.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -114,6 +116,12 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
                 leadingIcon: Icon(Icons.upload_file, color: Colors.blueGrey),
                 onPressed: () => _importTransactions(account),
                 child: Text(AppLocalizations.of(context)!.importTransactions),
+              ),
+              MenuItemButton(
+                leadingIcon: Icon(Icons.compare_arrows, color: Colors.teal),
+                onPressed: () =>
+                    context.go(ReconciliationScreen.fullPath, extra: account),
+                child: Text(AppLocalizations.of(context)!.reconcileStatement),
               ),
             ],
           ),
