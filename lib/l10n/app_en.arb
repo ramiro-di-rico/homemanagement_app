@@ -235,8 +235,6 @@
   "startDate": "Start: {date}",
   "endDate": "End: {date}",
   "copy": "Copy",
-  "edit": "Edit",
-  "delete": "Delete",
   "notAvailable": "N/A",
   "budgetName": "Name",
   "budgetAmount": "Amount",
@@ -340,5 +338,70 @@
       }
     }
   },
-  "lookbackMonths": "Lookback months"
+  "lookbackMonths": "Lookback months",
+  "reconcileStatement": "Reconcile statement",
+  "reconciliationSelectFile": "Select statement file",
+  "reconciliationNoStatementSelected": "Pick the CSV file your bank gives you to start",
+  "reconciliationPeriod": "Period",
+  "reconciliationMatchedLabel": "Reconciled",
+  "reconciliationMissingLabel": "Missing",
+  "reconciliationExtraLabel": "Not in statement",
+  "reconciliationAmbiguousLabel": "Ambiguous",
+  "reconciliationMatchedHint": "Already in the app. Nothing to do.",
+  "reconciliationMissingHint": "Movements the bank reports that are not in the app. The selected ones will be created.",
+  "reconciliationExtraHint": "Transactions in the app the bank does not report. The selected ones will be deleted.",
+  "reconciliationAmbiguousHint": "Movements that could match more than one transaction. Resolve these by hand from the transaction list.",
+  "reconciliationFullyReconciled": "This statement is fully reconciled",
+  "reconciliationConfirmDeleteTitle": "Delete transactions?",
+  "reconciliationConfirmDeleteMessage": "{count, plural, =1{1 transaction will be deleted permanently.} other{{count} transactions will be deleted permanently.}}",
+  "@reconciliationConfirmDeleteMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reconciliationApplied": "{created} created, {deleted} deleted",
+  "@reconciliationApplied": {
+    "placeholders": {
+      "created": {
+        "type": "int"
+      },
+      "deleted": {
+        "type": "int"
+      }
+    }
+  },
+  "reconciliationBalanceMatches": "The account balance matches the statement",
+  "reconciliationBalanceDifference": "Difference against the statement: {difference}",
+  "@reconciliationBalanceDifference": {
+    "placeholders": {
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "reconciliationCategoryRequired": "Pick a category for every movement to create",
+  "reconciliationNothingSelected": "Nothing selected to apply",
+  "failedToReadStatement": "Failed to read the statement",
+  "reconciliationNearPeriodEdge": "Could belong to a neighbouring statement — check before deleting",
+  "reconciliationBalanceMatchesAsOf": "The account balance at {date} matches the statement",
+  "@reconciliationBalanceMatchesAsOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reconciliationBalanceDifferenceAsOf": "Difference against the statement at {date}: {difference}",
+  "@reconciliationBalanceDifferenceAsOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "difference": {
+        "type": "String"
+      }
+    }
+  }
 }

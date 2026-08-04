@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:home_management_app/ui/core/extensions/datehelper.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
+import 'package:home_management_app/ui/features/transactions/views/reconciliation_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -124,6 +125,12 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
                 leadingIcon: Icon(Icons.upload_file, color: Colors.blueGrey),
                 onPressed: () => _importTransactions(account),
                 child: Text(AppLocalizations.of(context)!.importTransactions),
+              ),
+              MenuItemButton(
+                leadingIcon: Icon(Icons.compare_arrows, color: Colors.teal),
+                onPressed: () =>
+                    context.go(ReconciliationScreen.fullPath, extra: account),
+                child: Text(AppLocalizations.of(context)!.reconcileStatement),
               ),
             ],
           ),

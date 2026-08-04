@@ -1434,6 +1434,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lookback months'**
   String get lookbackMonths;
+
+  /// No description provided for @reconcileStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconcile statement'**
+  String get reconcileStatement;
+
+  /// No description provided for @reconciliationSelectFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Select statement file'**
+  String get reconciliationSelectFile;
+
+  /// No description provided for @reconciliationNoStatementSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the CSV file your bank gives you to start'**
+  String get reconciliationNoStatementSelected;
+
+  /// No description provided for @reconciliationPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get reconciliationPeriod;
+
+  /// No description provided for @reconciliationMatchedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconciled'**
+  String get reconciliationMatchedLabel;
+
+  /// No description provided for @reconciliationMissingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get reconciliationMissingLabel;
+
+  /// No description provided for @reconciliationExtraLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in statement'**
+  String get reconciliationExtraLabel;
+
+  /// No description provided for @reconciliationAmbiguousLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambiguous'**
+  String get reconciliationAmbiguousLabel;
+
+  /// No description provided for @reconciliationMatchedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in the app. Nothing to do.'**
+  String get reconciliationMatchedHint;
+
+  /// No description provided for @reconciliationMissingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements the bank reports that are not in the app. The selected ones will be created.'**
+  String get reconciliationMissingHint;
+
+  /// No description provided for @reconciliationExtraHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions in the app the bank does not report. The selected ones will be deleted.'**
+  String get reconciliationExtraHint;
+
+  /// No description provided for @reconciliationAmbiguousHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements that could match more than one transaction. Resolve these by hand from the transaction list.'**
+  String get reconciliationAmbiguousHint;
+
+  /// No description provided for @reconciliationFullyReconciled.
+  ///
+  /// In en, this message translates to:
+  /// **'This statement is fully reconciled'**
+  String get reconciliationFullyReconciled;
+
+  /// No description provided for @reconciliationConfirmDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete transactions?'**
+  String get reconciliationConfirmDeleteTitle;
+
+  /// No description provided for @reconciliationConfirmDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 transaction will be deleted permanently.} other{{count} transactions will be deleted permanently.}}'**
+  String reconciliationConfirmDeleteMessage(int count);
+
+  /// No description provided for @reconciliationApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'{created} created, {deleted} deleted'**
+  String reconciliationApplied(int created, int deleted);
+
+  /// No description provided for @reconciliationBalanceMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'The account balance matches the statement'**
+  String get reconciliationBalanceMatches;
+
+  /// No description provided for @reconciliationBalanceDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference against the statement: {difference}'**
+  String reconciliationBalanceDifference(String difference);
+
+  /// No description provided for @reconciliationCategoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a category for every movement to create'**
+  String get reconciliationCategoryRequired;
+
+  /// No description provided for @reconciliationNothingSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing selected to apply'**
+  String get reconciliationNothingSelected;
+
+  /// No description provided for @failedToReadStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to read the statement'**
+  String get failedToReadStatement;
+
+  /// No description provided for @reconciliationNearPeriodEdge.
+  ///
+  /// In en, this message translates to:
+  /// **'Could belong to a neighbouring statement — check before deleting'**
+  String get reconciliationNearPeriodEdge;
+
+  /// No description provided for @reconciliationBalanceMatchesAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'The account balance at {date} matches the statement'**
+  String reconciliationBalanceMatchesAsOf(String date);
+
+  /// No description provided for @reconciliationBalanceDifferenceAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference against the statement at {date}: {difference}'**
+  String reconciliationBalanceDifferenceAsOf(String date, String difference);
 }
 
 class _AppLocalizationsDelegate

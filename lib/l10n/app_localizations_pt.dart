@@ -727,4 +727,100 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get lookbackMonths => 'Meses retroativos';
+
+  @override
+  String get reconcileStatement => 'Reconcile statement';
+
+  @override
+  String get reconciliationSelectFile => 'Select statement file';
+
+  @override
+  String get reconciliationNoStatementSelected =>
+      'Pick the CSV file your bank gives you to start';
+
+  @override
+  String get reconciliationPeriod => 'Period';
+
+  @override
+  String get reconciliationMatchedLabel => 'Reconciled';
+
+  @override
+  String get reconciliationMissingLabel => 'Missing';
+
+  @override
+  String get reconciliationExtraLabel => 'Not in statement';
+
+  @override
+  String get reconciliationAmbiguousLabel => 'Ambiguous';
+
+  @override
+  String get reconciliationMatchedHint => 'Already in the app. Nothing to do.';
+
+  @override
+  String get reconciliationMissingHint =>
+      'Movements the bank reports that are not in the app. The selected ones will be created.';
+
+  @override
+  String get reconciliationExtraHint =>
+      'Transactions in the app the bank does not report. The selected ones will be deleted.';
+
+  @override
+  String get reconciliationAmbiguousHint =>
+      'Movements that could match more than one transaction. Resolve these by hand from the transaction list.';
+
+  @override
+  String get reconciliationFullyReconciled =>
+      'This statement is fully reconciled';
+
+  @override
+  String get reconciliationConfirmDeleteTitle => 'Delete transactions?';
+
+  @override
+  String reconciliationConfirmDeleteMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count transactions will be deleted permanently.',
+      one: '1 transaction will be deleted permanently.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reconciliationApplied(int created, int deleted) {
+    return '$created created, $deleted deleted';
+  }
+
+  @override
+  String get reconciliationBalanceMatches =>
+      'The account balance matches the statement';
+
+  @override
+  String reconciliationBalanceDifference(String difference) {
+    return 'Difference against the statement: $difference';
+  }
+
+  @override
+  String get reconciliationCategoryRequired =>
+      'Pick a category for every movement to create';
+
+  @override
+  String get reconciliationNothingSelected => 'Nothing selected to apply';
+
+  @override
+  String get failedToReadStatement => 'Failed to read the statement';
+
+  @override
+  String get reconciliationNearPeriodEdge =>
+      'Could belong to a neighbouring statement — check before deleting';
+
+  @override
+  String reconciliationBalanceMatchesAsOf(String date) {
+    return 'The account balance at $date matches the statement';
+  }
+
+  @override
+  String reconciliationBalanceDifferenceAsOf(String date, String difference) {
+    return 'Difference against the statement at $date: $difference';
+  }
 }

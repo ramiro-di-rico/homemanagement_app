@@ -128,14 +128,34 @@ class ApiServiceFactory {
   Future upload(String api, dynamic file) async {
     await _autoAuthenticateIfNeeded();
 
-    var request = http.MultipartRequest('POST', backendEndpoint.resolve(api))
-      ..files.add(file);
-    request.headers.addAll(_getHeaders());
-
-    var response = await request.send();
-    if (response.statusCode >= 200 && response.statusCode < 300) {
+    var response = await _send(api, file);
+    if (!_isSuccessfulStatusCode(response.statusCode)) {
       throw Exception('Failed to upload to $api');
     }
+  }
+
+  /// Same as [upload] but returning the decoded response body.
+  Future<dynamic> uploadWithReturn(String api, dynamic file) async {
+    await _autoAuthenticateIfNeeded();
+
+    var response = await _send(api, file);
+    var body = await response.stream.bytesToString();
+
+    if (!_isSuccessfulStatusCode(response.statusCode)) {
+      throw Exception('Failed to upload to $api. $body');
+    }
+
+    return body.isEmpty ? null : json.decode(body);
+  }
+
+  Future<http.StreamedResponse> _send(String api, dynamic file) async {
+    var request = http.MultipartRequest('POST', backendEndpoint.resolve(api))
+      ..files.add(file);
+    // Only the auth header: MultipartRequest sets its own Content-Type with the boundary, and
+    // overwriting it with application/json leaves the server unable to read the form.
+    request.headers.addAll(_getAuthHeaders());
+
+    return await request.send();
   }
 
   Future _autoAuthenticateIfNeeded() async {
@@ -145,16 +165,22 @@ class ApiServiceFactory {
     }
   }
 
-  Map<String, String> _getHeaders() {
-    var token = this.authenticationService.getUserToken();
+  Map<String, String> _getHeaders() => <String, String>{
+        ..._getAuthHeaders(),
+        'Content-Type': 'application/json',
+      };
+
+  Map<String, String> _getAuthHeaders() {
+    var token = authenticationService.getUserToken();
     return <String, String>{
       'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
       'Accept': 'application/json'
     };
   }
 
-  bool _isSuccesFullResponse(http.Response response) {
-    return response.statusCode >= 200 && response.statusCode < 300;
-  }
+  bool _isSuccesFullResponse(http.Response response) =>
+      _isSuccessfulStatusCode(response.statusCode);
+
+  bool _isSuccessfulStatusCode(int statusCode) =>
+      statusCode >= 200 && statusCode < 300;
 }
