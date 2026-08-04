@@ -3,6 +3,7 @@ import 'package:http/http.dart';
 
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
+import 'package:home_management_app/data/models/reconciliation.dart';
 import 'package:home_management_app/data/models/transaction-with-balance.dart';
 import 'package:home_management_app/domain/models/tag.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
@@ -131,6 +132,39 @@ class TransactionService {
   Future import(int id, String fileContent) async {
     var file = MultipartFile.fromString('csv', fileContent, filename: "file.csv");
     await apiServiceFactory.upload(apiName + '/import', file);
+  }
+
+  /// Classifies a bank statement against the account without writing anything.
+  Future<ReconciliationPreviewModel> previewReconciliation(
+      int accountId, String fileContent,
+      {StatementFormat format = StatementFormat.accountStatementCsv}) async {
+    var file = MultipartFile.fromString('statement', fileContent,
+        filename: "statement.csv");
+    var data = await apiServiceFactory.uploadWithReturn(
+        '$apiName/reconciliation/preview?accountId=$accountId&format=${format.apiName}',
+        file);
+    return ReconciliationPreviewModel.fromJson(data);
+  }
+
+  /// Applies only what the user selected on the preview.
+  Future<ApplyReconciliationResultModel> applyReconciliation(
+    int accountId, {
+    List<ReconciliationTransactionToCreate> transactionsToCreate = const [],
+    List<int> transactionIdsToDelete = const [],
+    List<ReconciliationReferenceLink> referencesToLink = const [],
+    double? expectedFinalBalance,
+  }) async {
+    var body = json.encode({
+      'accountId': accountId,
+      'transactionsToCreate':
+          transactionsToCreate.map((t) => t.toJson()).toList(),
+      'transactionIdsToDelete': transactionIdsToDelete,
+      'referencesToLink': referencesToLink.map((r) => r.toJson()).toList(),
+      'expectedFinalBalance': expectedFinalBalance,
+    });
+    var data = await apiServiceFactory.postWithReturn(
+        '$apiName/reconciliation/apply', body);
+    return ApplyReconciliationResultModel.fromJson(data);
   }
 
   Future<List<AccountModel>> bulkAdd(List<TransactionModel> transactions) async {

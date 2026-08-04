@@ -22,6 +22,7 @@ import 'package:home_management_app/data/repositories/invite.repository.dart';
 import 'package:home_management_app/data/repositories/notification.repository.dart';
 import 'package:home_management_app/data/repositories/currency.repository.dart';
 import 'package:home_management_app/data/repositories/main_account.repository.dart';
+import 'package:home_management_app/data/repositories/reconciliation_repository.dart';
 import 'package:home_management_app/data/repositories/recurring_transaction_repository.dart';
 import 'package:home_management_app/data/repositories/reminder_repository.dart';
 import 'package:home_management_app/data/repositories/tag.repository.dart';
@@ -211,6 +212,12 @@ void registerSingletons(PlatformContext platformContext) {
 
   var mainAccountRepository = MainAccountRepository(mainAccountService: mainAccountService, notifierService: errorNotifierService);
 
+  var reconciliationRepository = ReconciliationRepository(
+      transactionService: transactionService,
+      accountRepository: accountRepository,
+      transactionRepository: transactionRepository,
+      errorNotifierService: errorNotifierService);
+
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
@@ -229,5 +236,6 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(budgetRepository);
   GetIt.instance.registerSingleton(reminderRepository);
   GetIt.instance.registerSingleton(mainAccountRepository);
+  GetIt.instance.registerSingleton(reconciliationRepository);
   GetIt.instance.registerSingleton(InviteLinkService());
 }
