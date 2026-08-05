@@ -1483,6 +1483,54 @@ abstract class AppLocalizations {
   /// **'Ambiguous'**
   String get reconciliationAmbiguousLabel;
 
+  /// No description provided for @reconciliationPossibleMatchesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible matches'**
+  String get reconciliationPossibleMatchesLabel;
+
+  /// No description provided for @reconciliationPossibleMatchesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements that look like the same merchant but do not match exactly. Link the ones that are the same movement.'**
+  String get reconciliationPossibleMatchesHint;
+
+  /// No description provided for @reconciliationPossibleMatchDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'{difference} apart'**
+  String reconciliationPossibleMatchDifference(String difference);
+
+  /// No description provided for @reconciliationPossibleMatchDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{same day} =1{1 day apart} other{{days} days apart}}'**
+  String reconciliationPossibleMatchDays(int days);
+
+  /// No description provided for @reconciliationLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get reconciliationLink;
+
+  /// No description provided for @reconciliationUnlink.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get reconciliationUnlink;
+
+  /// No description provided for @reconciliationLinkedRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be linked to {name} — it will not be created'**
+  String reconciliationLinkedRow(String name);
+
+  /// No description provided for @reconciliationLinkedTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be linked to {name} — it will not be deleted'**
+  String reconciliationLinkedTransaction(String name);
+
   /// No description provided for @reconciliationMatchedHint.
   ///
   /// In en, this message translates to:

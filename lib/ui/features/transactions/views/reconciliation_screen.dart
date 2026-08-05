@@ -47,6 +47,11 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
   /// Ids to delete. Deliberately empty at the start: deleting is destructive.
   final Set<int> _selectedExtra = {};
 
+  /// Possible matches the user confirmed, as row reference to transaction id. Exclusive on both sides:
+  /// a row links to one transaction and a transaction to one row. A confirmed row is neither created
+  /// nor deleted, only linked.
+  final Map<String, int> _confirmedLinks = {};
+
   bool _applying = false;
 
   /// The preview the current selection was seeded from.
@@ -135,6 +140,8 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
     }
     // Deleting is destructive, so nothing here is preselected.
     _selectedExtra.clear();
+    // Nor is any suggested link: the point of the list is that only the user can tell.
+    _confirmedLinks.clear();
   }
 
   Widget _buildPreview(BuildContext context, AppLocalizations localizations,
@@ -142,7 +149,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
     _seedSelectionIfNeeded(preview);
 
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Column(
         children: [
           _buildSummary(context, localizations, preview),
@@ -152,6 +159,9 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
             tabs: [
               Tab(text: '${localizations.reconciliationMissingLabel} (${preview.missing.length})'),
               Tab(text: '${localizations.reconciliationExtraLabel} (${preview.extra.length})'),
+              Tab(
+                  text: '${localizations.reconciliationPossibleMatchesLabel}'
+                      ' (${preview.possibleMatches.length})'),
               Tab(text: '${localizations.reconciliationAmbiguousLabel} (${preview.ambiguous.length})'),
               Tab(text: '${localizations.reconciliationMatchedLabel} (${preview.matched.length})'),
             ],
@@ -161,6 +171,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
               children: [
                 _buildMissingTab(localizations, preview),
                 _buildExtraTab(localizations, preview),
+                _buildPossibleMatchesTab(localizations, preview),
                 _buildAmbiguousTab(localizations, preview),
                 _buildMatchedTab(localizations, preview),
               ],
@@ -221,7 +232,10 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
       onSelectAll: (selected) => setState(() {
         _selectedMissing.clear();
         if (selected) {
-          _selectedMissing.addAll(preview.missing.map((m) => m.row.reference));
+          // A row already linked to a transaction is not created, so it is not selectable either.
+          _selectedMissing.addAll(preview.missing
+              .map((m) => m.row.reference)
+              .where((reference) => !_confirmedLinks.containsKey(reference)));
         }
       }),
       localizations: localizations,
@@ -230,6 +244,17 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
         final reference = missing.row.reference;
         final categoryId = _categoryByReference[reference];
         final selectedCategory = categories.where((c) => c.id == categoryId).firstOrNull;
+        final linked = _confirmedMatchForRow(preview, reference);
+
+        // Linked to an existing transaction: creating it too would duplicate the movement.
+        if (linked != null) {
+          return _buildLinkedTile(
+            title: missing.row.name,
+            subtitle: _rowSubtitle(missing.row),
+            note: localizations.reconciliationLinkedRow(linked.transaction.name),
+            amount: _amountLabel(missing.row.price, missing.row.isIncome()),
+          );
+        }
 
         return CheckboxListTile(
           value: _selectedMissing.contains(reference),
@@ -277,13 +302,27 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
       onSelectAll: (selected) => setState(() {
         _selectedExtra.clear();
         if (selected) {
-          _selectedExtra.addAll(preview.extra.map((e) => e.transaction.id));
+          // A transaction already linked to a statement row is reported by the bank after all.
+          _selectedExtra.addAll(preview.extra
+              .map((e) => e.transaction.id)
+              .where((id) => !_confirmedLinks.containsValue(id)));
         }
       }),
       localizations: localizations,
       itemBuilder: (context, index) {
         final extra = preview.extra[index];
         final transaction = extra.transaction;
+        final linked = _confirmedMatchForTransaction(preview, transaction.id);
+
+        if (linked != null) {
+          return _buildLinkedTile(
+            title: transaction.name,
+            subtitle:
+                '${_formatDate(context, transaction.date)} · ${transaction.categoryName}',
+            note: localizations.reconciliationLinkedTransaction(linked.row.name),
+            amount: _amountLabel(transaction.price, transaction.isIncome()),
+          );
+        }
 
         return CheckboxListTile(
           value: _selectedExtra.contains(transaction.id),
@@ -323,6 +362,131 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
       },
     );
   }
+
+  /// Pairs the backend could not resolve on its own. Read-only until the user links one: confirming is
+  /// what turns a suggestion into an action, and nothing here is preselected.
+  Widget _buildPossibleMatchesTab(
+      AppLocalizations localizations, ReconciliationPreviewModel preview) {
+    return _buildTab(
+      hint: localizations.reconciliationPossibleMatchesHint,
+      itemCount: preview.possibleMatches.length,
+      localizations: localizations,
+      itemBuilder: (context, index) {
+        final match = preview.possibleMatches[index];
+        final confirmed = _confirmedLinks[match.row.reference] == match.transaction.id;
+        // Another candidate of the same row, or the same transaction under another row, already won.
+        final takenByAnother = !confirmed &&
+            (_confirmedLinks.containsKey(match.row.reference) ||
+                _confirmedLinks.containsValue(match.transaction.id));
+
+        return ListTile(
+          enabled: !takenByAnother,
+          leading: Icon(confirmed ? Icons.link : Icons.link_off,
+              color: confirmed ? Colors.green : Colors.orange),
+          title: Text(match.row.name),
+          isThreeLine: true,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(_rowSubtitle(match.row)),
+              Row(
+                children: [
+                  const Icon(Icons.compare_arrows, size: 14, color: Colors.blueGrey),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '${match.transaction.name} · '
+                      '${_formatDate(context, match.transaction.date)} · '
+                      '${_formatAmount(match.transaction.price)}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                '${localizations.reconciliationPossibleMatchDifference(_formatAmount(match.amountDifference.abs()))}'
+                ' · ${localizations.reconciliationPossibleMatchDays(match.dayDifference.abs())}',
+                style: const TextStyle(fontSize: 11, color: Colors.blueGrey),
+              ),
+            ],
+          ),
+          trailing: TextButton(
+            onPressed: takenByAnother ? null : () => _toggleLink(match),
+            child: Text(confirmed
+                ? localizations.reconciliationUnlink
+                : localizations.reconciliationLink),
+          ),
+        );
+      },
+    );
+  }
+
+  /// A row or a transaction the user already linked: it is spoken for, so it is shown but not selectable.
+  Widget _buildLinkedTile({
+    required String title,
+    required String subtitle,
+    required String note,
+    required Widget amount,
+  }) =>
+      ListTile(
+        leading: const Icon(Icons.link, color: Colors.green),
+        title: Text(title),
+        isThreeLine: true,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(subtitle),
+            Text(note, style: const TextStyle(fontSize: 11, color: Colors.green)),
+          ],
+        ),
+        trailing: amount,
+      );
+
+  /// Confirms or undoes a suggested link, keeping both sides exclusive: whatever else claimed this row
+  /// or this transaction is dropped, and a linked movement is neither created nor deleted.
+  void _toggleLink(ReconciliationPossibleMatchModel match) {
+    setState(() {
+      final reference = match.row.reference;
+      if (_confirmedLinks[reference] == match.transaction.id) {
+        _confirmedLinks.remove(reference);
+        return;
+      }
+
+      _confirmedLinks.removeWhere((_, id) => id == match.transaction.id);
+      _confirmedLinks[reference] = match.transaction.id;
+      _selectedMissing.remove(reference);
+      _selectedExtra.remove(match.transaction.id);
+    });
+  }
+
+  ReconciliationPossibleMatchModel? _confirmedMatchForRow(
+      ReconciliationPreviewModel preview, String reference) {
+    final transactionId = _confirmedLinks[reference];
+    if (transactionId == null) return null;
+
+    return preview.possibleMatches
+        .where((p) =>
+            p.row.reference == reference && p.transaction.id == transactionId)
+        .firstOrNull;
+  }
+
+  ReconciliationPossibleMatchModel? _confirmedMatchForTransaction(
+      ReconciliationPreviewModel preview, int transactionId) {
+    if (!_confirmedLinks.containsValue(transactionId)) return null;
+
+    return preview.possibleMatches
+        .where((p) =>
+            p.transaction.id == transactionId &&
+            _confirmedLinks[p.row.reference] == transactionId)
+        .firstOrNull;
+  }
+
+  /// The links the user confirmed, as the apply request expects them.
+  List<ReconciliationReferenceLink> _confirmedReferenceLinks() => _confirmedLinks
+      .entries
+      .map((entry) => ReconciliationReferenceLink(
+          transactionId: entry.value, externalReference: entry.key))
+      .toList();
 
   Widget _buildAmbiguousTab(
       AppLocalizations localizations, ReconciliationPreviewModel preview) {
@@ -408,7 +572,8 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
     final missingWithoutCategory = _selectedMissing
         .where((reference) => _categoryByReference[reference] == null)
         .length;
-    final hasSelection = _selectedMissing.isNotEmpty || _selectedExtra.isNotEmpty;
+    final selectionCount =
+        _selectedMissing.length + _selectedExtra.length + _confirmedLinks.length;
 
     return SafeArea(
       child: Padding(
@@ -428,7 +593,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
             ElevatedButton.icon(
               icon: const Icon(Icons.check),
               label: Text('${localizations.apply}'
-                  '${hasSelection ? ' (${_selectedMissing.length + _selectedExtra.length})' : ''}'),
+                  '${selectionCount > 0 ? ' ($selectionCount)' : ''}'),
               onPressed: missingWithoutCategory > 0 ? null : () => _apply(preview),
             ),
           ],
@@ -461,6 +626,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
 
     if (_selectedMissing.isEmpty &&
         _selectedExtra.isEmpty &&
+        _confirmedLinks.isEmpty &&
         _repository.pendingReferenceLinks().isEmpty) {
       _showMessage(localizations.reconciliationNothingSelected);
       return;
@@ -470,17 +636,28 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
       return;
     }
 
+    // Linking already accounts for the movement, so a confirmed row is not created and a confirmed
+    // transaction is not deleted, whatever the selections happen to hold.
     final toCreate = preview.missing
         .where((m) => _selectedMissing.contains(m.row.reference))
+        .where((m) => !_confirmedLinks.containsKey(m.row.reference))
         .map((m) => ReconciliationTransactionToCreate.fromRow(
             m.row, _categoryByReference[m.row.reference]!))
+        .toList();
+    final toDelete = _selectedExtra
+        .where((id) => !_confirmedLinks.containsValue(id))
         .toList();
 
     setState(() => _applying = true);
     final result = await _repository.apply(
       widget.account.id,
       transactionsToCreate: toCreate,
-      transactionIdsToDelete: _selectedExtra.toList(),
+      transactionIdsToDelete: toDelete,
+      // The heuristic matches still have to be linked: passing an explicit list replaces the default.
+      referencesToLink: [
+        ..._repository.pendingReferenceLinks(),
+        ..._confirmedReferenceLinks(),
+      ],
     );
     if (!mounted) return;
     setState(() => _applying = false);

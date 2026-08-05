@@ -754,6 +754,46 @@ class AppLocalizationsPt extends AppLocalizations {
   String get reconciliationAmbiguousLabel => 'Ambiguous';
 
   @override
+  String get reconciliationPossibleMatchesLabel => 'Possible matches';
+
+  @override
+  String get reconciliationPossibleMatchesHint =>
+      'Movements that look like the same merchant but do not match exactly. Link the ones that are the same movement.';
+
+  @override
+  String reconciliationPossibleMatchDifference(String difference) {
+    return '$difference apart';
+  }
+
+  @override
+  String reconciliationPossibleMatchDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days apart',
+      one: '1 day apart',
+      zero: 'same day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reconciliationLink => 'Link';
+
+  @override
+  String get reconciliationUnlink => 'Undo';
+
+  @override
+  String reconciliationLinkedRow(String name) {
+    return 'Will be linked to $name — it will not be created';
+  }
+
+  @override
+  String reconciliationLinkedTransaction(String name) {
+    return 'Will be linked to $name — it will not be deleted';
+  }
+
+  @override
   String get reconciliationMatchedHint => 'Already in the app. Nothing to do.';
 
   @override

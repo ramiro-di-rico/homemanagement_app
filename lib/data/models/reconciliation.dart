@@ -165,6 +165,36 @@ class ReconciliationExtraModel {
       );
 }
 
+/// A statement row and a transaction that name the same merchant and are close in amount and date, but
+/// not close enough for the backend to call them the same movement. Until the user confirms the link the
+/// row is still reported as missing and the transaction as extra.
+class ReconciliationPossibleMatchModel {
+  final StatementRowModel row;
+  final TransactionModel transaction;
+
+  /// How much more the bank reports than the app holds. Negative means the app holds more.
+  final double amountDifference;
+
+  /// How many days after the transaction the bank reports the movement. Negative means before.
+  final int dayDifference;
+
+  ReconciliationPossibleMatchModel({
+    required this.row,
+    required this.transaction,
+    required this.amountDifference,
+    required this.dayDifference,
+  });
+
+  factory ReconciliationPossibleMatchModel.fromJson(dynamic json) =>
+      ReconciliationPossibleMatchModel(
+        row: StatementRowModel.fromJson(json['row']),
+        transaction: TransactionModel.fromJson(json['transaction']),
+        amountDifference:
+            double.parse((json['amountDifference'] ?? 0).toString()),
+        dayDifference: json['dayDifference'] ?? 0,
+      );
+}
+
 class ReconciliationPreviewModel {
   final int accountId;
   final DateTime? periodStart;
@@ -177,6 +207,10 @@ class ReconciliationPreviewModel {
   final List<ReconciliationExtraModel> extra;
   final List<ReconciliationAmbiguousModel> ambiguous;
 
+  /// Links the user may want to confirm. Their rows are also in [missing] and their transactions in
+  /// [extra]: the backend suggests, the user decides.
+  final List<ReconciliationPossibleMatchModel> possibleMatches;
+
   ReconciliationPreviewModel({
     required this.accountId,
     this.periodStart,
@@ -186,6 +220,7 @@ class ReconciliationPreviewModel {
     required this.missing,
     required this.extra,
     required this.ambiguous,
+    this.possibleMatches = const [],
   });
 
   factory ReconciliationPreviewModel.fromJson(dynamic json) =>
@@ -204,7 +239,13 @@ class ReconciliationPreviewModel {
         extra: _mapList(json['extra'], ReconciliationExtraModel.fromJson),
         ambiguous:
             _mapList(json['ambiguous'], ReconciliationAmbiguousModel.fromJson),
+        possibleMatches: _mapList(
+            json['possibleMatches'], ReconciliationPossibleMatchModel.fromJson),
       );
+
+  /// The possible matches offered for a statement row, best candidate first.
+  List<ReconciliationPossibleMatchModel> possibleMatchesFor(String reference) =>
+      possibleMatches.where((p) => p.row.reference == reference).toList();
 
   /// Extras the user is expected to act on. Rows flagged near a period edge are excluded: they are
   /// most likely owned by the neighbouring statement, and the advice on them is to leave them alone.

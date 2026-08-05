@@ -347,6 +347,42 @@
   "reconciliationMissingLabel": "Missing",
   "reconciliationExtraLabel": "Not in statement",
   "reconciliationAmbiguousLabel": "Ambiguous",
+  "reconciliationPossibleMatchesLabel": "Possible matches",
+  "reconciliationPossibleMatchesHint": "Movements that look like the same merchant but do not match exactly. Link the ones that are the same movement.",
+  "reconciliationPossibleMatchDifference": "{difference} apart",
+  "@reconciliationPossibleMatchDifference": {
+    "placeholders": {
+      "difference": {
+        "type": "String"
+      }
+    }
+  },
+  "reconciliationPossibleMatchDays": "{days, plural, =0{same day} =1{1 day apart} other{{days} days apart}}",
+  "@reconciliationPossibleMatchDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "reconciliationLink": "Link",
+  "reconciliationUnlink": "Undo",
+  "reconciliationLinkedRow": "Will be linked to {name} — it will not be created",
+  "@reconciliationLinkedRow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reconciliationLinkedTransaction": "Will be linked to {name} — it will not be deleted",
+  "@reconciliationLinkedTransaction": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "reconciliationMatchedHint": "Already in the app. Nothing to do.",
   "reconciliationMissingHint": "Movements the bank reports that are not in the app. The selected ones will be created.",
   "reconciliationExtraHint": "Transactions in the app the bank does not report. The selected ones will be deleted.",

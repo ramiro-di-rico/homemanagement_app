@@ -18,6 +18,7 @@ class FakeReconciliationController extends ChangeNotifier
   int applyCallCount = 0;
   List<ReconciliationTransactionToCreate> lastCreated = [];
   List<int> lastDeleted = [];
+  List<ReconciliationReferenceLink> lastReferencesToLink = [];
   ApplyReconciliationResultModel? applyResult;
 
   @override
@@ -46,6 +47,7 @@ class FakeReconciliationController extends ChangeNotifier
     applyCallCount++;
     lastCreated = transactionsToCreate;
     lastDeleted = transactionIdsToDelete;
+    lastReferencesToLink = referencesToLink ?? const [];
     _preview = null;
     notifyListeners();
     return applyResult ??
@@ -276,12 +278,166 @@ void main() {
 
     expect(find.text('This statement is fully reconciled'), findsOneWidget);
   });
+
+  testWidgets('a possible match is only a suggestion until it is linked',
+      (tester) async {
+    final controller =
+        FakeReconciliationController(preview: previewWithPossibleMatch());
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Possible matches (1)'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Link'), findsOneWidget);
+    expect(find.text('3,000 apart · 1 day apart'), findsOneWidget);
+    // Nothing changed: the row is still going to be created.
+    expect(find.text('Apply (1)'), findsOneWidget);
+  });
+
+  testWidgets('linking a possible match links it instead of creating the row',
+      (tester) async {
+    final controller =
+        FakeReconciliationController(preview: previewWithPossibleMatch());
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Possible matches (1)'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Link'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Apply (1)'));
+    await tester.pumpAndSettle();
+
+    expect(controller.lastCreated, isEmpty);
+    expect(controller.lastDeleted, isEmpty);
+    final link = controller.lastReferencesToLink.single;
+    expect(link.transactionId, 99);
+    expect(link.externalReference, '111');
+  });
+
+  testWidgets('a linked row is no longer offered for creation', (tester) async {
+    final controller =
+        FakeReconciliationController(preview: previewWithPossibleMatch());
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Possible matches (1)'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Link'));
+    await tester.pumpAndSettle();
+
+    // The tab bar scrolled while reaching the possible matches, so the first tab has to be brought
+    // back into view before it can be tapped.
+    final missingTab = find.text('Missing (1)');
+    await tester.ensureVisible(missingTab);
+    await tester.pumpAndSettle();
+    await tester.tap(missingTab);
+    await tester.pumpAndSettle();
+
+    // No checkbox at all: linking already accounts for the movement.
+    expect(checkboxValues(tester), isEmpty);
+    expect(find.textContaining('Will be linked to Playroom 1'), findsOneWidget);
+  });
+
+  testWidgets('a linked transaction is no longer offered for deletion',
+      (tester) async {
+    final controller =
+        FakeReconciliationController(preview: previewWithPossibleMatch());
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Possible matches (1)'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Link'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Not in statement (1)'));
+    await tester.pumpAndSettle();
+
+    expect(checkboxValues(tester), isEmpty);
+    expect(find.textContaining('Will be linked to Pago con QR PLAYROOM'),
+        findsOneWidget);
+  });
+
+  testWidgets('a row links to one transaction only', (tester) async {
+    // Two candidates for the same row: confirming the second replaces the first.
+    final controller = FakeReconciliationController(
+        preview: previewWithPossibleMatch(extraCount: 2));
+    await pumpScreen(tester, controller);
+
+    await tester.tap(find.text('Possible matches (2)'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Link').first);
+    await tester.pumpAndSettle();
+
+    // The other candidate is out of reach while this one holds the row.
+    final other = tester.widget<TextButton>(find.byType(TextButton).last);
+    expect(other.onPressed, isNull);
+
+    await tester.tap(find.text('Undo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Link').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Apply (1)'));
+    await tester.pumpAndSettle();
+
+    expect(controller.lastReferencesToLink.single.transactionId, 100);
+  });
 }
 
 List<bool?> checkboxValues(WidgetTester tester) => tester
     .widgetList<Checkbox>(find.byType(Checkbox))
     .map((c) => c.value)
     .toList();
+
+/// One statement row and one transaction of the same merchant that do not match on their own: the
+/// possible-match case, with both sides also reported as missing and extra.
+ReconciliationPreviewModel previewWithPossibleMatch({int extraCount = 1}) =>
+    ReconciliationPreviewModel.fromJson({
+      'accountId': 3,
+      'periodStart': '2026-07-01T00:00:00Z',
+      'periodEnd': '2026-07-31T00:00:00Z',
+      'matched': [],
+      'missing': [
+        {
+          'row': _playroomRow,
+          'suggestedCategoryId': 7,
+        },
+      ],
+      'extra': List.generate(
+          extraCount,
+          (i) => {
+                'transaction': _playroomTransaction(99 + i, i + 1),
+                'nearPeriodEdge': false,
+              }),
+      'ambiguous': [],
+      'possibleMatches': List.generate(
+          extraCount,
+          (i) => {
+                'row': _playroomRow,
+                'transaction': _playroomTransaction(99 + i, i + 1),
+                'amountDifference': -3000.0,
+                'dayDifference': 1,
+              }),
+    });
+
+const _playroomRow = {
+  'reference': '111',
+  'name': 'Pago con QR PLAYROOM S. R. L.',
+  'price': 13000.0,
+  'date': '2026-07-16T00:00:00Z',
+  'transactionType': 1,
+};
+
+Map<String, dynamic> _playroomTransaction(int id, int number) => {
+      'id': id,
+      'accountId': 3,
+      'categoryId': 1,
+      'name': 'Playroom $number',
+      'price': 16000.0,
+      'date': '2026-07-15T00:00:00Z',
+      'transactionType': 1,
+      'categoryName': 'Juegos',
+      'tags': [],
+    };
 
 /// One missing row and one extra transaction, which is enough to exercise both selections.
 ReconciliationPreviewModel previewWith(

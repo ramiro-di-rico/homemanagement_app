@@ -756,6 +756,46 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reconciliationAmbiguousLabel => 'Ambiguas';
 
   @override
+  String get reconciliationPossibleMatchesLabel => 'Posibles coincidencias';
+
+  @override
+  String get reconciliationPossibleMatchesHint =>
+      'Movimientos que parecen ser del mismo comercio pero no coinciden del todo. Vinculá los que sean el mismo movimiento.';
+
+  @override
+  String reconciliationPossibleMatchDifference(String difference) {
+    return '$difference de diferencia';
+  }
+
+  @override
+  String reconciliationPossibleMatchDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días de diferencia',
+      one: '1 día de diferencia',
+      zero: 'mismo día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reconciliationLink => 'Vincular';
+
+  @override
+  String get reconciliationUnlink => 'Deshacer';
+
+  @override
+  String reconciliationLinkedRow(String name) {
+    return 'Se vincula con $name — no se va a crear';
+  }
+
+  @override
+  String reconciliationLinkedTransaction(String name) {
+    return 'Se vincula con $name — no se va a eliminar';
+  }
+
+  @override
   String get reconciliationMatchedHint =>
       'Ya están en la app. No hay nada que hacer.';
 
@@ -1553,6 +1593,46 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get reconciliationAmbiguousLabel => 'Ambiguas';
+
+  @override
+  String get reconciliationPossibleMatchesLabel => 'Posibles coincidencias';
+
+  @override
+  String get reconciliationPossibleMatchesHint =>
+      'Movimientos que parecen ser del mismo comercio pero no coinciden del todo. Vinculá los que sean el mismo movimiento.';
+
+  @override
+  String reconciliationPossibleMatchDifference(String difference) {
+    return '$difference de diferencia';
+  }
+
+  @override
+  String reconciliationPossibleMatchDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días de diferencia',
+      one: '1 día de diferencia',
+      zero: 'mismo día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reconciliationLink => 'Vincular';
+
+  @override
+  String get reconciliationUnlink => 'Deshacer';
+
+  @override
+  String reconciliationLinkedRow(String name) {
+    return 'Se vincula con $name — no se va a crear';
+  }
+
+  @override
+  String reconciliationLinkedTransaction(String name) {
+    return 'Se vincula con $name — no se va a eliminar';
+  }
 
   @override
   String get reconciliationMatchedHint =>
