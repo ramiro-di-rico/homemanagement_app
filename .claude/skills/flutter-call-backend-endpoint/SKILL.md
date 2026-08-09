@@ -54,7 +54,7 @@ There are two, and they are not interchangeable:
 
 ## Gotchas
 
-- `ApiServiceFactory` throws a bare `Exception('Failed to post to $api')` — the status code and response body are **discarded**. Any user-facing message must be composed in the repository's `catch`; you cannot branch on 404 vs 500 without changing the factory first.
+- `ApiServiceFactory` throws a bare `Exception('Failed to post to $api')` — the status code and response body are **discarded** for every verb except `uploadWithReturn`, which appends the body. Any user-facing message must be composed in the repository's `catch`; you cannot branch on 404 vs 500 without changing the factory first.
 - `apiDelete(api, id)` builds `'$api/$id'` itself — pass the endpoint and the id separately, not a pre-joined path.
-- `ApiServiceFactory.upload()` has an inverted success check (it throws when the status is 2xx). Don't copy it as a model, and if you need uploads, fix the condition first.
+- **File uploads use `_getAuthHeaders()`, not `_getHeaders()`.** `MultipartRequest` sets its own `Content-Type` with the multipart boundary; overwriting it with `application/json` leaves the server unable to parse the form. Use `upload()` / `uploadWithReturn()` rather than hand-rolling a multipart request.
 - New user-facing strings from step 3 go through [flutter-add-locale-string](../flutter-add-locale-string/SKILL.md) — the existing `notify(...)` calls are hardcoded English, which is a known gap, not the pattern to follow for new code.
