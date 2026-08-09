@@ -32,6 +32,7 @@ class _AddTransactionSheetDesktopState
 
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
+  FocusNode nameFocusNode = FocusNode();
 
   TransactionModel transactionModel = TransactionModel.empty(0, 0);
   AccountModel accountModel = AccountModel.empty(0);
@@ -89,8 +90,9 @@ class _AddTransactionSheetDesktopState
   void dispose() {
     this.nameController.removeListener(onNameChanged);
     priceController.removeListener(onPriceChanged);
-    this.nameController.dispose();
+    nameController.dispose();
     priceController.dispose();
+    nameFocusNode.dispose();
     super.dispose();
   }
 
@@ -104,6 +106,8 @@ class _AddTransactionSheetDesktopState
           SizedBox(
             width: 300,
             child: Autocomplete<TransactionModel>(
+              textEditingController: nameController,
+              focusNode: nameFocusNode,
               displayStringForOption: (TransactionModel option) => option.name,
               optionsBuilder: (TextEditingValue textEditingValue) {
                 if (textEditingValue.text == '') {
@@ -257,11 +261,15 @@ class _AddTransactionSheetDesktopState
             )
           ),
           SizedBox(width: 30),
-          SizedBox(
-            width: 100,
-            child: TextButton(
-              onPressed: addTransaction,
-              child: Icon(Icons.check),
+          AnimatedOpacity(
+            opacity: transactionModel.isValid() ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 500),
+            child: SizedBox(
+              width: 100,
+              child: TextButton(
+                onPressed: transactionModel.isValid() ? addTransaction : null,
+                child: Icon(Icons.check),
+              ),
             ),
           ),
         ],

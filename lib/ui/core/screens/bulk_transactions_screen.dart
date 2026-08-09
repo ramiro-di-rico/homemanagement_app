@@ -109,6 +109,226 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
     setState(() => _pendingTransactions.removeAt(index));
   }
 
+  Future<void> _editQueuedTransaction(int index) async {
+    final localizations = AppLocalizations.of(context)!;
+    final accounts = _accountRepository.accounts;
+    final categories = _categoryRepository.getActiveCategories();
+    final transaction = _pendingTransactions[index];
+    final locale = Localizations.localeOf(context).toString();
+
+    final nameController = TextEditingController(text: transaction.name);
+    final priceController = TextEditingController(
+      text: LocalizedNumberInputFormatterHelper.formatDouble(
+        transaction.price,
+        locale,
+      ),
+    );
+
+    AccountModel? selectedAccount;
+    for (final account in accounts) {
+      if (account.id == transaction.accountId) {
+        selectedAccount = account;
+        break;
+      }
+    }
+    selectedAccount ??= accounts.isNotEmpty ? accounts.first : null;
+
+    CategoryModel? selectedCategory;
+    for (final category in categories) {
+      if (category.id == transaction.categoryId) {
+        selectedCategory = category;
+        break;
+      }
+    }
+    selectedCategory ??= categories.isNotEmpty ? categories.first : null;
+
+    DateTime selectedDate = transaction.date;
+    TransactionType selectedType = transaction.transactionType;
+    String? dialogError;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(localizations.edit),
+              content: SizedBox(
+                width: 500,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (dialogError != null) ...[
+                        Text(
+                          dialogError!,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      DropdownButtonFormField<AccountModel>(
+                        initialValue: selectedAccount,
+                        decoration: InputDecoration(
+                          labelText: localizations.transactionAccount,
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
+                        ),
+                        items: accounts
+                            .map((a) => DropdownMenuItem(value: a, child: Text(a.name)))
+                            .toList(),
+                        onChanged: (v) => setDialogState(() => selectedAccount = v),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<CategoryModel>(
+                        initialValue: selectedCategory,
+                        decoration: InputDecoration(
+                          labelText: localizations.transactionCategory,
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.category_outlined),
+                        ),
+                        items: categories
+                            .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
+                            .toList(),
+                        onChanged: (v) => setDialogState(() => selectedCategory = v),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          labelText: localizations.transactionDescription,
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.edit_outlined),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: priceController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: [
+                          LocalizedNumberInputFormatter(locale: locale),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: localizations.transactionAmount,
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.attach_money),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      DateTimeField(
+                        format: DateFormat('dd MMM yyyy'),
+                        decoration: InputDecoration(
+                          labelText: localizations.transactionDate,
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.date_range),
+                        ),
+                        initialValue: selectedDate,
+                        onShowPicker: (context, currentValue) => showDatePicker(
+                          context: context,
+                          firstDate: DateTime(1900),
+                          initialDate: currentValue ?? selectedDate,
+                          lastDate: DateTime(2100),
+                        ),
+                        onChanged: (date) {
+                          if (date != null) {
+                            setDialogState(() => selectedDate = date);
+                          }
+                        },
+                        resetIcon: null,
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<TransactionType>(
+                        initialValue: selectedType,
+                        decoration: InputDecoration(
+                          labelText: localizations.transactionType,
+                          border: const OutlineInputBorder(),
+                          prefixIcon: const Icon(Icons.swap_vert),
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: TransactionType.Outcome,
+                            child: Text(localizations.outcome),
+                          ),
+                          DropdownMenuItem(
+                            value: TransactionType.Income,
+                            child: Text(localizations.income),
+                          ),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => selectedType = v);
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text(localizations.cancel),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final name = nameController.text.trim();
+                    final price = LocalizedNumberInputFormatterHelper.parseDouble(
+                      priceController.text.trim(),
+                      locale,
+                    );
+
+                    if (selectedAccount == null) {
+                      setDialogState(() => dialogError = localizations.pleaseSelectAccount);
+                      return;
+                    }
+                    if (selectedCategory == null) {
+                      setDialogState(() => dialogError = localizations.pleaseSelectCategory);
+                      return;
+                    }
+                    if (name.length < 3) {
+                      setDialogState(
+                        () => dialogError = localizations.nameMustBeAtLeast3Characters,
+                      );
+                      return;
+                    }
+                    if (price == null || price <= 0) {
+                      setDialogState(() => dialogError = localizations.enterValidPrice);
+                      return;
+                    }
+
+                    setState(() {
+                      _errorMessage = null;
+                      _successMessage = null;
+                      _pendingTransactions[index] = TransactionModel(
+                        transaction.id,
+                        selectedAccount!.id,
+                        selectedCategory!.id,
+                        name,
+                        price,
+                        selectedDate,
+                        selectedType,
+                        categoryName: selectedCategory!.name,
+                        tags: List.from(transaction.tags),
+                      );
+                    });
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text(localizations.save),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    nameController.dispose();
+    priceController.dispose();
+  }
+
   Future<void> _submitAll() async {
     final localizations = AppLocalizations.of(context)!;
     if (_pendingTransactions.isEmpty) {
@@ -443,6 +663,12 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                     ),
                     const SizedBox(width: 8),
                     IconButton(
+                      icon: const Icon(Icons.edit_outlined, size: 20),
+                      onPressed: () => _editQueuedTransaction(index),
+                      tooltip: localizations.edit,
+                      color: Colors.grey,
+                    ),
+                    IconButton(
                       icon: const Icon(Icons.delete_outline, size: 20),
                       onPressed: () => _removeFromQueue(index),
                       tooltip: localizations.remove,
@@ -458,4 +684,3 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
     );
   }
 }
-

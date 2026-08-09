@@ -708,6 +708,168 @@ class AppLocalizationsEs extends AppLocalizations {
   String maxTagsReached(int max, int current) {
     return 'Puedes adjuntar hasta $max etiquetas ($current seleccionadas).';
   }
+
+  @override
+  String get transactionProjections => 'Proyección de gastos';
+
+  @override
+  String get noProjectionDataAvailable =>
+      'No hay datos de proyección disponibles';
+
+  @override
+  String get projectedNextMonth => 'Próximo mes';
+
+  @override
+  String get projectedNext3Months => 'Próximos 3 meses';
+
+  @override
+  String get monthlyAverage => 'Promedio mensual';
+
+  @override
+  String basedOnLastMonths(int count) {
+    return 'Basado en los últimos $count meses';
+  }
+
+  @override
+  String get lookbackMonths => 'Meses hacia atrás';
+
+  @override
+  String get reconcileStatement => 'Conciliar extracto';
+
+  @override
+  String get reconciliationSelectFile => 'Elegir archivo del extracto';
+
+  @override
+  String get reconciliationNoStatementSelected =>
+      'Elegí el archivo CSV que te da el banco para empezar';
+
+  @override
+  String get reconciliationPeriod => 'Período';
+
+  @override
+  String get reconciliationMatchedLabel => 'Conciliadas';
+
+  @override
+  String get reconciliationMissingLabel => 'Faltantes';
+
+  @override
+  String get reconciliationExtraLabel => 'No están en el extracto';
+
+  @override
+  String get reconciliationAmbiguousLabel => 'Ambiguas';
+
+  @override
+  String get reconciliationPossibleMatchesLabel => 'Posibles coincidencias';
+
+  @override
+  String get reconciliationPossibleMatchesHint =>
+      'Movimientos que parecen ser del mismo comercio pero no coinciden del todo. Vinculá los que sean el mismo movimiento.';
+
+  @override
+  String reconciliationPossibleMatchDifference(String difference) {
+    return '$difference de diferencia';
+  }
+
+  @override
+  String reconciliationPossibleMatchDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días de diferencia',
+      one: '1 día de diferencia',
+      zero: 'mismo día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reconciliationLink => 'Vincular';
+
+  @override
+  String get reconciliationUnlink => 'Deshacer';
+
+  @override
+  String reconciliationLinkedRow(String name) {
+    return 'Se vincula con $name — no se va a crear';
+  }
+
+  @override
+  String reconciliationLinkedTransaction(String name) {
+    return 'Se vincula con $name — no se va a eliminar';
+  }
+
+  @override
+  String get reconciliationMatchedHint =>
+      'Ya están en la app. No hay nada que hacer.';
+
+  @override
+  String get reconciliationMissingHint =>
+      'Movimientos que el banco informa y no están en la app. Se van a crear los seleccionados.';
+
+  @override
+  String get reconciliationExtraHint =>
+      'Transacciones de la app que el banco no informa. Se van a eliminar las seleccionadas.';
+
+  @override
+  String get reconciliationAmbiguousHint =>
+      'Movimientos que podrían corresponder a más de una transacción. Resolvelos a mano desde la lista de transacciones.';
+
+  @override
+  String get reconciliationFullyReconciled =>
+      'Este extracto está completamente conciliado';
+
+  @override
+  String get reconciliationConfirmDeleteTitle => '¿Eliminar transacciones?';
+
+  @override
+  String reconciliationConfirmDeleteMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se van a eliminar $count transacciones de forma permanente.',
+      one: 'Se va a eliminar 1 transacción de forma permanente.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reconciliationApplied(int created, int deleted) {
+    return '$created creadas, $deleted eliminadas';
+  }
+
+  @override
+  String get reconciliationBalanceMatches =>
+      'El saldo de la cuenta coincide con el extracto';
+
+  @override
+  String reconciliationBalanceDifference(String difference) {
+    return 'Diferencia contra el extracto: $difference';
+  }
+
+  @override
+  String get reconciliationCategoryRequired =>
+      'Elegí una categoría para cada movimiento a crear';
+
+  @override
+  String get reconciliationNothingSelected =>
+      'No hay nada seleccionado para aplicar';
+
+  @override
+  String get failedToReadStatement => 'No se pudo leer el extracto';
+
+  @override
+  String get reconciliationNearPeriodEdge =>
+      'Podría pertenecer a un extracto vecino — revisá antes de eliminar';
+
+  @override
+  String reconciliationBalanceMatchesAsOf(String date) {
+    return 'El saldo de la cuenta al $date coincide con el extracto';
+  }
+
+  @override
+  String reconciliationBalanceDifferenceAsOf(String date, String difference) {
+    return 'Diferencia contra el extracto al $date: $difference';
+  }
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1387,5 +1549,167 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String maxTagsReached(int max, int current) {
     return 'Podés adjuntar hasta $max etiquetas ($current seleccionadas).';
+  }
+
+  @override
+  String get transactionProjections => 'Proyección de gastos';
+
+  @override
+  String get noProjectionDataAvailable =>
+      'No hay datos de proyección disponibles';
+
+  @override
+  String get projectedNextMonth => 'Próximo mes';
+
+  @override
+  String get projectedNext3Months => 'Próximos 3 meses';
+
+  @override
+  String get monthlyAverage => 'Promedio mensual';
+
+  @override
+  String basedOnLastMonths(int count) {
+    return 'Basado en los últimos $count meses';
+  }
+
+  @override
+  String get lookbackMonths => 'Meses hacia atrás';
+
+  @override
+  String get reconcileStatement => 'Conciliar extracto';
+
+  @override
+  String get reconciliationSelectFile => 'Elegir archivo del extracto';
+
+  @override
+  String get reconciliationNoStatementSelected =>
+      'Elegí el archivo CSV que te da el banco para empezar';
+
+  @override
+  String get reconciliationPeriod => 'Período';
+
+  @override
+  String get reconciliationMatchedLabel => 'Conciliadas';
+
+  @override
+  String get reconciliationMissingLabel => 'Faltantes';
+
+  @override
+  String get reconciliationExtraLabel => 'No están en el extracto';
+
+  @override
+  String get reconciliationAmbiguousLabel => 'Ambiguas';
+
+  @override
+  String get reconciliationPossibleMatchesLabel => 'Posibles coincidencias';
+
+  @override
+  String get reconciliationPossibleMatchesHint =>
+      'Movimientos que parecen ser del mismo comercio pero no coinciden del todo. Vinculá los que sean el mismo movimiento.';
+
+  @override
+  String reconciliationPossibleMatchDifference(String difference) {
+    return '$difference de diferencia';
+  }
+
+  @override
+  String reconciliationPossibleMatchDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días de diferencia',
+      one: '1 día de diferencia',
+      zero: 'mismo día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get reconciliationLink => 'Vincular';
+
+  @override
+  String get reconciliationUnlink => 'Deshacer';
+
+  @override
+  String reconciliationLinkedRow(String name) {
+    return 'Se vincula con $name — no se va a crear';
+  }
+
+  @override
+  String reconciliationLinkedTransaction(String name) {
+    return 'Se vincula con $name — no se va a eliminar';
+  }
+
+  @override
+  String get reconciliationMatchedHint =>
+      'Ya están en la app. No hay nada que hacer.';
+
+  @override
+  String get reconciliationMissingHint =>
+      'Movimientos que el banco informa y no están en la app. Se van a crear los seleccionados.';
+
+  @override
+  String get reconciliationExtraHint =>
+      'Transacciones de la app que el banco no informa. Se van a eliminar las seleccionadas.';
+
+  @override
+  String get reconciliationAmbiguousHint =>
+      'Movimientos que podrían corresponder a más de una transacción. Resolvelos a mano desde la lista de transacciones.';
+
+  @override
+  String get reconciliationFullyReconciled =>
+      'Este extracto está completamente conciliado';
+
+  @override
+  String get reconciliationConfirmDeleteTitle => '¿Eliminar transacciones?';
+
+  @override
+  String reconciliationConfirmDeleteMessage(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se van a eliminar $count transacciones de forma permanente.',
+      one: 'Se va a eliminar 1 transacción de forma permanente.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reconciliationApplied(int created, int deleted) {
+    return '$created creadas, $deleted eliminadas';
+  }
+
+  @override
+  String get reconciliationBalanceMatches =>
+      'El saldo de la cuenta coincide con el extracto';
+
+  @override
+  String reconciliationBalanceDifference(String difference) {
+    return 'Diferencia contra el extracto: $difference';
+  }
+
+  @override
+  String get reconciliationCategoryRequired =>
+      'Elegí una categoría para cada movimiento a crear';
+
+  @override
+  String get reconciliationNothingSelected =>
+      'No hay nada seleccionado para aplicar';
+
+  @override
+  String get failedToReadStatement => 'No se pudo leer el extracto';
+
+  @override
+  String get reconciliationNearPeriodEdge =>
+      'Podría pertenecer a un extracto vecino — revisá antes de eliminar';
+
+  @override
+  String reconciliationBalanceMatchesAsOf(String date) {
+    return 'El saldo de la cuenta al $date coincide con el extracto';
+  }
+
+  @override
+  String reconciliationBalanceDifferenceAsOf(String date, String difference) {
+    return 'Diferencia contra el extracto al $date: $difference';
   }
 }

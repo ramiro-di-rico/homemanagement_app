@@ -22,6 +22,7 @@ import 'package:home_management_app/data/repositories/invite.repository.dart';
 import 'package:home_management_app/data/repositories/notification.repository.dart';
 import 'package:home_management_app/data/repositories/currency.repository.dart';
 import 'package:home_management_app/data/repositories/main_account.repository.dart';
+import 'package:home_management_app/data/repositories/reconciliation_repository.dart';
 import 'package:home_management_app/data/repositories/recurring_transaction_repository.dart';
 import 'package:home_management_app/data/repositories/reminder_repository.dart';
 import 'package:home_management_app/data/repositories/tag.repository.dart';
@@ -34,6 +35,7 @@ import 'package:home_management_app/data/services/caching.dart';
 import 'package:home_management_app/data/services/category.service.dart';
 import 'package:home_management_app/data/services/category.service.metric.dart';
 import 'package:home_management_app/data/services/dashboard.service.dart';
+import 'package:home_management_app/data/services/transaction_projection.service.dart';
 import 'package:home_management_app/data/services/notification.service.dart';
 import 'package:home_management_app/data/services/cryptography.service.dart';
 import 'package:home_management_app/data/services/currency.service.dart';
@@ -95,6 +97,9 @@ void registerServices() {
   GetIt.instance.registerFactory(() => CategoryMetricService(
       authenticationService: GetIt.I<AuthenticationService>(),
       caching: GetIt.I<Caching>()));
+
+  GetIt.instance.registerFactory(() => TransactionProjectionService(
+      authenticationService: GetIt.I<AuthenticationService>()));
 
   GetIt.instance.registerFactory(() => TagService(
       authenticationService: GetIt.I<AuthenticationService>(),
@@ -207,6 +212,12 @@ void registerSingletons(PlatformContext platformContext) {
 
   var mainAccountRepository = MainAccountRepository(mainAccountService: mainAccountService, notifierService: errorNotifierService);
 
+  var reconciliationRepository = ReconciliationRepository(
+      transactionService: transactionService,
+      accountRepository: accountRepository,
+      transactionRepository: transactionRepository,
+      errorNotifierService: errorNotifierService);
+
   GetIt.instance.registerSingleton(platformContext);
   GetIt.instance.registerSingleton(userRepository);
   GetIt.instance.registerSingleton(accountRepository);
@@ -225,5 +236,6 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(budgetRepository);
   GetIt.instance.registerSingleton(reminderRepository);
   GetIt.instance.registerSingleton(mainAccountRepository);
+  GetIt.instance.registerSingleton(reconciliationRepository);
   GetIt.instance.registerSingleton(InviteLinkService());
 }

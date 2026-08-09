@@ -1398,6 +1398,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can attach up to {max} tags ({current} selected).'**
   String maxTagsReached(int max, int current);
+
+  /// No description provided for @transactionProjections.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Projections'**
+  String get transactionProjections;
+
+  /// No description provided for @noProjectionDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No projection data available'**
+  String get noProjectionDataAvailable;
+
+  /// No description provided for @projectedNextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get projectedNextMonth;
+
+  /// No description provided for @projectedNext3Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Next 3 months'**
+  String get projectedNext3Months;
+
+  /// No description provided for @monthlyAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly average'**
+  String get monthlyAverage;
+
+  /// No description provided for @basedOnLastMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on the last {count} months'**
+  String basedOnLastMonths(int count);
+
+  /// No description provided for @lookbackMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Lookback months'**
+  String get lookbackMonths;
+
+  /// No description provided for @reconcileStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconcile statement'**
+  String get reconcileStatement;
+
+  /// No description provided for @reconciliationSelectFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Select statement file'**
+  String get reconciliationSelectFile;
+
+  /// No description provided for @reconciliationNoStatementSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the CSV file your bank gives you to start'**
+  String get reconciliationNoStatementSelected;
+
+  /// No description provided for @reconciliationPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get reconciliationPeriod;
+
+  /// No description provided for @reconciliationMatchedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconciled'**
+  String get reconciliationMatchedLabel;
+
+  /// No description provided for @reconciliationMissingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing'**
+  String get reconciliationMissingLabel;
+
+  /// No description provided for @reconciliationExtraLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in statement'**
+  String get reconciliationExtraLabel;
+
+  /// No description provided for @reconciliationAmbiguousLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambiguous'**
+  String get reconciliationAmbiguousLabel;
+
+  /// No description provided for @reconciliationPossibleMatchesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible matches'**
+  String get reconciliationPossibleMatchesLabel;
+
+  /// No description provided for @reconciliationPossibleMatchesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements that look like the same merchant but do not match exactly. Link the ones that are the same movement.'**
+  String get reconciliationPossibleMatchesHint;
+
+  /// No description provided for @reconciliationPossibleMatchDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'{difference} apart'**
+  String reconciliationPossibleMatchDifference(String difference);
+
+  /// No description provided for @reconciliationPossibleMatchDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =0{same day} =1{1 day apart} other{{days} days apart}}'**
+  String reconciliationPossibleMatchDays(int days);
+
+  /// No description provided for @reconciliationLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get reconciliationLink;
+
+  /// No description provided for @reconciliationUnlink.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get reconciliationUnlink;
+
+  /// No description provided for @reconciliationLinkedRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be linked to {name} — it will not be created'**
+  String reconciliationLinkedRow(String name);
+
+  /// No description provided for @reconciliationLinkedTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Will be linked to {name} — it will not be deleted'**
+  String reconciliationLinkedTransaction(String name);
+
+  /// No description provided for @reconciliationMatchedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Already in the app. Nothing to do.'**
+  String get reconciliationMatchedHint;
+
+  /// No description provided for @reconciliationMissingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements the bank reports that are not in the app. The selected ones will be created.'**
+  String get reconciliationMissingHint;
+
+  /// No description provided for @reconciliationExtraHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions in the app the bank does not report. The selected ones will be deleted.'**
+  String get reconciliationExtraHint;
+
+  /// No description provided for @reconciliationAmbiguousHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Movements that could match more than one transaction. Resolve these by hand from the transaction list.'**
+  String get reconciliationAmbiguousHint;
+
+  /// No description provided for @reconciliationFullyReconciled.
+  ///
+  /// In en, this message translates to:
+  /// **'This statement is fully reconciled'**
+  String get reconciliationFullyReconciled;
+
+  /// No description provided for @reconciliationConfirmDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete transactions?'**
+  String get reconciliationConfirmDeleteTitle;
+
+  /// No description provided for @reconciliationConfirmDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 transaction will be deleted permanently.} other{{count} transactions will be deleted permanently.}}'**
+  String reconciliationConfirmDeleteMessage(int count);
+
+  /// No description provided for @reconciliationApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'{created} created, {deleted} deleted'**
+  String reconciliationApplied(int created, int deleted);
+
+  /// No description provided for @reconciliationBalanceMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'The account balance matches the statement'**
+  String get reconciliationBalanceMatches;
+
+  /// No description provided for @reconciliationBalanceDifference.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference against the statement: {difference}'**
+  String reconciliationBalanceDifference(String difference);
+
+  /// No description provided for @reconciliationCategoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a category for every movement to create'**
+  String get reconciliationCategoryRequired;
+
+  /// No description provided for @reconciliationNothingSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing selected to apply'**
+  String get reconciliationNothingSelected;
+
+  /// No description provided for @failedToReadStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to read the statement'**
+  String get failedToReadStatement;
+
+  /// No description provided for @reconciliationNearPeriodEdge.
+  ///
+  /// In en, this message translates to:
+  /// **'Could belong to a neighbouring statement — check before deleting'**
+  String get reconciliationNearPeriodEdge;
+
+  /// No description provided for @reconciliationBalanceMatchesAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'The account balance at {date} matches the statement'**
+  String reconciliationBalanceMatchesAsOf(String date);
+
+  /// No description provided for @reconciliationBalanceDifferenceAsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Difference against the statement at {date}: {difference}'**
+  String reconciliationBalanceDifferenceAsOf(String date, String difference);
 }
 
 class _AppLocalizationsDelegate

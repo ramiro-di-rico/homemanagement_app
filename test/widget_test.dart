@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:home_management_app/main.dart';
-import 'package:home_management_app/services/infra/platform/platform_strategy.dart';
+import 'package:home_management_app/data/services/platform/platform_strategy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:home_management_app/myapp.dart';
 

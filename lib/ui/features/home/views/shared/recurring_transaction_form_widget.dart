@@ -181,11 +181,13 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                   selectedAccounts: _selectedAccounts,
                   multipleSelection: false,
                   onSelectedAccountsChanged: (accounts) {
-                    _selectedAccounts.clear();
-                    _selectedAccounts.addAll(accounts.map((e) => e.account));
-                    _recurringTransaction.accountId = accounts.isNotEmpty
-                        ? accounts.first.account.id
-                        : null;
+                    setState(() {
+                      _selectedAccounts.clear();
+                      _selectedAccounts.addAll(accounts.map((e) => e.account));
+                      _recurringTransaction.accountId = accounts.isNotEmpty
+                          ? accounts.first.account.id
+                          : null;
+                    });
                   },
                 ),
               ),
@@ -194,9 +196,11 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                 width: 200,
                 child: CategorySelect(
                   onSelectedCategoriesChanged: (categories) {
-                    _selectedCategories.clear();
-                    _selectedCategories.addAll(categories);
-                    _recurringTransaction.categoryId = categories.first.id;
+                    setState(() {
+                      _selectedCategories.clear();
+                      _selectedCategories.addAll(categories);
+                      _recurringTransaction.categoryId = categories.first.id;
+                    });
                   },
                   selectedCategories: _selectedCategories,
                   multipleSelection: false,
@@ -262,7 +266,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                       ),
                     ),
                   ),
-                  onPressed: () async {
+                  onPressed: _recurringTransaction.isValid() ? () async {
                     if (saving) return;
 
                     setState(() {
@@ -280,7 +284,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
                       saving = false;
                     });
                     Navigator.pop(context, true);
-                  },
+                  } : null,
                   child: saving
                       ? CircularProgressIndicator()
                       : Text(widget.transaction == null ? 'Add' : 'Update'),
@@ -316,5 +320,6 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
 
   void onNameChanged() {
     _recurringTransaction.name = _nameController.text;
+    setState(() {});
   }
 }

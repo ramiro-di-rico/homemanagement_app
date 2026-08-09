@@ -29,6 +29,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
+  FocusNode nameFocusNode = FocusNode();
   AccountModel accountModel = AccountModel.empty(0);
   TransactionModel transactionModel = TransactionModel.empty(0, 0);
   String? _localeCode;
@@ -88,8 +89,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   void dispose() {
     this.nameController.removeListener(onNameChanged);
     priceController.removeListener(onPriceChanged);
-    this.nameController.dispose();
+    nameController.dispose();
     priceController.dispose();
+    nameFocusNode.dispose();
     super.dispose();
   }
 
@@ -110,6 +112,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
           Padding(
             padding: EdgeInsets.all(10),
             child: Autocomplete<TransactionModel>(
+              textEditingController: nameController,
+              focusNode: nameFocusNode,
               displayStringForOption: (TransactionModel option) => option.name,
               optionsBuilder: (TextEditingValue textEditingValue) {
                 if (textEditingValue.text == '') {
@@ -291,7 +295,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: ElevatedButton(
-                onPressed: addTransaction,
+                onPressed: transactionModel.isValid() ? addTransaction : null,
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size.fromHeight(40),
                 ),
