@@ -439,5 +439,12 @@
         "type": "String"
       }
     }
-  }
+  },
+  "savingsRate": "Savings rate",
+  "savingsRateThisMonth": "This month",
+  "savingsRateAverage": "Average",
+  "savingsRateTotalIncome": "Income",
+  "savingsRateTotalExpense": "Expense",
+  "savingsRateTotalSaved": "Saved",
+  "noSavingsRateDataAvailable": "No savings rate data available"
 }

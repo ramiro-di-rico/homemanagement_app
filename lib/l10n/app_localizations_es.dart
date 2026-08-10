@@ -867,6 +867,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String reconciliationBalanceDifferenceAsOf(String date, String difference) {
     return 'Diferencia contra el extracto al $date: $difference';
   }
+
+  @override
+  String get savingsRate => 'Tasa de ahorro';
+
+  @override
+  String get savingsRateThisMonth => 'Este mes';
+
+  @override
+  String get savingsRateAverage => 'Promedio';
+
+  @override
+  String get savingsRateTotalIncome => 'Ingresos';
+
+  @override
+  String get savingsRateTotalExpense => 'Gastos';
+
+  @override
+  String get savingsRateTotalSaved => 'Ahorrado';
+
+  @override
+  String get noSavingsRateDataAvailable => 'No hay datos de tasa de ahorro';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1706,4 +1727,25 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String reconciliationBalanceDifferenceAsOf(String date, String difference) {
     return 'Diferencia contra el extracto al $date: $difference';
   }
+
+  @override
+  String get savingsRate => 'Tasa de ahorro';
+
+  @override
+  String get savingsRateThisMonth => 'Este mes';
+
+  @override
+  String get savingsRateAverage => 'Promedio';
+
+  @override
+  String get savingsRateTotalIncome => 'Ingresos';
+
+  @override
+  String get savingsRateTotalExpense => 'Gastos';
+
+  @override
+  String get savingsRateTotalSaved => 'Ahorrado';
+
+  @override
+  String get noSavingsRateDataAvailable => 'No hay datos de tasa de ahorro';
 }

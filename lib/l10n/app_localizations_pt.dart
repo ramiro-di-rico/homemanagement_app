@@ -863,4 +863,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String reconciliationBalanceDifferenceAsOf(String date, String difference) {
     return 'Difference against the statement at $date: $difference';
   }
+
+  @override
+  String get savingsRate => 'Savings rate';
+
+  @override
+  String get savingsRateThisMonth => 'This month';
+
+  @override
+  String get savingsRateAverage => 'Average';
+
+  @override
+  String get savingsRateTotalIncome => 'Income';
+
+  @override
+  String get savingsRateTotalExpense => 'Expense';
+
+  @override
+  String get savingsRateTotalSaved => 'Saved';
+
+  @override
+  String get noSavingsRateDataAvailable => 'No savings rate data available';
 }

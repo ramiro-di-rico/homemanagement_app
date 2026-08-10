@@ -1626,6 +1626,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Difference against the statement at {date}: {difference}'**
   String reconciliationBalanceDifferenceAsOf(String date, String difference);
+
+  /// No description provided for @savingsRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Savings rate'**
+  String get savingsRate;
+
+  /// No description provided for @savingsRateThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get savingsRateThisMonth;
+
+  /// No description provided for @savingsRateAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get savingsRateAverage;
+
+  /// No description provided for @savingsRateTotalIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income'**
+  String get savingsRateTotalIncome;
+
+  /// No description provided for @savingsRateTotalExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get savingsRateTotalExpense;
+
+  /// No description provided for @savingsRateTotalSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savingsRateTotalSaved;
+
+  /// No description provided for @noSavingsRateDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No savings rate data available'**
+  String get noSavingsRateDataAvailable;
 }
 
 class _AppLocalizationsDelegate

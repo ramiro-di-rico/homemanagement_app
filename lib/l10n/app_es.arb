@@ -279,5 +279,12 @@
   "failedToReadStatement": "No se pudo leer el extracto",
   "reconciliationNearPeriodEdge": "Podría pertenecer a un extracto vecino — revisá antes de eliminar",
   "reconciliationBalanceMatchesAsOf": "El saldo de la cuenta al {date} coincide con el extracto",
-  "reconciliationBalanceDifferenceAsOf": "Diferencia contra el extracto al {date}: {difference}"
+  "reconciliationBalanceDifferenceAsOf": "Diferencia contra el extracto al {date}: {difference}",
+  "savingsRate": "Tasa de ahorro",
+  "savingsRateThisMonth": "Este mes",
+  "savingsRateAverage": "Promedio",
+  "savingsRateTotalIncome": "Ingresos",
+  "savingsRateTotalExpense": "Gastos",
+  "savingsRateTotalSaved": "Ahorrado",
+  "noSavingsRateDataAvailable": "No hay datos de tasa de ahorro"
 }
