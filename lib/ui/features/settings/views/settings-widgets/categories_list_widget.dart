@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:home_management_app/ui/core/extensions/hex_color_extension.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/add_category_sheet.dart';
@@ -16,83 +17,121 @@ class CategoriesListWidget extends StatefulWidget {
 
 class _CategoriesListWidgetState extends State<CategoriesListWidget> with NotifierMixin {
   CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
 
   @override
   void initState() {
     super.initState();
     _categoryRepository.addListener(refreshList);
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text;
+      });
+    });
   }
 
   @override
   void dispose() {
     _categoryRepository.removeListener(refreshList);
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Card(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.grey[900]
-              : Colors.grey[200],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: BorderSide(
-              color: Theme.of(context).dividerColor.withAlpha(50),
-              width: 1,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-            child: Row(
-                children: [
-                  SizedBox(width: 60, child: Text('Active', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
-                  SizedBox(width: 20),
-                  SizedBox(width: 150, child: Text('Can be measured', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
-                  SizedBox(width: 20),
-                  Expanded(child: Text('Name', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
-                  IconButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                          context: context,
-                          constraints: BoxConstraints(
-                            maxHeight: 1000,
-                            maxWidth: 500,
-                          ),
-                          isScrollControlled: true,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(25.0))),
-                          builder: (context) {
-                            return SizedBox(
-                              height: 100,
-                              child: AnimatedPadding(
-                                padding: EdgeInsets.only(
-                                  bottom: MediaQuery.of(context).viewInsets.bottom
-                                ),
-                                duration: const Duration(milliseconds: 100),
-                                curve: Curves.decelerate,
-                                child: AddCategorySheet()
-                              ),
-                            );
-                          }
-                      );
-                    },
-                    icon: Icon(Icons.add),
+    final visibleCategories = _query.trim().isEmpty
+        ? _categoryRepository.categories
+        : _categoryRepository.categories
+            .where((c) => c.name.toLowerCase().contains(_query.toLowerCase()))
+            .toList();
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: AppLocalizations.of(context)!.searchCategories,
+                  prefixIcon: Icon(Icons.search),
+                  suffixIcon: _query.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                          },
+                        )
+                      : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ]
+                ),
+              ),
             ),
-          )
-        ),
-        Expanded(
-          child: RefreshIndicator(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _categoryRepository.categories.length,
-                itemBuilder: (context, index) {
-                  var category = _categoryRepository.categories[index];
+            Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[900]
+                    : Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor.withAlpha(50),
+                  width: 1,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                child: Row(
+                    children: [
+                      SizedBox(width: 60, child: Text('Active', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                      SizedBox(width: 20),
+                      SizedBox(width: 150, child: Text('Can be measured', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                      SizedBox(width: 20),
+                      Expanded(child: Text('Name', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                      IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              constraints: BoxConstraints(
+                                maxHeight: 1000,
+                                maxWidth: 500,
+                              ),
+                              isScrollControlled: true,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(25.0))),
+                              builder: (context) {
+                                return SizedBox(
+                                  height: 100,
+                                  child: AnimatedPadding(
+                                    padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context).viewInsets.bottom
+                                    ),
+                                    duration: const Duration(milliseconds: 100),
+                                    curve: Curves.decelerate,
+                                    child: AddCategorySheet()
+                                  ),
+                                );
+                              }
+                          );
+                        },
+                        icon: Icon(Icons.add),
+                      ),
+                    ]
+                ),
+              )
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: visibleCategories.length,
+                    itemBuilder: (context, index) {
+                  var category = visibleCategories[index];
                   final backgroundColor = category.color.fromHex();
                   final contentColor = _getContentColor(backgroundColor);
                   return Card(
@@ -165,11 +204,15 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                                     );
                                   },
                                 ),
+                                Divider(height: 1, thickness: 1),
                                 MenuItemButton(
                                   leadingIcon: Icon(Icons.delete, color: Colors.redAccent),
-                                  child: Text('Delete', style: TextStyle(color: Colors.redAccent)),
+                                  child: Text('Delete',
+                                      style: TextStyle(
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.bold)),
                                   onPressed: () {
-                                    _categoryRepository.delete(_categoryRepository.categories[index]);
+                                    _categoryRepository.delete(category);
                                   },
                                 ),
                               ],
@@ -196,9 +239,11 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
               onRefresh: () async {
                 await _categoryRepository.load();
               }
-          ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

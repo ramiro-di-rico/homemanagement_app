@@ -365,6 +365,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchAccounts => 'Search accounts';
 
   @override
+  String get searchCategories => 'Search categories';
+
+  @override
   String get developerMode => 'Developer Mode';
 
   @override

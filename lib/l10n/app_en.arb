@@ -197,6 +197,7 @@
   "showAllAccounts": "Show all accounts",
   "hideAccounts": "Hide accounts",
   "searchAccounts": "Search accounts",
+  "searchCategories": "Search categories",
   "developerMode": "Developer Mode",
   "recurringTransactions": "Recurring Transactions",
   "searchRecurringTransactions": "Search recurring transactions",

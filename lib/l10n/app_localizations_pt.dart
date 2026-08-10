@@ -366,6 +366,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get searchAccounts => 'Pesquisar contas';
 
   @override
+  String get searchCategories => 'Pesquisar categorias';
+
+  @override
   String get developerMode => 'Modo Desenvolvedor';
 
   @override
