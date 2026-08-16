@@ -35,24 +35,33 @@ class Reminder {
       json['id'] as int,
       json['title'] as String,
       DateTime.parse(json['startDate'] as String),
-      json['endDate'] != null ? DateTime.parse(json['endDate'] as String) : null,
+      json['endDate'] != null && (json['endDate'] as String).isNotEmpty
+          ? DateTime.tryParse(json['endDate'] as String)
+          : null,
       Frequency.values.firstWhere((e) => e.index == json['frequency']),
       json['notifyByEmail'] as bool,
       json['isCompleted'] as bool? ?? false,
-      json['snoozedUntil'] != null ? DateTime.parse(json['snoozedUntil'] as String) : null,
+      json['snoozedUntil'] != null && (json['snoozedUntil'] as String).isNotEmpty
+          ? DateTime.tryParse(json['snoozedUntil'] as String)
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
+    final Map<String, dynamic> data = {
       'id': id,
       'title': title,
       'startDate': startDate.toIso8601String(),
-      'endDate': endDate?.toIso8601String(),
       'frequency': frequency.index,
       'notifyByEmail': notifyByEmail,
       'isCompleted': isCompleted,
-      'snoozedUntil': snoozedUntil?.toIso8601String(),
     };
+    if (endDate != null) {
+      data['endDate'] = endDate!.toIso8601String();
+    }
+    if (snoozedUntil != null) {
+      data['snoozedUntil'] = snoozedUntil!.toIso8601String();
+    }
+    return data;
   }
 }
