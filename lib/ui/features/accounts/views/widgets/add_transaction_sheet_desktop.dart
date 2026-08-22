@@ -11,24 +11,8 @@ import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
-
-abstract class TransactionSuggestionOption {
-  String get name;
-}
-
-class TransactionModelOption extends TransactionSuggestionOption {
-  final TransactionModel transaction;
-  TransactionModelOption(this.transaction);
-  @override
-  String get name => transaction.name;
-}
-
-class AccountModelOption extends TransactionSuggestionOption {
-  final AccountModel account;
-  AccountModelOption(this.account);
-  @override
-  String get name => account.name;
-}
+import 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
+export 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
 
 class AddTransactionSheetDesktop extends StatefulWidget {
   final TransactionModel? transactionModel;

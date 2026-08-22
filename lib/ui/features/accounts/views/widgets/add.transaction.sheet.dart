@@ -8,6 +8,8 @@ import 'package:home_management_app/ui/core/custom/components/dropdown.component
 import 'package:home_management_app/ui/core/custom/formatters/localized_number_input_formatter.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
+import 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
+import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 
@@ -15,18 +17,27 @@ import 'package:home_management_app/data/repositories/transaction.repository.dar
 class AddTransactionSheet extends StatefulWidget {
   AccountModel _accountModel;
   TransactionModel? transactionModel;
+  final CategoryRepository? categoryRepository;
+  final TransactionRepository? transactionRepository;
+  final AccountRepository? accountRepository;
 
-  AddTransactionSheet(this._accountModel, {Key? key, this.transactionModel})
-      : super(key: key);
+  AddTransactionSheet(
+    this._accountModel, {
+    Key? key,
+    this.transactionModel,
+    this.categoryRepository,
+    this.transactionRepository,
+    this.accountRepository,
+  }) : super(key: key);
 
   @override
   State<AddTransactionSheet> createState() => _AddTransactionSheetState();
 }
 
 class _AddTransactionSheetState extends State<AddTransactionSheet> {
-  TransactionRepository transactionRepository =
-      GetIt.I<TransactionRepository>();
-  CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
+  late final TransactionRepository transactionRepository;
+  late final CategoryRepository categoryRepository;
+  late final AccountRepository accountRepository;
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   FocusNode nameFocusNode = FocusNode();
@@ -42,6 +53,12 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   @override
   void initState() {
     super.initState();
+    transactionRepository =
+        widget.transactionRepository ?? GetIt.I<TransactionRepository>();
+    categoryRepository =
+        widget.categoryRepository ?? GetIt.I<CategoryRepository>();
+    accountRepository =
+        widget.accountRepository ?? GetIt.I<AccountRepository>();
     isEditing = widget.transactionModel != null;
     accountModel = widget._accountModel;
     transactionModel = widget.transactionModel ??
@@ -54,12 +71,23 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
   }
 
   void fetchSuggestions() async {
-    final fetched = await transactionRepository.getSuggestions();
-    if (mounted) {
-      setState(() {
-        suggestions = fetched;
-      });
-    }
+    try {
+      final fetched = await transactionRepository.getSuggestions();
+      if (mounted) {
+        setState(() {
+          suggestions = fetched;
+        });
+      }
+    } catch (_) {}
+
+    try {
+      if (accountRepository.accounts.isEmpty) {
+        await accountRepository.load();
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    } catch (_) {}
   }
 
   @override
@@ -111,19 +139,28 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
           //first row
           Padding(
             padding: EdgeInsets.all(10),
-            child: Autocomplete<TransactionModel>(
+            child: Autocomplete<TransactionSuggestionOption>(
               textEditingController: nameController,
               focusNode: nameFocusNode,
-              displayStringForOption: (TransactionModel option) => option.name,
+              displayStringForOption: (TransactionSuggestionOption option) =>
+                  option.name,
               optionsBuilder: (TextEditingValue textEditingValue) {
                 if (textEditingValue.text == '') {
-                  return const Iterable<TransactionModel>.empty();
+                  return const Iterable<TransactionSuggestionOption>.empty();
                 }
-                return suggestions.where((TransactionModel option) {
-                  return option.name
-                      .toLowerCase()
-                      .contains(textEditingValue.text.toLowerCase());
-                }).toList();
+                final query = textEditingValue.text.toLowerCase();
+                final matchingTransactions = suggestions
+                    .where((TransactionModel option) =>
+                        option.name.toLowerCase().contains(query))
+                    .map((TransactionModel option) =>
+                        TransactionModelOption(option));
+                final matchingAccounts = accountRepository.accounts
+                    .where((AccountModel account) =>
+                        account.name.isNotEmpty &&
+                        account.name.toLowerCase().contains(query))
+                    .map((AccountModel account) =>
+                        AccountModelOption(account));
+                return [...matchingTransactions, ...matchingAccounts];
               },
               optionsViewOpenDirection: OptionsViewOpenDirection.up,
               optionsViewBuilder: (context, onSelected, options) {
@@ -145,16 +182,33 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                             shrinkWrap: true,
                             itemCount: options.length,
                             itemBuilder: (BuildContext context, int index) {
-                              final TransactionModel option =
+                              final TransactionSuggestionOption option =
                                   options.elementAt(index);
-                              return ListTile(
-                                title: Text(option.name),
-                                subtitle: Text(
-                                  '${option.categoryName} - \$${option.price}',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                                onTap: () => onSelected(option),
-                              );
+                              if (option is TransactionModelOption) {
+                                final TransactionModel transaction =
+                                    option.transaction;
+                                return ListTile(
+                                  title: Text(transaction.name),
+                                  subtitle: Text(
+                                    '${transaction.categoryName} - \$${transaction.price}',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  onTap: () => onSelected(option),
+                                );
+                              } else if (option is AccountModelOption) {
+                                final AccountModel account = option.account;
+                                return ListTile(
+                                  title: Text(account.name),
+                                  subtitle: Text(
+                                    'Account',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                  onTap: () => onSelected(option),
+                                );
+                              }
+                              return const SizedBox.shrink();
                             },
                           ),
                         ),
@@ -163,19 +217,28 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                   },
                 );
               },
-              onSelected: (TransactionModel selection) {
-                nameController.text = selection.name;
-                transactionModel.name = selection.name;
-                transactionModel.categoryId = selection.categoryId;
-                transactionModel.price = selection.price;
-                transactionModel.transactionType = selection.transactionType;
-                _syncingPriceText = true;
-                priceController.text =
-                    LocalizedNumberInputFormatterHelper.formatDouble(
-                  selection.price,
-                  _localeCode ?? Localizations.localeOf(context).toString(),
-                );
-                _syncingPriceText = false;
+              onSelected: (TransactionSuggestionOption selection) {
+                if (selection is TransactionModelOption) {
+                  final TransactionModel selectionModel =
+                      selection.transaction;
+                  nameController.text = selectionModel.name;
+                  transactionModel.name = selectionModel.name;
+                  transactionModel.categoryId = selectionModel.categoryId;
+                  transactionModel.price = selectionModel.price;
+                  transactionModel.transactionType =
+                      selectionModel.transactionType;
+                  _syncingPriceText = true;
+                  priceController.text =
+                      LocalizedNumberInputFormatterHelper.formatDouble(
+                    selectionModel.price,
+                    _localeCode ?? Localizations.localeOf(context).toString(),
+                  );
+                  _syncingPriceText = false;
+                } else if (selection is AccountModelOption) {
+                  final AccountModel account = selection.account;
+                  nameController.text = account.name;
+                  transactionModel.name = account.name;
+                }
                 setState(() {});
               },
               fieldViewBuilder:

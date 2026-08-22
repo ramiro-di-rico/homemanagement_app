@@ -8,34 +8,51 @@ import 'package:intl/intl.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
+import 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
+import 'package:home_management_app/data/repositories/transaction.repository.dart';
 
 class BulkTransactionsScreen extends StatefulWidget {
   static const String fullPath = '/home_screen/bulk_transactions';
   static const String path = '/bulk_transactions';
 
-  const BulkTransactionsScreen({super.key});
+  final AccountRepository? accountRepository;
+  final CategoryRepository? categoryRepository;
+  final TransactionRepository? transactionRepository;
+  final TransactionService? transactionService;
+
+  const BulkTransactionsScreen({
+    super.key,
+    this.accountRepository,
+    this.categoryRepository,
+    this.transactionRepository,
+    this.transactionService,
+  });
 
   @override
   State<BulkTransactionsScreen> createState() => _BulkTransactionsScreenState();
 }
 
 class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
-  final AccountRepository _accountRepository = GetIt.I<AccountRepository>();
-  final CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
-  final TransactionService _transactionService = GetIt.I<TransactionService>();
+  late final AccountRepository _accountRepository;
+  late final CategoryRepository _categoryRepository;
+  late final TransactionRepository _transactionRepository;
+  late final TransactionService _transactionService;
 
   final List<TransactionModel> _pendingTransactions = [];
 
   // Form state
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final FocusNode _nameFocusNode = FocusNode();
   AccountModel? _selectedAccount;
   CategoryModel? _selectedCategory;
   DateTime _selectedDate = DateTime.now();
   TransactionType _selectedType = TransactionType.Outcome;
+
+  List<TransactionModel> _suggestions = [];
 
   bool _isSubmitting = false;
   String? _errorMessage;
@@ -44,17 +61,49 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   @override
   void initState() {
     super.initState();
+    _accountRepository = widget.accountRepository ?? GetIt.I<AccountRepository>();
+    _categoryRepository = widget.categoryRepository ?? GetIt.I<CategoryRepository>();
+    _transactionRepository = widget.transactionRepository ?? GetIt.I<TransactionRepository>();
+    _transactionService = widget.transactionService ?? GetIt.I<TransactionService>();
+
     final accounts = _accountRepository.accounts;
     if (accounts.isNotEmpty) _selectedAccount = accounts.first;
 
     final categories = _categoryRepository.getActiveCategories();
     if (categories.isNotEmpty) _selectedCategory = categories.first;
+
+    fetchSuggestions();
+  }
+
+  void fetchSuggestions() async {
+    try {
+      final fetched = await _transactionRepository.getSuggestions();
+      if (mounted) {
+        setState(() {
+          _suggestions = fetched;
+        });
+      }
+    } catch (_) {}
+
+    try {
+      if (_accountRepository.accounts.isEmpty) {
+        await _accountRepository.load();
+        if (mounted) {
+          setState(() {
+            if (_selectedAccount == null && _accountRepository.accounts.isNotEmpty) {
+              _selectedAccount = _accountRepository.accounts.first;
+            }
+          });
+        }
+      }
+    } catch (_) {}
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _priceController.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
@@ -485,11 +534,14 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
         // Account
         DropdownButtonFormField<AccountModel>(
-          initialValue: _selectedAccount,
+          key: ValueKey('account_${_selectedAccount?.id}'),
+          initialValue: accounts.any((a) => a.id == _selectedAccount?.id)
+              ? accounts.firstWhere((a) => a.id == _selectedAccount?.id)
+              : null,
           decoration: InputDecoration(
             labelText: localizations.transactionAccount,
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
           ),
           items: accounts
               .map((a) => DropdownMenuItem(value: a, child: Text(a.name)))
@@ -500,11 +552,14 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
         // Category
         DropdownButtonFormField<CategoryModel>(
-          initialValue: _selectedCategory,
+          key: ValueKey('category_${_selectedCategory?.id}'),
+          initialValue: categories.any((c) => c.id == _selectedCategory?.id)
+              ? categories.firstWhere((c) => c.id == _selectedCategory?.id)
+              : null,
           decoration: InputDecoration(
             labelText: localizations.transactionCategory,
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.category_outlined),
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.category_outlined),
           ),
           items: categories
               .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
@@ -514,13 +569,116 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         const SizedBox(height: 12),
 
         // Name
-        TextField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            labelText: localizations.transactionDescription,
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.edit_outlined),
-          ),
+        Autocomplete<TransactionSuggestionOption>(
+          textEditingController: _nameController,
+          focusNode: _nameFocusNode,
+          displayStringForOption: (TransactionSuggestionOption option) => option.name,
+          optionsBuilder: (TextEditingValue textEditingValue) {
+            if (textEditingValue.text.isEmpty) {
+              return const Iterable<TransactionSuggestionOption>.empty();
+            }
+            final query = textEditingValue.text.toLowerCase();
+            final matchingTransactions = _suggestions
+                .where((TransactionModel option) =>
+                    option.name.toLowerCase().contains(query))
+                .map((TransactionModel option) => TransactionModelOption(option));
+            final matchingAccounts = _accountRepository.accounts
+                .where((AccountModel account) =>
+                    account.name.isNotEmpty &&
+                    account.name.toLowerCase().contains(query))
+                .map((AccountModel account) => AccountModelOption(account));
+            return [...matchingTransactions, ...matchingAccounts];
+          },
+          optionsViewBuilder: (context, onSelected, options) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 4.0,
+                    borderRadius: BorderRadius.circular(15),
+                    clipBehavior: Clip.antiAlias,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: 260,
+                        maxWidth: constraints.maxWidth,
+                      ),
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemCount: options.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final TransactionSuggestionOption option =
+                              options.elementAt(index);
+                          if (option is TransactionModelOption) {
+                            final TransactionModel transaction =
+                                option.transaction;
+                            return ListTile(
+                              title: Text(transaction.name),
+                              subtitle: Text(
+                                '${transaction.categoryName} - \$${transaction.price}',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              onTap: () => onSelected(option),
+                            );
+                          } else if (option is AccountModelOption) {
+                            final AccountModel account = option.account;
+                            return ListTile(
+                              title: Text(account.name),
+                              subtitle: Text(
+                                'Account',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              onTap: () => onSelected(option),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+          onSelected: (TransactionSuggestionOption selection) {
+            if (selection is TransactionModelOption) {
+              final TransactionModel selectionModel = selection.transaction;
+              _nameController.text = selectionModel.name;
+              final matchingCategories = _categoryRepository.getActiveCategories().where(
+                (c) => c.id == selectionModel.categoryId,
+              );
+              if (matchingCategories.isNotEmpty) {
+                _selectedCategory = matchingCategories.first;
+              }
+              _selectedType = selectionModel.transactionType;
+              _priceController.text =
+                  LocalizedNumberInputFormatterHelper.formatDouble(
+                selectionModel.price,
+                Localizations.localeOf(context).toString(),
+              );
+            } else if (selection is AccountModelOption) {
+              final AccountModel account = selection.account;
+              _nameController.text = account.name;
+            }
+            setState(() {});
+          },
+          fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+            if (_nameController.text != controller.text &&
+                _nameController.text.isNotEmpty &&
+                controller.text.isEmpty) {
+              controller.text = _nameController.text;
+            }
+            return TextField(
+              controller: controller,
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                labelText: localizations.transactionDescription,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.edit_outlined),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 12),
 
@@ -535,8 +693,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
           ],
           decoration: InputDecoration(
             labelText: localizations.transactionAmount,
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.attach_money),
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.attach_money),
           ),
         ),
         const SizedBox(height: 12),
@@ -546,8 +704,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
           format: DateFormat('dd MMM yyyy'),
           decoration: InputDecoration(
             labelText: localizations.transactionDate,
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.date_range),
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.date_range),
           ),
           initialValue: _selectedDate,
           onShowPicker: (context, currentValue) => showDatePicker(
@@ -565,11 +723,12 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
         // Type
         DropdownButtonFormField<TransactionType>(
+          key: ValueKey('type_$_selectedType'),
           initialValue: _selectedType,
           decoration: InputDecoration(
             labelText: localizations.transactionType,
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.swap_vert),
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.swap_vert),
           ),
           items: [
             DropdownMenuItem(value: TransactionType.Outcome, child: Text(localizations.outcome)),
