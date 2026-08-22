@@ -27,11 +27,11 @@ CHROME_EXECUTABLE=/path/to/chrome ./scripts/run_web.sh
 
 ## Linux Support
 
-This project provides scripts for building a self-contained Linux package and installing it for the current user.
+This project provides a single script (`scripts/package_linux.sh`) for building a self-extracting Linux distributable package and optionally installing it for the current user.
 
-### Building the Linux Package
+### Building the Linux Distributable
 
-To build a release version of the application and bundle it into a distributable tarball, run the `package_linux.sh` script:
+To build a release version of the application and create a self-extracting installer script in `dist/`, run:
 
 ```bash
 ./scripts/package_linux.sh
@@ -39,28 +39,28 @@ To build a release version of the application and bundle it into a distributable
 
 **What it does:**
 - Builds the Flutter application in release mode.
-- Bundles the binary, libraries, and assets into a temporary directory.
-- Includes a high-resolution icon from the iOS assets.
-- Includes an installation script (`install.sh`).
-- Generates a compressed tarball in the `dist/` directory (e.g., `dist/homemanagement_app-1.0.10-linux-x64.tar.gz`).
+- Bundles the binary, libraries, and application icon.
+- Generates a standalone, self-extracting single-file installer in `dist/` (e.g., `dist/homemanagement_app-1.0.10-linux-x64.sh`) as well as a compressed tarball (`.tar.gz`).
 
 ### Installing the Application
 
-To install the application for the current user (requires no root privileges), follow these steps:
+#### Option 1: Build and Install in One Step
+From the repository root:
 
-1. Extract the generated tarball:
-   ```bash
-   tar -xzf dist/homemanagement_app-1.0.10-linux-x64.tar.gz -C /tmp
-   ```
-2. Run the installation script:
-   ```bash
-   cd /tmp/homemanagement_app
-   ./install.sh
-   ```
+```bash
+./scripts/package_linux.sh --install
+```
 
-**What it does:**
+#### Option 2: Run the Distributable Installer File
+Execute the generated standalone installer script:
+
+```bash
+./dist/homemanagement_app-1.0.10-linux-x64.sh
+```
+
+**What installation does:**
 - Copies the application files to `~/.local/bin/homemanagement_app`.
-- Installs the application icon to `~/.local/share/icons`.
+- Installs the application icon to `~/.local/share/icons/hicolor/1024x1024/apps`.
 - Creates a `.desktop` launcher in `~/.local/share/applications/homemanagement_app.desktop`.
 
-After installation, you can launch **Home Management App** from your application menu.
+After installation, you can launch **Home Management App** from your application menu or directly run `~/.local/bin/homemanagement_app/homemanagement_app`.
