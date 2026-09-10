@@ -109,7 +109,7 @@ void main() {
   final testSuggestions = [
     TransactionModel(
       101,
-      1,
+      2,
       2,
       'Supermarket Groceries',
       45.50,
@@ -135,6 +135,7 @@ void main() {
     List<CategoryModel>? categories,
   }) {
     return MaterialApp(
+      theme: ThemeData(splashFactory: NoSplash.splashFactory),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: const Locale('en'),
@@ -184,7 +185,7 @@ void main() {
     );
   });
 
-  testWidgets('selecting transaction suggestion populates description, price, category, and type',
+  testWidgets('selecting transaction suggestion populates description, price, category, type, and account',
       (WidgetTester tester) async {
     tester.view.physicalSize = const Size(1280, 900);
     tester.view.devicePixelRatio = 1.0;
@@ -196,29 +197,40 @@ void main() {
     final descriptionField = find.widgetWithText(TextField, 'Description');
     await tester.tap(descriptionField);
     await tester.pump();
-    await tester.enterText(descriptionField, 'salary');
+    await tester.enterText(descriptionField, 'super');
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
-    expect(find.text('Salary Deposit'), findsOneWidget);
+    expect(find.text('Supermarket Groceries'), findsOneWidget);
 
-    await tester.tap(find.text('Salary Deposit'));
+    await tester.tap(find.text('Supermarket Groceries'));
     await tester.pumpAndSettle();
 
     final descEditable = tester.widget<TextField>(descriptionField);
-    expect(descEditable.controller?.text, equals('Salary Deposit'));
+    expect(descEditable.controller?.text, equals('Supermarket Groceries'));
 
     final amountField = find.widgetWithText(TextField, 'Amount');
     final amountEditable = tester.widget<TextField>(amountField);
-    expect(amountEditable.controller?.text, equals('3,000'));
+    expect(amountEditable.controller?.text, equals('45.5'));
 
-    // Category dropdown should show General
-    expect(find.text('General'), findsOneWidget);
-    // Type dropdown should show Income
-    expect(find.text('Income'), findsOneWidget);
+    // Account dropdown should show Savings Vault (accountId: 2)
+    expect(
+      find.widgetWithText(DropdownButtonFormField<AccountModel>, 'Savings Vault'),
+      findsOneWidget,
+    );
+    // Category dropdown should show Groceries
+    expect(
+      find.widgetWithText(DropdownButtonFormField<CategoryModel>, 'Groceries'),
+      findsOneWidget,
+    );
+    // Type dropdown should show Outcome
+    expect(
+      find.widgetWithText(DropdownButtonFormField<TransactionType>, 'Outcome'),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('selecting account suggestion populates description only',
+  testWidgets('selecting account suggestion populates description and account',
       (WidgetTester tester) async {
     tester.view.physicalSize = const Size(1280, 900);
     tester.view.devicePixelRatio = 1.0;
@@ -248,6 +260,12 @@ void main() {
 
     final descEditable = tester.widget<TextField>(descriptionField);
     expect(descEditable.controller?.text, equals('Savings Vault'));
+
+    // Account dropdown should show Savings Vault
+    expect(
+      find.widgetWithText(DropdownButtonFormField<AccountModel>, 'Savings Vault'),
+      findsOneWidget,
+    );
 
     // Amount field should still be empty
     final amountField = find.widgetWithText(TextField, 'Amount');

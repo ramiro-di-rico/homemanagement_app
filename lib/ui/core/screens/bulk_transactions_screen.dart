@@ -651,6 +651,12 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
               if (matchingCategories.isNotEmpty) {
                 _selectedCategory = matchingCategories.first;
               }
+              final matchingAccounts = _accountRepository.accounts.where(
+                (a) => a.id == selectionModel.accountId,
+              );
+              if (matchingAccounts.isNotEmpty) {
+                _selectedAccount = matchingAccounts.first;
+              }
               _selectedType = selectionModel.transactionType;
               _priceController.text =
                   LocalizedNumberInputFormatterHelper.formatDouble(
@@ -660,6 +666,14 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
             } else if (selection is AccountModelOption) {
               final AccountModel account = selection.account;
               _nameController.text = account.name;
+              final matchingAccounts = _accountRepository.accounts.where(
+                (a) => a.id == account.id,
+              );
+              if (matchingAccounts.isNotEmpty) {
+                _selectedAccount = matchingAccounts.first;
+              } else {
+                _selectedAccount = account;
+              }
             }
             setState(() {});
           },
