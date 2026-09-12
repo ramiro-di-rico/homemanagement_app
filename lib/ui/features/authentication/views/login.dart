@@ -49,118 +49,159 @@ class _LoginViewState extends State<LoginView>
 
   @override
   Widget build(BuildContext context) {
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
+    final isKeyboardVisible =
+        keyboardInset > 0 || (keyboardFactory?.isKeyboardVisible() ?? false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.signIn),
       ),
       body: SafeArea(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: EmailTextField(
-                  onTextChanged: onEmailChanged,
-                  enableEmailField: !isAuthenticating,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    mainAxisAlignment: isKeyboardVisible
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: isKeyboardVisible ? 16 : 0,
+                        ),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: EmailTextField(
+                                onTextChanged: onEmailChanged,
+                                enableEmailField: !isAuthenticating,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: PasswordTextField(
+                                  onTextChanged: onPasswordChanged,
+                                  enablePassword:
+                                      userViewModel.isEmailValid &&
+                                          !isAuthenticating),
+                            ),
+                            if (isAuthenticating)
+                              const Padding(
+                                  padding: EdgeInsets.all(5),
+                                  child: CircularProgressIndicator())
+                            else
+                              authenticationService.canAutoAuthenticate()
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: ElevatedButton(
+                                            child: const Icon(Icons.send,
+                                                color: Colors.white),
+                                            onPressed: userViewModel.isValid
+                                                ? onButtonPressed
+                                                : null,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: ElevatedButton(
+                                            child: const Icon(Icons.fingerprint,
+                                                color: Colors.white),
+                                            onPressed: autoAuthenticate,
+                                          ),
+                                        ),
+                                        if (_canScanInviteWithCamera(context))
+                                          Padding(
+                                            padding: const EdgeInsets
+                                                .symmetric(horizontal: 10),
+                                            child: ElevatedButton(
+                                              onPressed: _openInviteScanner,
+                                              child: const Icon(
+                                                Icons.qr_code_scanner,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        ElevatedButton(
+                                          child: const Icon(Icons.send,
+                                              color: Colors.white),
+                                          onPressed: userViewModel.isValid
+                                              ? onButtonPressed
+                                              : null,
+                                        ),
+                                        if (_canScanInviteWithCamera(context))
+                                          Padding(
+                                            padding: const EdgeInsets
+                                                .symmetric(horizontal: 10),
+                                            child: ElevatedButton(
+                                              onPressed: _openInviteScanner,
+                                              child: const Icon(
+                                                Icons.qr_code_scanner,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                          ],
+                        ),
+                      ),
+                      if (!isKeyboardVisible)
+                        Column(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                              child: Divider(
+                                thickness: 2,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Text(AppLocalizations.of(context)!
+                                      .dontHaveAccount),
+                                  TextButton(
+                                    onPressed: () {
+                                      context.go(RegistrationScreen.fullPath);
+                                    },
+                                    child: Text(AppLocalizations.of(context)!
+                                        .createOne),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        )
+                    ],
+                  ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: PasswordTextField(
-                    onTextChanged: onPasswordChanged,
-                    enablePassword:
-                        userViewModel.isEmailValid && !isAuthenticating),
-              ),
-              if (isAuthenticating)
-                Padding(
-                    padding: EdgeInsets.all(5),
-                    child: CircularProgressIndicator())
-              else
-                authenticationService.canAutoAuthenticate()
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: ElevatedButton(
-                              child: Icon(Icons.send, color: Colors.white),
-                              onPressed: userViewModel.isValid
-                                  ? onButtonPressed
-                                  : null,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: ElevatedButton(
-                              child: Icon(Icons.fingerprint, color: Colors.white),
-                              onPressed: autoAuthenticate,
-                            ),
-                          ),
-                          if (_canScanInviteWithCamera(context))
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: ElevatedButton(
-                                onPressed: _openInviteScanner,
-                                child: const Icon(
-                                  Icons.qr_code_scanner,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            child: Icon(Icons.send, color: Colors.white),
-                            onPressed:
-                                userViewModel.isValid ? onButtonPressed : null,
-                          ),
-                          if (_canScanInviteWithCamera(context))
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: ElevatedButton(
-                                onPressed: _openInviteScanner,
-                                child: const Icon(
-                                  Icons.qr_code_scanner,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-            ],
-          ),
-          Column(
-            children: keyboardFactory?.isKeyboardVisible() ?? false
-                ? []
-                : [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                      child: Divider(
-                        thickness: 2,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                      child: Row(
-                        children: [
-                          Text(AppLocalizations.of(context)!.dontHaveAccount),
-                          TextButton(
-                            onPressed: () {
-                              context.go(RegistrationScreen.fullPath);
-                            },
-                            child: Text(AppLocalizations.of(context)!.createOne),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-          )
-        ]),
+            );
+          },
+        ),
       ),
     );
   }

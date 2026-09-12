@@ -26,147 +26,151 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
 
   @override
   Widget build(BuildContext context) {
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
+    final isKeyboardVisible =
+        keyboardInset > 0 || (keyboardFactory?.isKeyboardVisible() ?? false);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Management'),
       ),
       body: SafeArea(
-        child: Column(children: [
-          SizedBox(height: 100),
-          Container(
-            width: 500,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Text(
-                    'Sign In',
-                    style: TextStyle(fontSize: 34),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: EmailTextField(
-                    onTextChanged: onEmailChanged,
-                    enableEmailField: !isAuthenticating,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(20),
-                  child: PasswordTextField(
-                      onTextChanged: onPasswordChanged,
-                      enablePassword:
-                          userViewModel.isEmailValid && !isAuthenticating),
-                ),
-                SizedBox(height: 20),
-                if (isAuthenticating)
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  SizedBox(height: isKeyboardVisible ? 16 : 100),
                   Padding(
-                    padding: EdgeInsets.all(5),
-                    child: CircularProgressIndicator(),
-                  )
-                else
-                  userViewModel.isPasswordValid
-                      ? ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(200, 50),
-                          ),
-                          child: Icon(Icons.send),
-                          onPressed:
-                              userViewModel.isValid ? onButtonPressed : null,
-                        )
-                      : OutlinedButton(
-                          onPressed: null,
-                          child: Icon(Icons.send),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(200, 50),
-                          ),
-                        ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Divider(
-                    thickness: 2,
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      'Sign In',
+                      style: TextStyle(fontSize: 34),
+                    ),
                   ),
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Expanded(child: Text('Forgot your password ?')),
-                      TextButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('Request Password Change'),
-                                content: TextField(
-                                  controller: emailPasswordResetController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Email',
-                                    hintText: 'Enter your email',
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                    child: EmailTextField(
+                      onTextChanged: onEmailChanged,
+                      enableEmailField: !isAuthenticating,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(20),
+                    child: PasswordTextField(
+                        onTextChanged: onPasswordChanged,
+                        enablePassword:
+                            userViewModel.isEmailValid && !isAuthenticating),
+                  ),
+                  SizedBox(height: 20),
+                  if (isAuthenticating)
+                    Padding(
+                      padding: EdgeInsets.all(5),
+                      child: CircularProgressIndicator(),
+                    )
+                  else
+                    userViewModel.isPasswordValid
+                        ? ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 50),
+                            ),
+                            child: Icon(Icons.send),
+                            onPressed:
+                                userViewModel.isValid ? onButtonPressed : null,
+                          )
+                        : OutlinedButton(
+                            onPressed: null,
+                            child: Icon(Icons.send),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(200, 50),
+                            ),
+                          ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Divider(
+                      thickness: 2,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text('Forgot your password ?')),
+                        TextButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Request Password Change'),
+                                  content: TextField(
+                                    controller: emailPasswordResetController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Email',
+                                      hintText: 'Enter your email',
+                                    ),
+                                    keyboardType: TextInputType.emailAddress,
                                   ),
-                                  keyboardType: TextInputType.emailAddress,
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text('Cancel'),
-                                    onPressed: () {
-                                      emailPasswordResetController.clear();
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  ElevatedButton(
-                                    child: Text('Submit'),
-                                    onPressed: () async  {
-                                      final email = emailPasswordResetController.text;
-                                      await _identityService.requestPasswordChange(email);
-                                      emailPasswordResetController.clear();
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('Cancel'),
+                                      onPressed: () {
+                                        emailPasswordResetController.clear();
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    ElevatedButton(
+                                      child: Text('Submit'),
+                                      onPressed: () async  {
+                                        final email = emailPasswordResetController.text;
+                                        await _identityService.requestPasswordChange(email);
+                                        emailPasswordResetController.clear();
 
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Email sent to $email'),
-                                          backgroundColor: Colors.green,
-                                          behavior: SnackBarBehavior.floating,
-                                        ),
-                                      );
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        child: Text('Reset it'),
-                      )
-                    ],
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Email sent to $email'),
+                                            backgroundColor: Colors.green,
+                                            behavior: SnackBarBehavior.floating,
+                                          ),
+                                        );
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Text('Reset it'),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 20),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Expanded(child: Text('You don' 't have an account yet ?')),
-                      TextButton(
-                        onPressed: () {
-                          context.go(RegistrationScreen.fullPath);
-                        },
-                        child: Text('Create one'),
-                      )
-                    ],
-                  ),
-                )
-              ],
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text('You don' 't have an account yet ?')),
+                        TextButton(
+                          onPressed: () {
+                            context.go(RegistrationScreen.fullPath);
+                          },
+                          child: Text('Create one'),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [],
-          )
-        ]),
+        ),
       ),
     );
   }

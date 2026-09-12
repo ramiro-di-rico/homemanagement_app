@@ -321,15 +321,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
             shape: RoundedRectangleBorder(
                 borderRadius:
                     BorderRadius.vertical(top: Radius.circular(25.0))),
-            builder: (context) {
-              return SizedBox(
-                height: 420,
-                child: AnimatedPadding(
-                    padding: MediaQuery.of(context).viewInsets,
-                    duration: Duration(seconds: 1),
-                    child: AddTransactionSheet(account)),
-              );
-            });
+            builder: (context) => AddTransactionSheet(account));
       },
     ));
 

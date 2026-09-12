@@ -72,18 +72,10 @@ class TransactionRowInfo extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                         borderRadius:
                             BorderRadius.vertical(top: Radius.circular(25.0))),
-                    builder: (context) {
-                      return SizedBox(
-                        height: 400,
-                        child: AnimatedPadding(
-                            padding: MediaQuery.of(context).viewInsets,
-                            duration: Duration(seconds: 1),
-                            child: AddTransactionSheet(
-                              account,
-                              transactionModel: transaction,
-                            )),
-                      );
-                    });
+                    builder: (context) => AddTransactionSheet(
+                          account,
+                          transactionModel: transaction,
+                        ));
               },
               onLongPress: () => openManageTags(context),
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
