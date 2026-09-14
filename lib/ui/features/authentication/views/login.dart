@@ -68,14 +68,10 @@ class _LoginViewState extends State<LoginView>
                 ),
                 child: IntrinsicHeight(
                   child: Column(
-                    mainAxisAlignment: isKeyboardVisible
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(
-                          top: isKeyboardVisible ? 16 : 0,
-                        ),
+                        padding: const EdgeInsets.only(top: 16),
                         child: Column(
                           children: [
                             Padding(
@@ -165,7 +161,8 @@ class _LoginViewState extends State<LoginView>
                           ],
                         ),
                       ),
-                      if (!isKeyboardVisible)
+                      if (!isKeyboardVisible) ...[
+                        const Spacer(),
                         Column(
                           children: [
                             const Padding(
@@ -195,6 +192,7 @@ class _LoginViewState extends State<LoginView>
                             )
                           ],
                         )
+                      ]
                     ],
                   ),
                 ),
