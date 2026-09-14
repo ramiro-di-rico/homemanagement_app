@@ -9,7 +9,6 @@ import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/currency.repository.dart';
 import 'package:home_management_app/data/repositories/identity_user_repository.dart';
 import 'package:home_management_app/data/repositories/tag.repository.dart';
-import 'package:home_management_app/data/services/user-settings-service.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/ui/features/authentication/views/login.dart';
 import 'package:home_management_app/ui/features/invites/views/invite_management_screen.dart';
@@ -18,11 +17,10 @@ import 'package:home_management_app/ui/features/accounts/views/main-account-list
 import 'package:home_management_app/ui/features/dashboard/views/budget_desktop_view.dart';
 import 'package:home_management_app/ui/features/dashboard/views/dashboard_desktop.dart';
 import 'package:home_management_app/ui/features/settings/views/settings.dart';
+import 'package:home_management_app/ui/features/settings/views/settings-widgets/reminders/reminders_desktop_view.dart';
 import 'package:home_management_app/ui/features/statistics/views/statistics_view.dart';
 import 'package:home_management_app/ui/features/transactions/views/transactions_search_desktop_view.dart';
 import 'package:home_management_app/ui/core/screens/bulk_transactions_screen.dart';
-import 'package:home_management_app/ui/features/home/views/shared/account-sheet-dektop.dart';
-import 'package:home_management_app/ui/features/home/views/shared/recurring_transaction_form_widget.dart';
 import 'package:home_management_app/ui/features/home/views/shared/recurring_transactions_widget.dart';
 
 class HomeDesktop extends StatefulWidget {
@@ -34,7 +32,8 @@ class HomeDesktop extends StatefulWidget {
 
 class _HomeDesktopState extends State<HomeDesktop> {
   bool useMainAccounts = false;
-  IdentityUserRepository _identityUserRepository = GetIt.I<IdentityUserRepository>();
+  final IdentityUserRepository _identityUserRepository =
+      GetIt.I<IdentityUserRepository>();
 
   @override
   void initState() {
@@ -96,6 +95,13 @@ class _HomeDesktopState extends State<HomeDesktop> {
               },
               icon: Icon(Icons.track_changes),
               tooltip: l10n.budget),
+          IconButton(
+            icon: Icon(Icons.notifications),
+            onPressed: () {
+              context.go(RemindersDesktopView.fullPath);
+            },
+            tooltip: l10n.reminders,
+          ),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () async {

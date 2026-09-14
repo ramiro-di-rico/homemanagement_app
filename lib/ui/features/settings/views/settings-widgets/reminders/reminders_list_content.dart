@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 
 import 'package:home_management_app/domain/models/reminder.dart';
 import 'package:home_management_app/data/repositories/reminder_repository.dart';
@@ -15,6 +16,7 @@ class ReminderListContent extends StatefulWidget {
 class _ReminderListContentState extends State<ReminderListContent> {
   final ReminderRepository _reminderRepository =
       GetIt.instance<ReminderRepository>();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -26,6 +28,7 @@ class _ReminderListContentState extends State<ReminderListContent> {
   @override
   void dispose() {
     _reminderRepository.removeListener(_onRepositoryChanged);
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -88,94 +91,114 @@ class _ReminderListContentState extends State<ReminderListContent> {
 
     return RefreshIndicator(
       onRefresh: _refresh,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: [
-          Card(
-            child: ListTile(
-              title: const Text('Reminders'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Tooltip(
-                    message: 'Mark all as completed',
-                    child: IconButton(
-                      icon: const Icon(Icons.done_all),
-                      onPressed: () async {
-                        await _reminderRepository.setAllCompleted(true);
-                      },
+      child: Scrollbar(
+        controller: _scrollController,
+        thumbVisibility: true,
+        child: ListView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            Card(
+              child: ListTile(
+                title: const Text('Reminders'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Tooltip(
+                      message: 'Mark all as completed',
+                      child: IconButton(
+                        icon: const Icon(Icons.done_all),
+                        onPressed: () async {
+                          await _reminderRepository.setAllCompleted(true);
+                        },
+                      ),
                     ),
-                  ),
-                  Tooltip(
-                    message: 'Mark all as not completed',
-                    child: IconButton(
-                      icon: const Icon(Icons.undo),
-                      onPressed: () async {
-                        await _reminderRepository.setAllCompleted(false);
-                      },
+                    Tooltip(
+                      message: 'Mark all as not completed',
+                      child: IconButton(
+                        icon: const Icon(Icons.undo),
+                        onPressed: () async {
+                          await _reminderRepository.setAllCompleted(false);
+                        },
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () => _showReminderSheet(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (isLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: CircularProgressIndicator(),
-              ),
-            )
-          else if (reminders.isEmpty)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Text('No reminders found'),
-              ),
-            )
-          else
-            for (final reminder in reminders)
-              Card(
-                child: ListTile(
-                  leading: Checkbox(
-                    value: reminder.isCompleted,
-                    onChanged: (value) =>
-                        _toggleCompletion(reminder, value ?? false),
-                  ),
-                  title: Text(
-                    reminder.title,
-                    style: TextStyle(
-                      decoration: reminder.isCompleted
-                          ? TextDecoration.lineThrough
-                          : TextDecoration.none,
-                      color: reminder.isCompleted ? Colors.grey : null,
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      onPressed: () => _showReminderSheet(),
                     ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(reminder.frequencyString),
-                      if (!reminder.isCompleted)
-                        PopupMenuButton<int>(
-                          icon: const Icon(Icons.snooze),
-                          tooltip: 'Snooze',
-                          onSelected: (days) => _snoozeReminder(reminder, days),
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(value: 1, child: Text('1 day')),
-                            const PopupMenuItem(value: 2, child: Text('2 days')),
-                            const PopupMenuItem(value: 7, child: Text('1 week')),
-                          ],
-                        ),
-                    ],
-                  ),
-                  onTap: () => _showReminderSheet(reminder: reminder),
+                  ],
                 ),
               ),
-        ],
+            ),
+            if (isLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (reminders.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Text('No reminders found'),
+                ),
+              )
+            else
+              for (final reminder in reminders)
+                Card(
+                  child: ListTile(
+                    leading: Checkbox(
+                      value: reminder.isCompleted,
+                      onChanged: (value) =>
+                          _toggleCompletion(reminder, value ?? false),
+                    ),
+                    title: Text(
+                      reminder.title,
+                      style: TextStyle(
+                        decoration: reminder.isCompleted
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                        color: reminder.isCompleted ? Colors.grey : null,
+                      ),
+                    ),
+                    subtitle: (!reminder.isCompleted &&
+                            reminder.snoozedUntil != null &&
+                            reminder.snoozedUntil!.isAfter(DateTime.now()))
+                        ? Text(
+                            'Snoozed until ${DateFormat.yMMMd().format(reminder.snoozedUntil!)}',
+                            style: TextStyle(
+                              color: Colors.purple[300],
+                              fontSize: 12,
+                            ),
+                          )
+                        : null,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(reminder.frequencyString),
+                        if (!reminder.isCompleted)
+                          PopupMenuButton<int>(
+                            icon: const Icon(Icons.snooze),
+                            tooltip: 'Snooze',
+                            onSelected: (days) =>
+                                _snoozeReminder(reminder, days),
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                  value: 1, child: Text('1 day')),
+                              const PopupMenuItem(
+                                  value: 2, child: Text('2 days')),
+                              const PopupMenuItem(
+                                  value: 7, child: Text('1 week')),
+                            ],
+                          ),
+                      ],
+                    ),
+                    onTap: () => _showReminderSheet(reminder: reminder),
+                  ),
+                ),
+          ],
+        ),
       ),
     );
   }
