@@ -61,17 +61,21 @@ class _LoginViewState extends State<LoginView>
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight,
                 ),
                 child: IntrinsicHeight(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: isKeyboardVisible
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 16),
+                        padding: EdgeInsets.only(
+                          top: isKeyboardVisible ? 16 : 0,
+                        ),
                         child: Column(
                           children: [
                             Padding(
@@ -161,8 +165,7 @@ class _LoginViewState extends State<LoginView>
                           ],
                         ),
                       ),
-                      if (!isKeyboardVisible) ...[
-                        const Spacer(),
+                      if (!isKeyboardVisible)
                         Column(
                           children: [
                             const Padding(
@@ -192,7 +195,6 @@ class _LoginViewState extends State<LoginView>
                             )
                           ],
                         )
-                      ]
                     ],
                   ),
                 ),

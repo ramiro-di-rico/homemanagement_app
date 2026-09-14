@@ -36,7 +36,7 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
           child: Center(
             child: Container(
               constraints: const BoxConstraints(maxWidth: 500),
