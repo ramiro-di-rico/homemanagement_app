@@ -57,7 +57,7 @@ class ReminderRepository extends ChangeNotifier {
     try {
       await _reminderService.setAllCompleted(isCompleted);
       _cachedReminders = _cachedReminders
-          .map((r) => Reminder(r.id, r.title, r.startDate, r.endDate, r.frequency, r.notifyByEmail, isCompleted, r.snoozedUntil))
+          .map((r) => r.copyWith(isCompleted: isCompleted))
           .toList();
       notifyListeners();
       _notifierService.notify(isCompleted ? 'All reminders completed' : 'All reminders marked as not completed');
@@ -81,7 +81,8 @@ class ReminderRepository extends ChangeNotifier {
     try {
       await _reminderService.snoozeReminder(id, days);
       await getReminders(forceRefresh: true);
-      _notifierService.notify('Reminder snoozed for $days days');
+      _notifierService.notify(
+          days == 0 ? 'Snooze cancelled' : 'Reminder snoozed for $days days');
     } on Exception catch (e) {
       _notifierService.notify(e.toString(), isError: true);
     }

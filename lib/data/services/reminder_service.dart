@@ -41,8 +41,11 @@ class ReminderService {
 
   Future<Reminder> updateReminder(int id, Reminder reminder) async {
     await _autoAuthenticateIfNeeded();
+    final uri = backendEndpoint.replace(
+      path: '${backendEndpoint.path}/$id',
+    );
     final response = await http.put(
-      backendEndpoint.resolve("reminder/${id}"),
+      uri,
       headers: _getHeaders(),
       body: jsonEncode(reminder.toJson()),
     );
@@ -75,8 +78,11 @@ class ReminderService {
 
   Future<void> deleteReminder(String id) async {
     await _autoAuthenticateIfNeeded();
+    final uri = backendEndpoint.replace(
+      path: '${backendEndpoint.path}/$id',
+    );
     final response = await http.delete(
-      backendEndpoint.resolve("reminder/${id}"),
+      uri,
       headers: _getHeaders(),
     );
     var okStatusCode = response.statusCode >= 200 && response.statusCode < 300;

@@ -107,18 +107,9 @@ class _RemindersDesktopViewState extends State<RemindersDesktopView> {
   Widget _buildSummaryCard(BuildContext context, List<Reminder> reminders) {
     final total = reminders.length;
     final completed = reminders.where((r) => r.isCompleted).length;
-    final now = DateTime.now();
-    final snoozed = reminders
-        .where((r) =>
-            !r.isCompleted &&
-            r.snoozedUntil != null &&
-            r.snoozedUntil!.isAfter(now))
-        .length;
-    final pending = reminders
-        .where((r) =>
-            !r.isCompleted &&
-            (r.snoozedUntil == null || !r.snoozedUntil!.isAfter(now)))
-        .length;
+    final snoozed = reminders.where((r) => r.isSnoozed).length;
+    final pending =
+        reminders.where((r) => !r.isCompleted && !r.isSnoozed).length;
 
     final theme = Theme.of(context);
 

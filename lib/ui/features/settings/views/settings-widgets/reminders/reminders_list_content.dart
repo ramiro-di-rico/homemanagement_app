@@ -43,16 +43,7 @@ class _ReminderListContentState extends State<ReminderListContent> {
   }
 
   Future<void> _toggleCompletion(Reminder reminder, bool isCompleted) async {
-    final updatedReminder = Reminder(
-      reminder.id,
-      reminder.title,
-      reminder.startDate,
-      reminder.endDate,
-      reminder.frequency,
-      reminder.notifyByEmail,
-      isCompleted,
-      reminder.snoozedUntil,
-    );
+    final updatedReminder = reminder.copyWith(isCompleted: isCompleted);
     await _reminderRepository.updateReminder(reminder.id, updatedReminder);
   }
 
@@ -162,11 +153,9 @@ class _ReminderListContentState extends State<ReminderListContent> {
                         color: reminder.isCompleted ? Colors.grey : null,
                       ),
                     ),
-                    subtitle: (!reminder.isCompleted &&
-                            reminder.snoozedUntil != null &&
-                            reminder.snoozedUntil!.isAfter(DateTime.now()))
+                    subtitle: reminder.isSnoozed
                         ? Text(
-                            'Snoozed until ${DateFormat.yMMMd().format(reminder.snoozedUntil!)}',
+                            'Snoozed until ${DateFormat.yMMMd().format(reminder.snoozedUntil!.toLocal())}',
                             style: TextStyle(
                               color: Colors.purple[300],
                               fontSize: 12,
@@ -179,7 +168,10 @@ class _ReminderListContentState extends State<ReminderListContent> {
                         Text(reminder.frequencyString),
                         if (!reminder.isCompleted)
                           PopupMenuButton<int>(
-                            icon: const Icon(Icons.snooze),
+                            icon: Icon(
+                              Icons.snooze,
+                              color: reminder.isSnoozed ? Colors.purple[300] : null,
+                            ),
                             tooltip: 'Snooze',
                             onSelected: (days) =>
                                 _snoozeReminder(reminder, days),
@@ -190,6 +182,9 @@ class _ReminderListContentState extends State<ReminderListContent> {
                                   value: 2, child: Text('2 days')),
                               const PopupMenuItem(
                                   value: 7, child: Text('1 week')),
+                              if (reminder.isSnoozed)
+                                const PopupMenuItem(
+                                    value: 0, child: Text('Cancel snooze')),
                             ],
                           ),
                       ],
