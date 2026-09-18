@@ -1,0 +1,37 @@
+name: Junie
+
+on:
+  issue_comment:
+    types: [created, edited]
+  pull_request_review_comment:
+    types: [created, edited]
+  issues:
+    types: [opened, assigned]
+  pull_request:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted, edited]
+
+jobs:
+  junie:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@junie-agent')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@junie-agent')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@junie-agent')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@junie-agent') || contains(github.event.issue.title, '@junie-agent'))) ||
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.body, '@junie-agent') || contains(github.event.pull_request.title, '@junie-agent')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Junie
+        id: junie
+        uses: JetBrains/junie-github-action@v1
+        with:
+          junie_api_key: ${{ secrets.JUNIE_API_KEY }}
