@@ -99,6 +99,26 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
     } catch (_) {}
   }
 
+  void _copyToForm(TransactionModel transaction) {
+    final accounts = _accountRepository.accounts.where((a) => a.id == transaction.accountId);
+    final categories = _categoryRepository
+        .getActiveCategories()
+        .where((c) => c.id == transaction.categoryId);
+    setState(() {
+      _errorMessage = null;
+      _successMessage = null;
+      if (accounts.isNotEmpty) _selectedAccount = accounts.first;
+      if (categories.isNotEmpty) _selectedCategory = categories.first;
+      _nameController.text = transaction.name;
+      _priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
+        transaction.price,
+        Localizations.localeOf(context).toString(),
+      );
+      _selectedDate = transaction.date;
+      _selectedType = transaction.transactionType;
+    });
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -715,6 +735,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
 
         // Date
         DateTimeField(
+          key: ValueKey('date_$_selectedDate'),
           format: DateFormat('dd MMM yyyy'),
           decoration: InputDecoration(
             labelText: localizations.transactionDate,
@@ -835,6 +856,12 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                       ),
                     ),
                     const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.copy_outlined, size: 20),
+                      onPressed: () => _copyToForm(t),
+                      tooltip: localizations.copy,
+                      color: Colors.grey,
+                    ),
                     IconButton(
                       icon: const Icon(Icons.edit_outlined, size: 20),
                       onPressed: () => _editQueuedTransaction(index),
