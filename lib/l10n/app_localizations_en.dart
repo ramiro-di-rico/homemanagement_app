@@ -187,6 +187,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addTransaction => 'Add Transaction';
 
   @override
+  String get dictateTransaction => 'Dictate transaction';
+
+  @override
+  String get stopRecording => 'Stop recording';
+
+  @override
+  String get microphonePermissionDenied =>
+      'Microphone permission is required to dictate';
+
+  @override
+  String get voicePreviewFailed =>
+      'Couldn\'t understand the audio. Please try again.';
+
+  @override
+  String voiceHeard(String text) {
+    return 'Heard: $text';
+  }
+
+  @override
   String get delete => 'Delete';
 
   @override

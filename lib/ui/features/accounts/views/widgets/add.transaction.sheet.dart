@@ -12,6 +12,8 @@ import 'package:home_management_app/domain/models/transaction_suggestion_option.
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
+import 'package:home_management_app/data/models/voice_transaction_draft.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/voice_dictation_button.dart';
 
 // ignore: must_be_immutable
 class AddTransactionSheet extends StatefulWidget {
@@ -253,10 +255,20 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                     controller.text.isEmpty) {
                   controller.text = nameController.text;
                 }
-                return AppTextField(
+                final nameField = AppTextField(
                   editingController: controller,
                   customFocusNode: focusNode,
                   label: 'Transaction Name',
+                );
+                if (isEditing) return nameField;
+                return Row(
+                  children: [
+                    Expanded(child: nameField),
+                    VoiceDictationButton(
+                      accountId: accountModel.id,
+                      onDraft: applyVoiceDraft,
+                    ),
+                  ],
                 );
               },
             ),
@@ -379,6 +391,25 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
         ),
       ),
     );
+  }
+
+  void applyVoiceDraft(VoiceTransactionDraft draft) {
+    nameController.text = draft.name;
+    transactionModel.name = draft.name;
+    transactionModel.transactionType = draft.transactionType;
+    if (categoryRepository.categories.any((c) => c.id == draft.categoryId)) {
+      transactionModel.categoryId = draft.categoryId;
+    }
+    if (draft.price > 0) {
+      transactionModel.price = draft.price;
+      _syncingPriceText = true;
+      priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
+        draft.price,
+        _localeCode ?? Localizations.localeOf(context).toString(),
+      );
+      _syncingPriceText = false;
+    }
+    setState(() {});
   }
 
   void onNameChanged() {

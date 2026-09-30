@@ -1,3 +1,4 @@
+import 'package:home_management_app/data/services/backend_environment.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -5,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:home_management_app/domain/models/invite.dart';
 
 class PublicInviteService {
-  final Uri backendEndpoint = Uri.https('www.ramiro-di-rico.dev', 'homemanagementapi/api/');
+  final Uri backendEndpoint = BackendEnvironment.uri('homemanagementapi/api/');
 
   Future<PublicInviteModel> getByToken(String token) async {
     final response = await http.get(

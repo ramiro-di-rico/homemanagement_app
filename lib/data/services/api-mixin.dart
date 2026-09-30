@@ -1,9 +1,10 @@
+import 'package:home_management_app/data/services/backend_environment.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 mixin HttpApiServiceMixin {
   Uri backendEndpoint =
-      Uri.https('www.ramiro-di-rico.dev', 'homemanagementapi/api/');
+      BackendEnvironment.uri('homemanagementapi/api/');
 
   Uri createUri(String api, {Map<String, dynamic>? queryParameters}) =>
       backendEndpoint.resolve(api).replace(queryParameters: queryParameters);

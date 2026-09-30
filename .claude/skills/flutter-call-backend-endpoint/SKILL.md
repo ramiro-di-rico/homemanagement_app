@@ -5,10 +5,10 @@ description: Call a backend API endpoint from a service, and surface its result 
 
 # Calling a backend endpoint
 
-The backend base URL is hardcoded in **two** places, and they must stay identical:
-`Uri.https('www.ramiro-di-rico.dev', 'homemanagementapi/api/')` in
-[api.service.factory.dart](../../../lib/data/services/api.service.factory.dart) and
-[api-mixin.dart](../../../lib/data/services/api-mixin.dart). If you change one, change both.
+The backend origin comes from [backend_environment.dart](../../../lib/data/services/backend_environment.dart)
+(`BackendEnvironment.uri(path)`), which defaults to production and is overridden at build time with
+`--dart-define=BACKEND_ORIGIN=http://localhost:8088` for the local dev stack. Services keep their
+path prefix (`homemanagementapi/api/`, `identity/...`, `reminderapi/...`) — never hardcode a host.
 
 ## Pick the right helper
 

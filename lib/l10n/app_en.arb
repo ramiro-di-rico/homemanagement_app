@@ -94,6 +94,18 @@
   "password": "Password",
   "addAccount": "Add Account",
   "addTransaction": "Add Transaction",
+  "dictateTransaction": "Dictate transaction",
+  "stopRecording": "Stop recording",
+  "microphonePermissionDenied": "Microphone permission is required to dictate",
+  "voicePreviewFailed": "Couldn't understand the audio. Please try again.",
+  "voiceHeard": "Heard: {text}",
+  "@voiceHeard": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "delete": "Delete",
   "unassign": "Unassign",
   "addAccountTo": "Add Account to {name}",

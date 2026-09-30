@@ -445,6 +445,36 @@ abstract class AppLocalizations {
   /// **'Add Transaction'**
   String get addTransaction;
 
+  /// No description provided for @dictateTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictate transaction'**
+  String get dictateTransaction;
+
+  /// No description provided for @stopRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop recording'**
+  String get stopRecording;
+
+  /// No description provided for @microphonePermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission is required to dictate'**
+  String get microphonePermissionDenied;
+
+  /// No description provided for @voicePreviewFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t understand the audio. Please try again.'**
+  String get voicePreviewFailed;
+
+  /// No description provided for @voiceHeard.
+  ///
+  /// In en, this message translates to:
+  /// **'Heard: {text}'**
+  String voiceHeard(String text);
+
   /// No description provided for @delete.
   ///
   /// In en, this message translates to:

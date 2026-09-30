@@ -1,3 +1,4 @@
+import 'package:home_management_app/data/services/backend_environment.dart';
 import 'package:home_management_app/ui/features/authentication/view_models/my_user_view_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,7 +7,6 @@ import 'package:home_management_app/data/services/authentication.service.dart';
 
 class IdentityUserService {
   String usersMy = 'identity/api/users/my';
-  String url = 'www.ramiro-di-rico.dev';
 
   AuthenticationService authenticationService;
 
@@ -15,7 +15,7 @@ class IdentityUserService {
   Future<MyUserViewModel> getUser() async {
     await _autoAuthenticateIfNeeded();
     var response = await http.get(
-      Uri.https(this.url, usersMy),
+      BackendEnvironment.uri(usersMy),
       headers: _getHeaders(),
     );
 
@@ -33,7 +33,7 @@ class IdentityUserService {
   ) async {
     await _autoAuthenticateIfNeeded();
     var response = await http.put(
-      Uri.https(this.url, usersMy),
+      BackendEnvironment.uri(usersMy),
       headers: _getHeaders(),
       body: jsonEncode(<String, String>{
         'language': language,

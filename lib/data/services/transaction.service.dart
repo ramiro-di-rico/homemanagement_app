@@ -1,9 +1,13 @@
 import 'package:home_management_app/domain/models/currency.dart';
+import 'dart:typed_data';
+
 import 'package:http/http.dart';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/data/models/reconciliation.dart';
+import 'package:home_management_app/data/models/voice_transaction_draft.dart';
 import 'package:home_management_app/data/models/transaction-with-balance.dart';
 import 'package:home_management_app/domain/models/tag.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
@@ -132,6 +136,16 @@ class TransactionService {
   Future import(int id, String fileContent) async {
     var file = MultipartFile.fromString('csv', fileContent, filename: "file.csv");
     await apiServiceFactory.upload(apiName + '/import', file);
+  }
+
+  /// Transcribes a dictated clip into a transaction draft without writing anything.
+  Future<VoiceTransactionDraft> previewVoiceTransaction(
+      int accountId, Uint8List wavBytes) async {
+    var file = MultipartFile.fromBytes('file', wavBytes,
+        filename: 'voice.wav', contentType: MediaType('audio', 'wav'));
+    var data = await apiServiceFactory.uploadWithReturn(
+        '$apiName/voice/preview?accountId=$accountId', file);
+    return VoiceTransactionDraft.fromJson(data);
   }
 
   /// Classifies a bank statement against the account without writing anything.
