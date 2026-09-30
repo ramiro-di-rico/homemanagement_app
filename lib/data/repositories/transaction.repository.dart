@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:home_management_app/data/models/voice_transaction_draft.dart';
 import 'package:flutter/material.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/tag.dart';
@@ -54,6 +57,11 @@ class TransactionRepository extends ChangeNotifier {
     errorNotifierService.notify('Transaction ${transaction.name} added successfully');
     notifyListeners();
   }
+
+  /// Errors propagate: the caller shows a localized message.
+  Future<VoiceTransactionDraft> previewVoiceTransaction(
+          int accountId, Uint8List wavBytes) =>
+      transactionService.previewVoiceTransaction(accountId, wavBytes);
 
   Future remove(TransactionModel transactionModel) async {
     await this.transactionService.delete(transactionModel.id);

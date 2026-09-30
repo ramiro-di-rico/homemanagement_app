@@ -188,6 +188,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get addTransaction => 'Añadir Transacción';
 
   @override
+  String get dictateTransaction => 'Dictar transacción';
+
+  @override
+  String get stopRecording => 'Detener grabación';
+
+  @override
+  String get microphonePermissionDenied =>
+      'Se necesita permiso del micrófono para dictar';
+
+  @override
+  String get voicePreviewFailed =>
+      'No se pudo entender el audio. Inténtalo de nuevo.';
+
+  @override
+  String voiceHeard(String text) {
+    return 'Escuché: $text';
+  }
+
+  @override
   String get delete => 'Eliminar';
 
   @override
@@ -1057,6 +1076,25 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get addTransaction => 'Agregar Transacción';
+
+  @override
+  String get dictateTransaction => 'Dictar transacción';
+
+  @override
+  String get stopRecording => 'Detener grabación';
+
+  @override
+  String get microphonePermissionDenied =>
+      'Se necesita permiso del micrófono para dictar';
+
+  @override
+  String get voicePreviewFailed =>
+      'No se pudo entender el audio. Probá de nuevo.';
+
+  @override
+  String voiceHeard(String text) {
+    return 'Escuché: $text';
+  }
 
   @override
   String get delete => 'Eliminar';

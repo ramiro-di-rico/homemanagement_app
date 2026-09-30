@@ -1,3 +1,4 @@
+import 'package:home_management_app/data/services/backend_environment.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:home_management_app/domain/models/reminder.dart';
@@ -5,7 +6,7 @@ import 'package:home_management_app/data/services/authentication.service.dart';
 
 class ReminderService {
   final AuthenticationService _authenticationService;
-  final Uri backendEndpoint = Uri.https('www.ramiro-di-rico.dev', 'reminderapi/reminder');
+  final Uri backendEndpoint = BackendEnvironment.uri('reminderapi/reminder');
 
   ReminderService(this._authenticationService);
 

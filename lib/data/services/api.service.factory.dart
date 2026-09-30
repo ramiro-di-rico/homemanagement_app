@@ -1,3 +1,4 @@
+import 'package:home_management_app/data/services/backend_environment.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -7,7 +8,7 @@ import 'package:http/http.dart' as http;
 class ApiServiceFactory {
   AuthenticationService authenticationService;
   Uri backendEndpoint =
-      Uri.https('www.ramiro-di-rico.dev', 'homemanagementapi/api/');
+      BackendEnvironment.uri('homemanagementapi/api/');
 
   ApiServiceFactory({required this.authenticationService});
 

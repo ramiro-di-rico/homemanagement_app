@@ -1,11 +1,11 @@
 
+import 'package:home_management_app/data/services/backend_environment.dart';
 import 'package:home_management_app/domain/models/user.dart';
 import 'package:home_management_app/data/services/logger_wrapper.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class IdentityService {
-  String url = 'www.ramiro-di-rico.dev';
   String authenticateApi = 'identity/api/Authentication/SignIn';
   String authenticateApiV2 = 'identity/api/Authentication/V2/SignIn';
   String registrationApi = 'identity/api/registration';
@@ -17,7 +17,7 @@ class IdentityService {
 
   Future<UserModel?> internalAuthenticate(String email, String password) async {
     _logger?.i('Calling v1 authentication endpoint');
-    var response = await http.post(Uri.https(this.url, this.authenticateApi),
+    var response = await http.post(BackendEnvironment.uri(this.authenticateApi),
         headers: <String, String>{'Content-Type': 'application/json'},
         body:
         jsonEncode(<String, String>{'email': email, 'password': password}));
@@ -28,7 +28,7 @@ class IdentityService {
   Future<UserModel?> internalAuthenticateV2(String username, String password) async {
     _logger?.i('Calling v2 authentication endpoint');
     var params = <String, String>{'api-version': '2' };
-    var uri = Uri.https(this.url, this.authenticateApi, params);
+    var uri = BackendEnvironment.uri(this.authenticateApi, params);
     var response = await http.post(uri,
         headers: <String, String>{'Content-Type': 'application/json'},
         body: jsonEncode(
@@ -52,7 +52,7 @@ class IdentityService {
   }
 
   Future<bool> register(String email, String password, [String language = 'en']) async {
-    var response = await http.post(Uri.https(this.url, this.registrationApi),
+    var response = await http.post(BackendEnvironment.uri(this.registrationApi),
         headers: <String, String>{'Content-Type': 'application/json'},
         body: jsonEncode(<String, String>{'email': email, 'password': password, 'language': language}));
 
@@ -60,7 +60,7 @@ class IdentityService {
   }
 
   Future<UserModel?> completeTwoFactorAuthentication(String username, String code) async {
-    var response = await http.post(Uri.https(this.url, this.twoFactorApi),
+    var response = await http.post(BackendEnvironment.uri(this.twoFactorApi),
         headers: <String, String>{'Content-Type': 'application/json'},
         body: jsonEncode(<String, String>{'username': username, 'code': code}));
 
@@ -81,7 +81,7 @@ class IdentityService {
     var token = user.token;
 
     try {
-      var response = await http.put(Uri.https(this.url, this.refreshTokenApi),
+      var response = await http.put(BackendEnvironment.uri(this.refreshTokenApi),
           headers: <String, String>{
             'Content-Type': 'application/json',
             'Accept': 'application/json',
@@ -118,6 +118,6 @@ class IdentityService {
   }
 
   Uri createPasswordResetUri(String api) {
-    return Uri.https(this.url, api);
+    return BackendEnvironment.uri(api);
   }
 }

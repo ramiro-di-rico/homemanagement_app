@@ -11,6 +11,8 @@ import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
+import 'package:home_management_app/data/models/voice_transaction_draft.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/voice_dictation_button.dart';
 import 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
 export 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
 
@@ -254,6 +256,11 @@ class _AddTransactionSheetDesktopState
               },
             ),
           ),
+          if (!widget.isEditing)
+            VoiceDictationButton(
+              accountId: accountModel.id,
+              onDraft: applyVoiceDraft,
+            ),
           SizedBox(width: 10),
           SizedBox(
             width: 150,
@@ -341,6 +348,25 @@ class _AddTransactionSheetDesktopState
         ],
       ),
     );
+  }
+
+  void applyVoiceDraft(VoiceTransactionDraft draft) {
+    nameController.text = draft.name;
+    transactionModel.name = draft.name;
+    transactionModel.transactionType = draft.transactionType;
+    if (categoryRepository.categories.any((c) => c.id == draft.categoryId)) {
+      transactionModel.categoryId = draft.categoryId;
+    }
+    if (draft.price > 0) {
+      transactionModel.price = draft.price;
+      _syncingPriceText = true;
+      priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
+        draft.price,
+        _localeCode ?? Localizations.localeOf(context).toString(),
+      );
+      _syncingPriceText = false;
+    }
+    setState(() {});
   }
 
   void onNameChanged() {
