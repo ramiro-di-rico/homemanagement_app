@@ -1,0 +1,35 @@
+{
+  "version": "1.0.10",
+  "integration_state_schema": 1,
+  "installed_integrations": [
+    "claude",
+    "codex",
+    "junie",
+    "cursor-agent",
+    "copilot"
+  ],
+  "integration_settings": {
+    "claude": {
+      "script": "sh",
+      "invoke_separator": "-"
+    },
+    "codex": {
+      "script": "sh",
+      "invoke_separator": "-"
+    },
+    "junie": {
+      "script": "sh",
+      "invoke_separator": "-"
+    },
+    "cursor-agent": {
+      "script": "sh",
+      "invoke_separator": "-"
+    },
+    "copilot": {
+      "script": "sh",
+      "invoke_separator": "-"
+    }
+  },
+  "integration": "claude",
+  "default_integration": "claude"
+}

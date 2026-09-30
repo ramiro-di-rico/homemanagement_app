@@ -1,0 +1,17 @@
+{
+  "integration": "junie",
+  "version": "1.0.10",
+  "installed_at": "2026-09-30T20:57:37.214138+00:00",
+  "files": {
+    ".junie/commands/speckit-analyze.md": "fd6aa6941e9ccb1b0e4df1bd8b67cd67ecee5a8710acd9a1d561c941381bf0a4",
+    ".junie/commands/speckit-clarify.md": "87fe5654bed38ed47dfdea0bef204e7715eed9290e2b815b5c74e4c21dcb1def",
+    ".junie/commands/speckit-constitution.md": "6382c0e9581e47c66d433070559f078d9855982957526979e204ebcc613f34d6",
+    ".junie/commands/speckit-implement.md": "fb42a98e2180da2f0fe62556cb83b369498374aafb3ace7e9d15daa54154f00c",
+    ".junie/commands/speckit-converge.md": "b84e3538887ddced5f11f0603195fc1d2c6c3f3a49b830339b74f3f268ed85dd",
+    ".junie/commands/speckit-plan.md": "6fc5017695a0350e13342f06562d499c87ae688eba7caf27e76a6847fbb45059",
+    ".junie/commands/speckit-checklist.md": "b5d33fbf47f73c356715de3ddef86d832863b30badf0184febd53c9e3148770a",
+    ".junie/commands/speckit-specify.md": "a0081e5e951b59e68f1139391f5211ddc9629fbf0e0d57aeb3fd51b1246c7f4b",
+    ".junie/commands/speckit-tasks.md": "e814777017115cef64716d0db61b3eee2631193d341a7a459adcf728f3f01c8a",
+    ".junie/commands/speckit-taskstoissues.md": "cd8cbd876e2335bc2f0d6ef8737218260bc08326bbacee25136f01d42a821548"
+  }
+}
