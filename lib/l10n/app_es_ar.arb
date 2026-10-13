@@ -55,6 +55,17 @@
   "microphonePermissionDenied": "Se necesita permiso del micrófono para dictar",
   "voicePreviewFailed": "No se pudo entender el audio. Probá de nuevo.",
   "voiceHeard": "Escuché: {text}",
+  "attachDocument": "Adjuntar comprobante",
+  "documentPreviewFailed": "No se pudieron leer los archivos seleccionados. Probá de nuevo.",
+  "documentsSkipped": "{count} archivo(s) no se pudieron leer",
+  "@documentsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectDocumentPreview": "Seleccioná qué comprobante usar",
   "delete": "Eliminar",
   "unassign": "Desasignar",
   "addAccountTo": "Agregar Cuenta a {name}",

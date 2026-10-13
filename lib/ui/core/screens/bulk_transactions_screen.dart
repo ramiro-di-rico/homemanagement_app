@@ -9,10 +9,16 @@ import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
+import 'package:home_management_app/data/models/voice_transaction_draft.dart';
+import 'package:home_management_app/data/models/document_transaction_draft.dart';
+import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/voice_dictation_button.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/document_scan_button.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/document_preview_picker.dart';
 
 class BulkTransactionsScreen extends StatefulWidget {
   static const String fullPath = '/home_screen/bulk_transactions';
@@ -61,10 +67,14 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   @override
   void initState() {
     super.initState();
-    _accountRepository = widget.accountRepository ?? GetIt.I<AccountRepository>();
-    _categoryRepository = widget.categoryRepository ?? GetIt.I<CategoryRepository>();
-    _transactionRepository = widget.transactionRepository ?? GetIt.I<TransactionRepository>();
-    _transactionService = widget.transactionService ?? GetIt.I<TransactionService>();
+    _accountRepository =
+        widget.accountRepository ?? GetIt.I<AccountRepository>();
+    _categoryRepository =
+        widget.categoryRepository ?? GetIt.I<CategoryRepository>();
+    _transactionRepository =
+        widget.transactionRepository ?? GetIt.I<TransactionRepository>();
+    _transactionService =
+        widget.transactionService ?? GetIt.I<TransactionService>();
 
     final accounts = _accountRepository.accounts;
     if (accounts.isNotEmpty) _selectedAccount = accounts.first;
@@ -90,7 +100,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         await _accountRepository.load();
         if (mounted) {
           setState(() {
-            if (_selectedAccount == null && _accountRepository.accounts.isNotEmpty) {
+            if (_selectedAccount == null &&
+                _accountRepository.accounts.isNotEmpty) {
               _selectedAccount = _accountRepository.accounts.first;
             }
           });
@@ -100,10 +111,12 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   }
 
   void _copyToForm(TransactionModel transaction) {
-    final accounts = _accountRepository.accounts.where((a) => a.id == transaction.accountId);
-    final categories = _categoryRepository
-        .getActiveCategories()
-        .where((c) => c.id == transaction.categoryId);
+    final accounts = _accountRepository.accounts.where(
+      (a) => a.id == transaction.accountId,
+    );
+    final categories = _categoryRepository.getActiveCategories().where(
+      (c) => c.id == transaction.categoryId,
+    );
     setState(() {
       _errorMessage = null;
       _successMessage = null;
@@ -116,6 +129,66 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
       );
       _selectedDate = transaction.date;
       _selectedType = transaction.transactionType;
+    });
+  }
+
+  void applyVoiceDraft(VoiceTransactionDraft draft) {
+    final categories = _categoryRepository.getActiveCategories();
+    setState(() {
+      _nameController.text = draft.name;
+      _selectedType = draft.transactionType;
+      final matching = categories.where((c) => c.id == draft.categoryId);
+      if (matching.isNotEmpty) _selectedCategory = matching.first;
+      if (draft.price > 0) {
+        _priceController.text =
+            LocalizedNumberInputFormatterHelper.formatDouble(
+              draft.price,
+              Localizations.localeOf(context).toString(),
+            );
+      }
+    });
+  }
+
+  Future<void> applyDocumentPreviews(
+    List<DocumentTransactionPreview> previews,
+  ) async {
+    final localizations = AppLocalizations.of(context)!;
+    final successful = previews.where((p) => p.draft != null).toList();
+    if (successful.isEmpty) {
+      GetIt.I<NotifierService>().notify(
+        localizations.documentPreviewFailed,
+        isError: true,
+      );
+      return;
+    }
+    final failed = previews.length - successful.length;
+    if (failed > 0) {
+      GetIt.I<NotifierService>().notify(
+        localizations.documentsSkipped(failed),
+        isError: true,
+      );
+    }
+    final draft = successful.length == 1
+        ? successful.first.draft!
+        : await showDocumentPreviewPicker(context, successful);
+    if (draft != null) applyDocumentDraft(draft);
+  }
+
+  void applyDocumentDraft(DocumentTransactionDraft draft) {
+    final categories = _categoryRepository.getActiveCategories();
+    setState(() {
+      _nameController.text = draft.name;
+      _selectedType = draft.transactionType;
+      _selectedDate = draft.date;
+      final matching = categories.where((c) => c.id == draft.categoryId);
+      if (matching.isNotEmpty) _selectedCategory = matching.first;
+      if (draft.amount > 0) {
+        _priceController.text =
+            LocalizedNumberInputFormatterHelper.formatDouble(
+              draft.amount,
+              Localizations.localeOf(context).toString(),
+            );
+      }
     });
   }
 
@@ -141,7 +214,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
       return;
     }
     if (name.length < 3) {
-      setState(() => _errorMessage = localizations.nameMustBeAtLeast3Characters);
+      setState(
+        () => _errorMessage = localizations.nameMustBeAtLeast3Characters,
+      );
       return;
     }
     final price = LocalizedNumberInputFormatterHelper.parseDouble(
@@ -244,12 +319,20 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                         decoration: InputDecoration(
                           labelText: localizations.transactionAccount,
                           border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
+                          prefixIcon: const Icon(
+                            Icons.account_balance_wallet_outlined,
+                          ),
                         ),
                         items: accounts
-                            .map((a) => DropdownMenuItem(value: a, child: Text(a.name)))
+                            .map(
+                              (a) => DropdownMenuItem(
+                                value: a,
+                                child: Text(a.name),
+                              ),
+                            )
                             .toList(),
-                        onChanged: (v) => setDialogState(() => selectedAccount = v),
+                        onChanged: (v) =>
+                            setDialogState(() => selectedAccount = v),
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<CategoryModel>(
@@ -260,9 +343,15 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                           prefixIcon: const Icon(Icons.category_outlined),
                         ),
                         items: categories
-                            .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
+                            .map(
+                              (c) => DropdownMenuItem(
+                                value: c,
+                                child: Text(c.name),
+                              ),
+                            )
                             .toList(),
-                        onChanged: (v) => setDialogState(() => selectedCategory = v),
+                        onChanged: (v) =>
+                            setDialogState(() => selectedCategory = v),
                       ),
                       const SizedBox(height: 12),
                       TextField(
@@ -276,7 +365,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                       const SizedBox(height: 12),
                       TextField(
                         controller: priceController,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         inputFormatters: [
                           LocalizedNumberInputFormatter(locale: locale),
                         ],
@@ -344,27 +435,35 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                 FilledButton(
                   onPressed: () {
                     final name = nameController.text.trim();
-                    final price = LocalizedNumberInputFormatterHelper.parseDouble(
-                      priceController.text.trim(),
-                      locale,
-                    );
+                    final price =
+                        LocalizedNumberInputFormatterHelper.parseDouble(
+                          priceController.text.trim(),
+                          locale,
+                        );
 
                     if (selectedAccount == null) {
-                      setDialogState(() => dialogError = localizations.pleaseSelectAccount);
+                      setDialogState(
+                        () => dialogError = localizations.pleaseSelectAccount,
+                      );
                       return;
                     }
                     if (selectedCategory == null) {
-                      setDialogState(() => dialogError = localizations.pleaseSelectCategory);
+                      setDialogState(
+                        () => dialogError = localizations.pleaseSelectCategory,
+                      );
                       return;
                     }
                     if (name.length < 3) {
                       setDialogState(
-                        () => dialogError = localizations.nameMustBeAtLeast3Characters,
+                        () => dialogError =
+                            localizations.nameMustBeAtLeast3Characters,
                       );
                       return;
                     }
                     if (price == null || price <= 0) {
-                      setDialogState(() => dialogError = localizations.enterValidPrice);
+                      setDialogState(
+                        () => dialogError = localizations.enterValidPrice,
+                      );
                       return;
                     }
 
@@ -401,7 +500,10 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
   Future<void> _submitAll() async {
     final localizations = AppLocalizations.of(context)!;
     if (_pendingTransactions.isEmpty) {
-      setState(() => _errorMessage = localizations.addAtLeastOneTransactionBeforeSubmitting);
+      setState(
+        () => _errorMessage =
+            localizations.addAtLeastOneTransactionBeforeSubmitting,
+      );
       return;
     }
 
@@ -412,14 +514,22 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
     });
 
     try {
-      final updatedAccounts = await _transactionService.bulkAdd(List.from(_pendingTransactions));
+      final updatedAccounts = await _transactionService.bulkAdd(
+        List.from(_pendingTransactions),
+      );
       _accountRepository.setBalances(updatedAccounts);
       setState(() {
-        _successMessage = localizations.transactionsSubmittedSuccessfully(_pendingTransactions.length.toString());
+        _successMessage = localizations.transactionsSubmittedSuccessfully(
+          _pendingTransactions.length.toString(),
+        );
         _pendingTransactions.clear();
       });
     } catch (e) {
-      setState(() => _errorMessage = localizations.failedToSubmitTransactions(e.toString()));
+      setState(
+        () => _errorMessage = localizations.failedToSubmitTransactions(
+          e.toString(),
+        ),
+      );
     } finally {
       setState(() => _isSubmitting = false);
     }
@@ -441,7 +551,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
               ),
             ),
           TextButton.icon(
-            onPressed: _isSubmitting || _pendingTransactions.isEmpty ? null : _submitAll,
+            onPressed: _isSubmitting || _pendingTransactions.isEmpty
+                ? null
+                : _submitAll,
             icon: _isSubmitting
                 ? const SizedBox(
                     width: 18,
@@ -468,7 +580,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                 if (_errorMessage != null)
                   MaterialBanner(
                     content: Text(_errorMessage!),
-                    backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.errorContainer,
                     actions: [
                       TextButton(
                         onPressed: () => setState(() => _errorMessage = null),
@@ -549,7 +663,10 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(localizations.addTransaction, style: Theme.of(context).textTheme.titleMedium),
+        Text(
+          localizations.addTransaction,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
         const SizedBox(height: 16),
 
         // Account
@@ -592,20 +709,27 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         Autocomplete<TransactionSuggestionOption>(
           textEditingController: _nameController,
           focusNode: _nameFocusNode,
-          displayStringForOption: (TransactionSuggestionOption option) => option.name,
+          displayStringForOption: (TransactionSuggestionOption option) =>
+              option.name,
           optionsBuilder: (TextEditingValue textEditingValue) {
             if (textEditingValue.text.isEmpty) {
               return const Iterable<TransactionSuggestionOption>.empty();
             }
             final query = textEditingValue.text.toLowerCase();
             final matchingTransactions = _suggestions
-                .where((TransactionModel option) =>
-                    option.name.toLowerCase().contains(query))
-                .map((TransactionModel option) => TransactionModelOption(option));
+                .where(
+                  (TransactionModel option) =>
+                      option.name.toLowerCase().contains(query),
+                )
+                .map(
+                  (TransactionModel option) => TransactionModelOption(option),
+                );
             final matchingAccounts = _accountRepository.accounts
-                .where((AccountModel account) =>
-                    account.name.isNotEmpty &&
-                    account.name.toLowerCase().contains(query))
+                .where(
+                  (AccountModel account) =>
+                      account.name.isNotEmpty &&
+                      account.name.toLowerCase().contains(query),
+                )
                 .map((AccountModel account) => AccountModelOption(account));
             return [...matchingTransactions, ...matchingAccounts];
           },
@@ -628,8 +752,8 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                         shrinkWrap: true,
                         itemCount: options.length,
                         itemBuilder: (BuildContext context, int index) {
-                          final TransactionSuggestionOption option =
-                              options.elementAt(index);
+                          final TransactionSuggestionOption option = options
+                              .elementAt(index);
                           if (option is TransactionModelOption) {
                             final TransactionModel transaction =
                                 option.transaction;
@@ -665,9 +789,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
             if (selection is TransactionModelOption) {
               final TransactionModel selectionModel = selection.transaction;
               _nameController.text = selectionModel.name;
-              final matchingCategories = _categoryRepository.getActiveCategories().where(
-                (c) => c.id == selectionModel.categoryId,
-              );
+              final matchingCategories = _categoryRepository
+                  .getActiveCategories()
+                  .where((c) => c.id == selectionModel.categoryId);
               if (matchingCategories.isNotEmpty) {
                 _selectedCategory = matchingCategories.first;
               }
@@ -680,9 +804,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
               _selectedType = selectionModel.transactionType;
               _priceController.text =
                   LocalizedNumberInputFormatterHelper.formatDouble(
-                selectionModel.price,
-                Localizations.localeOf(context).toString(),
-              );
+                    selectionModel.price,
+                    Localizations.localeOf(context).toString(),
+                  );
             } else if (selection is AccountModelOption) {
               final AccountModel account = selection.account;
               _nameController.text = account.name;
@@ -703,7 +827,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                 controller.text.isEmpty) {
               controller.text = _nameController.text;
             }
-            return TextField(
+            final nameField = TextField(
               controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
@@ -711,6 +835,20 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.edit_outlined),
               ),
+            );
+            if (_selectedAccount == null) return nameField;
+            return Row(
+              children: [
+                Expanded(child: nameField),
+                VoiceDictationButton(
+                  accountId: _selectedAccount!.id,
+                  onDraft: applyVoiceDraft,
+                ),
+                DocumentScanButton(
+                  accountId: _selectedAccount!.id,
+                  onPreviews: applyDocumentPreviews,
+                ),
+              ],
             );
           },
         ),
@@ -766,8 +904,14 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
             prefixIcon: const Icon(Icons.swap_vert),
           ),
           items: [
-            DropdownMenuItem(value: TransactionType.Outcome, child: Text(localizations.outcome)),
-            DropdownMenuItem(value: TransactionType.Income, child: Text(localizations.income)),
+            DropdownMenuItem(
+              value: TransactionType.Outcome,
+              child: Text(localizations.outcome),
+            ),
+            DropdownMenuItem(
+              value: TransactionType.Income,
+              child: Text(localizations.income),
+            ),
           ],
           onChanged: (v) => setState(() => _selectedType = v!),
         ),
@@ -780,7 +924,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
             icon: const Icon(Icons.add),
             label: Text(localizations.addToQueue),
             style: FilledButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
           ),
@@ -814,7 +960,9 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
-            localizations.queuedTransactions(_pendingTransactions.length.toString()),
+            localizations.queuedTransactions(
+              _pendingTransactions.length.toString(),
+            ),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -833,14 +981,19 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
             return Card(
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: isIncome ? Colors.green.shade800 : Colors.red.shade800,
+                  backgroundColor: isIncome
+                      ? Colors.green.shade800
+                      : Colors.red.shade800,
                   child: Icon(
                     isIncome ? Icons.arrow_downward : Icons.arrow_upward,
                     color: Colors.white,
                     size: 18,
                   ),
                 ),
-                title: Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(
+                  t.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 subtitle: Text(
                   '${account.name}  •  ${t.categoryName}  •  ${DateFormat('dd MMM yyyy').format(t.date)}',
                   style: const TextStyle(fontSize: 12),

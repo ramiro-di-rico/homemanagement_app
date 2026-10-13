@@ -207,6 +207,21 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get attachDocument => 'Adjuntar comprobante';
+
+  @override
+  String get documentPreviewFailed =>
+      'No se pudieron leer los archivos seleccionados. Inténtalo de nuevo.';
+
+  @override
+  String documentsSkipped(int count) {
+    return '$count archivo(s) no se pudieron leer';
+  }
+
+  @override
+  String get selectDocumentPreview => 'Selecciona qué comprobante usar';
+
+  @override
   String get delete => 'Eliminar';
 
   @override
@@ -1095,6 +1110,21 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String voiceHeard(String text) {
     return 'Escuché: $text';
   }
+
+  @override
+  String get attachDocument => 'Adjuntar comprobante';
+
+  @override
+  String get documentPreviewFailed =>
+      'No se pudieron leer los archivos seleccionados. Probá de nuevo.';
+
+  @override
+  String documentsSkipped(int count) {
+    return '$count archivo(s) no se pudieron leer';
+  }
+
+  @override
+  String get selectDocumentPreview => 'Seleccioná qué comprobante usar';
 
   @override
   String get delete => 'Eliminar';

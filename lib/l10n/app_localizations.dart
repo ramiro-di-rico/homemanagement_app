@@ -475,6 +475,30 @@ abstract class AppLocalizations {
   /// **'Heard: {text}'**
   String voiceHeard(String text);
 
+  /// No description provided for @attachDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach receipt'**
+  String get attachDocument;
+
+  /// No description provided for @documentPreviewFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read the selected file(s). Please try again.'**
+  String get documentPreviewFailed;
+
+  /// No description provided for @documentsSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} file(s) could not be read'**
+  String documentsSkipped(int count);
+
+  /// No description provided for @selectDocumentPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Select which receipt to use'**
+  String get selectDocumentPreview;
+
   /// No description provided for @delete.
   ///
   /// In en, this message translates to:

@@ -13,7 +13,12 @@ import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 import 'package:home_management_app/data/models/voice_transaction_draft.dart';
+import 'package:home_management_app/data/models/document_transaction_draft.dart';
+import 'package:home_management_app/data/services/error_notifier_service.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/accounts/views/widgets/voice_dictation_button.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/document_scan_button.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/document_preview_picker.dart';
 
 // ignore: must_be_immutable
 class AddTransactionSheet extends StatefulWidget {
@@ -268,6 +273,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                       accountId: accountModel.id,
                       onDraft: applyVoiceDraft,
                     ),
+                    DocumentScanButton(
+                      accountId: accountModel.id,
+                      onPreviews: applyDocumentPreviews,
+                    ),
                   ],
                 );
               },
@@ -405,6 +414,46 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
       _syncingPriceText = true;
       priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
         draft.price,
+        _localeCode ?? Localizations.localeOf(context).toString(),
+      );
+      _syncingPriceText = false;
+    }
+    setState(() {});
+  }
+
+  Future<void> applyDocumentPreviews(
+      List<DocumentTransactionPreview> previews) async {
+    final strings = AppLocalizations.of(context)!;
+    final successful = previews.where((p) => p.draft != null).toList();
+    if (successful.isEmpty) {
+      GetIt.I<NotifierService>()
+          .notify(strings.documentPreviewFailed, isError: true);
+      return;
+    }
+    final failed = previews.length - successful.length;
+    if (failed > 0) {
+      GetIt.I<NotifierService>()
+          .notify(strings.documentsSkipped(failed), isError: true);
+    }
+    final draft = successful.length == 1
+        ? successful.first.draft!
+        : await showDocumentPreviewPicker(context, successful);
+    if (draft != null) applyDocumentDraft(draft);
+  }
+
+  void applyDocumentDraft(DocumentTransactionDraft draft) {
+    nameController.text = draft.name;
+    transactionModel.name = draft.name;
+    transactionModel.transactionType = draft.transactionType;
+    transactionModel.date = draft.date;
+    if (categoryRepository.categories.any((c) => c.id == draft.categoryId)) {
+      transactionModel.categoryId = draft.categoryId;
+    }
+    if (draft.amount > 0) {
+      transactionModel.price = draft.amount;
+      _syncingPriceText = true;
+      priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
+        draft.amount,
         _localeCode ?? Localizations.localeOf(context).toString(),
       );
       _syncingPriceText = false;

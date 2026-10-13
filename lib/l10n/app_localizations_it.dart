@@ -207,6 +207,21 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get attachDocument => 'Allega scontrino';
+
+  @override
+  String get documentPreviewFailed =>
+      'Impossibile leggere i file selezionati. Riprova.';
+
+  @override
+  String documentsSkipped(int count) {
+    return '$count file non leggibili';
+  }
+
+  @override
+  String get selectDocumentPreview => 'Seleziona quale scontrino usare';
+
+  @override
   String get delete => 'Elimina';
 
   @override

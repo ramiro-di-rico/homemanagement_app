@@ -106,6 +106,17 @@
       }
     }
   },
+  "attachDocument": "Attach receipt",
+  "documentPreviewFailed": "Couldn't read the selected file(s). Please try again.",
+  "documentsSkipped": "{count} file(s) could not be read",
+  "@documentsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectDocumentPreview": "Select which receipt to use",
   "delete": "Delete",
   "unassign": "Unassign",
   "addAccountTo": "Add Account to {name}",

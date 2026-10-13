@@ -8,6 +8,7 @@ import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/data/models/reconciliation.dart';
 import 'package:home_management_app/data/models/voice_transaction_draft.dart';
+import 'package:home_management_app/data/models/document_transaction_draft.dart';
 import 'package:home_management_app/data/models/transaction-with-balance.dart';
 import 'package:home_management_app/domain/models/tag.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
@@ -146,6 +147,33 @@ class TransactionService {
     var data = await apiServiceFactory.uploadWithReturn(
         '$apiName/voice/preview?accountId=$accountId', file);
     return VoiceTransactionDraft.fromJson(data);
+  }
+
+  /// Reads one or more receipt files into transaction drafts without writing
+  /// anything. The backend returns one result per file, in the same order.
+  Future<List<DocumentTransactionPreview>> previewDocumentTransactions(
+      int accountId, Map<String, Uint8List> filesByName) async {
+    var files = filesByName.entries
+        .map((e) => MultipartFile.fromBytes('files', e.value,
+            filename: e.key, contentType: _contentTypeFor(e.key)))
+        .toList();
+    var data = await apiServiceFactory.uploadMultipleWithReturn(
+        '$apiName/document/preview?accountId=$accountId', files);
+    return DocumentTransactionPreview.listFromJson(data);
+  }
+
+  static MediaType _contentTypeFor(String fileName) {
+    switch (fileName.split('.').last.toLowerCase()) {
+      case 'pdf':
+        return MediaType('application', 'pdf');
+      case 'png':
+        return MediaType('image', 'png');
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      default:
+        return MediaType('application', 'octet-stream');
+    }
   }
 
   /// Classifies a bank statement against the account without writing anything.

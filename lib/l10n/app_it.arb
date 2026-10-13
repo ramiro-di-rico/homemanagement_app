@@ -60,6 +60,17 @@
   "microphonePermissionDenied": "È necessario il permesso del microfono per dettare",
   "voicePreviewFailed": "Impossibile capire l'audio. Riprova.",
   "voiceHeard": "Ho sentito: {text}",
+  "attachDocument": "Allega scontrino",
+  "documentPreviewFailed": "Impossibile leggere i file selezionati. Riprova.",
+  "documentsSkipped": "{count} file non leggibili",
+  "@documentsSkipped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectDocumentPreview": "Seleziona quale scontrino usare",
   "delete": "Elimina",
   "unassign": "Disassegna",
   "addAccountTo": "Aggiungi Conto a {name}",

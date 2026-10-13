@@ -206,6 +206,21 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get attachDocument => 'Anexar comprovante';
+
+  @override
+  String get documentPreviewFailed =>
+      'Não foi possível ler o(s) arquivo(s) selecionado(s). Tente novamente.';
+
+  @override
+  String documentsSkipped(int count) {
+    return '$count arquivo(s) não puderam ser lidos';
+  }
+
+  @override
+  String get selectDocumentPreview => 'Selecione qual comprovante usar';
+
+  @override
   String get delete => 'Excluir';
 
   @override

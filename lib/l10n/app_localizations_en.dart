@@ -206,6 +206,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get attachDocument => 'Attach receipt';
+
+  @override
+  String get documentPreviewFailed =>
+      'Couldn\'t read the selected file(s). Please try again.';
+
+  @override
+  String documentsSkipped(int count) {
+    return '$count file(s) could not be read';
+  }
+
+  @override
+  String get selectDocumentPreview => 'Select which receipt to use';
+
+  @override
   String get delete => 'Delete';
 
   @override

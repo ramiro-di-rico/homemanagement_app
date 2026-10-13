@@ -126,20 +126,27 @@ class ApiServiceFactory {
     }
   }
 
-  Future upload(String api, dynamic file) async {
+  Future upload(String api, http.MultipartFile file) async {
     await _autoAuthenticateIfNeeded();
 
-    var response = await _send(api, file);
+    var response = await _send(api, [file]);
     if (!_isSuccessfulStatusCode(response.statusCode)) {
       throw Exception('Failed to upload to $api');
     }
   }
 
   /// Same as [upload] but returning the decoded response body.
-  Future<dynamic> uploadWithReturn(String api, dynamic file) async {
+  Future<dynamic> uploadWithReturn(String api, http.MultipartFile file) async {
+    return uploadMultipleWithReturn(api, [file]);
+  }
+
+  /// Same as [uploadWithReturn] but sending every file in [files] in a single
+  /// multipart request, so the backend can correlate them if needed.
+  Future<dynamic> uploadMultipleWithReturn(
+      String api, List<http.MultipartFile> files) async {
     await _autoAuthenticateIfNeeded();
 
-    var response = await _send(api, file);
+    var response = await _send(api, files);
     var body = await response.stream.bytesToString();
 
     if (!_isSuccessfulStatusCode(response.statusCode)) {
@@ -149,9 +156,10 @@ class ApiServiceFactory {
     return body.isEmpty ? null : json.decode(body);
   }
 
-  Future<http.StreamedResponse> _send(String api, dynamic file) async {
+  Future<http.StreamedResponse> _send(
+      String api, List<http.MultipartFile> files) async {
     var request = http.MultipartRequest('POST', backendEndpoint.resolve(api))
-      ..files.add(file);
+      ..files.addAll(files);
     // Only the auth header: MultipartRequest sets its own Content-Type with the boundary, and
     // overwriting it with application/json leaves the server unable to read the form.
     request.headers.addAll(_getAuthHeaders());

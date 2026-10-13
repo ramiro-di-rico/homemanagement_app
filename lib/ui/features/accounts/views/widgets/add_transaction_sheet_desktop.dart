@@ -12,7 +12,12 @@ import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 import 'package:home_management_app/data/models/voice_transaction_draft.dart';
+import 'package:home_management_app/data/models/document_transaction_draft.dart';
+import 'package:home_management_app/data/services/error_notifier_service.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/accounts/views/widgets/voice_dictation_button.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/document_scan_button.dart';
+import 'package:home_management_app/ui/features/accounts/views/widgets/document_preview_picker.dart';
 import 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
 export 'package:home_management_app/domain/models/transaction_suggestion_option.dart';
 
@@ -67,9 +72,12 @@ class _AddTransactionSheetDesktopState
     accountRepository =
         widget.accountRepository ?? GetIt.I<AccountRepository>();
     accountModel = widget._accountModel;
-    transactionModel = widget.transactionModel ??
+    transactionModel =
+        widget.transactionModel ??
         TransactionModel.empty(
-            accountModel.id, categoryRepository.categories.first.id);
+          accountModel.id,
+          categoryRepository.categories.first.id,
+        );
     nameController.addListener(onNameChanged);
     priceController.addListener(onPriceChanged);
     nameController.text = transactionModel.name;
@@ -132,220 +140,239 @@ class _AddTransactionSheetDesktopState
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(width: 10),
-          SizedBox(
-            width: 300,
-            child: Autocomplete<TransactionSuggestionOption>(
-              textEditingController: nameController,
-              focusNode: nameFocusNode,
-              displayStringForOption: (TransactionSuggestionOption option) =>
-                  option.name,
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text == '') {
-                  return const Iterable<TransactionSuggestionOption>.empty();
-                }
-                final query = textEditingValue.text.toLowerCase();
-                final matchingTransactions = suggestions
-                    .where((TransactionModel option) =>
-                        option.name.toLowerCase().contains(query))
-                    .map((TransactionModel option) =>
-                        TransactionModelOption(option));
-                final matchingAccounts = accountRepository.accounts
-                    .where((AccountModel account) =>
-                        account.name.isNotEmpty &&
-                        account.name.toLowerCase().contains(query))
-                    .map((AccountModel account) =>
-                        AccountModelOption(account));
-                return [...matchingTransactions, ...matchingAccounts];
-              },
-              optionsViewOpenDirection: OptionsViewOpenDirection.up,
-              optionsViewBuilder: (context, onSelected, options) {
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Material(
-                        elevation: 4.0,
-                        borderRadius: BorderRadius.circular(15),
-                        clipBehavior: Clip.antiAlias,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: 260,
-                            maxWidth: constraints.maxWidth,
-                          ),
-                          child: ListView.builder(
-                            padding: EdgeInsets.zero,
-                            shrinkWrap: true,
-                            itemCount: options.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final TransactionSuggestionOption option =
-                                  options.elementAt(index);
-                              if (option is TransactionModelOption) {
-                                final TransactionModel transaction =
-                                    option.transaction;
-                                return ListTile(
-                                  title: Text(transaction.name),
-                                  subtitle: Text(
-                                    '${transaction.categoryName} - \$${transaction.price}',
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                  onTap: () => onSelected(option),
-                                );
-                              } else if (option is AccountModelOption) {
-                                final AccountModel account = option.account;
-                                return ListTile(
-                                  title: Text(account.name),
-                                  subtitle: Text(
-                                    'Account',
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                  onTap: () => onSelected(option),
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(width: 10),
+            SizedBox(
+              width: 300,
+              child: Autocomplete<TransactionSuggestionOption>(
+                textEditingController: nameController,
+                focusNode: nameFocusNode,
+                displayStringForOption: (TransactionSuggestionOption option) =>
+                    option.name,
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text == '') {
+                    return const Iterable<TransactionSuggestionOption>.empty();
+                  }
+                  final query = textEditingValue.text.toLowerCase();
+                  final matchingTransactions = suggestions
+                      .where(
+                        (TransactionModel option) =>
+                            option.name.toLowerCase().contains(query),
+                      )
+                      .map(
+                        (TransactionModel option) =>
+                            TransactionModelOption(option),
+                      );
+                  final matchingAccounts = accountRepository.accounts
+                      .where(
+                        (AccountModel account) =>
+                            account.name.isNotEmpty &&
+                            account.name.toLowerCase().contains(query),
+                      )
+                      .map(
+                        (AccountModel account) => AccountModelOption(account),
+                      );
+                  return [...matchingTransactions, ...matchingAccounts];
+                },
+                optionsViewOpenDirection: OptionsViewOpenDirection.up,
+                optionsViewBuilder: (context, onSelected, options) {
+                  return LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Material(
+                          elevation: 4.0,
+                          borderRadius: BorderRadius.circular(15),
+                          clipBehavior: Clip.antiAlias,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 260,
+                              maxWidth: constraints.maxWidth,
+                            ),
+                            child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemCount: options.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final TransactionSuggestionOption option =
+                                    options.elementAt(index);
+                                if (option is TransactionModelOption) {
+                                  final TransactionModel transaction =
+                                      option.transaction;
+                                  return ListTile(
+                                    title: Text(transaction.name),
+                                    subtitle: Text(
+                                      '${transaction.categoryName} - \$${transaction.price}',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                    onTap: () => onSelected(option),
+                                  );
+                                } else if (option is AccountModelOption) {
+                                  final AccountModel account = option.account;
+                                  return ListTile(
+                                    title: Text(account.name),
+                                    subtitle: Text(
+                                      'Account',
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall,
+                                    ),
+                                    onTap: () => onSelected(option),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              },
-              onSelected: (TransactionSuggestionOption selection) {
-                if (selection is TransactionModelOption) {
-                  final TransactionModel selectionModel =
-                      selection.transaction;
-                  nameController.text = selectionModel.name;
-                  transactionModel.name = selectionModel.name;
-                  transactionModel.categoryId = selectionModel.categoryId;
-                  transactionModel.price = selectionModel.price;
-                  transactionModel.transactionType =
-                      selectionModel.transactionType;
-                  _syncingPriceText = true;
-                  priceController.text =
-                      LocalizedNumberInputFormatterHelper.formatDouble(
-                    selectionModel.price,
-                    _localeCode ?? Localizations.localeOf(context).toString(),
+                      );
+                    },
                   );
-                  _syncingPriceText = false;
-                } else if (selection is AccountModelOption) {
-                  final AccountModel account = selection.account;
-                  nameController.text = account.name;
-                  transactionModel.name = account.name;
-                }
-                setState(() {});
-              },
-              fieldViewBuilder:
-                  (context, controller, focusNode, onFieldSubmitted) {
-                if (nameController.text != controller.text &&
-                    nameController.text.isNotEmpty &&
-                    controller.text.isEmpty) {
-                  controller.text = nameController.text;
-                }
-                return AppTextField(
-                  editingController: controller,
-                  customFocusNode: focusNode,
-                  label: 'Transaction Name',
-                  focus: true,
-                );
-              },
+                },
+                onSelected: (TransactionSuggestionOption selection) {
+                  if (selection is TransactionModelOption) {
+                    final TransactionModel selectionModel =
+                        selection.transaction;
+                    nameController.text = selectionModel.name;
+                    transactionModel.name = selectionModel.name;
+                    transactionModel.categoryId = selectionModel.categoryId;
+                    transactionModel.price = selectionModel.price;
+                    transactionModel.transactionType =
+                        selectionModel.transactionType;
+                    _syncingPriceText = true;
+                    priceController.text =
+                        LocalizedNumberInputFormatterHelper.formatDouble(
+                          selectionModel.price,
+                          _localeCode ??
+                              Localizations.localeOf(context).toString(),
+                        );
+                    _syncingPriceText = false;
+                  } else if (selection is AccountModelOption) {
+                    final AccountModel account = selection.account;
+                    nameController.text = account.name;
+                    transactionModel.name = account.name;
+                  }
+                  setState(() {});
+                },
+                fieldViewBuilder:
+                    (context, controller, focusNode, onFieldSubmitted) {
+                      if (nameController.text != controller.text &&
+                          nameController.text.isNotEmpty &&
+                          controller.text.isEmpty) {
+                        controller.text = nameController.text;
+                      }
+                      return AppTextField(
+                        editingController: controller,
+                        customFocusNode: focusNode,
+                        label: 'Transaction Name',
+                        focus: true,
+                      );
+                    },
+              ),
             ),
-          ),
-          if (!widget.isEditing)
-            VoiceDictationButton(
-              accountId: accountModel.id,
-              onDraft: applyVoiceDraft,
-            ),
-          SizedBox(width: 10),
-          SizedBox(
-            width: 150,
-            child: TextField(
+            if (!widget.isEditing)
+              VoiceDictationButton(
+                accountId: accountModel.id,
+                onDraft: applyVoiceDraft,
+              ),
+            if (!widget.isEditing)
+              DocumentScanButton(
+                accountId: accountModel.id,
+                onPreviews: applyDocumentPreviews,
+              ),
+            SizedBox(width: 10),
+            SizedBox(
+              width: 150,
+              child: TextField(
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [
                   LocalizedNumberInputFormatter(
                     locale:
-                        _localeCode ?? Localizations.localeOf(context).toString(),
+                        _localeCode ??
+                        Localizations.localeOf(context).toString(),
                   ),
                 ],
                 decoration: InputDecoration(icon: Icon(Icons.attach_money)),
-                controller: priceController),
-          ),
-          SizedBox(width: 30),
-          SizedBox(
-            width: 135,
-            child: DateTimeField(
-              decoration: InputDecoration(
-                icon: Icon(Icons.date_range),
+                controller: priceController,
               ),
-              format: DateFormat("dd MMM yyyy"),
-              onShowPicker: (context, currentValue) {
-                return showDatePicker(
+            ),
+            SizedBox(width: 30),
+            SizedBox(
+              width: 135,
+              child: DateTimeField(
+                decoration: InputDecoration(icon: Icon(Icons.date_range)),
+                format: DateFormat("dd MMM yyyy"),
+                onShowPicker: (context, currentValue) {
+                  return showDatePicker(
                     context: context,
                     firstDate: DateTime(1900),
                     initialDate: currentValue ?? DateTime.now(),
-                    lastDate: DateTime(2100));
-              },
-              onChanged: (date) {
-                transactionModel.date = date!;
-                setState(() {});
-              },
-              resetIcon: null,
-              initialValue: transactionModel.date,
-            ),
-          ),
-          SizedBox(width: 30),
-          SizedBox(
-            width: 200,
-            child: DropdownComponent(
-              currentValue: categoryRepository.categories
-                  .firstWhere((element) =>
-              element.id == transactionModel.categoryId)
-                  .name,
-              items: categoryRepository.categories
-                  .map((e) => e.name)
-                  .toList(),
-              onChanged: (categoryName) {
-                transactionModel.categoryId = categoryRepository
-                    .categories
-                    .firstWhere((element) => element.name == categoryName)
-                    .id;
-                setState(() {});
-              },
-              isExpanded: true,
-            ),
-          ),
-          SizedBox(width: 30),
-          SizedBox(
-            width: 100,
-            child: DropdownComponent(
-              items: TransactionModel.getTransactionTypes(),
-              onChanged: (transactionType) {
-                transactionModel.transactionType =
-                    TransactionModel.parseByName(transactionType);
-                setState(() {});
-              },
-              currentValue: transactionModel.transactionType.name,
-              isExpanded: true,
-            )
-          ),
-          SizedBox(width: 30),
-          AnimatedOpacity(
-            opacity: transactionModel.isValid() ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 500),
-            child: SizedBox(
-              width: 100,
-              child: TextButton(
-                onPressed: transactionModel.isValid() ? addTransaction : null,
-                child: Icon(Icons.check),
+                    lastDate: DateTime(2100),
+                  );
+                },
+                onChanged: (date) {
+                  transactionModel.date = date!;
+                  setState(() {});
+                },
+                resetIcon: null,
+                initialValue: transactionModel.date,
               ),
             ),
-          ),
-        ],
+            SizedBox(width: 30),
+            SizedBox(
+              width: 200,
+              child: DropdownComponent(
+                currentValue: categoryRepository.categories
+                    .firstWhere(
+                      (element) => element.id == transactionModel.categoryId,
+                    )
+                    .name,
+                items: categoryRepository.categories
+                    .map((e) => e.name)
+                    .toList(),
+                onChanged: (categoryName) {
+                  transactionModel.categoryId = categoryRepository.categories
+                      .firstWhere((element) => element.name == categoryName)
+                      .id;
+                  setState(() {});
+                },
+                isExpanded: true,
+              ),
+            ),
+            SizedBox(width: 30),
+            SizedBox(
+              width: 100,
+              child: DropdownComponent(
+                items: TransactionModel.getTransactionTypes(),
+                onChanged: (transactionType) {
+                  transactionModel.transactionType =
+                      TransactionModel.parseByName(transactionType);
+                  setState(() {});
+                },
+                currentValue: transactionModel.transactionType.name,
+                isExpanded: true,
+              ),
+            ),
+            SizedBox(width: 30),
+            AnimatedOpacity(
+              opacity: transactionModel.isValid() ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 500),
+              child: SizedBox(
+                width: 100,
+                child: TextButton(
+                  onPressed: transactionModel.isValid() ? addTransaction : null,
+                  child: Icon(Icons.check),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -362,6 +389,51 @@ class _AddTransactionSheetDesktopState
       _syncingPriceText = true;
       priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
         draft.price,
+        _localeCode ?? Localizations.localeOf(context).toString(),
+      );
+      _syncingPriceText = false;
+    }
+    setState(() {});
+  }
+
+  Future<void> applyDocumentPreviews(
+    List<DocumentTransactionPreview> previews,
+  ) async {
+    final strings = AppLocalizations.of(context)!;
+    final successful = previews.where((p) => p.draft != null).toList();
+    if (successful.isEmpty) {
+      GetIt.I<NotifierService>().notify(
+        strings.documentPreviewFailed,
+        isError: true,
+      );
+      return;
+    }
+    final failed = previews.length - successful.length;
+    if (failed > 0) {
+      GetIt.I<NotifierService>().notify(
+        strings.documentsSkipped(failed),
+        isError: true,
+      );
+    }
+    final draft = successful.length == 1
+        ? successful.first.draft!
+        : await showDocumentPreviewPicker(context, successful);
+    if (draft != null) applyDocumentDraft(draft);
+  }
+
+  void applyDocumentDraft(DocumentTransactionDraft draft) {
+    nameController.text = draft.name;
+    transactionModel.name = draft.name;
+    transactionModel.transactionType = draft.transactionType;
+    transactionModel.date = draft.date;
+    if (categoryRepository.categories.any((c) => c.id == draft.categoryId)) {
+      transactionModel.categoryId = draft.categoryId;
+    }
+    if (draft.amount > 0) {
+      transactionModel.price = draft.amount;
+      _syncingPriceText = true;
+      priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
+        draft.amount,
         _localeCode ?? Localizations.localeOf(context).toString(),
       );
       _syncingPriceText = false;
