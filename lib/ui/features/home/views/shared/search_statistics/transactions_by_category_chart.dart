@@ -18,7 +18,7 @@ class TransactionsByCategoryChart extends StatelessWidget {
       final key = t.categoryName.isEmpty
           ? localizations.categoryNotSet
           : t.categoryName;
-      grouped[key] = (grouped[key] ?? 0) + t.price;
+      grouped[key] = (grouped[key] ?? 0) + t.amount;
     }
 
     final entries = grouped.entries.toList()

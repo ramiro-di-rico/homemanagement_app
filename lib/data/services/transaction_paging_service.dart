@@ -142,7 +142,7 @@ class TransactionPagingService extends ChangeNotifier  {
     List<String> headers = [
       'Id',
       'Transaction Name',
-      'Price',
+      'Amount',
       'Transaction Type',
       'Date',
       'Category Id',
@@ -160,7 +160,7 @@ class TransactionPagingService extends ChangeNotifier  {
       List<String> row = [
         transaction.id.toString(),
         transaction.name,
-        transaction.price.toString(),
+        transaction.amount.toString(),
         transaction.parseTransactionByType(),
         DateFormat('yyyy-MM-dd').format(transaction.date),
         transaction.categoryId.toString(),

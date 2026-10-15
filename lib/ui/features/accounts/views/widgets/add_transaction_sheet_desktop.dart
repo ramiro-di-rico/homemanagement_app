@@ -118,7 +118,7 @@ class _AddTransactionSheetDesktopState
     try {
       priceController.text = widget.isEditing || widget.fromRecurring
           ? LocalizedNumberInputFormatterHelper.formatDouble(
-              transactionModel.price,
+              transactionModel.amount,
               localeCode,
             )
           : "";
@@ -206,7 +206,7 @@ class _AddTransactionSheetDesktopState
                                   return ListTile(
                                     title: Text(transaction.name),
                                     subtitle: Text(
-                                      '${transaction.categoryName} - \$${transaction.price}',
+                                      '${transaction.categoryName} - \$${transaction.amount}',
                                       style: Theme.of(
                                         context,
                                       ).textTheme.bodySmall,
@@ -242,13 +242,13 @@ class _AddTransactionSheetDesktopState
                     nameController.text = selectionModel.name;
                     transactionModel.name = selectionModel.name;
                     transactionModel.categoryId = selectionModel.categoryId;
-                    transactionModel.price = selectionModel.price;
+                    transactionModel.amount = selectionModel.amount;
                     transactionModel.transactionType =
                         selectionModel.transactionType;
                     _syncingPriceText = true;
                     priceController.text =
                         LocalizedNumberInputFormatterHelper.formatDouble(
-                          selectionModel.price,
+                          selectionModel.amount,
                           _localeCode ??
                               Localizations.localeOf(context).toString(),
                         );
@@ -384,11 +384,11 @@ class _AddTransactionSheetDesktopState
     if (categoryRepository.categories.any((c) => c.id == draft.categoryId)) {
       transactionModel.categoryId = draft.categoryId;
     }
-    if (draft.price > 0) {
-      transactionModel.price = draft.price;
+    if (draft.amount > 0) {
+      transactionModel.amount = draft.amount;
       _syncingPriceText = true;
       priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
-        draft.price,
+        draft.amount,
         _localeCode ?? Localizations.localeOf(context).toString(),
       );
       _syncingPriceText = false;
@@ -430,7 +430,7 @@ class _AddTransactionSheetDesktopState
       transactionModel.categoryId = draft.categoryId;
     }
     if (draft.amount > 0) {
-      transactionModel.price = draft.amount;
+      transactionModel.amount = draft.amount;
       _syncingPriceText = true;
       priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
         draft.amount,
@@ -463,7 +463,7 @@ class _AddTransactionSheetDesktopState
         return;
       }
 
-      transactionModel.price = parsedPrice;
+      transactionModel.amount = parsedPrice;
       setState(() {});
     }
   }

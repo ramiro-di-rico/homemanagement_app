@@ -357,7 +357,7 @@ class _TransactionsSearchDesktopViewState
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          transaction.price.toString(),
+                                          transaction.amount.toString(),
                                           style: TextStyle(
                                             color: transaction.transactionType ==
                                                     TransactionType.Income
@@ -450,7 +450,7 @@ class _TransactionsSearchDesktopViewState
                                         ),
                                         const SizedBox(width: 80),
                                         Expanded(child: Text(transaction.name)),
-                                        Text(transaction.price.toString(),
+                                        Text(transaction.amount.toString(),
                                             style: TextStyle(
                                               color: transaction.transactionType ==
                                                       TransactionType.Income

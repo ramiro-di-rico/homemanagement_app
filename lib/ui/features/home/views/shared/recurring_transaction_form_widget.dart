@@ -69,11 +69,11 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
 
     _localeCode = localeCode;
 
-    if (_recurringTransaction.price != null) {
+    if (_recurringTransaction.amount != null) {
       _syncingPriceText = true;
       try {
         _priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
-          _recurringTransaction.price!,
+          _recurringTransaction.amount!,
           localeCode,
         );
       } finally {
@@ -303,7 +303,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
     }
 
     if (_priceController.text.isEmpty) {
-      _recurringTransaction.price = null;
+      _recurringTransaction.amount = null;
     } else {
       final price = LocalizedNumberInputFormatterHelper.parseDouble(
         _priceController.text,
@@ -314,7 +314,7 @@ class _RecurringTransactionFormState extends State<RecurringTransactionForm> {
         return;
       }
 
-      _recurringTransaction.price = price;
+      _recurringTransaction.amount = price;
     }
   }
 
