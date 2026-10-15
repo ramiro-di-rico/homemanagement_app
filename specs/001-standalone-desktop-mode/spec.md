@@ -8,6 +8,14 @@
 
 **Input**: User description: "Standalone desktop mode: allow using the app on desktop (Linux/Windows/macOS, not web) without registering or a backend. Data is stored locally in an encrypted SQLite database (drift). In local mode the user can create, edit and delete accounts, categories and transactions; balances are the sum of transactions (accounts start at 0); currencies come from a hardcoded list. Backend-dependent features (metrics dashboard widgets, statistics, budget, reminders, recurring, invitations, bulk transactions, search, CSV import/export, voice/receipt capture, main accounts) are hidden. Entry point is a "Use without an account" option on the desktop login screen. Later, the user can create an account by providing an email (existing registration flow); after registration the app imports all local accounts, categories and transactions to the new server user (currencies mapped by code, local ids remapped to server ids — backend POST account will return the created account), verifies balances, keeps the local DB as a timestamped backup, and switches to normal online mode. No two-way sync."
 
+## Clarifications
+
+### Session 2026-10-15
+
+- Q: When the chosen email is already registered, can the user log in and move local data into that existing account? → A: No. They must register with a different email; local data is only ever moved into a new, empty account.
+- Q: Are tags supported in local mode and included in the move? → A: No. Tags are hidden in local mode and not moved.
+- Q: Is it acceptable that local data is unrecoverable if the OS credential store holding the encryption key is lost? → A: Yes, accepted risk. No recovery password.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Start using the app without an account (Priority: P1)
@@ -82,7 +90,7 @@ After using the app locally for a while, the user decides to create an online ac
 4. **Given** the move has finished successfully, **When** the user looks at their computer, **Then** the local data is preserved as a backup file whose name includes the date, and the app no longer reads or writes it.
 5. **Given** the move fails partway, for example because the connection drops, **When** the user retries, **Then** it continues from where it stopped without creating duplicates, and the app stays in local mode with all local data intact until the move fully succeeds.
 6. **Given** local mode with no data at all, **When** the user creates an account, **Then** registration completes and the app switches to online mode without a move step.
-7. **Given** the user wants to create an account with an email that is already registered, **When** registration reports the email is taken, **Then** [NEEDS CLARIFICATION: Should the user be able to log in to that existing account and move their local data into it, merging with what is already there, or must they register a new email?]
+7. **Given** the user wants to create an account with an email that is already registered, **When** registration reports the email is taken, **Then** the user is asked to register with a different email; local data is never moved into an existing online account, and the app stays in local mode with all local data intact.
 
 ---
 
@@ -134,6 +142,7 @@ After using the app locally for a while, the user decides to create an online ac
   - CSV import and export
   - voice dictation and receipt scanning
   - main accounts
+  - tags on transactions
   - the profile and security sections of settings
   - per-account metrics on the account detail screen
 - **FR-016**: Trying to reach a hidden screen in local mode MUST redirect the user to the local home screen.
@@ -149,7 +158,7 @@ After using the app locally for a while, the user decides to create an online ac
 - **FR-023**: After the move, the app MUST compare each online account balance with its local balance. If any differ, it MUST report the affected accounts to the user.
 - **FR-024**: After a successful move, the app MUST keep the local data as a backup file whose name includes the date of the move. It MUST stop reading from or writing to that file, and MUST switch to normal online mode.
 - **FR-025**: There MUST be no ongoing synchronization between local data and the online account. The move happens once.
-- **FR-026**: The behaviour when the chosen email is already registered MUST follow the clarification in User Story 4, scenario 7.
+- **FR-026**: If the chosen email is already registered, the app MUST ask the user to register with a different email. Local data MUST NOT be moved into an existing online account.
 
 ### Key Entities
 
@@ -183,8 +192,8 @@ After using the app locally for a while, the user decides to create an online ac
 
 - **Platforms.** Local mode is for desktop installs only: Linux, Windows and macOS. Web and mobile are out of scope for this feature.
 - **Transaction types.** Transfers between accounts and other server-generated linked transactions are out of scope in local mode. Local transactions are only income or expense.
-- **Tags.** [NEEDS CLARIFICATION: Should tags on transactions be supported in local mode and included in the move, or hidden in local mode? Default if unanswered: hidden and not moved.]
-- **Encryption key.** The key protecting local data is created automatically and kept in the operating system's secure credential store, so the user never types a password. [NEEDS CLARIFICATION: Is it acceptable that local data becomes unrecoverable if that credential store is lost, for example after reinstalling the operating system, or should the user set a recovery password?]
+- **Tags.** Tags are hidden in local mode and are not part of the move.
+- **Encryption key.** The key protecting local data is created automatically and kept in the operating system's secure credential store, so the user never types a password. If that store is lost, for example after reinstalling the operating system, the local data cannot be recovered; this is an accepted risk, and there is no recovery password.
 - **Default categories.** The default local categories mirror those a new online user receives, so the move matches them by name rather than duplicating them.
 - **Backend change.** The move depends on the server returning the newly created account, including its identifier, when an account is created.
 - **Registration.** The existing registration flow already logs the user in on success. A newly registered account does not require two-factor verification before the move can run.
