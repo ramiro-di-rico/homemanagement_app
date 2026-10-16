@@ -40,6 +40,10 @@ dependencies:
   app_links: ^6.4.1
   record: ^7.1.1
   http_parser: ^4.1.2
+  drift: 2.35.2
+  drift_flutter: 0.3.1
+  sqlite3: 3.7.0
+  flutter_secure_storage: 10.3.4
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +51,14 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   msix: ^3.16.13
   flutter_launcher_icons: ^0.14.4
+  drift_dev: 2.35.1
+  build_runner: 2.16.2
+
+# Bundles SQLite3MultipleCiphers (encrypted SQLite) for the local standalone mode.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
 
 flutter_launcher_icons:
   android: "launcher_icon"

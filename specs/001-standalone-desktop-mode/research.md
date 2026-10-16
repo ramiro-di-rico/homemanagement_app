@@ -20,6 +20,7 @@
   | build_runner | 2.16.2 | 2026-10-07 | 2.17.1 (2026-10-14) is too new; 2.17.0 was retracted |
   | sqlite3 | 3.7.0 | 2026-09-30 | 3.7.1 (2026-10-13) is too new, so pin `sqlite3: 3.7.0` |
 
+- **Dependency conflict found during T001**: flutter_secure_storage 11.x depends on `win32 ^6`, but the app's `file_picker 10.3.10` needs `win32 ^5.9`, so `pub get` fails with 11.2.0. Upgrading file_picker (12.x/13.x, a major bump used in 7 files) is out of scope for this feature, so **flutter_secure_storage is pinned to 10.3.4** (newest 10.x, published 2026-09-13). The platform notes in R2 were researched against 11.2.0 and **must be re-confirmed against 10.3.4 in the T005 spike** (libsecret on Linux, keychain entitlement on macOS). Revisit when file_picker is upgraded.
 - **Compatibility**: drift_dev 2.35.1 (analyzer `>=13 <15`) and build_runner 2.16.2 (analyzer `>=14.3 <15`) overlap on analyzer 14.3–14.5, and both work with Dart 3.12. This has not been resolved with `pub get` yet; it is the first step of the Phase 0 spike.
 - **Build note**: the first build downloads the SQLite binary from GitHub (it honours `HTTPS_PROXY` and is cached in `.dart_tool/hooks_runner/`). Offline CI needs `url_pattern` pointed at a mirror.
 - **Alternatives considered**:
@@ -31,7 +32,7 @@
 - **Decision**:
   - **SQLite3MultipleCiphers** via the sqlite3 build hook: `hooks: user_defines: sqlite3: source: sqlite3mc` in `pubspec.yaml`.
   - **The key**:
-    - It is a 256-bit random value. It is generated on the first entry into local mode and stored with flutter_secure_storage **11.2.0** (2026-09-16) under `local_db_key_v1`.
+    - It is a 256-bit random value. It is generated on the first entry into local mode and stored with flutter_secure_storage **10.3.4** (2026-09-13) under `local_db_key_v1`.
     - It is read **before** opening the database and passed as a plain `String` into `DriftNativeOptions(setup: (db) => db.execute("PRAGMA key = ..."))`.
     - The setup callback runs in a background isolate, so it may only capture sendable values.
   - **Self-check**: after opening, `PRAGMA cipher` must return a row. If it doesn't, the database is closed and an error is raised. The app never runs unencrypted.

@@ -20,7 +20,7 @@ Technically, the repositories get a data-source seam: interfaces implemented by 
   - drift 2.35.2
   - drift_flutter 0.3.1
   - sqlite3 3.7.0, pinned, with the `sqlite3mc` build-hook source
-  - flutter_secure_storage 11.2.0
+  - flutter_secure_storage 10.3.4 (11.x needs win32 ^6, which conflicts with file_picker 10.x; see research R1)
 - **New dev**: drift_dev 2.35.1, build_runner 2.16.2.
 - All are ≥7 days old; see [research.md](./research.md) R1–R2.
 
