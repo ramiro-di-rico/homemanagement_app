@@ -52,9 +52,16 @@
   - **SQLCipher (`source: sqlcipher`)**: viable, but the OpenSSL linking is unverified.
   - **User passphrase**: rejected by spec clarification Q3.
   - **No encryption**: rejected by FR-014.
-- **Unverified (spike)**:
-  - That `PRAGMA cipher` works as the self-check with `source: sqlite3mc` on all three OSes.
-  - That the release bundles contain the sqlite3mc library.
+- **Spike result (T005, 2026-10-16, Linux x64 release build): PASSED**, after one build fix. Evidence:
+  - `PRAGMA cipher` returns a row (`chacha20`), so the self-check works with `source: sqlite3mc`.
+  - A row written through drift reads back through drift. After closing, the file header is random bytes (not `SQLite format 3`), and the inserted text is not visible in the file.
+  - Opening the file with **no key** or the **wrong key** fails with `SqliteException(26) file is not a database`. Reopening with the right key returns the row.
+  - The key round-trips through flutter_secure_storage 10.3.4 across separate process runs.
+  - The key was set as a passphrase: `PRAGMA key = '<base64url of 32 random bytes>'`. The raw `x'<hex>'` form was **not** tested, so the opener uses the passphrase form.
+  - drift_dev 2.35.1 + build_runner 2.16.2 generate code on Dart 3.12 (about 39 s, because it analyses all ~950 inputs in the repo).
+- **Build fix needed (found by the spike)**: the sqlite3 build hook downloads and builds `libsqlite3mc.so` into `build/native_assets/<os>/`, but this project's `linux/CMakeLists.txt` and `windows/CMakeLists.txt` predate Flutter's native-assets install step. Without it, the release bundle has **no SQLite library** and the app fails at the first database call (`Failed to load dynamic library 'libsqlite3mc.so'`). Fixed by adding the template's `install(DIRECTORY "${NATIVE_ASSETS_DIR}" …)` block to both files. Linux is verified (the library is in `bundle/lib/`). **Windows is the same block but not built or run here**; macOS needed no change in the fresh template.
+- **Keyring behaviour found by the spike**: when started from a shell inside a snap environment (here IntelliJ's snap; `SNAP_NAME` set), libsecret used its **file backend** (it opened `~/.local/share/keyrings/default.keyring`) instead of the Secret Service. Started with the `SNAP_*` variables removed, it used the Secret Service over D-Bus and stored one item (label `<app-id>/FlutterSecureStorage`, attribute `account=<app-id>.secureStorage`) in the `login` collection. The plugin keeps **all** the app's keys as one JSON item. Both paths worked. A user launching the app normally gets the Secret Service. Developers launching from a snap IDE terminal may see the file backend.
+- **Still unverified**: Windows and macOS builds (no machines here), and a Flatpak/Snap-packaged app. T077 keeps the Windows and macOS runs as a release requirement.
 
 ## R3. Backend: account creation response
 

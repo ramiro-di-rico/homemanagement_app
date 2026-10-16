@@ -47,13 +47,18 @@ description: "Task list for Standalone Desktop Mode"
   - Windows: ATL in VS Build Tools.
   - macOS: the keychain entitlement.
   - The sqlite3 build hook downloads from GitHub on the first build (`HTTPS_PROXY`, `url_pattern`).
-- [ ] T005 Encryption spike on a throwaway scratch branch (not merged):
+- [X] T005 Encryption spike on a throwaway scratch branch (not merged):
   - Open a drift database via `driftDatabase(name: 'spike', native: DriftNativeOptions(databaseDirectory: getApplicationSupportDirectory, setup: (db) => db.execute("PRAGMA key = '<hex key from flutter_secure_storage>'")))`.
   - Run `PRAGMA cipher` and check it returns a row.
   - Build `flutter build linux --release` and confirm the sqlite3mc library is under `build/linux/x64/release/bundle/lib/`.
   - Confirm `head -c 16` of the file is not `SQLite format 3`.
   - Record the outcome by replacing the "Unverified (spike)" bullets in `specs/001-standalone-desktop-mode/research.md` R2.
   - **If it fails, stop and revisit R2 (fallback: `source: sqlcipher`).**
+  - **Result: PASSED on Linux x64 (release build).** Details, the build fix and the keyring finding are in `research.md` R2. Summary:
+    - `PRAGMA cipher` returns `chacha20`. The file header is random bytes. No key or a wrong key is rejected. The right key reopens the data.
+    - **A build fix was required and is applied**: `linux/CMakeLists.txt` and `windows/CMakeLists.txt` now install `build/native_assets/<os>/` into the bundle. Without it the release bundle contained no SQLite library. The Windows change matches Flutter's current template but is untested.
+    - When run from a snap IDE terminal, libsecret used its file backend instead of the Secret Service. Both stored the key correctly.
+    - The spike code was throwaway and has been deleted, and its test keys and files were removed.
 
 **Checkpoint**: Dependencies resolve and encrypted open works in a release build.
 
@@ -139,11 +144,11 @@ description: "Task list for Standalone Desktop Mode"
   - `onCreate` seeds the currencies **(1, 'USD', 1), (2, 'ARS', 0), (3, 'EUR', 0)**.
   - `onCreate` also seeds the **17 default categories with the exact names and icons** from `../homemanagement-api/HomeManagement.Database/Seed/CategoryInitializer.cs`: Various, Rent, Transportation, Supplies, Entertainment, Gift, Clothes, Education, Health, Salary, Bond, Services, Savings, Transfers, Donations, Extraction, Deposit. All active, all measurable.
   - `onCreate` inserts the single `import_states` row with `status = notStarted`.
-- [ ] T017 Run `dart run build_runner build --delete-conflicting-outputs` and commit the generated `lib/data/local/local_database.g.dart`. Generated code is checked in, the same as the l10n output.
+- [ ] T017 Run `dart run build_runner build --delete-conflicting-outputs` and commit the generated `lib/data/local/local_database.g.dart`. Generated code is checked in, the same as the l10n output. The spike showed a full run takes about 39 s because drift_dev analyses every Dart file in the repo; consider a `build.yaml` limiting the drift builders to `lib/data/local/**` and check that the output is unchanged.
 - [ ] T018 Create `lib/data/local/local_database_opener.dart` with `Future<LocalDatabase> openLocalDatabase({required String fileName})`:
   - Read the key `local_db_key_v1` from `FlutterSecureStorage`. If it's absent **and the file doesn't exist**, generate 32 random bytes (`Random.secure()`), base64-encode them and store them. If it's absent **and the file exists**, throw `LocalDataUnavailableException(reason: keyMissing)`. Never create a new key for an existing file.
   - Wrap `PlatformException` from secure storage (e.g. `KeyringLocked`) as `LocalDataUnavailableException(reason: keyringUnavailable)`.
-  - Open with `driftDatabase(name: <fileName without extension>, native: DriftNativeOptions(databaseDirectory: getApplicationSupportDirectory, setup: (db) { db.execute("PRAGMA key = \"x'<hex>'\""); }))`. Capture only the key **String** in the closure, because it runs in a background isolate.
+  - Open with `driftDatabase(name: <fileName without extension>, native: DriftNativeOptions(databaseDirectory: getApplicationSupportDirectory, setup: (db) { db.execute("PRAGMA key = '$key';"); }))` where `$key` is the base64url string. This is the form the T005 spike verified; the raw `x'<hex>'` form was not tested. Capture only the key **String** in the closure, because it runs in a background isolate.
   - After opening, run `PRAGMA cipher`. If it is empty, close the database and throw `LocalDataUnavailableException(reason: notEncrypted)`.
   - Never delete or overwrite the file on any error path.
 - [ ] T019 [P] Create `lib/data/local/local_currency.service.dart`: `LocalCurrencyService implements CurrencyDataSource`. It returns the seeded rows as `CurrencyModel(id, name, value)`.

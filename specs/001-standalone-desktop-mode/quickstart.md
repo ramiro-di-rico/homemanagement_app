@@ -34,7 +34,7 @@ Expected:
 | Q3 | US1-4, FR-003 | Close and relaunch | Opens directly into the local home screen |
 | Q4 | US2, FR-005–009 | Create "Wallet" (ARS). Add income 100 and expense 30. Edit the expense to 40. Delete the income | Balance goes 0 → 100 → 70 → 60 → −40 |
 | Q5 | R7 | Try to delete a category that is in use, and an account with transactions | Both are blocked with a message. Deactivating the category works |
-| Q6 | FR-014, SC-007 | `head -c 16 ~/.local/share/<app-id>/homemanagement_local.sqlite` | Not `SQLite format 3` |
+| Q6 | FR-014, SC-007 | `head -c 16 ~/.local/share/homemanagement_app/homemanagement_local.sqlite` (the folder is named after the binary; `getApplicationSupportDirectory`) | Not `SQLite format 3`. The text of a transaction name does not appear in `strings` of the file |
 | Q7 | Edge case "cannot open" | Remove the `local_db_key_v1` secret (seahorse), then relaunch | "Local data cannot be opened" screen. The file is untouched (same size and mtime) |
 | Q8 | US3, FR-015/016 | Open each AppBar action, Settings, account detail and the add-transaction sheet. Try `context.go('/home_screen/budget')` via a debug link | Only the allowed features are visible. Hidden routes redirect home |
 | Q9 | US4, FR-018–024 | Reconnect. Click **Create account** and register a new email | Progress is shown, then a summary. The app is online. Accounts, categories, transactions and balances match the local data. `homemanagement_local.backup-YYYY-MM-DD.sqlite` exists |
