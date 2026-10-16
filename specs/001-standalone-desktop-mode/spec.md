@@ -66,11 +66,13 @@ In local mode the user only sees features that work without a server. Menu entri
 **Acceptance Scenarios**:
 
 1. **Given** local mode, **When** the home screen is shown, **Then** the user sees their accounts and balances, and none of the server-computed panels (balance breakdown, overview, balance history chart, upcoming recurring transactions).
-2. **Given** local mode, **When** the user looks at the top menu, **Then** only Settings and a "Create account" action are available. Search, bulk transactions, invitations, statistics, budget, reminders and logout are not shown.
+2. **Given** local mode, **When** the user looks at the top menu, **Then** only Settings, a "Create account" action and a "Log in to an existing account" action are available. Search, bulk transactions, invitations, statistics, budget, reminders and logout are not shown.
 3. **Given** local mode, **When** the user opens the add-transaction form, **Then** voice dictation and receipt scanning are not offered.
 4. **Given** local mode, **When** the user tries to open a server-only screen by any other path, for example a stale link, **Then** they are returned to the local home screen.
 5. **Given** local mode, **When** the user opens Settings, **Then** category management and appearance and language options are available, and server-only sections such as profile, security and invitations are hidden.
 6. **Given** local mode, **When** any screen is shown, **Then** a clear indication says the user is working locally, with a way to create an account.
+7. **Given** local mode with data and no move pending, **When** the user chooses "Log in to an existing account" and confirms, **Then** the login screen opens, and after logging in the app works online with that account. The local data is not moved and stays on the computer unchanged. Choosing "Use without an account" later reopens the same local data.
+8. **Given** a move is in progress or has failed, **When** the user looks at the top menu, **Then** "Log in to an existing account" is not offered.
 
 ---
 
@@ -91,6 +93,7 @@ After using the app locally for a while, the user decides to create an online ac
 5. **Given** the move fails partway, for example because the connection drops, **When** the user retries, **Then** it continues from where it stopped without creating duplicates, and the app stays in local mode with all local data intact until the move fully succeeds.
 6. **Given** local mode with no data at all, **When** the user creates an account, **Then** registration completes and the app switches to online mode without a move step.
 7. **Given** the user wants to create an account with an email that is already registered, **When** registration reports the email is taken, **Then** the user is asked to register with a different email; local data is never moved into an existing online account, and the app stays in local mode with all local data intact.
+8. **Given** a move has failed partway and not been resumed yet, **When** the user tries to add, edit or delete an account, category or transaction, **Then** the change is blocked with a message asking them to finish the move first, and nothing that was already moved is lost or duplicated when they do.
 
 ---
 
@@ -100,9 +103,9 @@ After using the app locally for a while, the user decides to create an online ac
 - **Currency missing online.** A currency a local account uses may not exist on the server. The move checks all currencies before it starts, and if any can't be matched it stops before changing anything and tells the user which ones.
 - **App closed during the move.** On the next launch the app is still in local mode, and the user can resume the move.
 - **Same account name twice.** Two local accounts may share a name. Each is moved as a separate account, and transactions stay with the correct one.
-- **Returning to local mode later.** If a user who has moved to online mode later logs out and chooses "Use without an account" again, they start with a new, empty local dataset. The earlier backup is not touched or loaded.
-- **Category in use.** A user may try to delete a category that is used by transactions. The behaviour matches online mode: either blocked with a message, or the transactions keep a reference to it.
-- **Account with transactions.** Deleting an account that has transactions behaves the same as online mode.
+- **Returning to local mode later.** If a user who has moved to online mode later logs out and chooses "Use without an account" again, they start with a new, empty local dataset, and the earlier backup is not touched or loaded. If they left local mode with "Log in to an existing account" (without moving), choosing "Use without an account" again reopens their existing local data.
+- **Category in use.** A user may try to delete a category that is used by transactions. Deletion is blocked with a message, and the user is offered to deactivate the category instead.
+- **Account with transactions.** Deleting an account that has transactions is blocked with a message, the same as online mode.
 - **Local data cannot be opened.** If the local data can't be opened, for example because the protection key is unavailable, the user sees a clear message explaining the situation. Nothing is silently overwritten or wiped.
 - **Low disk space.** If disk space runs out, or the data can't be saved, the user is told that the change was not saved.
 
@@ -120,7 +123,7 @@ After using the app locally for a while, the user decides to create an online ac
 **Local data management**
 
 - **FR-005**: Users MUST be able to create, rename, hide, archive and delete accounts in local mode. Each account has a name, a currency from a built-in list, and an account type (cash or bank account).
-- **FR-006**: Users MUST be able to create, edit and delete categories in local mode. A first-time local user MUST start with a small default set of categories.
+- **FR-006**: Users MUST be able to create, edit and delete categories in local mode. A first-time local user MUST start with the same default categories a new online account receives.
 - **FR-007**: Users MUST be able to create, edit, duplicate and delete income and expense transactions in local mode. Each transaction has a name, an amount, a date, a type (income or expense), an account and a category.
 - **FR-008**: An account's balance MUST always equal the sum of its income transactions minus the sum of its expense transactions. A new account's balance is 0.
 - **FR-009**: Balances shown MUST update immediately after any transaction is created, edited or deleted.
@@ -154,13 +157,16 @@ After using the app locally for a while, the user decides to create an online ac
 - **FR-019**: After registration and login succeed, the app MUST move all local accounts, categories and transactions to the new online account. Every transaction MUST stay linked to the same account and category it had locally.
 - **FR-020**: Before changing anything online, the move MUST check that every local currency can be matched to a server currency by code. If any cannot, it MUST stop and tell the user which ones.
 - **FR-021**: The move MUST show progress, and MUST be resumable after a failure or app closure without creating duplicate accounts, categories or transactions.
-- **FR-022**: Until the move has fully succeeded, the app MUST stay in local mode, and the local data MUST stay intact and editable.
+- **FR-022**: Until the move has fully succeeded, the app MUST stay in local mode, and the local data MUST stay intact. While a move is in progress, or has failed and not yet been completed, local data MUST be read-only: the user can view it, but adding, editing or deleting is blocked with a message asking them to finish the move first.
 - **FR-023**: After the move, the app MUST compare each online account balance with its local balance. If any differ, it MUST report the affected accounts to the user.
 - **FR-024**: After a successful move, the app MUST keep the local data as a backup file whose name includes the date of the move. It MUST stop reading from or writing to that file, and MUST switch to normal online mode.
 - **FR-025**: There MUST be no ongoing synchronization between local data and the online account. The move happens once.
 - **FR-026**: If the chosen email is already registered, the app MUST ask the user to register with a different email. Local data MUST NOT be moved into an existing online account.
+- **FR-027**: In local mode, users MUST be able to leave local mode by logging in to an existing online account, after confirming that their local data will stay on this computer and will not be moved. Local data MUST remain unchanged and MUST be reopened if the user later chooses "Use without an account" again. This option MUST NOT be offered while a move is in progress or has failed.
 
 ### Key Entities
+
+In the design documents, the move is called the *import*.
 
 - **Local Account**: a place where money is held, such as a wallet or a bank account.
   - Name, currency, type (cash or bank), and whether it is hidden or archived.
@@ -195,7 +201,7 @@ After using the app locally for a while, the user decides to create an online ac
 - **Tags.** Tags are hidden in local mode and are not part of the move.
 - **Encryption key.** The key protecting local data is created automatically and kept in the operating system's secure credential store, so the user never types a password. If that store is lost, for example after reinstalling the operating system, the local data cannot be recovered; this is an accepted risk, and there is no recovery password.
 - **Default categories.** The default local categories mirror those a new online user receives, so the move matches them by name rather than duplicating them.
-- **Backend change.** The move depends on the server returning the newly created account, including its identifier, when an account is created.
+- **Server dependencies.** The move depends on the server returning the newly created account, including its identifier, when an account is created; this is already the case. It needs no server changes: the move itself prevents the server's automatic pairing of transactions as transfers between accounts.
 - **Registration.** The existing registration flow already logs the user in on success. A newly registered account does not require two-factor verification before the move can run.
 - **Single profile.** There is one local dataset per computer user. Multiple local profiles are out of scope.
 - **No local export.** Local mode does not provide export, import or backup functions of its own beyond the automatic backup made after a move.

@@ -1,0 +1,142 @@
+# Research: Standalone Desktop Mode
+
+**Feature**: [spec.md](./spec.md) | **Plan**: [plan.md](./plan.md)
+**Date**: 2026-10-15. Package ages are checked against the org's 7-day dependency-freshness rule as of this date.
+
+## R1. Local storage engine
+
+- **Decision**: drift **2.35.2** + drift_flutter **0.3.1**, with code generation via drift_dev **2.35.1** + build_runner **2.16.2**. sqlite3 **3.7.0** is added as a direct dependency (needed for the build-hook config and the raw `Database` type in the setup callback) and pinned exactly.
+- **Rationale**:
+  - Typed schema and queries, a first-class `MigrationStrategy`, and an in-memory database for tests (the repo has no mocking library).
+  - sqlite3 3.x bundles a prebuilt, hash-checked SQLite per OS/ABI through a Dart build hook, so no system `libsqlite3` is needed on Linux, Windows or macOS.
+  - `sqlite3_flutter_libs` and `sqlcipher_flutter_libs` are end-of-life and **must not** be added.
+- **Freshness**:
+
+  | Package | Version | Published | Note |
+  |---|---|---|---|
+  | drift | 2.35.2 | 2026-10-07 | |
+  | drift_dev | 2.35.1 | 2026-09-30 | |
+  | drift_flutter | 0.3.1 | 2026-07-11 | |
+  | build_runner | 2.16.2 | 2026-10-07 | 2.17.1 (2026-10-14) is too new; 2.17.0 was retracted |
+  | sqlite3 | 3.7.0 | 2026-09-30 | 3.7.1 (2026-10-13) is too new, so pin `sqlite3: 3.7.0` |
+
+- **Compatibility**: drift_dev 2.35.1 (analyzer `>=13 <15`) and build_runner 2.16.2 (analyzer `>=14.3 <15`) overlap on analyzer 14.3–14.5, and both work with Dart 3.12. This has not been resolved with `pub get` yet; it is the first step of the Phase 0 spike.
+- **Build note**: the first build downloads the SQLite binary from GitHub (it honours `HTTPS_PROXY` and is cached in `.dart_tool/hooks_runner/`). Offline CI needs `url_pattern` pointed at a mirror.
+- **Alternatives considered**:
+  - **sqflite_common_ffi 2.4.3**: no code generation, but raw SQL, hand-written migrations, no compile-time checks.
+  - **Hive / Isar**: not relational. The derived balances and the import ordering are much easier in SQL.
+
+## R2. Encryption at rest (FR-014, SC-007)
+
+- **Decision**:
+  - **SQLite3MultipleCiphers** via the sqlite3 build hook: `hooks: user_defines: sqlite3: source: sqlite3mc` in `pubspec.yaml`.
+  - **The key**:
+    - It is a 256-bit random value. It is generated on the first entry into local mode and stored with flutter_secure_storage **11.2.0** (2026-09-16) under `local_db_key_v1`.
+    - It is read **before** opening the database and passed as a plain `String` into `DriftNativeOptions(setup: (db) => db.execute("PRAGMA key = ..."))`.
+    - The setup callback runs in a background isolate, so it may only capture sendable values.
+  - **Self-check**: after opening, `PRAGMA cipher` must return a row. If it doesn't, the database is closed and an error is raised. The app never runs unencrypted.
+- **Rationale**:
+  - Drift's encryption docs recommend sqlite3mc, which ships a newer SQLite core than the SQLCipher build.
+  - sqlite3mc has built-in ciphers, which avoids the unresolved question of how OpenSSL is linked into the prebuilt SQLCipher binaries on Linux and Windows.
+  - It is a fresh database, so there's no SQLCipher-format compatibility to preserve.
+- **Platform requirements for flutter_secure_storage**:
+  - **Linux**: needs `libsecret-1-dev` to build (currently **not installed** on the dev machine) and `libsecret-1-0` plus a running Secret Service (gnome-keyring or KWallet) at runtime. A locked or missing keyring raises a catchable `PlatformException` (e.g. `KeyringLocked`).
+  - **macOS**: needs the Keychain Sharing entitlement (`keychain-access-groups`) in `macos/Runner/DebugProfile.entitlements` and `Release.entitlements`, which currently have none. Without it, writes look like they succeed but don't persist.
+  - **Windows**: needs the C++ ATL components in VS Build Tools.
+- **Failure policy**:
+  - **Keyring unavailable when entering local mode**: local mode is not entered. The user sees a message explaining that the system keyring must be available or unlocked.
+  - **Keyring unavailable on a later launch**: the app shows the "local data cannot be opened" screen (spec edge case). It **never** recreates or overwrites the file.
+  - **Lost keyring**: data is unrecoverable, which is an accepted risk (spec clarification Q3).
+- **Alternatives considered**:
+  - **SQLCipher (`source: sqlcipher`)**: viable, but the OpenSSL linking is unverified.
+  - **User passphrase**: rejected by spec clarification Q3.
+  - **No encryption**: rejected by FR-014.
+- **Unverified (spike)**:
+  - That `PRAGMA cipher` works as the self-check with `source: sqlite3mc` on all three OSes.
+  - That the release bundles contain the sqlite3mc library.
+
+## R3. Backend: account creation response
+
+- **Decision**: no backend change. The client's `AccountService.add` parses the response and returns the created `AccountModel`.
+- **Evidence**: `POST api/account` already returns **201 Created** with `AccountResultDto(Id, Name, Balance, AccountType, CurrencyId, Measurable, Archive, IsHidden, UserId)`. See `homemanagement-api/HomeManagementApi/Controllers/Accounts/AccountController.cs:73-88`. The client currently discards the body.
+- **Impact**: the plan assumed a backend change; it isn't needed. The spec assumption ("the server returns the created account") holds today.
+
+## R4. Backend: what a new user starts with
+
+- **Evidence**: `UserService.AddUserAsync` (`HomeManagement.Business/Features/User/UserService.cs:290-343`) creates:
+  - one "Cash" account (Cash, **USD**);
+  - **17 categories** from `HomeManagement.Database/Seed/CategoryInitializer.cs`: Various, Rent, Transportation, Supplies, Entertainment, Gift, Clothes, Education, Health, Salary, Bond, Services, Savings, Transfers, Donations, Extraction, Deposit (each with a Material icon);
+  - user settings.
+- **`POST category/v1` quirks**: it ignores `isActive`, `measurable` and `color`, creates the category **inactive**, and does **not** reject duplicate names.
+- **Decision**:
+  - The local default categories are seeded with exactly those 17 names and icons. On import they are matched by name (case-insensitive), so nothing is duplicated.
+  - Each category created during import is followed by a `PUT category/v1` that sets `isActive`, `measurable`, `icon` and `color`. Otherwise it would be invisible in the online category picker (`getActiveCategories`).
+  - The server's default empty "Cash"/USD account is reused for the first local account named "Cash" in USD. Otherwise it stays as an empty account online.
+
+## R5. Currencies
+
+- **Evidence**:
+  - Currencies are global. The server seeds `USD` (value 1), `ARS` (0) and `EUR` (0) (`HomeManagement.Database/Seed/CurrencySeed.cs`).
+  - `GET api/Currency` returns `[{id, name, value}]`, where `name` is the ISO code.
+  - The client's `CurrencyModel(id, name, value)` displays `name`.
+- **Decision**: the local hardcoded list is exactly USD, ARS and EUR, with fixed local ids 1–3. On import they map to server ids by `name`. The preflight check (FR-020) stays, in case the server list changes.
+- **Alternative rejected**: a larger ISO list. Accounts in currencies the server lacks would always fail the import.
+
+## R6. Backend: transfer mirroring vs. exact import
+
+- **Evidence**:
+  - `InternalAddTransactionAsync` (`HomeManagement.Business/Features/Transactions/TransactionService.cs:398-457`) is used by both single and bulk add.
+  - It looks for the user's account whose `Name == transaction.Name` (exact). If one exists, it creates a mirror transaction there and updates that account's balance.
+  - `BulkAddTransactions` (:364-395) calls it per transaction, matching against the user's accounts loaded at the start, and saves once at the end, so it is atomic per request.
+- **Problem**: local mode has no mirroring (transfers are out of scope). Importing a local transaction named like another account would add an extra transaction online and break balance parity (FR-023, SC-005).
+- **Decision** (2026-10-16: the user declined a backend change):
+  - The import gives every server account a **temporary unique name** (`"<name> ⟨import <tag>-<localId|default>⟩"`) before sending any transaction, sends the transactions through the existing bulk endpoint, then restores the real names with `PUT account/{id}`.
+  - Mirroring only happens when transactions are added, so renaming afterwards is safe.
+  - The server's account name is unbounded `text`, and `PUT account/{id}` (`UpdateAccountDto(AccountId, Name, Archive, Measurable, IsHidden)`) also lets the import set `archive`, `measurable` and `isHidden`, which `POST account` can't.
+- **Resumability without transaction ids**:
+  - Accounts: an earlier attempt's account is found by its exact temporary name. That is more reliable than matching by name and currency.
+  - Transactions: one bulk request **per account**, checkpointed by `accounts.transactions_imported`. After an ambiguous failure, the client checks whether the freshly created server account already has transactions (via the account's balance and a first page of `transactions/filter`) before resending. Each target account starts empty, so this check is reliable (SC-006).
+- **Accepted side effect**: if an import fails and is never resumed, the server accounts keep their temporary names until it is resumed. The user is still in local mode during that time.
+- **Alternatives considered**:
+  - **A backend opt-out flag on bulk add**: declined by the user.
+  - **Replicating mirroring locally and sending only originals**: breaks as soon as the user edits or deletes one side locally.
+  - **A dedicated `/import` endpoint**: needs a backend change.
+
+## R7. Delete semantics
+
+- **Server behaviour**:
+  - **Account**: delete is blocked when it has transactions (`AccountDeletionValidator`). Today this surfaces as a **500**, because `AccountHasTransactionsException` isn't mapped in `BusinessExceptionHandlerActionFilter`.
+  - **Category**: delete is a hard delete with **cascade to its transactions and no balance fix**. That is a server bug.
+- **Decision (local)**:
+  - Account delete is blocked while it has transactions, the same as online.
+  - Category delete is blocked while it is used, and the user is offered "deactivate".
+  - The local schema enforces both with `ON DELETE RESTRICT`.
+  - Both server bugs are reported for follow-up and not fixed in this feature.
+
+## R8. Registration when the email is taken (FR-026)
+
+- **Evidence**:
+  - Identity is a separate service (`Altair/AltairUserManagement/Controllers/UserManagement/RegistrationController.cs`).
+  - On failure it returns **400** with ASP.NET Identity `IdentityError`s; a taken email produces the `DuplicateEmail` / `DuplicateUserName` codes. The client's `IdentityService.register` returns only `statusCode == 200`.
+- **Decision**: `register` returns `RegistrationResult { success, emailTaken, failed }`, which it gets by parsing the 400 body for those codes. On `emailTaken`, the registration screen asks for a different email and stays in local mode.
+- **Unverified**: that `RegisterUserAsync` uses `UserManager.CreateAsync` (which produces the standard codes). Check in Altair during Phase 5.
+
+## R9. Mode switching without rebuilding DI
+
+- **Decision**:
+  - One mode-aware delegate per data-source interface ([contracts/data-sources.md](./contracts/data-sources.md)) checks `AppModeService.isLocal` on each call.
+  - Repositories keep their single instances. Entering local mode and finishing the import flip the mode and reload the repositories.
+- **Rationale**:
+  - Views hold repository references in fields (`GetIt.I<...>()` at construction), so `GetIt.reset()` plus re-registration would leave stale instances in live widgets.
+  - Restarting the process is not a clean option on desktop.
+- **Startup**: `main()` becomes `async`. It reads `appMode` from SharedPreferences and, when local, opens the database before `runApp`, so the first frame already has data.
+
+## R10. Platform gate
+
+- **Evidence**: `myapp.dart:23-25` treats `PlatformType.Web` as desktop for routing.
+- **Decision**: local mode availability checks `getPlatformType() == PlatformType.Desktop` specifically (FR-001). The routing `isDesktop` flag stays unchanged.
+
+## R11. Interaction with in-flight work
+
+- **Field rename**: branch `feat/price-to-amount` (commit `fdd2e4e`, not yet on `master`) renames `TransactionModel.price` to `amount`. Local tables use `amount`, and the mapping code follows whichever name `master` has when implementation starts. Merging that branch first avoids touching both names.
+- **Exposure**: the unmapped 500 on account delete and the category cascade (R7) only affect online mode.
