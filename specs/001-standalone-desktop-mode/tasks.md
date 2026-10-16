@@ -41,7 +41,7 @@ description: "Task list for Standalone Desktop Mode"
   - Run `flutter pub get` and confirm it resolves (analyzer 14.3–14.5 expected). Done: resolves with analyzer 14.5.0, drift 2.35.2, drift_dev 2.35.1, drift_flutter 0.3.1, sqlite3 3.7.0, build_runner 2.16.2, flutter_secure_storage 10.3.4.
   - Before adding, re-check that every version is still the newest one ≥7 days old (org rule).
 - [ ] T002 [P] Add the `keychain-access-groups` entitlement (`$(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)`) to `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements` (needed by flutter_secure_storage, research R2).
-- [ ] T003 [P] Add `lib/data/local/*.g.dart` to `analyzer: exclude:` in `analysis_options.yaml`. That file already has an uncommitted `exclude` block from other work, so extend it rather than replace it, and coordinate with its owner before committing.
+- [X] T003 [P] Add `lib/data/local/*.g.dart` to `analyzer: exclude:` in `analysis_options.yaml`. That file already has an uncommitted `exclude` block from other work, so extend it rather than replace it, and coordinate with its owner before committing. Done: added to the existing `exclude` block and verified with a temporary error in a `.g.dart` file (ignored) next to one in a normal file (reported). `analysis_options.yaml` is left uncommitted together with its other in-progress changes.
 - [ ] T004 [P] Document desktop build and runtime prerequisites in `README.md`:
   - Linux: `libsecret-1-dev` to build; `libsecret-1-0` and a Secret Service (gnome-keyring/KWallet) at runtime.
   - Windows: ATL in VS Build Tools.
