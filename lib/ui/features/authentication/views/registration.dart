@@ -9,6 +9,7 @@ import 'package:home_management_app/ui/features/authentication/views/user-contro
 import 'package:home_management_app/ui/features/authentication/views/2fa_view.dart';
 import 'package:home_management_app/ui/features/home/views/home.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
+import 'package:home_management_app/ui/core/converters/device_language_resolver.dart';
 
 import 'package:home_management_app/ui/core/mixins/notifier_mixin.dart';
 import 'user-controls-mixins/email-behavior.dart';
@@ -35,10 +36,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
       floatingActionButton: enableButton
           ? FloatingActionButton(
               onPressed: () async {
-                var locale = PlatformDispatcher.instance.locale.languageCode;
-                if (locale != 'en' && locale != 'es') {
-                  locale = 'en';
-                }
+                var locale = resolveDeviceLanguage(PlatformDispatcher.instance.locale);
 
                 var result =
                     await authenticationService.register(userViewModel.email, userViewModel.password, locale);
