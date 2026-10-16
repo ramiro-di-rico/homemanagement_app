@@ -422,7 +422,7 @@ ReconciliationPreviewModel previewWithPossibleMatch({int extraCount = 1}) =>
 const _playroomRow = {
   'reference': '111',
   'name': 'Pago con QR PLAYROOM S. R. L.',
-  'price': 13000.0,
+  'amount': 13000.0,
   'date': '2026-07-16T00:00:00Z',
   'transactionType': 1,
 };
@@ -432,7 +432,7 @@ Map<String, dynamic> _playroomTransaction(int id, int number) => {
       'accountId': 3,
       'categoryId': 1,
       'name': 'Playroom $number',
-      'price': 16000.0,
+      'amount': 16000.0,
       'date': '2026-07-15T00:00:00Z',
       'transactionType': 1,
       'categoryName': 'Juegos',
@@ -461,7 +461,7 @@ ReconciliationPreviewModel previewWith(
           'row': {
             'reference': '222',
             'name': 'Pago Sushimei',
-            'price': 9000.0,
+            'amount': 9000.0,
             'date': '2026-07-16T00:00:00Z',
             'transactionType': 1,
           },
@@ -476,7 +476,7 @@ ReconciliationPreviewModel previewWith(
                   'accountId': 3,
                   'categoryId': 1,
                   'name': 'Duplicado ${i + 1}',
-                  'price': 500.0,
+                  'amount': 500.0,
                   'date': '2026-07-15T00:00:00Z',
                   'transactionType': 1,
                   'categoryName': 'Comida',

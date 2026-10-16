@@ -124,7 +124,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
       if (categories.isNotEmpty) _selectedCategory = categories.first;
       _nameController.text = transaction.name;
       _priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
-        transaction.price,
+        transaction.amount,
         Localizations.localeOf(context).toString(),
       );
       _selectedDate = transaction.date;
@@ -139,10 +139,10 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
       _selectedType = draft.transactionType;
       final matching = categories.where((c) => c.id == draft.categoryId);
       if (matching.isNotEmpty) _selectedCategory = matching.first;
-      if (draft.price > 0) {
+      if (draft.amount > 0) {
         _priceController.text =
             LocalizedNumberInputFormatterHelper.formatDouble(
-              draft.price,
+              draft.amount,
               Localizations.localeOf(context).toString(),
             );
       }
@@ -263,7 +263,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
     final nameController = TextEditingController(text: transaction.name);
     final priceController = TextEditingController(
       text: LocalizedNumberInputFormatterHelper.formatDouble(
-        transaction.price,
+        transaction.amount,
         locale,
       ),
     );
@@ -760,7 +760,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                             return ListTile(
                               title: Text(transaction.name),
                               subtitle: Text(
-                                '${transaction.categoryName} - \$${transaction.price}',
+                                '${transaction.categoryName} - \$${transaction.amount}',
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                               onTap: () => onSelected(option),
@@ -804,7 +804,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
               _selectedType = selectionModel.transactionType;
               _priceController.text =
                   LocalizedNumberInputFormatterHelper.formatDouble(
-                    selectionModel.price,
+                    selectionModel.amount,
                     Localizations.localeOf(context).toString(),
                   );
             } else if (selection is AccountModelOption) {
@@ -1002,7 +1002,7 @@ class _BulkTransactionsScreenState extends State<BulkTransactionsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${isIncome ? '+' : '-'}${t.price.toStringAsFixed(2)}',
+                      '${isIncome ? '+' : '-'}${t.amount.toStringAsFixed(2)}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: isIncome ? Colors.greenAccent : Colors.redAccent,

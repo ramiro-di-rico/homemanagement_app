@@ -44,7 +44,7 @@ Map<String, dynamic> previewJson() => {
             'accountId': 3,
             'categoryId': 1,
             'name': 'Duplicado',
-            'price': 500.0,
+            'amount': 500.0,
             'date': '2026-07-15T00:00:00Z',
             'transactionType': 1,
             'categoryName': 'Food',
@@ -67,7 +67,7 @@ Map<String, dynamic> rowJson(
     {
       'reference': reference,
       'name': name,
-      'price': price,
+      'amount': price,
       'date': '2026-07-15T00:00:00Z',
       'transactionType': type,
     };
@@ -116,7 +116,7 @@ void main() {
 
       expect(preview.extra.first.transaction.id, 99);
       expect(preview.extra.first.transaction.name, 'Duplicado');
-      expect(preview.extra.first.transaction.price, 500.0);
+      expect(preview.extra.first.transaction.amount, 500.0);
       expect(preview.extra.first.nearPeriodEdge, isTrue);
     });
 
@@ -174,7 +174,7 @@ void main() {
               'accountId': 3,
               'categoryId': 1,
               'name': 'Duplicado',
-              'price': 500.0,
+              'amount': 500.0,
               'date': '2026-07-15T00:00:00Z',
               'transactionType': 1,
               'categoryName': 'Food',
@@ -217,14 +217,14 @@ void main() {
 
       expect(toCreate.externalReference, '222');
       expect(toCreate.name, 'Pago Sushimei');
-      expect(toCreate.price, 9000.0);
+      expect(toCreate.amount, 9000.0);
       expect(toCreate.categoryId, 7);
     });
 
     test('toJson serializes the transaction type the way the API expects', () {
       final expense = ReconciliationTransactionToCreate(
         name: 'Pago Sushimei',
-        price: 9000,
+        amount: 9000,
         date: DateTime.utc(2026, 7, 16),
         transactionType: TransactionType.Outcome,
         categoryId: 7,
@@ -233,7 +233,7 @@ void main() {
 
       final income = ReconciliationTransactionToCreate(
         name: 'Rendimientos',
-        price: 13.24,
+        amount: 13.24,
         date: DateTime.utc(2026, 7, 16),
         transactionType: TransactionType.Income,
         categoryId: 7,

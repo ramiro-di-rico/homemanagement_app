@@ -231,10 +231,10 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                           ),
                           subtitle: Row(
                             children: [
-                              recurringTransaction.price == null
+                              recurringTransaction.amount == null
                                   ? Text(AppLocalizations.of(context)!.priceNotSet)
                                   : Text(
-                                      recurringTransaction.price.toString(),
+                                      recurringTransaction.amount.toString(),
                                       style: TextStyle(
                                         color: recurringTransaction
                                                     .transactionType ==

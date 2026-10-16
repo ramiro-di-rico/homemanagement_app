@@ -111,7 +111,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     try {
       priceController.text = isEditing
           ? LocalizedNumberInputFormatterHelper.formatDouble(
-              transactionModel.price,
+              transactionModel.amount,
               localeCode,
             )
           : "";
@@ -202,7 +202,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                                 return ListTile(
                                   title: Text(transaction.name),
                                   subtitle: Text(
-                                    '${transaction.categoryName} - \$${transaction.price}',
+                                    '${transaction.categoryName} - \$${transaction.amount}',
                                     style:
                                         Theme.of(context).textTheme.bodySmall,
                                   ),
@@ -236,13 +236,13 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
                   nameController.text = selectionModel.name;
                   transactionModel.name = selectionModel.name;
                   transactionModel.categoryId = selectionModel.categoryId;
-                  transactionModel.price = selectionModel.price;
+                  transactionModel.amount = selectionModel.amount;
                   transactionModel.transactionType =
                       selectionModel.transactionType;
                   _syncingPriceText = true;
                   priceController.text =
                       LocalizedNumberInputFormatterHelper.formatDouble(
-                    selectionModel.price,
+                    selectionModel.amount,
                     _localeCode ?? Localizations.localeOf(context).toString(),
                   );
                   _syncingPriceText = false;
@@ -409,11 +409,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     if (categoryRepository.categories.any((c) => c.id == draft.categoryId)) {
       transactionModel.categoryId = draft.categoryId;
     }
-    if (draft.price > 0) {
-      transactionModel.price = draft.price;
+    if (draft.amount > 0) {
+      transactionModel.amount = draft.amount;
       _syncingPriceText = true;
       priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
-        draft.price,
+        draft.amount,
         _localeCode ?? Localizations.localeOf(context).toString(),
       );
       _syncingPriceText = false;
@@ -450,7 +450,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
       transactionModel.categoryId = draft.categoryId;
     }
     if (draft.amount > 0) {
-      transactionModel.price = draft.amount;
+      transactionModel.amount = draft.amount;
       _syncingPriceText = true;
       priceController.text = LocalizedNumberInputFormatterHelper.formatDouble(
         draft.amount,
@@ -483,7 +483,7 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
         return;
       }
 
-      transactionModel.price = parsedPrice;
+      transactionModel.amount = parsedPrice;
       setState(() {});
     }
   }
