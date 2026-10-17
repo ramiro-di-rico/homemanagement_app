@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/domain/models/currency.dart';
-import 'package:home_management_app/data/services/currency.service.dart';
+import 'package:home_management_app/data/services/sources/currency_data_source.dart';
 
 class CurrencyRepository extends ChangeNotifier {
   @protected
-  CurrencyService currencyService;
+  CurrencyDataSource currencyService;
 
   List<CurrencyModel> currencies = [];
 

@@ -8,6 +8,7 @@ import 'package:home_management_app/domain/models/tag.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/tag.repository.dart';
+import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
 
 import 'package:home_management_app/domain/models/transaction.page.dart';
@@ -15,7 +16,9 @@ import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'account.container.dart';
 
 class TransactionRepository extends ChangeNotifier {
+  /// Server-only operations (tags, previews). Hidden in local mode.
   TransactionService transactionService;
+  late final TransactionDataSource _dataSource;
   AccountRepository accountRepository;
   NotifierService errorNotifierService;
   TagRepository? _tagRepository;
@@ -32,13 +35,16 @@ class TransactionRepository extends ChangeNotifier {
 
   TransactionRepository(
       {required this.transactionService,
+      TransactionDataSource? dataSource,
       required this.accountRepository,
       required this.errorNotifierService,
       TagRepository? tagRepository})
-      : _tagRepository = tagRepository;
+      : _tagRepository = tagRepository {
+    _dataSource = dataSource ?? transactionService;
+  }
 
   Future add(TransactionModel transaction) async {
-    var transactionResult = await this.transactionService.add(transaction);
+    var transactionResult = await this._dataSource.add(transaction);
     if (accountsContainer.any((element) =>
         element.account.id == transactionResult.transactionModel.accountId)) {
       var container = accountsContainer.firstWhere(
@@ -70,7 +76,7 @@ class TransactionRepository extends ChangeNotifier {
       transactionService.previewDocumentTransactions(accountId, filesByName);
 
   Future remove(TransactionModel transactionModel) async {
-    await this.transactionService.delete(transactionModel.id);
+    await this._dataSource.delete(transactionModel.id);
     var container = accountsContainer.firstWhere(
         (element) => element.account.id == transactionModel.accountId,
         orElse: () => AccountContainer(AccountModel.empty(0)));
@@ -86,7 +92,7 @@ class TransactionRepository extends ChangeNotifier {
   }
 
   Future update(TransactionModel transactionModel) async {
-    await this.transactionService.update(transactionModel);
+    await this._dataSource.update(transactionModel);
     var currentContainer = _getCurrentContainer();
     var currentTransaction = currentContainer.transactions
         .firstWhere((x) => x.id == transactionModel.id);
@@ -164,10 +170,10 @@ class TransactionRepository extends ChangeNotifier {
     if (result.length < this.pageSize) {
       if (nameFiltering.length > 1) {
         result = await this
-            .transactionService
+            ._dataSource
             .pageNameFiltering(page, nameFiltering);
       } else {
-        result = await this.transactionService.page(page);
+        result = await this._dataSource.page(page);
       }
     }
     return result;
@@ -285,7 +291,7 @@ class TransactionRepository extends ChangeNotifier {
       return _suggestionsCache!.map((e) => e.clone()).toList();
     }
 
-    final fetched = await this.transactionService.suggested();
+    final fetched = await this._dataSource.suggested();
     _suggestionsCache = fetched.map((e) => e.clone()).toList();
     _suggestionsCachedAt = now;
     return fetched;

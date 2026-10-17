@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/metrics/account-metrics.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
-import 'package:home_management_app/data/services/account.service.dart';
+import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/error_notifier_service.dart';
 
 class AccountRepository extends ChangeNotifier {
-  AccountService accountService;
+  AccountDataSource accountService;
   NotifierService notifierService;
   String cacheKey = 'accountsKey';
   final List<AccountModel> _internalAccounts = [];
@@ -45,8 +45,9 @@ class AccountRepository extends ChangeNotifier {
 
   Future add(AccountModel accountModel) async {
     try {
-      await this.accountService.add(accountModel);
-      this.accounts.add(accountModel);
+      var created = await this.accountService.add(accountModel);
+      this._internalAccounts.add(created);
+      this.accounts.add(created);
       notifyListeners();
       notifierService.notify('Account ${accountModel.name} added successfully');
     } catch (ex) {

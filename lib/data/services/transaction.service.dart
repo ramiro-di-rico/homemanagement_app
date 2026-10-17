@@ -16,8 +16,9 @@ import 'package:home_management_app/domain/models/transaction.page.dart';
 import 'api.service.factory.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
 import 'dart:convert';
+import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 
-class TransactionService {
+class TransactionService implements TransactionDataSource {
   AuthenticationService authenticationService;
   late ApiServiceFactory apiServiceFactory;
   final String apiName = 'transactions';
@@ -27,6 +28,7 @@ class TransactionService {
         ApiServiceFactory(authenticationService: this.authenticationService);
   }
 
+  @override
   Future<List<TransactionModel>> page(TransactionPageModel page) async {
     dynamic data = await apiServiceFactory.apiGet(
         '$apiName/filter?accountId=${page.accountId}&currentPage=${page.currentPage}&pageSize=${page.pageCount}');
@@ -34,6 +36,7 @@ class TransactionService {
     return pageResult.items;
   }
 
+  @override
   Future<List<TransactionModel>> pageNameFiltering(
       TransactionPageModel page, String name) async {
     dynamic data = await apiServiceFactory.apiGet(
@@ -43,6 +46,7 @@ class TransactionService {
     return pageResult.items;
   }
 
+  @override
   Future<List<TransactionModel>> suggested() async {
     dynamic data = await apiServiceFactory.apiGet('$apiName/suggested');
     return (data as List).map((e) => TransactionModel.fromJson(e)).toList();
@@ -97,6 +101,7 @@ class TransactionService {
     return pageResult.items;
   }
 
+  @override
   Future<TransactionWithBalanceModel> add(
       TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
@@ -104,10 +109,12 @@ class TransactionService {
     return TransactionWithBalanceModel.fromJson(result);
   }
 
+  @override
   Future delete(int id) async {
     await apiServiceFactory.apiDelete(apiName, id.toString());
   }
 
+  @override
   Future update(TransactionModel transactionModel) async {
     var body = json.encode(transactionModel.toJson());
     await apiServiceFactory.apiPut(
