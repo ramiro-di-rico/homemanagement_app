@@ -13,7 +13,7 @@
 
 ## Phase 1: Foundational (blocks all stories)
 
-- [ ] T001 Add `AccountModel? getById(int id)` to `lib/data/repositories/account.repository.dart`. It searches `_internalAccounts` (so hidden accounts are included) and returns `null` if not found. Do not copy the list.
+- [X] T001 Add `AccountModel? getById(int id)` to `lib/data/repositories/account.repository.dart`. It searches `_internalAccounts` (so hidden accounts are included) and returns `null` if not found. Do not copy the list.
 
 **Checkpoint**: the repository can return its current instance for an id.
 
