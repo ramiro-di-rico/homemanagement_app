@@ -392,7 +392,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
 
 
   String buildCsvTemplate(int accountId) {
-    final header = 'Id;Name;Price;Date;TransactionType;Category;;AccountId';
+    final header = 'Id;Name;Amount;Date;TransactionType;Category;;AccountId';
     final today = DateTime.now();
     final exampleDate = '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
     final exampleRow = ';Example transaction;0.00;$exampleDate;Expense;Some Category;;$accountId';

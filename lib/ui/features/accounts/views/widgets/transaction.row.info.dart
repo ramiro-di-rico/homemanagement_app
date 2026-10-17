@@ -111,9 +111,9 @@ class TransactionRowInfo extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                           child: Text(
-                            transaction.price % 1 == 0
-                                ? transaction.price.toStringAsFixed(0)
-                                : transaction.price.toStringAsFixed(2),
+                            transaction.amount % 1 == 0
+                                ? transaction.amount.toStringAsFixed(0)
+                                : transaction.amount.toStringAsFixed(2),
                             style: TextStyle(
                                 color: transaction.transactionType ==
                                         TransactionType.Income

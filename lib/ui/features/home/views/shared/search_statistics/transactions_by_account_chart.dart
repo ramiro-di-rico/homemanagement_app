@@ -20,7 +20,7 @@ class TransactionsByAccountChart extends StatelessWidget {
 
     final grouped = <int, double>{};
     for (final t in transactions) {
-      grouped[t.accountId] = (grouped[t.accountId] ?? 0) + t.price;
+      grouped[t.accountId] = (grouped[t.accountId] ?? 0) + t.amount;
     }
 
     final entries = grouped.entries.toList()

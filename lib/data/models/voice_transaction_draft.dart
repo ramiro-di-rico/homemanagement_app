@@ -5,7 +5,7 @@ import 'package:home_management_app/domain/models/transaction.dart';
 class VoiceTransactionDraft {
   final String rawTranscription;
   final String name;
-  final double price;
+  final double amount;
   final DateTime date;
   final TransactionType transactionType;
   final int categoryId;
@@ -15,7 +15,7 @@ class VoiceTransactionDraft {
   VoiceTransactionDraft({
     required this.rawTranscription,
     required this.name,
-    required this.price,
+    required this.amount,
     required this.date,
     required this.transactionType,
     required this.categoryId,
@@ -27,7 +27,7 @@ class VoiceTransactionDraft {
       VoiceTransactionDraft(
         rawTranscription: json['rawTranscription'] ?? '',
         name: json['name'] ?? '',
-        price: double.parse(json['price'].toString()),
+        amount: double.parse((json['amount'] ?? json['price']).toString()),
         date: DateTime.parse(json['date']),
         transactionType: TransactionModel.parse(json['transactionType'],
             categoryName: json['categoryName']),

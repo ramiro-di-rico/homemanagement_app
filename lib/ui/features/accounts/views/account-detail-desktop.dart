@@ -39,7 +39,8 @@ class AccountDetailDesktop extends StatefulWidget {
 
 class _AccountDetailDesktopState extends State<AccountDetailDesktop>
     with TransactionListSkeletonBehavior, AccountListScrollingBehavior, NotifierMixin {
-  late AccountModel account;
+  AccountModel get account =>
+      accountRepository.getById(widget.account.id) ?? widget.account;
   Overall? overall;
 
   MetricService _metricService = GetIt.I<MetricService>();
@@ -52,7 +53,6 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
 
   @override
   void initState() {
-    account = widget.account;
     transactionRepository.addListener(refreshState);
     accountRepository.addListener(refreshState);
     load();
@@ -70,7 +70,6 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
   void didUpdateWidget(AccountDetailDesktop oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.account.id != widget.account.id) {
-      account = widget.account;
       load();
     }
   }

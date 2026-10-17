@@ -5,6 +5,7 @@ import '2fa_view.dart';
 
 import 'package:home_management_app/ui/core/custom/components/email-textfield.dart';
 import 'package:home_management_app/ui/core/custom/components/password-textfield.dart';
+import 'package:home_management_app/ui/core/converters/device_language_resolver.dart';
 import 'package:home_management_app/ui/core/mixins/notifier_mixin.dart';
 import 'user-controls-mixins/authentication-behavior.dart';
 import 'user-controls-mixins/email-behavior.dart';
@@ -33,10 +34,7 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
 
     setAuthenticatingStatus(true);
 
-    var locale = PlatformDispatcher.instance.locale.languageCode;
-    if (locale != 'en' && locale != 'es') {
-      locale = 'en';
-    }
+    var locale = resolveDeviceLanguage(PlatformDispatcher.instance.locale);
 
     var registrationResult = await this.authenticationService.register(
         this.userViewModel.email, this.userViewModel.password, locale);

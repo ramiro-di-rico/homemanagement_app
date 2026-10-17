@@ -5,7 +5,7 @@ class TransactionModel {
   final int id;
   int accountId, categoryId;
   String name, categoryName;
-  double price;
+  double amount;
   DateTime date;
   TransactionType transactionType;
   List<TagModel> tags;
@@ -15,7 +15,7 @@ class TransactionModel {
       this.accountId,
       this.categoryId,
       this.name,
-      this.price,
+      this.amount,
       this.date,
       this.transactionType,
       {this.categoryName = "",
@@ -28,7 +28,7 @@ class TransactionModel {
         this.accountId,
         this.categoryId,
         this.name,
-        this.price,
+        this.amount,
         this.date,
         this.transactionType,
         categoryName: this.categoryName,
@@ -41,7 +41,7 @@ class TransactionModel {
         this.accountId,
         this.categoryId,
         this.name,
-        this.price,
+        this.amount,
         this.date,
         this.transactionType,
         categoryName: this.categoryName,
@@ -64,7 +64,7 @@ class TransactionModel {
         json['accountId'],
         json['categoryId'],
         json['name'],
-        double.parse(json['price'].toString()),
+        double.parse((json['amount'] ?? json['price']).toString()),
         DateTime.parse(json['date']),
         parse(json['transactionType'], categoryName: categoryName),
         categoryName: categoryName,
@@ -78,7 +78,7 @@ class TransactionModel {
         recurringTransaction.accountId!,
         recurringTransaction.categoryId!,
         recurringTransaction.name,
-        recurringTransaction.price ?? 0,
+        recurringTransaction.amount ?? 0,
         recurringTransaction.date ?? DateTime.now(),
         recurringTransaction.transactionType);
   }
@@ -88,7 +88,7 @@ class TransactionModel {
         'accountId': this.accountId,
         'categoryId': this.categoryId,
         'name': this.name,
-        'price': this.price,
+        'amount': this.amount,
         'date': this.date.toIso8601String(),
         'transactionType':
             this.transactionType == TransactionType.Income ? 0 : 1,

@@ -13,10 +13,10 @@ class TransactionTotalsWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     final incomeTotal = transactions
         .where((t) => t.transactionType == TransactionType.Income)
-        .fold<double>(0, (sum, t) => sum + t.price);
+        .fold<double>(0, (sum, t) => sum + t.amount);
     final outcomeTotal = transactions
         .where((t) => t.transactionType == TransactionType.Outcome)
-        .fold<double>(0, (sum, t) => sum + t.price);
+        .fold<double>(0, (sum, t) => sum + t.amount);
     final balance = incomeTotal - outcomeTotal;
 
     return Card(

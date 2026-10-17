@@ -42,7 +42,8 @@ class AccountDetailScreen extends StatefulWidget {
 class _AccountDetailScreenState extends State<AccountDetailScreen>
     with TransactionListSkeletonBehavior, AccountListScrollingBehavior, NotifierMixin {
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
-  late AccountModel account;
+  AccountModel get account =>
+      accountRepository.getById(widget.account.id) ?? widget.account;
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
   TransactionService transactionService = GetIt.I<TransactionService>();
   TransactionRepository transactionRepository =
@@ -55,7 +56,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
 
   @override
   void initState() {
-    account = widget.account;
     transactionRepository.addListener(refreshState);
     filteringTextFocusNode.addListener(() {});
     filteringNameController.addListener(refreshState);
@@ -79,7 +79,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen>
   void didUpdateWidget(AccountDetailScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.account.id != widget.account.id) {
-      account = widget.account;
       load();
     }
   }
