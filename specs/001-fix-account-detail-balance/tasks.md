@@ -25,8 +25,8 @@
 
 **Independent Test**: Open an account, add an expense of 10, and see the balance drop by 10 without leaving the screen. Repeat for income, edit and delete.
 
-- [ ] T002 [P] [US1] Create `test/repository/account_repository_test.dart`. It uses a hand-written fake that `implements AccountService` (no mocking library). Cover: `getById` returns the same instance that `updateBalance`, `revertBalance` and `setBalance` change; `getById` returns `null` for an unknown id; `getById` finds a hidden account.
-- [ ] T003 [US1] In `lib/ui/features/accounts/views/account.detail.dart`, replace the `late AccountModel account;` field with a getter: `accountRepository.getById(widget.account.id) ?? widget.account`. Remove the `account = widget.account;` assignments in `initState` and `didUpdateWidget`. Keep the `didUpdateWidget` call to `load()` when the id changes. No other usage of `account` needs to change.
+- [X] T002 [P] [US1] Create `test/repository/account_repository_test.dart`. It uses a hand-written fake that `implements AccountService` (no mocking library). Cover: `getById` returns the same instance that `updateBalance`, `revertBalance` and `setBalance` change; `getById` returns `null` for an unknown id; `getById` finds a hidden account.
+- [X] T003 [US1] In `lib/ui/features/accounts/views/account.detail.dart`, replace the `late AccountModel account;` field with a getter: `accountRepository.getById(widget.account.id) ?? widget.account`. Remove the `account = widget.account;` assignments in `initState` and `didUpdateWidget`. Keep the `didUpdateWidget` call to `load()` when the id changes. No other usage of `account` needs to change.
 
 **Checkpoint**: the mobile balance updates after transaction changes.
 
