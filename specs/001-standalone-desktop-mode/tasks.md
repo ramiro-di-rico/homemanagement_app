@@ -40,9 +40,9 @@ description: "Task list for Standalone Desktop Mode"
   - Do **not** add `sqlite3_flutter_libs` or `sqlcipher_flutter_libs`.
   - Run `flutter pub get` and confirm it resolves (analyzer 14.3–14.5 expected). Done: resolves with analyzer 14.5.0, drift 2.35.2, drift_dev 2.35.1, drift_flutter 0.3.1, sqlite3 3.7.0, build_runner 2.16.2, flutter_secure_storage 10.3.4.
   - Before adding, re-check that every version is still the newest one ≥7 days old (org rule).
-- [ ] T002 [P] Add the `keychain-access-groups` entitlement (`$(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)`) to `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements` (needed by flutter_secure_storage, research R2).
+- [X] T002 [P] Add the `keychain-access-groups` entitlement (`$(AppIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)`) to `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements` (needed by flutter_secure_storage, research R2).
 - [X] T003 [P] Add `lib/data/local/*.g.dart` to `analyzer: exclude:` in `analysis_options.yaml`. That file already has an uncommitted `exclude` block from other work, so extend it rather than replace it, and coordinate with its owner before committing. Done: added to the existing `exclude` block and verified with a temporary error in a `.g.dart` file (ignored) next to one in a normal file (reported). `analysis_options.yaml` is left uncommitted together with its other in-progress changes.
-- [ ] T004 [P] Document desktop build and runtime prerequisites in `README.md`:
+- [X] T004 [P] Document desktop build and runtime prerequisites in `README.md`:
   - Linux: `libsecret-1-dev` to build; `libsecret-1-0` and a Secret Service (gnome-keyring/KWallet) at runtime.
   - Windows: ATL in VS Build Tools.
   - macOS: the keychain entitlement.
@@ -75,42 +75,44 @@ description: "Task list for Standalone Desktop Mode"
 
 ### Seam (refactor, no behaviour change; contracts/data-sources.md)
 
-- [ ] T006 [P] Create `abstract interface class AccountDataSource` in `lib/data/services/sources/account_data_source.dart`, with exactly the signatures in `specs/001-standalone-desktop-mode/contracts/data-sources.md`:
+- [X] T006 [P] Create `abstract interface class AccountDataSource` in `lib/data/services/sources/account_data_source.dart`, with exactly the signatures in `specs/001-standalone-desktop-mode/contracts/data-sources.md`:
   - `fetchAccounts()`
   - `Future<AccountModel> add(AccountModel)`
   - `update`
   - `delete`
 
   Also define `AccountHasTransactionsException` in the same file.
-- [ ] T007 [P] Create `abstract interface class CategoryDataSource` in `lib/data/services/sources/category_data_source.dart`:
+- [X] T007 [P] Create `abstract interface class CategoryDataSource` in `lib/data/services/sources/category_data_source.dart`:
   - `fetch()`
   - `Future<CategoryModel> add`
   - `update`
   - `delete`
 
   Also define `CategoryInUseException` in the same file.
-- [ ] T008 [P] Create `abstract interface class CurrencyDataSource` (`fetchCurrencies()`) in `lib/data/services/sources/currency_data_source.dart`.
-- [ ] T009 [P] Create `abstract interface class TransactionDataSource` in `lib/data/services/sources/transaction_data_source.dart`:
+- [X] T008 [P] Create `abstract interface class CurrencyDataSource` (`fetchCurrencies()`) in `lib/data/services/sources/currency_data_source.dart`.
+- [X] T009 [P] Create `abstract interface class TransactionDataSource` in `lib/data/services/sources/transaction_data_source.dart`:
   - `page`
   - `pageNameFiltering`
   - `suggested`
   - `Future<TransactionWithBalanceModel> add`
   - `update`
   - `delete(int id)`
-- [ ] T010 Make `AccountService` in `lib/data/services/account.service.dart` implement `AccountDataSource`:
+- [X] T010 Make `AccountService` in `lib/data/services/account.service.dart` implement `AccountDataSource`:
   - Rename `fetchAccounts` only if needed to match the interface.
   - Change `add` to use `apiServiceFactory.postWithReturn('account', …)` and return `AccountModel.fromJson(result)`. The server answers 201 + `AccountResultDto` (research R3), and `_isSuccessfulStatusCode` accepts 2xx.
-- [ ] T011 [P] Make `CategoryService` in `lib/data/services/category.service.dart` implement `CategoryDataSource`. `add` already returns the created `CategoryModel`. `delete` takes a `CategoryModel`; adapt it if it currently takes an id.
-- [ ] T012 [P] Make `CurrencyService` in `lib/data/services/currency.service.dart` implement `CurrencyDataSource`.
-- [ ] T013 [P] Make `TransactionService` in `lib/data/services/transaction.service.dart` implement `TransactionDataSource`. No signature changes for `page`, `pageNameFiltering`, `suggested`, `add`, `update` or `delete`.
-- [ ] T014 Change the repositories to depend on the interfaces instead of the concrete services:
+- [X] T011 [P] Make `CategoryService` in `lib/data/services/category.service.dart` implement `CategoryDataSource`. `add` already returns the created `CategoryModel`. `delete` takes a `CategoryModel`; adapt it if it currently takes an id.
+- [X] T012 [P] Make `CurrencyService` in `lib/data/services/currency.service.dart` implement `CurrencyDataSource`.
+- [X] T013 [P] Make `TransactionService` in `lib/data/services/transaction.service.dart` implement `TransactionDataSource`. No signature changes for `page`, `pageNameFiltering`, `suggested`, `add`, `update` or `delete`.
+- [X] T014 Change the repositories to depend on the interfaces instead of the concrete services:
   - `lib/data/repositories/account.repository.dart` (field type `AccountDataSource`). In `add`, append the **returned** model instead of the input with id 0.
   - `lib/data/repositories/category.repository.dart`
   - `lib/data/repositories/currency.repository.dart`
   - `lib/data/repositories/transaction.repository.dart` (field type `TransactionDataSource`)
 
   Keep constructor parameter names, so the wiring in `lib/main.dart` still compiles with the HTTP services.
-- [ ] T015 Run a refactor regression: `flutter analyze` and `flutter test` must be green. Then run the app online on Linux: add/edit/delete an account, a category and a transaction. Behaviour is unchanged, and a newly added account now has its real id (it can be edited without a reload).
+
+  Done. `TransactionRepository` keeps the concrete `transactionService` for the server-only operations (tags, voice and receipt previews) and gains an optional `dataSource: TransactionDataSource` for add/update/delete/page/suggested. It defaults to `transactionService`. T027 passes the mode-aware delegate as `dataSource`.
+- [ ] T015 Run a refactor regression: `flutter analyze` and `flutter test` must be green. (Automated part done: no analyzer errors, 70 tests pass. Manual online run on Linux still pending. Use `/snap/bin/flutter`: the `flutter` on PATH is 3.41.7, whose Dart is too old for `sdk: ^3.12.0`.) Then run the app online on Linux: add/edit/delete an account, a category and a transaction. Behaviour is unchanged, and a newly added account now has its real id (it can be edited without a reload).
 
 ### Local database (data-model.md)
 
