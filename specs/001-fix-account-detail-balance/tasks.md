@@ -59,8 +59,8 @@
 
 ## Phase 5: Polish & Verification
 
-- [ ] T007 Run `flutter analyze` and fix any issue introduced by these changes.
-- [ ] T008 Run `flutter test` and confirm the new and existing tests pass.
+- [X] T007 Run `flutter analyze` and fix any issue introduced by these changes.
+- [X] T008 Run `flutter test` and confirm the new and existing tests pass.
 - [ ] T009 Run the manual scenarios in `specs/001-fix-account-detail-balance/quickstart.md` on mobile and on desktop, including the "refresh, then add a transaction" case.
 
 ---
