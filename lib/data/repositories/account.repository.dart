@@ -28,12 +28,8 @@ class AccountRepository extends ChangeNotifier {
     return List.from(_internalAccounts);
   }
 
-  AccountModel? getById(int id) {
-    for (final account in _internalAccounts) {
-      if (account.id == id) return account;
-    }
-    return null;
-  }
+  AccountModel? getById(int id) =>
+      _internalAccounts.where((account) => account.id == id).firstOrNull;
 
   Future load() async {
     var result = await this.accountService.fetchAccounts();
