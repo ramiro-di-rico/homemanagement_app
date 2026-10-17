@@ -25,6 +25,17 @@ You can still set a custom browser explicitly:
 CHROME_EXECUTABLE=/path/to/chrome ./scripts/run_web.sh
 ```
 
+## Desktop Build Prerequisites
+
+Standalone (local) mode stores its data in an encrypted SQLite database (sqlite3mc) and keeps the key in the OS secret store (`flutter_secure_storage`).
+
+- **Linux**
+  - Build: `libsecret-1-dev`.
+  - Runtime: `libsecret-1-0` and a Secret Service provider (gnome-keyring or KWallet).
+- **Windows**: the ATL component of the Visual Studio Build Tools.
+- **macOS**: the `keychain-access-groups` entitlement, already set in `macos/Runner/DebugProfile.entitlements` and `Release.entitlements`.
+- **All desktop platforms**: the `sqlite3` build hook downloads the sqlite3mc library from GitHub on the first build. Behind a proxy, set `HTTPS_PROXY`, or point the hook at a mirror with `url_pattern`.
+
 ## Linux Support
 
 This project provides a single script (`scripts/package_linux.sh`) for building a self-extracting Linux distributable package and optionally installing it for the current user.
