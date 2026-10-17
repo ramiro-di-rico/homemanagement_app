@@ -38,8 +38,8 @@
 
 **Independent Test**: On the detail screen, import a CSV and confirm the balance matches. Then add a transaction and confirm it still updates.
 
-- [ ] T004 [US2] Extend `test/repository/account_repository_test.dart`. With the fake service returning new `AccountModel` instances on the second `fetchAccounts()`, assert that after `load()` `getById(id)` returns the new instance (not the old one) with the reloaded balance, and that `updateBalance` afterwards is reflected through `getById`.
-- [ ] T005 [US2] Confirm that `_importTransactions` in `account.detail.dart` still calls `accountRepository.refresh()` and that the screen picks up the new balance through the getter from T003. Make no code change unless that fails.
+- [X] T004 [US2] Extend `test/repository/account_repository_test.dart`. With the fake service returning new `AccountModel` instances on the second `fetchAccounts()`, assert that after `load()` `getById(id)` returns the new instance (not the old one) with the reloaded balance, and that `updateBalance` afterwards is reflected through `getById`.
+- [X] T005 [US2] Confirm that `_importTransactions` in `account.detail.dart` still calls `accountRepository.refresh()` and that the screen picks up the new balance through the getter from T003. Make no code change unless that fails.
 
 **Checkpoint**: the balance is correct after reloads and keeps updating afterwards.
 
@@ -51,7 +51,7 @@
 
 **Independent Test**: Run the US1 and US2 scenarios on the desktop layout (`flutter run -d linux`).
 
-- [ ] T006 [P] [US3] In `lib/ui/features/accounts/views/account-detail-desktop.dart`, replace `late AccountModel account;` with the same getter (`accountRepository.getById(widget.account.id) ?? widget.account`). Remove the `account = widget.account;` assignments in `initState` and `didUpdateWidget`. Keep the `load()` call when the id changes.
+- [X] T006 [P] [US3] In `lib/ui/features/accounts/views/account-detail-desktop.dart`, replace `late AccountModel account;` with the same getter (`accountRepository.getById(widget.account.id) ?? widget.account`). Remove the `account = widget.account;` assignments in `initState` and `didUpdateWidget`. Keep the `load()` call when the id changes.
 
 **Checkpoint**: both layouts use the repository as the source of truth.
 

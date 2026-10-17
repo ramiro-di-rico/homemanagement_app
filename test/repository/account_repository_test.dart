@@ -18,18 +18,28 @@ class FakeAccountService implements AccountService {
 }
 
 AccountModel buildAccount(int id, double balance, {bool isHidden = false}) =>
-    AccountModel(id, 'Account $id', balance, false, AccountType.Cash, 1, 1,
-        false, isHidden);
+    AccountModel(
+      id,
+      'Account $id',
+      balance,
+      false,
+      AccountType.Cash,
+      1,
+      1,
+      false,
+      isHidden,
+    );
 
 void main() {
   late AccountRepository repository;
+  late FakeAccountService service;
 
   setUp(() async {
+    service = FakeAccountService(
+      () => [buildAccount(1, 100), buildAccount(2, 50, isHidden: true)],
+    );
     repository = AccountRepository(
-      accountService: FakeAccountService(() => [
-            buildAccount(1, 100),
-            buildAccount(2, 50, isHidden: true),
-          ]),
+      accountService: service,
       notifierService: NotifierService(),
     );
     await repository.load();
@@ -61,5 +71,30 @@ void main() {
       expect(repository.getById(2), isNotNull);
       expect(repository.accounts.any((a) => a.id == 2), isFalse);
     });
+  });
+
+  group('AccountRepository reload', () {
+    test(
+      'getById returns the new instance after load replaces accounts',
+      () async {
+        final stale = repository.getById(1)!;
+        service.onFetch = () => [
+          buildAccount(1, 250),
+          buildAccount(2, 50, isHidden: true),
+        ];
+
+        await repository.load();
+
+        final fresh = repository.getById(1)!;
+        expect(identical(fresh, stale), isFalse);
+        expect(fresh.balance, 250);
+
+        repository.updateBalance(1, 20, TransactionType.Outcome);
+        expect(repository.getById(1)!.balance, 230);
+        // The pre-reload instance no longer receives updates, which is why a
+        // screen must resolve the account by id instead of keeping a copy.
+        expect(stale.balance, 100);
+      },
+    );
   });
 }
