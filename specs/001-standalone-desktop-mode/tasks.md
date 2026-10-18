@@ -196,7 +196,7 @@ description: "Task list for Standalone Desktop Mode"
 
 ### App mode (contracts/data-sources.md; research R9)
 
-- [ ] T025 Create `lib/data/services/app_mode.service.dart`: `AppModeService extends ChangeNotifier`.
+- [X] T025 Create `lib/data/services/app_mode.service.dart`: `AppModeService extends ChangeNotifier`.
   - `isLocalAvailable` is `PlatformType.Desktop` only.
   - `isLocal` is backed by the SharedPreferences key `appMode` (`online` default / `local`).
   - `LocalDatabase? database` is set when local.
@@ -204,13 +204,20 @@ description: "Task list for Standalone Desktop Mode"
   - `Future<void> enterLocalMode()` opens or creates the database, persists `appMode = local`, calls `TransactionRepository.invalidateSuggestions()`, then notifies. Add that public method to `lib/data/repositories/transaction.repository.dart`; it wraps the private `_invalidateSuggestionsCache()`.
   - `bool get isImportPending`: true while `import_states.status` is `inProgress` or `failed`.
   - Leave `completeImport()` as a stub for US4.
-- [ ] T026 Create `lib/data/services/sources/mode_aware_data_sources.dart` with `ModeAwareAccountDataSource`, `ModeAwareCategoryDataSource`, `ModeAwareCurrencyDataSource` and `ModeAwareTransactionDataSource`. Each takes `(remote, AppModeService)` and forwards every call to `remote`, or to a lazily constructed local service (`LocalXService(appMode.database!)`) when `appMode.isLocal`.
+
+  Done. Notes:
+  - `AppModeService` takes optional `preferences` and `openDatabase` parameters, so tests can use an in-memory database.
+  - `startupError` leaves `isLocal` true on purpose: the app must not fall back to online or touch the file. `myapp.dart` (T033) shows the error screen instead of the router.
+  - `isImportPending` is a cached synchronous getter, because the router needs it synchronously. It is read when the database opens, and `refreshImportStatus()` re-reads it after the import changes `import_states`.
+  - `enterLocalMode()` throws `StateError` where local mode is unavailable, and leaves the mode unchanged when the database can't be opened.
+  - Instead of `AppModeService` calling `TransactionRepository.invalidateSuggestions()`, which would need the repository before it exists, T027 should do `appMode.addListener(transactionRepository.invalidateSuggestions)`. The public method is added to the repository.
+- [X] T026 Create `lib/data/services/sources/mode_aware_data_sources.dart` with `ModeAwareAccountDataSource`, `ModeAwareCategoryDataSource`, `ModeAwareCurrencyDataSource` and `ModeAwareTransactionDataSource`. Each takes `(remote, AppModeService)` and forwards every call to `remote`, or to a lazily constructed local service (`LocalXService(appMode.database!)`) when `appMode.isLocal`.
 - [ ] T027 Wire everything in `lib/main.dart`:
   - Make `main()` `async` and call `WidgetsFlutterBinding.ensureInitialized()`.
   - Create and `await AppModeService(platform).init()`, then register it as a singleton **before** `registerSingletons`.
   - In `registerSingletons`, construct `AccountRepository`, `CategoryRepository`, `CurrencyRepository` and `TransactionRepository` with the `ModeAware*` delegates wrapping the existing HTTP services.
   - Leave the `registerServices` factories (used directly by some views) unchanged.
-- [ ] T028 [P] Write `test/data/services/mode_aware_data_sources_test.dart`. Fake remote implementations record calls. Check that calls go to the fake remote when online and to the local service (in-memory database) when local, and that flipping the mode switches routing without re-creating repositories.
+- [X] T028 [P] Write `test/data/services/mode_aware_data_sources_test.dart`. Fake remote implementations record calls. Check that calls go to the fake remote when online and to the local service (in-memory database) when local, and that flipping the mode switches routing without re-creating repositories.
 
 **Checkpoint**: The seam is in place, online behaviour is unchanged, and the local database is encrypted and tested. User stories can start.
 
