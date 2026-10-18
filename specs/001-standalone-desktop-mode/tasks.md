@@ -159,28 +159,35 @@ description: "Task list for Standalone Desktop Mode"
   - Never delete or overwrite the file on any error path.
 
   Done. Two additions beyond the task text: a fourth reason, `unreadable`, for a file that exists but fails to open with the stored key (otherwise a raw `SqliteException` would escape `AppModeService.init()`, which only catches `LocalDataUnavailableException`), and optional `secureStorage` and `supportDirectory` parameters so tests can replace the keyring and the directory. A throwaway test against the real sqlite3mc library confirmed: a new key is stored and the file header is not `SQLite format 3`; reopening with the key works; a missing key on an existing file gives `keyMissing` without writing a key; a wrong key gives `unreadable` and leaves the file size unchanged; a locked keyring gives `keyringUnavailable` and creates no file. That test was not kept, since it needs `path_provider_platform_interface` (not a direct dependency) to fake the temp directory.
-- [ ] T019 [P] Create `lib/data/local/local_currency.service.dart`: `LocalCurrencyService implements CurrencyDataSource`. It returns the seeded rows as `CurrencyModel(id, name, value)`.
-- [ ] T020 [P] Create `lib/data/local/local_account.service.dart`: `LocalAccountService implements AccountDataSource`.
+- [X] T019 [P] Create `lib/data/local/local_currency.service.dart`: `LocalCurrencyService implements CurrencyDataSource`. It returns the seeded rows as `CurrencyModel(id, name, value)`.
+- [X] T020 [P] Create `lib/data/local/local_account.service.dart`: `LocalAccountService implements AccountDataSource`.
   - `fetchAccounts` returns `AccountModel` with `userId = 0` and the **derived** balance `COALESCE(SUM(CASE transaction_type WHEN 0 THEN amount ELSE -amount END), 0)` (FR-008), via one grouped query.
   - `add` trims the name, validates "1–100 chars", inserts, and returns the model with its new id and balance 0.
   - `update` covers rename, hide and archive.
   - `delete` throws `AccountHasTransactionsException` if any transaction references the account.
-- [ ] T021 [P] Create `lib/data/local/local_category.service.dart`: `LocalCategoryService implements CategoryDataSource`.
+- [X] T021 [P] Create `lib/data/local/local_category.service.dart`: `LocalCategoryService implements CategoryDataSource`.
   - `fetch` returns all rows, including inactive ones (contract C4).
   - `add` and `update` enforce the case-insensitive unique name with a typed `CategoryNameTakenException`.
   - `delete` throws `CategoryInUseException` if any transaction references the category.
-- [ ] T022 [P] Create `lib/data/local/local_transaction.service.dart`: `LocalTransactionService implements TransactionDataSource`.
+- [X] T022 [P] Create `lib/data/local/local_transaction.service.dart`: `LocalTransactionService implements TransactionDataSource`.
   - `page` and `pageNameFiltering` are ordered by `date DESC, id DESC`, using `page.currentPage` and `page.pageCount` (contract C3). Name filter: case-insensitive `LIKE`. `categoryName` is filled by a join, and `tags` is empty.
   - `add` validates `amount > 0`, normalizes `date` to UTC midnight, sets `created_at`, and returns `TransactionWithBalanceModel(transaction with new id, sourceAccount with post-insert balance, targetAccount: null)` (contract C1).
   - `update` and `delete` are plain row operations.
   - `suggested()` returns the 10 most recent transactions with distinct `name`.
   - Read `TransactionModel`'s amount field as `price` or `amount`, whichever `master` has (research R11).
-- [ ] T023 [P] Write `test/data/local/local_database_test.dart` against an in-memory database (`NativeDatabase.memory()`, no encryption):
+
+  Done (T019–T022). Notes:
+  - Shared pieces: `LocalDatabase.accountBalance`, `lib/data/local/local_mappers.dart` (row to model, and the date conversion), and `CategoryNameTakenException` in `category_data_source.dart`.
+  - Invalid input (empty or too long name, amount <= 0) throws `ArgumentError`. T044 will add `LocalWriteFailedException` for failed writes.
+  - Dates are stored as UTC midnight of the chosen day and read back as local midnight of that same day, so views show the day the user picked in any time zone. Only the calendar day of the input is used.
+  - drift's `contains` does not escape `%` or `_`, so the name filter uses `like` with an escape character. A test covers it.
+  - `suggested()` keeps the latest row (highest id) per exact name and returns the 10 most recent by date.
+- [X] T023 [P] Write `test/data/local/local_database_test.dart` against an in-memory database (`NativeDatabase.memory()`, no encryption):
   - The seed has 3 currencies and 17 categories, all active.
   - FK RESTRICT blocks deleting a used account and a used category.
   - The `amount > 0` CHECK holds.
   - The case-insensitive unique category name holds.
-- [ ] T024 [P] Write `test/data/local/local_services_test.dart` against an in-memory database:
+- [X] T024 [P] Write `test/data/local/local_services_test.dart` against an in-memory database:
   - Balances after add, edit and delete of income/outcome. Add 100 income, add 30 outcome → 70; edit the outcome to 40 → 60; delete the income → −40 (quickstart Q4).
   - `add` returns the post-insert source balance.
   - Paging order and page size.
