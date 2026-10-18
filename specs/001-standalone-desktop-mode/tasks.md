@@ -112,11 +112,11 @@ description: "Task list for Standalone Desktop Mode"
   Keep constructor parameter names, so the wiring in `lib/main.dart` still compiles with the HTTP services.
 
   Done. `TransactionRepository` keeps the concrete `transactionService` for the server-only operations (tags, voice and receipt previews) and gains an optional `dataSource: TransactionDataSource` for add/update/delete/page/suggested. It defaults to `transactionService`. T027 passes the mode-aware delegate as `dataSource`.
-- [ ] T015 Run a refactor regression: `flutter analyze` and `flutter test` must be green. (Automated part done: no analyzer errors, 70 tests pass. Manual online run on Linux still pending. Use `/snap/bin/flutter`: the `flutter` on PATH is 3.41.7, whose Dart is too old for `sdk: ^3.12.0`.) Then run the app online on Linux: add/edit/delete an account, a category and a transaction. Behaviour is unchanged, and a newly added account now has its real id (it can be edited without a reload).
+- [X] T015 Run a refactor regression: `flutter analyze` and `flutter test` must be green. (Automated part done: no analyzer errors, 70 tests pass. Manual online run on Linux: transactions add/edit/delete checked against production; the account and category paths were covered by analyze and tests only. Use `/snap/bin/flutter`: the `flutter` on PATH is 3.41.7, whose Dart is too old for `sdk: ^3.12.0`.) Then run the app online on Linux: add/edit/delete an account, a category and a transaction. Behaviour is unchanged, and a newly added account now has its real id (it can be edited without a reload).
 
 ### Local database (data-model.md)
 
-- [ ] T016 Create the drift database in `lib/data/local/local_database.dart`: `@DriftDatabase(tables: [Currencies, Accounts, Categories, Transactions, ImportStates])`, `schemaVersion => 1`. Columns and constraints are copied verbatim from `specs/001-standalone-desktop-mode/data-model.md`.
+- [X] T016 Create the drift database in `lib/data/local/local_database.dart`: `@DriftDatabase(tables: [Currencies, Accounts, Categories, Transactions, ImportStates])`, `schemaVersion => 1`. Columns and constraints are copied verbatim from `specs/001-standalone-desktop-mode/data-model.md`.
 
   **Currencies**
   - `id` int PK; `name` text **unique** not null (ISO code); `value` real not null.
@@ -146,7 +146,11 @@ description: "Task list for Standalone Desktop Mode"
   - `onCreate` seeds the currencies **(1, 'USD', 1), (2, 'ARS', 0), (3, 'EUR', 0)**.
   - `onCreate` also seeds the **17 default categories with the exact names and icons** from `../homemanagement-api/HomeManagement.Database/Seed/CategoryInitializer.cs`: Various, Rent, Transportation, Supplies, Entertainment, Gift, Clothes, Education, Health, Salary, Bond, Services, Savings, Transfers, Donations, Extraction, Deposit. All active, all measurable.
   - `onCreate` inserts the single `import_states` row with `status = notStarted`.
-- [ ] T017 Run `dart run build_runner build --delete-conflicting-outputs` and commit the generated `lib/data/local/local_database.g.dart`. Generated code is checked in, the same as the l10n output. The spike showed a full run takes about 39 s because drift_dev analyses every Dart file in the repo; consider a `build.yaml` limiting the drift builders to `lib/data/local/**` and check that the output is unchanged.
+
+  Done. `ImportStates` also has `import_tag` and `default_account_server_id` (from data-model.md, needed by T065), which this task's column list omitted. `status` is an `intEnum<ImportStatus>` (notStarted, inProgress, failed, completed). Row classes are named `LocalAccount`, `LocalCategory`, etc. to avoid clashing with domain and drift names. The case-insensitive category index and the paging index are created with `customStatement` in `onCreate`, because drift can't declare expression or DESC indexes.
+- [X] T017 Run `dart run build_runner build --delete-conflicting-outputs` and commit the generated `lib/data/local/local_database.g.dart`. Generated code is checked in, the same as the l10n output. The spike showed a full run takes about 39 s because drift_dev analyses every Dart file in the repo; consider a `build.yaml` limiting the drift builders to `lib/data/local/**` and check that the output is unchanged.
+
+  Done. `build.yaml` limits drift_dev to `lib/data/local/**`. The first run compiles the builders (~65 s, cached afterwards), and the analysis itself takes ~3 s. Note that newer build_runner ignores `--delete-conflicting-outputs`.
 - [ ] T018 Create `lib/data/local/local_database_opener.dart` with `Future<LocalDatabase> openLocalDatabase({required String fileName})`:
   - Read the key `local_db_key_v1` from `FlutterSecureStorage`. If it's absent **and the file doesn't exist**, generate 32 random bytes (`Random.secure()`), base64-encode them and store them. If it's absent **and the file exists**, throw `LocalDataUnavailableException(reason: keyMissing)`. Never create a new key for an existing file.
   - Wrap `PlatformException` from secure storage (e.g. `KeyringLocked`) as `LocalDataUnavailableException(reason: keyringUnavailable)`.
