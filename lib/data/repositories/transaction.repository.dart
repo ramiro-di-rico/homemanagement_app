@@ -297,6 +297,9 @@ class TransactionRepository extends ChangeNotifier {
     return fetched;
   }
 
+  /// Drops the cached suggestions, e.g. when switching between local and online data.
+  void invalidateSuggestions() => _invalidateSuggestionsCache();
+
   void _invalidateSuggestionsCache() {
     _suggestionsCache = null;
     _suggestionsCachedAt = null;
