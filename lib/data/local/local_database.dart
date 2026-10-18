@@ -105,6 +105,17 @@ class LocalDatabase extends _$LocalDatabase {
         },
       );
 
+  /// Income minus outcome for one account (FR-008). Balances are never stored.
+  Future<double> accountBalance(int accountId) async {
+    final row = await customSelect(
+      'SELECT COALESCE(SUM(CASE transaction_type WHEN 0 THEN amount ELSE -amount END), 0.0) AS balance '
+      'FROM transactions WHERE account_id = ?',
+      variables: [Variable.withInt(accountId)],
+      readsFrom: {transactions},
+    ).getSingle();
+    return row.read<double>('balance');
+  }
+
   Future<void> _seed() async {
     await batch((b) {
       // Same rows as the server's CurrencySeed.

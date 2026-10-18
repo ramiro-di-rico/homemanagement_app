@@ -16,3 +16,8 @@ class CategoryInUseException implements Exception {
   @override
   String toString() => 'CategoryInUseException';
 }
+
+class CategoryNameTakenException implements Exception {
+  @override
+  String toString() => 'CategoryNameTakenException';
+}
