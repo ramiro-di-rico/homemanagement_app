@@ -1,0 +1,8 @@
+# drift_dev otherwise analyses every Dart file in the repo (~39 s per run).
+targets:
+  $default:
+    builders:
+      drift_dev:
+        generate_for:
+          include:
+            - lib/data/local/**
