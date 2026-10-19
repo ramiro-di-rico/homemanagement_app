@@ -119,6 +119,21 @@ void main() {
     await expectBalancesMatchDatabase();
   });
 
+  test('deleting an account that has transactions is refused with a typed error', () async {
+    final account = created.first;
+    await transactions.loadFirstPage(account.id);
+    await transactions.add(newTransaction(account, 10, TransactionType.Outcome));
+
+    await expectLater(accounts.delete(account),
+        throwsA(isA<AccountHasTransactionsException>()));
+
+    expect(accounts.accounts, hasLength(5), reason: 'the account stays');
+    await accounts.delete(created.last);
+    expect(accounts.accounts, hasLength(4), reason: 'an empty one can go');
+    expect(await ModeAwareAccountDataSource(_UnreachableAccounts(), appMode).fetchAccounts(),
+        hasLength(4));
+  });
+
   test('1,000 random operations across 5 accounts never let the balances drift', () async {
     final random = Random(20261018);
     var operations = 0;

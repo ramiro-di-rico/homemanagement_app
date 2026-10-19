@@ -8,6 +8,7 @@ import 'package:home_management_app/data/services/platform/platform_context.dart
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
+import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/ui/features/accounts/views/account-detail-desktop.dart';
 import 'package:home_management_app/ui/features/accounts/views/account.detail.dart';
 import 'package:home_management_app/ui/features/accounts/views/widgets/add_transaction_sheet_desktop.dart';
@@ -381,6 +382,9 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
       });
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removed(item.name))));
+    } on AccountHasTransactionsException {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context)!.accountHasTransactions)));
     } catch (ex) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(

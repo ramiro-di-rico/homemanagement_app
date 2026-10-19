@@ -102,6 +102,9 @@ class AccountRepository extends ChangeNotifier {
       this.accounts.remove(accountModel);
       notifyListeners();
       notifierService.notify('Account ${accountModel.name} deleted successfully');
+    } on AccountHasTransactionsException {
+      // The caller explains it to the user, so there is no generic failure notice.
+      rethrow;
     } catch (ex) {
       print(ex);
       notifierService.notify('Failed to delete account ${accountModel.name}', isError: true);
