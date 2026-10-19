@@ -31,6 +31,8 @@ import 'package:home_management_app/data/repositories/user.repository.dart';
 import 'package:home_management_app/data/services/api.service.factory.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/data/services/account.service.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
+import 'package:home_management_app/data/services/sources/mode_aware_data_sources.dart';
 import 'package:home_management_app/data/services/caching.dart';
 import 'package:home_management_app/data/services/category.service.dart';
 import 'package:home_management_app/data/services/category.service.metric.dart';
@@ -47,14 +49,21 @@ import 'package:home_management_app/data/services/password_reset_service.dart';
 import 'package:home_management_app/data/services/transaction_paging_service.dart';
 import 'package:home_management_app/data/services/invite_link_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   var platform = PlatformStrategy.createPlatform();
   platform.initialize();
-  registerDependencies(platform);
+  var appModeService = AppModeService(platform);
+  await appModeService.init();
+  registerDependencies(platform, appModeService: appModeService);
   runApp(MyApp(platform));
 }
 
-void registerDependencies(PlatformContext platform) {
+void registerDependencies(PlatformContext platform,
+    {AppModeService? appModeService}) {
+  // Registered first: the repositories built in registerSingletons depend on it.
+  GetIt.instance
+      .registerSingleton(appModeService ?? AppModeService(platform));
   registerSingletons(platform);
   registerServices();
 }
@@ -154,13 +163,19 @@ void registerSingletons(PlatformContext platformContext) {
       apiServiceFactory:
           ApiServiceFactory(authenticationService: authenticationService));
 
-  var accountRepository = AccountRepository(accountService: accountService, notifierService: errorNotifierService);
+  var appModeService = GetIt.I<AppModeService>();
+
+  var accountRepository = AccountRepository(
+      accountService: ModeAwareAccountDataSource(accountService, appModeService),
+      notifierService: errorNotifierService);
 
   var currencyRepository = CurrencyRepository(
-      currencyService: CurrencyService(
-          authenticationService: GetIt.I<AuthenticationService>(),
-          apiServiceFactory: ApiServiceFactory(
-              authenticationService: GetIt.I<AuthenticationService>())));
+      currencyService: ModeAwareCurrencyDataSource(
+          CurrencyService(
+              authenticationService: GetIt.I<AuthenticationService>(),
+              apiServiceFactory: ApiServiceFactory(
+                  authenticationService: GetIt.I<AuthenticationService>())),
+          appModeService));
 
 
   var notificationRepository = NotificationRepository(
@@ -180,15 +195,21 @@ void registerSingletons(PlatformContext platformContext) {
 
   var transactionRepository = TransactionRepository(
       transactionService: transactionService,
+      dataSource:
+          ModeAwareTransactionDataSource(transactionService, appModeService),
       accountRepository: accountRepository,
       errorNotifierService: errorNotifierService,
       tagRepository: tagRepository);
+  // Local and online suggestions must never mix.
+  appModeService.addListener(transactionRepository.invalidateSuggestions);
 
-  var categoryRepository = CategoryRepository(CategoryService(
-      authenticationService: authenticationService,
-      apiServiceFactory:
-          ApiServiceFactory(authenticationService: authenticationService),
-      notifierService: errorNotifierService));
+  var categoryRepository = CategoryRepository(ModeAwareCategoryDataSource(
+      CategoryService(
+          authenticationService: authenticationService,
+          apiServiceFactory:
+              ApiServiceFactory(authenticationService: authenticationService),
+          notifierService: errorNotifierService),
+      appModeService));
 
   var identityUserRepository = IdentityUserRepository(
       IdentityUserService(authenticationService: authenticationService),
