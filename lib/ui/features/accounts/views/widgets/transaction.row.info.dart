@@ -6,6 +6,7 @@ import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 
 import 'package:home_management_app/domain/models/account.dart';
 import 'add.transaction.sheet.dart';
@@ -29,6 +30,8 @@ class TransactionRowInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    // Tags are stored on the server, so local mode has none.
+    final showTags = !GetIt.I<AppModeService>().isLocal;
     return Slidable(
         endActionPane: ActionPane(
           motion: ScrollMotion(),
@@ -43,13 +46,14 @@ class TransactionRowInfo extends StatelessWidget {
               backgroundColor: Colors.lightBlueAccent,
               borderRadius: BorderRadius.circular(10),
             ),
-            SlidableAction(
-              autoClose: true,
-              icon: Icons.label_outline,
-              backgroundColor: Colors.teal,
-              borderRadius: BorderRadius.circular(10),
-              onPressed: (context) => openManageTags(context),
-            ),
+            if (showTags)
+              SlidableAction(
+                autoClose: true,
+                icon: Icons.label_outline,
+                backgroundColor: Colors.teal,
+                borderRadius: BorderRadius.circular(10),
+                onPressed: (context) => openManageTags(context),
+              ),
             SlidableAction(
               autoClose: true,
               icon: Icons.delete,
@@ -77,7 +81,7 @@ class TransactionRowInfo extends StatelessWidget {
                           transactionModel: transaction,
                         ));
               },
-              onLongPress: () => openManageTags(context),
+              onLongPress: showTags ? () => openManageTags(context) : null,
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,7 +128,7 @@ class TransactionRowInfo extends StatelessWidget {
                       )
                     ],
                   ),
-                  if (transaction.tags.isNotEmpty)
+                  if (showTags && transaction.tags.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Wrap(
@@ -144,6 +148,7 @@ class TransactionRowInfo extends StatelessWidget {
                             .toList(),
                       ),
                     ),
+                  if (showTags)
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
