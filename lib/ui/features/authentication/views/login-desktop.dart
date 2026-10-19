@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_management_app/data/local/local_database_opener.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
+import 'package:home_management_app/ui/features/home/views/home.dart';
 import 'package:home_management_app/ui/features/authentication/views/user-controls-mixins/authentication-behavior.dart';
 import 'package:home_management_app/ui/features/authentication/views/registration.dart';
 
@@ -23,6 +27,33 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
   
   final IdentityService _identityService = GetIt.I.get<IdentityService>();
   final TextEditingController emailPasswordResetController = TextEditingController();
+  final AppModeService _appModeService = GetIt.I.get<AppModeService>();
+
+  Future<void> _useWithoutAccount() async {
+    try {
+      await _appModeService.enterLocalMode();
+      if (!mounted) return;
+      context.go(HomeScreen.fullPath);
+    } on LocalDataUnavailableException catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.localModeUnavailableTitle),
+          content: Text(e.reason == LocalDataUnavailableReason.keyringUnavailable
+              ? l10n.localModeKeyringUnavailable
+              : l10n.localDataCannotBeOpenedDetail),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +196,15 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                         )
                       ],
                     ),
-                  )
+                  ),
+                  if (_appModeService.isLocalAvailable)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: TextButton(
+                        onPressed: isAuthenticating ? null : _useWithoutAccount,
+                        child: Text(AppLocalizations.of(context)!.useWithoutAccount),
+                      ),
+                    ),
                 ],
               ),
             ),
