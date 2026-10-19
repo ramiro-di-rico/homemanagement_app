@@ -233,15 +233,22 @@ description: "Task list for Standalone Desktop Mode"
 
 ### Tests for User Story 1
 
-- [ ] T029 [P] [US1] Extend `test/views/login_view_test.dart`, or add `test/views/login_desktop_local_option_test.dart`:
+- [X] T029 [P] [US1] Extend `test/views/login_view_test.dart`, or add `test/views/login_desktop_local_option_test.dart`:
   - The "Use without an account" button renders for `PlatformType.Desktop`.
   - It is absent for `Web` and `Mobile`.
   - Tapping it calls `AppModeService.enterLocalMode` and navigates to `/home_screen`.
-- [ ] T030 [P] [US1] Write `test/views/local_mode_guard_test.dart` for the router `redirect` built by `Routing.createRoutes` with a fake `AppModeService(isLocal: true)` and an unauthenticated `AuthenticationService`:
+- [X] T030 [P] [US1] Write `test/views/local_mode_guard_test.dart` for the router `redirect` built by `Routing.createRoutes` with a fake `AppModeService(isLocal: true)` and an unauthenticated `AuthenticationService`:
   - `/login_screen` → `/home_screen`.
   - `/home_screen` is allowed.
   - `/public/invites/abc` and `/login_screen?view=reset_password` redirect to `/home_screen` in local mode.
   - Online mode is unchanged (still redirects to login, and invite and reset links still work).
+
+  Done (T029, T030). Notes:
+  - T029 is `test/views/login_desktop_local_option_test.dart` (a new file, not an extension of `login_view_test.dart`): the button shows on desktop and is hidden on Web, WebMobile and Mobile. Tapping it enters local mode and opens the home. A locked keyring shows the dialog and stays on the login.
+  - T030 is `test/views/local_mode_guard_test.dart`. It resolves each path through the router's own parser, so the real `redirect` runs without building any screen. It covers local mode (login to home, home allowed, invite and reset links to home with no reset state recorded, registration reachable) and online mode (unauthenticated to login, invite still public, reset link still works).
+  - T030 does not test the full local allowlist (that is T048) or that `refreshListenable` moves a user already on the login screen: the login button navigates explicitly anyway.
+  - Both tests were checked by temporarily disabling the feature (the guard and the `isLocalAvailable` condition), and both fail then.
+  - Shared `test/helpers/fake_platform.dart`; the two earlier tests that had their own copy now use it.
 
 ### Implementation for User Story 1
 
