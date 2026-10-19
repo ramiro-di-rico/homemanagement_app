@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:home_management_app/domain/models/account.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/data/services/password_reset_service.dart';
 import 'package:home_management_app/ui/features/accounts/views/account-detail-desktop.dart';
@@ -29,8 +30,9 @@ import 'package:home_management_app/ui/core/screens/bulk_transactions_screen.dar
 
 class Routing{
 
-  static GoRouter createRoutes(bool isDesktop, AuthenticationService authenticationService, PasswordResetService passwordResetService){
+  static GoRouter createRoutes(bool isDesktop, AuthenticationService authenticationService, PasswordResetService passwordResetService, AppModeService appModeService){
     return GoRouter(
+      refreshListenable: appModeService,
       routes: [
         GoRoute(
           path: LoginView.fullPath,
@@ -127,16 +129,30 @@ class Routing{
       ],
       initialLocation: LoginView.fullPath,
       redirect: (context, state) {
+        // Local mode comes first: the password-reset and invite links below all
+        // reach the server, and local mode makes no network calls (FR-004).
+        if (appModeService.isLocal) {
+          final location = state.matchedLocation;
+          if (location == LoginView.fullPath ||
+              location.startsWith('/public/invites/')) {
+            return HomeScreen.fullPath;
+          }
+          if (location == HomeScreen.fullPath) {
+            return null;
+          }
+        }
+
         var emailQueryParam = state.uri.queryParameters['email'] ?? '';
         var tokenQueryParam = state.uri.queryParameters['token'] ?? '';
         var viewQueryParam = state.uri.queryParameters['view'] ?? '';
 
-        if (passwordResetService.isResettingPassword()) {
+        if (!appModeService.isLocal &&
+            passwordResetService.isResettingPassword()) {
           return ResetPasswordView.fullPath +
               passwordResetService.resetPasswordQueryParams();
         }
 
-        if (viewQueryParam == 'reset_password') {
+        if (!appModeService.isLocal && viewQueryParam == 'reset_password') {
           passwordResetService.setResetPasswordQueryParams(
               emailQueryParam.toString(), tokenQueryParam.toString());
           return ResetPasswordView.fullPath + passwordResetService.resetPasswordQueryParams();

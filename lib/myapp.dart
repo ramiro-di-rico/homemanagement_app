@@ -7,6 +7,7 @@ import 'package:home_management_app/data/services/platform/platform_context.dart
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/deep_link_service.dart';
 import 'package:home_management_app/data/repositories/identity_user_repository.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/data/services/password_reset_service.dart';
 import 'package:home_management_app/ui/core/themes/dark_theme.dart';
@@ -28,7 +29,8 @@ class MyApp extends StatelessWidget {
     var passwordResetService = GetIt.I.get<PasswordResetService>();
     var deepLinkService = GetIt.I.get<DeepLinkService>();
     var identityUserRepository = GetIt.I.get<IdentityUserRepository>();
-    final router = Routing.createRoutes(isDesktop, authenticationService, passwordResetService);
+    var appModeService = GetIt.I.get<AppModeService>();
+    final router = Routing.createRoutes(isDesktop, authenticationService, passwordResetService, appModeService);
     deepLinkService.attachRouter(router);
 
     return ListenableBuilder(
