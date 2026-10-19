@@ -212,11 +212,13 @@ description: "Task list for Standalone Desktop Mode"
   - `enterLocalMode()` throws `StateError` where local mode is unavailable, and leaves the mode unchanged when the database can't be opened.
   - Instead of `AppModeService` calling `TransactionRepository.invalidateSuggestions()`, which would need the repository before it exists, T027 should do `appMode.addListener(transactionRepository.invalidateSuggestions)`. The public method is added to the repository.
 - [X] T026 Create `lib/data/services/sources/mode_aware_data_sources.dart` with `ModeAwareAccountDataSource`, `ModeAwareCategoryDataSource`, `ModeAwareCurrencyDataSource` and `ModeAwareTransactionDataSource`. Each takes `(remote, AppModeService)` and forwards every call to `remote`, or to a lazily constructed local service (`LocalXService(appMode.database!)`) when `appMode.isLocal`.
-- [ ] T027 Wire everything in `lib/main.dart`:
+- [X] T027 Wire everything in `lib/main.dart`:
   - Make `main()` `async` and call `WidgetsFlutterBinding.ensureInitialized()`.
   - Create and `await AppModeService(platform).init()`, then register it as a singleton **before** `registerSingletons`.
   - In `registerSingletons`, construct `AccountRepository`, `CategoryRepository`, `CurrencyRepository` and `TransactionRepository` with the `ModeAware*` delegates wrapping the existing HTTP services.
   - Leave the `registerServices` factories (used directly by some views) unchanged.
+
+  Done. `registerDependencies(platform, {appModeService})` registers the service first and creates an un-initialised one (online) when none is passed, so the existing tests that call `registerDependencies(platform)` still work. The transaction repository gets the delegate through its optional `dataSource` parameter. `appModeService.addListener(transactionRepository.invalidateSuggestions)` replaces the call that T025 described. A 100-second launch of the Linux app started cleanly in online mode.
 - [X] T028 [P] Write `test/data/services/mode_aware_data_sources_test.dart`. Fake remote implementations record calls. Check that calls go to the fake remote when online and to the local service (in-memory database) when local, and that flipping the mode switches routing without re-creating repositories.
 
 **Checkpoint**: The seam is in place, online behaviour is unchanged, and the local database is encrypted and tested. User stories can start.
