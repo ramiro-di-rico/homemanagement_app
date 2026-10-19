@@ -254,12 +254,18 @@ description: "Task list for Standalone Desktop Mode"
   Done. Notes:
   - In local mode `/login_screen` and `/public/invites/*` redirect to `/home_screen`, and `/home_screen` is allowed. The password-reset state and `?view=reset_password` checks are skipped entirely in local mode, because they reach the server. Every other path falls through to the existing logic, so registration still works and deep screens such as account detail redirect to login and then home until T051 adds the allowlist.
   - `createRoutes` has a fourth parameter, `AppModeService`. `lib/myapp.dart` passes it from GetIt now (a minimal call-site change). The startup-error screen is still T033.
-- [ ] T033 [US1] Update `lib/myapp.dart` to resolve `AppModeService` from GetIt and pass it to `Routing.createRoutes`. If `appModeService.startupError != null`, render `LocalDataUnavailableScreen` instead of the router.
-- [ ] T034 [US1] Create `lib/ui/features/local_mode/views/local_data_unavailable_screen.dart` (the "local data cannot be opened" spec edge case):
+- [X] T033 [US1] Update `lib/myapp.dart` to resolve `AppModeService` from GetIt and pass it to `Routing.createRoutes`. If `appModeService.startupError != null`, render `LocalDataUnavailableScreen` instead of the router.
+- [X] T034 [US1] Create `lib/ui/features/local_mode/views/local_data_unavailable_screen.dart` (the "local data cannot be opened" spec edge case):
   - Explains the reason (keyring locked/unavailable, key missing, not encrypted) using the T031 strings.
   - Offers **Retry**, which re-runs `AppModeService.init()`.
   - Never offers to delete or reset the data.
   - Uses theme colours only (light and dark).
+
+  Done (T033, T034). Notes:
+  - `MyApp` now rebuilds on `Listenable.merge([identityUserRepository, appModeService])`. When `startupError` is set it builds a plain `MaterialApp` (same locale, theme and localization setup) around the screen, and goes back to the router once Retry succeeds. The router is still created once per `MyApp` build, not per notification.
+  - A locked keyring gets `localModeKeyringUnavailable`. Every other reason (`keyMissing`, `notEncrypted`, `unreadable`) gets the generic `localDataCannotBeOpenedDetail`.
+  - Added the `retry` key (en, es, es_AR), since no reusable one existed.
+  - Widget test: `test/views/local_data_unavailable_screen_test.dart`. Not run in the real app: forcing the error needs an existing database file with no key in the keyring.
 - [ ] T035 [US1] Update `lib/ui/features/authentication/views/login-desktop.dart`:
   - When `GetIt.I<AppModeService>().isLocalAvailable`, add a `TextButton(l10n.useWithoutAccount)` next to the "Create one" link (around line 162).
   - On tap, `await enterLocalMode()` then `context.go(HomeScreen.fullPath)`.
