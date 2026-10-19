@@ -308,10 +308,16 @@ description: "Task list for Standalone Desktop Mode"
 
 ### Tests for User Story 2
 
-- [ ] T039 [P] [US2] Write `test/data/repositories/local_repositories_test.dart`. Using `ModeAware*` in local mode on an in-memory database, check that:
+- [X] T039 [P] [US2] Write `test/data/repositories/local_repositories_test.dart`. Using `ModeAware*` in local mode on an in-memory database, check that:
   - `TransactionRepository.add` updates `AccountRepository.accounts` balance from the result.
   - `remove` and `update` keep the in-memory balance equal to a fresh `fetchAccounts()` balance.
   - Run this over 1,000 random operations across 5 accounts (SC-003).
+
+  Done. Notes:
+  - The random run is seeded (deterministic) and mixes about 50% adds, 25% edits and 25% removes. After every operation it compares each account's balance in `AccountRepository` with a fresh `fetchAccounts()` from the database. It also asserts that each kind of operation ran often enough to matter.
+  - Edits and removes only pick transactions the account's page shows, as the UI does: `TransactionRepository.update` looks the old transaction up in the current account's loaded list and throws if it isn't there.
+  - The server stand-ins throw if local mode ever reaches them, and `TransactionRepository`'s concrete service (server-only calls) is a throwing fake too.
+  - Checked by temporarily breaking `AccountRepository.revertBalance`: the random test fails.
 
 ### Implementation for User Story 2
 
