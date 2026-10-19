@@ -1728,6 +1728,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No savings rate data available'**
   String get noSavingsRateDataAvailable;
+
+  /// No description provided for @useWithoutAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Use without an account'**
+  String get useWithoutAccount;
+
+  /// No description provided for @localModeUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local mode unavailable'**
+  String get localModeUnavailableTitle;
+
+  /// No description provided for @localModeKeyringUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Local mode needs the system keyring to store its encryption key, but the keyring isn\'t available or is locked. Unlock it and try again.'**
+  String get localModeKeyringUnavailable;
+
+  /// No description provided for @localDataCannotBeOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'Your local data can\'t be opened'**
+  String get localDataCannotBeOpened;
+
+  /// No description provided for @localDataCannotBeOpenedDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is still on this computer and hasn\'t been changed. Check that the system keyring is unlocked, then try again.'**
+  String get localDataCannotBeOpenedDetail;
 }
 
 class _AppLocalizationsDelegate

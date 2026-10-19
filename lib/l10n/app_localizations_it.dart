@@ -923,4 +923,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get noSavingsRateDataAvailable => 'No savings rate data available';
+
+  @override
+  String get useWithoutAccount => 'Use without an account';
+
+  @override
+  String get localModeUnavailableTitle => 'Local mode unavailable';
+
+  @override
+  String get localModeKeyringUnavailable =>
+      'Local mode needs the system keyring to store its encryption key, but the keyring isn\'t available or is locked. Unlock it and try again.';
+
+  @override
+  String get localDataCannotBeOpened => 'Your local data can\'t be opened';
+
+  @override
+  String get localDataCannotBeOpenedDetail =>
+      'Your data is still on this computer and hasn\'t been changed. Check that the system keyring is unlocked, then try again.';
 }

@@ -925,6 +925,23 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noSavingsRateDataAvailable => 'No hay datos de tasa de ahorro';
+
+  @override
+  String get useWithoutAccount => 'Usar sin una cuenta';
+
+  @override
+  String get localModeUnavailableTitle => 'Modo local no disponible';
+
+  @override
+  String get localModeKeyringUnavailable =>
+      'El modo local necesita el llavero del sistema para guardar su clave de cifrado, pero el llavero no está disponible o está bloqueado. Desbloquéalo e inténtalo de nuevo.';
+
+  @override
+  String get localDataCannotBeOpened => 'No se pueden abrir tus datos locales';
+
+  @override
+  String get localDataCannotBeOpenedDetail =>
+      'Tus datos siguen en este equipo y no se han modificado. Comprueba que el llavero del sistema esté desbloqueado e inténtalo de nuevo.';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1822,4 +1839,21 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get noSavingsRateDataAvailable => 'No hay datos de tasa de ahorro';
+
+  @override
+  String get useWithoutAccount => 'Usar sin una cuenta';
+
+  @override
+  String get localModeUnavailableTitle => 'Modo local no disponible';
+
+  @override
+  String get localModeKeyringUnavailable =>
+      'El modo local necesita el llavero del sistema para guardar su clave de cifrado, pero el llavero no está disponible o está bloqueado. Desbloquealo y volvé a intentar.';
+
+  @override
+  String get localDataCannotBeOpened => 'No se pueden abrir tus datos locales';
+
+  @override
+  String get localDataCannotBeOpenedDetail =>
+      'Tus datos siguen en esta computadora y no se modificaron. Verificá que el llavero del sistema esté desbloqueado y volvé a intentar.';
 }
