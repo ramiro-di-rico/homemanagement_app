@@ -5,7 +5,6 @@ import 'package:home_management_app/data/local/local_database.dart';
 import 'package:home_management_app/data/local/local_database_opener.dart';
 import 'package:home_management_app/data/models/transaction-with-balance.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
-import 'package:home_management_app/data/services/platform/platform_context.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
@@ -19,16 +18,7 @@ import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/domain/models/transaction.page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class FakePlatform implements PlatformContext {
-  final PlatformType type;
-  FakePlatform(this.type);
-
-  @override
-  PlatformType getPlatformType() => type;
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
+import '../../helpers/fake_platform.dart';
 
 class FakeRemoteAccounts implements AccountDataSource {
   final List<String> calls = [];

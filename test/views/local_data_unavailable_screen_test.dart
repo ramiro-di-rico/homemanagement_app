@@ -4,19 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:home_management_app/data/local/local_database.dart';
 import 'package:home_management_app/data/local/local_database_opener.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
-import 'package:home_management_app/data/services/platform/platform_context.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/local_mode/views/local_data_unavailable_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class _DesktopPlatform implements PlatformContext {
-  @override
-  PlatformType getPlatformType() => PlatformType.Desktop;
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
+import '../helpers/fake_platform.dart';
 
 void main() {
   late LocalDataUnavailableReason? failWith;
@@ -24,7 +17,7 @@ void main() {
 
   Future<AppModeService> failingService() async {
     SharedPreferences.setMockInitialValues({'appMode': 'local'});
-    final service = AppModeService(_DesktopPlatform(), openDatabase: (_) async {
+    final service = AppModeService(FakePlatform(PlatformType.Desktop), openDatabase: (_) async {
       final reason = failWith;
       if (reason != null) throw LocalDataUnavailableException(reason);
       return opened = LocalDatabase(NativeDatabase.memory());
