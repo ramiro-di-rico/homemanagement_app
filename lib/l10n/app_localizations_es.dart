@@ -945,6 +945,24 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get retry => 'Reintentar';
+
+  @override
+  String get accountHasTransactions =>
+      'Esta cuenta tiene transacciones, por lo que no se puede eliminar. Elimina primero sus transacciones, o archívala.';
+
+  @override
+  String get categoryInUse =>
+      'Esta categoría se usa en transacciones, por lo que no se puede eliminar. Puedes desactivarla en su lugar.';
+
+  @override
+  String get deactivateCategory => 'Desactivar';
+
+  @override
+  String get categoryNameTaken => 'Ya existe una categoría con este nombre.';
+
+  @override
+  String get changeNotSaved =>
+      'No se pudo guardar el cambio. No se modificó nada.';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1862,4 +1880,22 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get retry => 'Reintentar';
+
+  @override
+  String get accountHasTransactions =>
+      'Esta cuenta tiene transacciones, por lo que no se puede eliminar. Eliminá primero sus transacciones, o archivala.';
+
+  @override
+  String get categoryInUse =>
+      'Esta categoría se usa en transacciones, por lo que no se puede eliminar. Podés desactivarla en su lugar.';
+
+  @override
+  String get deactivateCategory => 'Desactivar';
+
+  @override
+  String get categoryNameTaken => 'Ya existe una categoría con este nombre.';
+
+  @override
+  String get changeNotSaved =>
+      'No se pudo guardar el cambio. No se modificó nada.';
 }

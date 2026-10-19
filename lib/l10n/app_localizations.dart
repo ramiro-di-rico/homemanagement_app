@@ -1764,6 +1764,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @accountHasTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has transactions, so it can\'t be deleted. Delete its transactions first, or archive the account instead.'**
+  String get accountHasTransactions;
+
+  /// No description provided for @categoryInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This category is used by transactions, so it can\'t be deleted. You can deactivate it instead.'**
+  String get categoryInUse;
+
+  /// No description provided for @deactivateCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get deactivateCategory;
+
+  /// No description provided for @categoryNameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'A category with this name already exists.'**
+  String get categoryNameTaken;
+
+  /// No description provided for @changeNotSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your change couldn\'t be saved. Nothing was changed.'**
+  String get changeNotSaved;
 }
 
 class _AppLocalizationsDelegate

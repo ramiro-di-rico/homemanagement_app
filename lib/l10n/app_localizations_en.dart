@@ -938,4 +938,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get accountHasTransactions =>
+      'This account has transactions, so it can\'t be deleted. Delete its transactions first, or archive the account instead.';
+
+  @override
+  String get categoryInUse =>
+      'This category is used by transactions, so it can\'t be deleted. You can deactivate it instead.';
+
+  @override
+  String get deactivateCategory => 'Deactivate';
+
+  @override
+  String get categoryNameTaken => 'A category with this name already exists.';
+
+  @override
+  String get changeNotSaved =>
+      'Your change couldn\'t be saved. Nothing was changed.';
 }

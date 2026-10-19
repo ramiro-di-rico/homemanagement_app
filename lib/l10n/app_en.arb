@@ -476,5 +476,10 @@
   "localModeKeyringUnavailable": "Local mode needs the system keyring to store its encryption key, but the keyring isn't available or is locked. Unlock it and try again.",
   "localDataCannotBeOpened": "Your local data can't be opened",
   "localDataCannotBeOpenedDetail": "Your data is still on this computer and hasn't been changed. Check that the system keyring is unlocked, then try again.",
-  "retry": "Retry"
+  "retry": "Retry",
+  "accountHasTransactions": "This account has transactions, so it can't be deleted. Delete its transactions first, or archive the account instead.",
+  "categoryInUse": "This category is used by transactions, so it can't be deleted. You can deactivate it instead.",
+  "deactivateCategory": "Deactivate",
+  "categoryNameTaken": "A category with this name already exists.",
+  "changeNotSaved": "Your change couldn't be saved. Nothing was changed."
 }
