@@ -5,6 +5,8 @@ import 'package:home_management_app/ui/core/extensions/hex_color_extension.dart'
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/add_category_sheet.dart';
 
 import 'package:home_management_app/data/repositories/category.repository.dart';
+import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/ui/core/mixins/notifier_mixin.dart';
 import 'edit_category_sheet.dart';
 
@@ -211,9 +213,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                                       style: TextStyle(
                                           color: Colors.redAccent,
                                           fontWeight: FontWeight.bold)),
-                                  onPressed: () {
-                                    _categoryRepository.delete(category);
-                                  },
+                                  onPressed: () => _deleteCategory(category),
                                 ),
                               ],
                             builder: (BuildContext context, MenuController controller,
@@ -249,6 +249,44 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
 
   Color _getContentColor(Color background) {
     return background.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+  }
+
+  /// A category used by transactions can't be deleted locally. The user is
+  /// offered to deactivate it, so it stops being offered but keeps its history.
+  Future<void> _deleteCategory(CategoryModel category) async {
+    try {
+      await _categoryRepository.delete(category);
+    } on CategoryInUseException {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      final deactivate = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text(l10n.categoryInUse),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.deactivateCategory),
+            ),
+          ],
+        ),
+      );
+      if (deactivate != true) return;
+      await _categoryRepository.update(CategoryModel(
+          category.id,
+          category.userId,
+          category.name,
+          category.icon,
+          category.measurable,
+          false,
+          category.color));
+      // `update` doesn't replace the item in the list, so reload it.
+      await _categoryRepository.load();
+    }
   }
 
   void refreshList() {

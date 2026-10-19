@@ -5,6 +5,8 @@ import 'package:home_management_app/ui/core/extensions/hex_color_extension.dart'
 
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
+import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 
 class EditCategorySheet extends StatefulWidget {
   final CategoryModel category;
@@ -19,25 +21,31 @@ class _EditCategorySheetState extends State<EditCategorySheet> {
   TextEditingController _categoryNameController = TextEditingController();
   CategoryModel category = CategoryModel.create('');
   Color pickerColor = Colors.red;
+  String? _nameError;
 
   @override
   void initState() {
     pickerColor = widget.category.color.fromHex();
+    // Set once: setting it in build would overwrite what the user typed on every rebuild.
+    _categoryNameController.text = widget.category.name;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    _categoryNameController.text = widget.category.name;
     return Row(
       children: [
         SizedBox(width: 20),
         Expanded(
           child: TextField(
             controller: _categoryNameController,
+            onChanged: (_) {
+              if (_nameError != null) setState(() => _nameError = null);
+            },
             decoration: InputDecoration(
               labelText: 'Category name',
               border: OutlineInputBorder(),
+              errorText: _nameError,
             ),
           ),
         ),
@@ -90,11 +98,22 @@ class _EditCategorySheetState extends State<EditCategorySheet> {
         ),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
+            final previousName = widget.category.name;
+            final previousColor = widget.category.color;
             widget.category.name = _categoryNameController.text;
             widget.category.color = pickerColor.toHex();
-            _categoryRepository.update(widget.category);
-            Navigator.pop(context);
+            try {
+              await _categoryRepository.update(widget.category);
+              if (mounted) Navigator.pop(context);
+            } on CategoryNameTakenException {
+              // Nothing was saved, so the list must keep showing the old values.
+              widget.category.name = previousName;
+              widget.category.color = previousColor;
+              if (!mounted) return;
+              setState(() =>
+                  _nameError = AppLocalizations.of(context)!.categoryNameTaken);
+            }
           },
           child: Text('Update'),
         ),
