@@ -17,6 +17,7 @@ import 'package:home_management_app/ui/features/invites/views/invite_management_
 import 'package:home_management_app/ui/features/invites/views/public_invite_screen.dart';
 import 'package:home_management_app/ui/features/dashboard/views/budget_desktop_view.dart';
 import 'package:home_management_app/ui/features/home/views/home-desktop.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_home_desktop.dart';
 import 'ui/features/home/views/home.dart';
 import 'package:home_management_app/ui/features/home/views/logging_view.dart';
 import 'package:home_management_app/ui/features/settings/views/settings.dart';
@@ -52,8 +53,9 @@ class Routing{
         ),
         GoRoute(
             path: HomeScreen.fullPath,
-            builder: (context, state) =>
-            !isDesktop ? HomeScreen() : HomeDesktop(),
+            builder: (context, state) => !isDesktop
+                ? HomeScreen()
+                : (appModeService.isLocal ? LocalHomeDesktop() : HomeDesktop()),
             routes: [
               GoRoute(
                 path: TransactionsSearchDesktopView.path,
