@@ -266,10 +266,16 @@ description: "Task list for Standalone Desktop Mode"
   - A locked keyring gets `localModeKeyringUnavailable`. Every other reason (`keyMissing`, `notEncrypted`, `unreadable`) gets the generic `localDataCannotBeOpenedDetail`.
   - Added the `retry` key (en, es, es_AR), since no reusable one existed.
   - Widget test: `test/views/local_data_unavailable_screen_test.dart`. Not run in the real app: forcing the error needs an existing database file with no key in the keyring.
-- [ ] T035 [US1] Update `lib/ui/features/authentication/views/login-desktop.dart`:
+- [X] T035 [US1] Update `lib/ui/features/authentication/views/login-desktop.dart`:
   - When `GetIt.I<AppModeService>().isLocalAvailable`, add a `TextButton(l10n.useWithoutAccount)` next to the "Create one" link (around line 162).
   - On tap, `await enterLocalMode()` then `context.go(HomeScreen.fullPath)`.
   - On `LocalDataUnavailableException(keyringUnavailable)`, show `localModeKeyringUnavailable` in a dialog and stay on login.
+
+  Done. Notes:
+  - The button sits on its own line under the "Create one" row, not in it: a third item in that row overflows the 460 px content width. It is disabled while a sign-in is running.
+  - Any `LocalDataUnavailableException` shows the dialog, not only `keyringUnavailable`: a locked keyring gets `localModeKeyringUnavailable`, the other reasons get `localDataCannotBeOpenedDetail`. The OK label is Flutter's own localized `okButtonLabel`.
+  - `DesktopLoginView` also serves the web, but `isLocalAvailable` is false there, so the button is hidden. The widget test is T029.
+  - Not run in the real app yet: tapping the button persists `appMode = local`, and the local home (T036, T037) does not exist, so the next launch would start into a home that still calls the server.
 - [ ] T036 [US1] Update `lib/ui/features/home/views/home-desktop.dart` `initState`:
   - When `appMode.isLocal`, only call `AccountRepository.load()`, `CurrencyRepository.load()` and `CategoryRepository.load()`.
   - Skip `TagRepository.load()`, `IdentityUserRepository.getUser()`, `BudgetRepository.load()` and the `useMainAccounts` read, and force `useMainAccounts = false`.
