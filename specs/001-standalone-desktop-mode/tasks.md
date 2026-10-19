@@ -321,7 +321,10 @@ description: "Task list for Standalone Desktop Mode"
 
 ### Implementation for User Story 2
 
-- [ ] T040 [US2] Add the l10n keys `accountHasTransactions`, `categoryInUse`, `deactivateCategory`, `categoryNameTaken` and `changeNotSaved` to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
+- [X] T040 [US2] Add the l10n keys `accountHasTransactions`, `categoryInUse`, `deactivateCategory`, `categoryNameTaken` and `changeNotSaved` to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
+
+  Done. Wording notes: `accountHasTransactions` points the user to deleting the transactions or archiving the account (archive exists in the app). `categoryInUse` points to deactivating. `changeNotSaved` says nothing was changed, which is true because T044 leaves the in-memory state untouched. `it` and `pt` fall back to English (53 and 56 untranslated).
+
 - [ ] T041 [US2] In `lib/ui/features/accounts/views/account-list-desktop.dart` (delete action around line 378), catch `AccountHasTransactionsException` from `AccountRepository.delete` and show `l10n.accountHasTransactions` through the existing notifier/snackbar path, instead of a generic error. Also make sure `AccountRepository.delete` in `lib/data/repositories/account.repository.dart` rethrows typed exceptions rather than swallowing them.
 - [ ] T042 [US2] In `lib/ui/features/settings/views/settings-widgets/categories_list_widget.dart` (delete around line 215), catch `CategoryInUseException`. Show a dialog with `l10n.categoryInUse` and a `l10n.deactivateCategory` action that calls `CategoryRepository.update` with `isActive = false`.
 - [ ] T043 [US2] In `lib/ui/features/settings/views/settings-widgets/add_category_sheet.dart` and `edit_category_sheet.dart`, catch `CategoryNameTakenException` and show `l10n.categoryNameTaken`.
