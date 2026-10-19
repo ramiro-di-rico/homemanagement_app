@@ -4,6 +4,7 @@ import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/metrics/account-metrics.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/data/services/error_notifier_service.dart';
 
 class AccountRepository extends ChangeNotifier {
@@ -53,6 +54,8 @@ class AccountRepository extends ChangeNotifier {
       this.accounts.add(created);
       notifyListeners();
       notifierService.notify('Account ${accountModel.name} added successfully');
+    } on LocalWriteFailedException {
+      notifierService.notifyChangeNotSaved();
     } catch (ex) {
       print(ex);
       notifierService.notify('Failed to add account ${accountModel.name}', isError: true);
@@ -64,6 +67,10 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
       notifierService.notify('Account ${accountModel.name} updated successfully');
+    } on LocalWriteFailedException {
+      notifierService.notifyChangeNotSaved();
+      // The caller edited the model before saving, so take the stored values back.
+      await _reloadQuietly();
     } catch (ex) {
       notifierService.notify('Failed to update account ${accountModel.name}', isError: true);
       print(ex);
@@ -77,6 +84,9 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
       notifierService.notify('Account ${accountModel.name} $archiveLabel successfully');
+    } on LocalWriteFailedException {
+      accountModel.archive = !accountModel.archive;
+      notifierService.notifyChangeNotSaved();
     } catch (ex) {
       notifierService.notify('Failed to $archiveLabel account ${accountModel.name}', isError: true);
       print(ex);
@@ -90,6 +100,9 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
       notifierService.notify('Account ${accountModel.name} $hideLabel successfully');
+    } on LocalWriteFailedException {
+      accountModel.isHidden = !accountModel.isHidden;
+      notifierService.notifyChangeNotSaved();
     } catch (ex) {
       notifierService.notify('Failed to $hideLabel account ${accountModel.name}', isError: true);
       print(ex);
@@ -105,9 +118,19 @@ class AccountRepository extends ChangeNotifier {
     } on AccountHasTransactionsException {
       // The caller explains it to the user, so there is no generic failure notice.
       rethrow;
+    } on LocalWriteFailedException {
+      notifierService.notifyChangeNotSaved();
     } catch (ex) {
       print(ex);
       notifierService.notify('Failed to delete account ${accountModel.name}', isError: true);
+    }
+  }
+
+  Future<void> _reloadQuietly() async {
+    try {
+      await load();
+    } catch (_) {
+      // Keep what is shown if the stored values can't be read either.
     }
   }
 

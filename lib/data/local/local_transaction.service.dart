@@ -5,6 +5,7 @@ import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/domain/models/transaction.page.dart';
 
 import 'local_database.dart';
+import 'local_write_guard.dart';
 import 'local_mappers.dart';
 
 class LocalTransactionService implements TransactionDataSource {
@@ -67,7 +68,8 @@ class LocalTransactionService implements TransactionDataSource {
 
   /// There is no transfer mirroring locally, so `targetAccount` is always null.
   @override
-  Future<TransactionWithBalanceModel> add(TransactionModel transaction) async {
+  Future<TransactionWithBalanceModel> add(TransactionModel transaction) =>
+      guardWrite(() async {
     final name = _validate(transaction);
     final id = await _db.into(_db.transactions).insert(
           TransactionsCompanion.insert(
@@ -91,10 +93,10 @@ class LocalTransactionService implements TransactionDataSource {
         .getSingle();
     return TransactionWithBalanceModel(row.toModel(category.name),
         account.toModel(await _db.accountBalance(account.id)), null);
-  }
+  });
 
   @override
-  Future update(TransactionModel transaction) async {
+  Future update(TransactionModel transaction) => guardWrite(() async {
     final name = _validate(transaction);
     await (_db.update(_db.transactions)
           ..where((t) => t.id.equals(transaction.id)))
@@ -106,12 +108,12 @@ class LocalTransactionService implements TransactionDataSource {
       transactionType: Value(_typeToInt(transaction.transactionType)),
       date: Value(toStoredDate(transaction.date)),
     ));
-  }
+  });
 
   @override
-  Future delete(int id) async {
+  Future delete(int id) => guardWrite(() async {
     await (_db.delete(_db.transactions)..where((t) => t.id.equals(id))).go();
-  }
+  });
 
   int _typeToInt(TransactionType type) =>
       type == TransactionType.Income ? 0 : 1;

@@ -1,38 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:home_management_app/domain/models/category.dart';
+import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 
 class CategoryRepository extends ChangeNotifier {
   CategoryDataSource categoryService;
+  final NotifierService? notifierService;
   final List<CategoryModel> categories = [];
 
-  CategoryRepository(this.categoryService);
+  CategoryRepository(this.categoryService, {this.notifierService});
 
   Future load() async {
-    categories.clear();
+    // Fetch before clearing, so a failed read keeps what is already shown.
     var result = await categoryService.fetch();
+    categories.clear();
     categories.addAll(result);
     categories.sort((a, b) => a.name.compareTo(b.name));
     notifyListeners();
   }
 
   Future add(CategoryModel category) async {
-    var addedCategory = await categoryService.add(category);
-    categories.add(addedCategory);
-    categories.sort((a, b) => a.name.compareTo(b.name));
-    notifyListeners();
+    try {
+      var addedCategory = await categoryService.add(category);
+      categories.add(addedCategory);
+      categories.sort((a, b) => a.name.compareTo(b.name));
+      notifyListeners();
+    } on LocalWriteFailedException {
+      notifierService?.notifyChangeNotSaved();
+    }
   }
 
   Future update(CategoryModel category) async {
-    await categoryService.update(category);
-    notifyListeners();
+    try {
+      await categoryService.update(category);
+      notifyListeners();
+    } on LocalWriteFailedException {
+      notifierService?.notifyChangeNotSaved();
+      // The caller edited the model before saving, so take the stored values back.
+      try {
+        await load();
+      } catch (_) {
+        // Keep what is shown if the stored values can't be read either.
+      }
+    }
   }
 
   Future delete(CategoryModel category) async {
-    await categoryService.delete(category);
-    categories.removeWhere((element) => element.id == category.id);
-    categories.sort((a, b) => a.name.compareTo(b.name));
-    notifyListeners();
+    try {
+      await categoryService.delete(category);
+      categories.removeWhere((element) => element.id == category.id);
+      categories.sort((a, b) => a.name.compareTo(b.name));
+      notifyListeners();
+    } on LocalWriteFailedException {
+      notifierService?.notifyChangeNotSaved();
+    }
   }
 
   List<CategoryModel> getActiveCategories() {

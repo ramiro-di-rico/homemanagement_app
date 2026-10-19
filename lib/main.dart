@@ -209,7 +209,7 @@ void registerSingletons(PlatformContext platformContext) {
           apiServiceFactory:
               ApiServiceFactory(authenticationService: authenticationService),
           notifierService: errorNotifierService),
-      appModeService));
+      appModeService), notifierService: errorNotifierService);
 
   var identityUserRepository = IdentityUserRepository(
       IdentityUserService(authenticationService: authenticationService),

@@ -3,6 +3,7 @@ import 'package:home_management_app/data/services/sources/account_data_source.da
 import 'package:home_management_app/domain/models/account.dart';
 
 import 'local_database.dart';
+import 'local_write_guard.dart';
 import 'local_mappers.dart';
 
 class LocalAccountService implements AccountDataSource {
@@ -26,7 +27,7 @@ class LocalAccountService implements AccountDataSource {
   }
 
   @override
-  Future<AccountModel> add(AccountModel account) async {
+  Future<AccountModel> add(AccountModel account) => guardWrite(() async {
     final name = _validName(account.name);
     final id = await _db.into(_db.accounts).insert(AccountsCompanion.insert(
           name: name,
@@ -40,10 +41,10 @@ class LocalAccountService implements AccountDataSource {
           ..where((a) => a.id.equals(id)))
         .getSingle();
     return created.toModel(0);
-  }
+  });
 
   @override
-  Future update(AccountModel account) async {
+  Future update(AccountModel account) => guardWrite(() async {
     final name = _validName(account.name);
     await (_db.update(_db.accounts)..where((a) => a.id.equals(account.id)))
         .write(AccountsCompanion(
@@ -54,10 +55,10 @@ class LocalAccountService implements AccountDataSource {
       archive: Value(account.archive),
       isHidden: Value(account.isHidden),
     ));
-  }
+  });
 
   @override
-  Future delete(AccountModel account) async {
+  Future delete(AccountModel account) => guardWrite(() async {
     final used = await (_db.select(_db.transactions)
           ..where((t) => t.accountId.equals(account.id))
           ..limit(1))
@@ -65,7 +66,7 @@ class LocalAccountService implements AccountDataSource {
     if (used.isNotEmpty) throw AccountHasTransactionsException();
     await (_db.delete(_db.accounts)..where((a) => a.id.equals(account.id)))
         .go();
-  }
+  });
 
   int _typeToInt(AccountType type) => type == AccountType.Cash ? 0 : 1;
 

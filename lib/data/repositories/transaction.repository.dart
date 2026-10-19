@@ -3,11 +3,13 @@ import 'dart:typed_data';
 import 'package:home_management_app/data/models/voice_transaction_draft.dart';
 import 'package:home_management_app/data/models/document_transaction_draft.dart';
 import 'package:flutter/material.dart';
+import 'package:home_management_app/data/models/transaction-with-balance.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/tag.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/tag.repository.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
 
@@ -44,7 +46,13 @@ class TransactionRepository extends ChangeNotifier {
   }
 
   Future add(TransactionModel transaction) async {
-    var transactionResult = await this._dataSource.add(transaction);
+    final TransactionWithBalanceModel transactionResult;
+    try {
+      transactionResult = await this._dataSource.add(transaction);
+    } on LocalWriteFailedException {
+      errorNotifierService.notifyChangeNotSaved();
+      return;
+    }
     if (accountsContainer.any((element) =>
         element.account.id == transactionResult.transactionModel.accountId)) {
       var container = accountsContainer.firstWhere(
@@ -76,7 +84,12 @@ class TransactionRepository extends ChangeNotifier {
       transactionService.previewDocumentTransactions(accountId, filesByName);
 
   Future remove(TransactionModel transactionModel) async {
-    await this._dataSource.delete(transactionModel.id);
+    try {
+      await this._dataSource.delete(transactionModel.id);
+    } on LocalWriteFailedException {
+      errorNotifierService.notifyChangeNotSaved();
+      return;
+    }
     var container = accountsContainer.firstWhere(
         (element) => element.account.id == transactionModel.accountId,
         orElse: () => AccountContainer(AccountModel.empty(0)));
@@ -92,7 +105,12 @@ class TransactionRepository extends ChangeNotifier {
   }
 
   Future update(TransactionModel transactionModel) async {
-    await this._dataSource.update(transactionModel);
+    try {
+      await this._dataSource.update(transactionModel);
+    } on LocalWriteFailedException {
+      errorNotifierService.notifyChangeNotSaved();
+      return;
+    }
     var currentContainer = _getCurrentContainer();
     var currentTransaction = currentContainer.transactions
         .firstWhere((x) => x.id == transactionModel.id);
