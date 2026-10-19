@@ -301,5 +301,6 @@
   "localModeUnavailableTitle": "Modo local no disponible",
   "localModeKeyringUnavailable": "El modo local necesita el llavero del sistema para guardar su clave de cifrado, pero el llavero no está disponible o está bloqueado. Desbloquealo y volvé a intentar.",
   "localDataCannotBeOpened": "No se pueden abrir tus datos locales",
-  "localDataCannotBeOpenedDetail": "Tus datos siguen en esta computadora y no se modificaron. Verificá que el llavero del sistema esté desbloqueado y volvé a intentar."
+  "localDataCannotBeOpenedDetail": "Tus datos siguen en esta computadora y no se modificaron. Verificá que el llavero del sistema esté desbloqueado y volvé a intentar.",
+  "retry": "Reintentar"
 }

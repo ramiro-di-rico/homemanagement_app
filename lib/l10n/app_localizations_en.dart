@@ -935,4 +935,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get localDataCannotBeOpenedDetail =>
       'Your data is still on this computer and hasn\'t been changed. Check that the system keyring is unlocked, then try again.';
+
+  @override
+  String get retry => 'Retry';
 }

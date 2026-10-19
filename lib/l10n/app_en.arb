@@ -475,5 +475,6 @@
   "localModeUnavailableTitle": "Local mode unavailable",
   "localModeKeyringUnavailable": "Local mode needs the system keyring to store its encryption key, but the keyring isn't available or is locked. Unlock it and try again.",
   "localDataCannotBeOpened": "Your local data can't be opened",
-  "localDataCannotBeOpenedDetail": "Your data is still on this computer and hasn't been changed. Check that the system keyring is unlocked, then try again."
+  "localDataCannotBeOpenedDetail": "Your data is still on this computer and hasn't been changed. Check that the system keyring is unlocked, then try again.",
+  "retry": "Retry"
 }

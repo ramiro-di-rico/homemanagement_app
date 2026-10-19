@@ -1758,6 +1758,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your data is still on this computer and hasn\'t been changed. Check that the system keyring is unlocked, then try again.'**
   String get localDataCannotBeOpenedDetail;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate
