@@ -137,7 +137,12 @@ class _AccountSheetDesktopState extends State<AccountSheetDesktop> {
 
   onCurrencyTypeChanged(String currency) {
     setState(() {
-      this.account.currencyId = this.currencies.indexOf(currency);
+      // The id, not the position in the list: ids start at 1.
+      this.account.currencyId = this
+          .currencyRepository
+          .currencies
+          .firstWhere((c) => c.name == currency)
+          .id;
     });
   }
 
