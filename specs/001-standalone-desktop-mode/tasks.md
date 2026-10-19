@@ -276,10 +276,14 @@ description: "Task list for Standalone Desktop Mode"
   - Any `LocalDataUnavailableException` shows the dialog, not only `keyringUnavailable`: a locked keyring gets `localModeKeyringUnavailable`, the other reasons get `localDataCannotBeOpenedDetail`. The OK label is Flutter's own localized `okButtonLabel`.
   - `DesktopLoginView` also serves the web, but `isLocalAvailable` is false there, so the button is hidden. The widget test is T029.
   - Not run in the real app yet: tapping the button persists `appMode = local`, and the local home (T036, T037) does not exist, so the next launch would start into a home that still calls the server.
-- [ ] T036 [US1] Update `lib/ui/features/home/views/home-desktop.dart` `initState`:
+- [X] T036 [US1] Update `lib/ui/features/home/views/home-desktop.dart` `initState`:
   - When `appMode.isLocal`, only call `AccountRepository.load()`, `CurrencyRepository.load()` and `CategoryRepository.load()`.
   - Skip `TagRepository.load()`, `IdentityUserRepository.getUser()`, `BudgetRepository.load()` and the `useMainAccounts` read, and force `useMainAccounts = false`.
-- [ ] T037 [US1] Update `lib/ui/features/home/views/home-desktop.dart` body: when local, render only `AccountListDesktopView`. Don't build `DashboardDesktop` (`BalanceWidget`, `OverviewWidget` and `BalanceHistoricalChartWidget` all call `MetricService`) or `RecurringTransactionList`, so no server request is made (FR-004).
+- [X] T037 [US1] Update `lib/ui/features/home/views/home-desktop.dart` body: when local, render only `AccountListDesktopView`. Don't build `DashboardDesktop` (`BalanceWidget`, `OverviewWidget` and `BalanceHistoricalChartWidget` all call `MetricService`) or `RecurringTransactionList`, so no server request is made (FR-004).
+
+  Done (T036, T037), with a changed approach: instead of branching inside `HomeDesktop`, local mode has its own widget, `lib/ui/features/local_mode/views/local_home_desktop.dart` (`LocalHomeDesktop`), and `home-desktop.dart` is untouched. `routing.dart` picks it when `appModeService.isLocal`, the same way it already picks mobile or desktop. It loads only accounts, currencies and categories, and shows only `AccountListDesktopView` (centred, max 900 px). Its AppBar has only the title for now.
+  - **T052, T054 and T049 now apply to `LocalHomeDesktop`**: add the Settings and "Create account" actions and the banner there, and don't edit `HomeDesktop`'s AppBar.
+  - Not run in the real app yet (T038 is the manual FR-004 check).
 - [ ] T038 [US1] Check FR-004 by hand. Run the Linux debug build with the network disabled, enter local mode, and watch the logs (`lib/data/services/logger_wrapper.dart` output / Logging view) for any HTTP attempt during startup and home load. Fix any caller found.
 
 **Checkpoint**: US1 is fully functional. The MVP can be demoed: offline start, local home, relaunch.
