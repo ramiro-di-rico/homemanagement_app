@@ -245,11 +245,15 @@ description: "Task list for Standalone Desktop Mode"
 
 ### Implementation for User Story 1
 
-- [ ] T031 [US1] Add the l10n keys `useWithoutAccount`, `localModeUnavailableTitle`, `localModeKeyringUnavailable`, `localDataCannotBeOpened` and `localDataCannotBeOpenedDetail` to `lib/l10n/app_en.arb`, plus Spanish in `app_es.arb` and `app_es_ar.arb`. `it` and `pt` fall back to English. Then run `flutter gen-l10n`.
-- [ ] T032 [US1] Update `lib/routing.dart`:
+- [X] T031 [US1] Add the l10n keys `useWithoutAccount`, `localModeUnavailableTitle`, `localModeKeyringUnavailable`, `localDataCannotBeOpened` and `localDataCannotBeOpenedDetail` to `lib/l10n/app_en.arb`, plus Spanish in `app_es.arb` and `app_es_ar.arb`. `it` and `pt` fall back to English. Then run `flutter gen-l10n`.
+- [X] T032 [US1] Update `lib/routing.dart`:
   - `createRoutes` takes `AppModeService` and passes it as `refreshListenable`.
   - In `redirect`, put the local-mode block at the **very top**, before the password-reset state, the `?view=reset_password` query and the `/public/invites/` check, because all of those reach the server (FR-004). When `appModeService.isLocal`: send `/login_screen` to `/home_screen`, and allow `HomeScreen.fullPath` without authentication.
   - Leave the full allowlist (FR-016) to US3, T048.
+
+  Done. Notes:
+  - In local mode `/login_screen` and `/public/invites/*` redirect to `/home_screen`, and `/home_screen` is allowed. The password-reset state and `?view=reset_password` checks are skipped entirely in local mode, because they reach the server. Every other path falls through to the existing logic, so registration still works and deep screens such as account detail redirect to login and then home until T051 adds the allowlist.
+  - `createRoutes` has a fourth parameter, `AppModeService`. `lib/myapp.dart` passes it from GetIt now (a minimal call-site change). The startup-error screen is still T033.
 - [ ] T033 [US1] Update `lib/myapp.dart` to resolve `AppModeService` from GetIt and pass it to `Routing.createRoutes`. If `appModeService.startupError != null`, render `LocalDataUnavailableScreen` instead of the router.
 - [ ] T034 [US1] Create `lib/ui/features/local_mode/views/local_data_unavailable_screen.dart` (the "local data cannot be opened" spec edge case):
   - Explains the reason (keyring locked/unavailable, key missing, not encrypted) using the T031 strings.
