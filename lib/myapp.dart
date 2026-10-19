@@ -11,6 +11,7 @@ import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/data/services/password_reset_service.dart';
 import 'package:home_management_app/ui/core/themes/dark_theme.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_data_unavailable_screen.dart';
 import 'package:home_management_app/ui/core/themes/light_theme.dart';
 
 class MyApp extends StatelessWidget {
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
     deepLinkService.attachRouter(router);
 
     return ListenableBuilder(
-      listenable: identityUserRepository,
+      listenable: Listenable.merge([identityUserRepository, appModeService]),
       builder: (context, _) {
         var languageCode = identityUserRepository.getCurrentLanguage();
         Locale? locale;
@@ -45,6 +46,22 @@ class MyApp extends StatelessWidget {
           } else {
             locale = Locale(languageCode);
           }
+        }
+
+        // The local data couldn't be opened: nothing else may run until it can.
+        if (appModeService.startupError != null) {
+          return MaterialApp(
+            key: ValueKey(locale?.toString() ?? 'default'),
+            home: LocalDataUnavailableScreen(appModeService: appModeService),
+            debugShowCheckedModeBanner: false,
+            onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: locale,
+            theme: LightTheme.create(),
+            darkTheme: DarkTheme.create(),
+            themeMode: identityUserRepository.themeMode,
+          );
         }
 
         return MaterialApp.router(
