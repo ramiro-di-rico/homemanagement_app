@@ -1794,6 +1794,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your change couldn\'t be saved. Nothing was changed.'**
   String get changeNotSaved;
+
+  /// No description provided for @localModeBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re working locally on this computer'**
+  String get localModeBanner;
+
+  /// No description provided for @createAccountToSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAccountToSync;
+
+  /// No description provided for @logInExistingAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to an existing account'**
+  String get logInExistingAccount;
+
+  /// No description provided for @logInExistingAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Your local data will stay on this computer and won\'t be moved to that account.'**
+  String get logInExistingAccountConfirm;
 }
 
 class _AppLocalizationsDelegate

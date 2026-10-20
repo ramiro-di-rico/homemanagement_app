@@ -961,4 +961,17 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get changeNotSaved =>
       'Your change couldn\'t be saved. Nothing was changed.';
+
+  @override
+  String get localModeBanner => 'You\'re working locally on this computer';
+
+  @override
+  String get createAccountToSync => 'Create account';
+
+  @override
+  String get logInExistingAccount => 'Log in to an existing account';
+
+  @override
+  String get logInExistingAccountConfirm =>
+      'Your local data will stay on this computer and won\'t be moved to that account.';
 }

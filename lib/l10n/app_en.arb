@@ -481,5 +481,9 @@
   "categoryInUse": "This category is used by transactions, so it can't be deleted. You can deactivate it instead.",
   "deactivateCategory": "Deactivate",
   "categoryNameTaken": "A category with this name already exists.",
-  "changeNotSaved": "Your change couldn't be saved. Nothing was changed."
+  "changeNotSaved": "Your change couldn't be saved. Nothing was changed.",
+  "localModeBanner": "You're working locally on this computer",
+  "createAccountToSync": "Create account",
+  "logInExistingAccount": "Log in to an existing account",
+  "logInExistingAccountConfirm": "Your local data will stay on this computer and won't be moved to that account."
 }

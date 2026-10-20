@@ -963,6 +963,20 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get changeNotSaved =>
       'No se pudo guardar el cambio. No se modificó nada.';
+
+  @override
+  String get localModeBanner =>
+      'Estás trabajando de forma local en este equipo';
+
+  @override
+  String get createAccountToSync => 'Crear cuenta';
+
+  @override
+  String get logInExistingAccount => 'Iniciar sesión en una cuenta existente';
+
+  @override
+  String get logInExistingAccountConfirm =>
+      'Tus datos locales se quedarán en este equipo y no se moverán a esa cuenta.';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1898,4 +1912,18 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get changeNotSaved =>
       'No se pudo guardar el cambio. No se modificó nada.';
+
+  @override
+  String get localModeBanner =>
+      'Estás trabajando de forma local en esta computadora';
+
+  @override
+  String get createAccountToSync => 'Crear cuenta';
+
+  @override
+  String get logInExistingAccount => 'Iniciar sesión en una cuenta existente';
+
+  @override
+  String get logInExistingAccountConfirm =>
+      'Tus datos locales se quedarán en esta computadora y no se moverán a esa cuenta.';
 }

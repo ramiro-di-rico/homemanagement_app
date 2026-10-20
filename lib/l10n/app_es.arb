@@ -314,5 +314,9 @@
   "categoryInUse": "Esta categoría se usa en transacciones, por lo que no se puede eliminar. Puedes desactivarla en su lugar.",
   "deactivateCategory": "Desactivar",
   "categoryNameTaken": "Ya existe una categoría con este nombre.",
-  "changeNotSaved": "No se pudo guardar el cambio. No se modificó nada."
+  "changeNotSaved": "No se pudo guardar el cambio. No se modificó nada.",
+  "localModeBanner": "Estás trabajando de forma local en este equipo",
+  "createAccountToSync": "Crear cuenta",
+  "logInExistingAccount": "Iniciar sesión en una cuenta existente",
+  "logInExistingAccountConfirm": "Tus datos locales se quedarán en este equipo y no se moverán a esa cuenta."
 }
