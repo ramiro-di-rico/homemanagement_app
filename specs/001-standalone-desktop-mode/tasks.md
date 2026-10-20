@@ -381,25 +381,26 @@ description: "Task list for Standalone Desktop Mode"
 
   Done, test-first. `test/views/local_mode_guard_test.dart` now also covers the allowlist: six paths that must stay put, and ten that must redirect to `/home_screen` (the nine listed here, plus reminders, plus an unknown path). Four of the "stay" cases (account detail, settings, the log screen and the import screen) failed until T051 was implemented, and pass now. The import path is written as a literal, because the screen arrives with T069.
 
-- [ ] T049 [P] [US3] Write `test/views/home_desktop_local_mode_test.dart`. In local mode, the AppBar shows only Settings and "Create account" and "Log in to an existing account" (the last one is hidden when `isImportPending`). Search, Bulk, Invitations, Statistics, Budget, Reminders and Logout are absent. The local-mode banner is visible.
+- [ ] T049 [P] [US3] Write `test/views/home_desktop_local_mode_test.dart`. In local mode, the AppBar shows only Settings and "Create account" and "Sign in to an existing account" (the last one is hidden when `isImportPending`). Search, Bulk, Invitations, Statistics, Budget, Reminders and Logout are absent. The local-mode banner is visible.
 
 ### Implementation for User Story 3
 
-- [X] T050 [US3] Add the l10n keys `localModeBanner` ("You're working locally on this computer"), `createAccountToSync`, `logInExistingAccount` and `logInExistingAccountConfirm` ("Your local data will stay on this computer and won't be moved to that account.") to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
+- [X] T050 [US3] Add the l10n keys `localModeBanner` ("You're working locally on this computer"), `createOnlineAccount`, `signInExistingAccount` and `signInExistingAccountConfirm` ("Your local data will stay on this computer and won't be moved to that account.") to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
 
-  Done. English text for the AppBar action and the banner button is just "Create account", which is what T049 expects, although the key says "ToSync" (there is no sync, only the one-time move). `it` and `pt` fall back to English (57 and 60 untranslated).
+  Done. The keys were renamed after review (UI-04): `createAccountToSync` is now `createOnlineAccount` ("Create online account", because "account" alone also means a money account here), and the "log in" keys are `signInExistingAccount` and `signInExistingAccountConfirm`, which says how to come back ("Use without an account"). The app already says "Sign in", so the wording follows it. `it` and `pt` fall back to English (57 and 60 untranslated).
 
 - [X] T051 [US3] Complete the FR-016 allowlist in `lib/routing.dart`. In local mode, return `null` only for the paths listed in T048. Redirect everything else to `HomeScreen.fullPath`.
 
   Done. In local mode the router's `redirect` now decides everything: `/login_screen` goes to the home, a path in `_localModeAllowedPaths` is allowed, and any other path, known or not, goes to the home. The set is the six paths from T048, with `/home_screen/local_import` as a literal until T069. Because that block always returns, the password-reset checks that T032 had to skip in local mode are no longer reachable from it, so their `!isLocal` conditions were removed. Online behaviour is unchanged. Account detail is now reachable in local mode, so T047 can be run by hand.
 
-- [ ] T052 [US3] Update the AppBar `actions` in `lib/ui/features/home/views/home-desktop.dart` (lines 63–121). When local, show only Settings and a `createAccountToSync` action that does `context.go(RegistrationScreen.fullPath)`. Also show a `logInExistingAccount` action unless `appMode.isImportPending` (see the next task). Hide Search, Bulk, Invitations, Statistics, Budget, Reminders and Logout.
-- [ ] T053 [US3] Implement "Log in to an existing account" (spec FR-027, US3 scenarios 7–8):
+- [ ] T052 [US3] Update the AppBar `actions` in `lib/ui/features/home/views/home-desktop.dart` (lines 63–121). When local, show only Settings and a `createOnlineAccount` action that does `context.go(RegistrationScreen.fullPath)`. Also show a `signInExistingAccount` action unless `appMode.isImportPending` (see the next task). Hide Search, Bulk, Invitations, Statistics, Budget, Reminders and Logout.
+- [ ] T053 [US3] Implement "Sign in to an existing account" (spec FR-027, US3 scenarios 7–8):
+  - **Already in place (review RF-02):** `AppModeService.leaveLocalMode()` exists: it closes the database without touching the file, persists `online`, clears `startupError` and throws while an import is pending. What is left here is the confirmation dialog (title `signInExistingAccount`, body `signInExistingAccountConfirm`, confirm `signIn`), and clearing `Caching` and **resetting the repositories** (RF-07, SP-05) with no reload before login: online with no user, a reload throws.
   - Add `Future<void> leaveLocalMode()` to `lib/data/services/app_mode.service.dart`. It closes the database **without renaming or deleting the file**, persists `appMode = online`, clears `Caching` and `TransactionRepository.invalidateSuggestions()`, notifies, and reloads the Account, Currency and Category repositories. It throws if `isImportPending`.
-  - The `logInExistingAccount` AppBar action in `lib/ui/features/home/views/home-desktop.dart` shows a confirmation dialog with `l10n.logInExistingAccountConfirm`. On confirm it calls `leaveLocalMode()`, then `context.go(LoginView.fullPath)`.
+  - The `signInExistingAccount` AppBar action in `lib/ui/features/home/views/home-desktop.dart` shows a confirmation dialog with `l10n.signInExistingAccountConfirm`. On confirm it calls `leaveLocalMode()`, then `context.go(LoginView.fullPath)`.
   - The next "Use without an account" reopens the same `homemanagement_local.sqlite` with the same key (T018 already reuses an existing file and key).
   - Add cases to `test/data/services/mode_aware_data_sources_test.dart`: after `leaveLocalMode()`, calls go to the remote; after `enterLocalMode()`, the earlier local rows are still there.
-- [ ] T054 [P] [US3] Create `lib/ui/features/local_mode/views/local_mode_banner.dart`. It's a `MaterialBanner`-style strip using `Theme.of(context).colorScheme` (follow `.claude/skills/flutter-theme-and-styling/SKILL.md`) with `l10n.localModeBanner` and a `createAccountToSync` button. Mount it at the top of `HomeDesktop`, `AccountDetailDesktop` and `SettingsDesktopView` (`lib/ui/features/settings/views/settings_desktop.dart`) when local, so it's on every local-mode screen (FR-017, US3 scenario 6).
+- [ ] T054 [P] [US3] Create `lib/ui/features/local_mode/views/local_mode_banner.dart`. It's a `MaterialBanner`-style strip using `Theme.of(context).colorScheme` (follow `.claude/skills/flutter-theme-and-styling/SKILL.md`) with `l10n.localModeBanner` and a `createOnlineAccount` button. Mount it at the top of `HomeDesktop`, `AccountDetailDesktop` and `SettingsDesktopView` (`lib/ui/features/settings/views/settings_desktop.dart`) when local, so it's on every local-mode screen (FR-017, US3 scenario 6).
 - [ ] T055 [P] [US3] Update `lib/ui/features/accounts/views/account-list-desktop.dart`. When local, hide CSV export/import (around lines 305 and 351, which use `TransactionService` directly) and the main-accounts toggle.
 - [ ] T056 [P] [US3] Update `lib/ui/features/accounts/views/account-detail-desktop.dart`. When local, skip `MetricService.getOverallByAccountId` and its panel (around lines 297–343), and hide the CSV and metrics navigation. The field `transactionService = GetIt.I<TransactionService>()` at line 48 must not be used in local mode.
 - [ ] T057 [P] [US3] Update `lib/ui/features/accounts/views/widgets/add_transaction_sheet_desktop.dart`. When local, hide voice dictation, receipt scanning and the tags input.
@@ -445,6 +446,7 @@ description: "Task list for Standalone Desktop Mode"
 - [ ] T065 [US4] Create `lib/data/services/local_import.service.dart` implementing the import state machine in `specs/001-standalone-desktop-mode/data-model.md`. It takes `LocalDatabase` plus the remote `AccountService`, `CategoryService`, `CurrencyService`, `TransactionService` (via the interfaces and a small `BulkTransactionClient` interface for fakes) and `AuthenticationService`.
   - **Step 0**: set `import_states.status = inProgress`, `target_email`, `started_at`, and (once) `import_tag` = 8 random hex chars. On resume, require `authenticationService.user.email == target_email`, otherwise fail with `importWrongUser`.
   - **Step 1, preflight**: check currencies by `name`. If any is missing, throw `importCurrencyMissing` listing the codes.
+  - Match category names with `categoryNameKey` (trimmed, Dart `toLowerCase()`), the same folding the local uniqueness uses (RF-06), not SQLite's `lower()`.
   - **Step 2, categories**: fetch online categories → match by lower-cased name → `add` the missing ones → `update` each created category with isActive/measurable/icon/color → store `server_id`.
   - **Step 3, accounts under temporary names** (research R6). The temporary name is `"<name> ⟨import <import_tag>-<local id>⟩"`.
     - `fetchAccounts` online.
@@ -504,6 +506,30 @@ description: "Task list for Standalone Desktop Mode"
   - Check plan.md's goal that local CRUD and balance refresh take under 100 ms with the 1,000-transaction seed.
 
 ---
+
+## Phase 8: Review follow-ups
+
+**Source**: [review-findings.md](./review-findings.md). Each item lists the finding it closes. Group A (data safety, before T052) is done. The remaining findings stay in that file with their suggested placement.
+
+- [X] T076 RF-01, UI-01 Entering local mode is single-flight and its button shows it is busy:
+  - `AppModeService.enterLocalMode()` shares one running call, so a double click can't open the database twice.
+  - The opener reads the key back after writing it and uses the stored value.
+  - The login button is disabled with a spinner while it opens, and is released before the error dialog is shown.
+- [X] T077 RF-02, RF-03, UI-02 The "local data can't be opened" screen is no longer a dead end:
+  - Text per reason (new `LocalDataUnavailableReason.fileMissing`): says the data was kept, and a lost key gets no Retry.
+  - "Use an online account instead" calls `AppModeService.leaveLocalMode()`, which keeps the file.
+  - "Start with empty data" appears only for a missing file, as an explicit choice.
+  - A failed Retry says so, and the primary action has focus.
+  - At startup the file must exist (`openLocalDatabase(mustExist: true)`), so a missing file is reported and never replaced by an empty one.
+  - **Still open from RF-03:** pick a real Linux `APPLICATION_ID` before release, because the application folder depends on it.
+- [X] T078 RF-08 Startup can't leave the user without a window: unexpected errors while opening become `unreadable`, and a failing `SharedPreferences` starts the app online.
+- [X] T079 RF-04 A failed save is never shown as a success: `AccountRepository.delete` and `CategoryRepository.add` and `update` still show the notice but rethrow, the account list no longer removes the account itself, and the category sheets stay open with what was typed. Other writes still close their sheet, with the notice showing and nothing changed.
+- [X] T080 RF-05, RF-12 `guardWrite` maps only storage failures (busy, locked, read-only, I/O, corrupt, full, can't open, not a database) to "not saved", and also looks through drift's `CouldNotRollBackException`, which a full disk causes. Constraint errors and bugs now surface as bugs. Check-then-write sequences run in a transaction, so a double submit is "name taken" and not a failure.
+- [X] T081 RF-06 Category names are unique by `name_key`, folded in Dart, because SQLite's `lower()` only handles ASCII. This is schema version 2 with a migration for existing files; names that only differed by accents are both kept.
+- [X] T082 RF-11 A plain notice replaces a localized one that was never shown.
+- [X] T083 SP-03 `UpdateCategoryModel` sends `id`, the field the server binds. Editing a category used to look for category 0 and fail, **online as well**.
+- [X] T084 UI-04, UI-06 String renames and wording (see T050) and the credential-store wording, which also fits Windows.
+- [X] T085 RF-18 (part) Tests for the opener (first run, key reuse, lost key, wrong key, locked keyring, missing file), the migration, and the failure paths; the weak `isA<Exception>()` assertions are now specific.
 
 ## Dependencies & Execution Order
 
