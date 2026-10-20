@@ -989,4 +989,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get localDataRetryFailed => 'Still can\'t open your local data.';
+
+  @override
+  String get localModeEmptyDescription =>
+      'Your data is stored encrypted on this computer only.';
+
+  @override
+  String get createFirstAccount => 'Create your first account';
 }

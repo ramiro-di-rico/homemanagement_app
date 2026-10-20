@@ -323,5 +323,7 @@
   "localDataKeyMissing": "La clave que protege tus datos locales ya no existe, por ejemplo tras reinstalar el sistema, así que los datos no se pueden abrir. Tu archivo se conservó y no se borró nada.",
   "localDataUnreadable": "No se puede leer el archivo de datos locales. Se conservó y no se borró nada.",
   "localDataFileMissing": "No se encontró tu archivo de datos locales. Si lo moviste, vuelve a ponerlo y reintenta. Si no, puedes empezar de nuevo con datos vacíos.",
-  "localDataRetryFailed": "Todavía no se pueden abrir tus datos locales."
+  "localDataRetryFailed": "Todavía no se pueden abrir tus datos locales.",
+  "localModeEmptyDescription": "Tus datos se guardan cifrados solo en este equipo.",
+  "createFirstAccount": "Crea tu primera cuenta"
 }

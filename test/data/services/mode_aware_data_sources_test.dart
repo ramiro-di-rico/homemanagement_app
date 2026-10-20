@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -351,6 +353,31 @@ void main() {
       expect(appMode.database, isNull);
       expect(appMode.startupError, isNull);
       expect((await SharedPreferences.getInstance()).getString('appMode'), 'online');
+    });
+
+    test('after leaving, calls go to the remote, and entering again finds the earlier local data', () async {
+      // A real file, so that closing and reopening it keeps the rows.
+      final dir = Directory.systemTemp.createTempSync('leave_and_return');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final appMode = createService(opener: (_, {required mustExist}) async {
+        final db = LocalDatabase(NativeDatabase(File('${dir.path}/local.sqlite')));
+        opened.add(db);
+        return db;
+      });
+      await appMode.init();
+      await appMode.enterLocalMode();
+      final remote = FakeRemoteAccounts();
+      final accounts = ModeAwareAccountDataSource(remote, appMode);
+      await accounts.add(AccountModel(0, 'Kept', 0, true, AccountType.Cash, 1, 0, false, false));
+      expect(remote.calls, isEmpty);
+
+      await appMode.leaveLocalMode();
+      expect((await accounts.fetchAccounts()).single.name, 'Remote');
+      expect(remote.calls, ['fetchAccounts']);
+
+      await appMode.enterLocalMode();
+      expect((await accounts.fetchAccounts()).map((a) => a.name), ['Kept']);
+      expect(remote.calls, ['fetchAccounts'], reason: 'local again, so nothing more went to the server');
     });
 
     test('leaving local mode is also the way out of an unreadable file', () async {

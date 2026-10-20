@@ -995,6 +995,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get localDataRetryFailed =>
       'Todavía no se pueden abrir tus datos locales.';
+
+  @override
+  String get localModeEmptyDescription =>
+      'Tus datos se guardan cifrados solo en este equipo.';
+
+  @override
+  String get createFirstAccount => 'Crea tu primera cuenta';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1962,4 +1969,11 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get localDataRetryFailed =>
       'Todavía no se pueden abrir tus datos locales.';
+
+  @override
+  String get localModeEmptyDescription =>
+      'Tus datos se guardan cifrados solo en esta computadora.';
+
+  @override
+  String get createFirstAccount => 'Creá tu primera cuenta';
 }

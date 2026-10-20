@@ -490,5 +490,7 @@
   "localDataKeyMissing": "The key that protects your local data is gone, for example after reinstalling the system, so the data can't be opened. Your file was kept and nothing was deleted.",
   "localDataUnreadable": "The local data file can't be read. It was kept and nothing was deleted.",
   "localDataFileMissing": "Your local data file wasn't found. If it was moved, put it back and retry. Otherwise you can start again with empty data.",
-  "localDataRetryFailed": "Still can't open your local data."
+  "localDataRetryFailed": "Still can't open your local data.",
+  "localModeEmptyDescription": "Your data is stored encrypted on this computer only.",
+  "createFirstAccount": "Create your first account"
 }

@@ -1848,6 +1848,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Still can\'t open your local data.'**
   String get localDataRetryFailed;
+
+  /// No description provided for @localModeEmptyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is stored encrypted on this computer only.'**
+  String get localModeEmptyDescription;
+
+  /// No description provided for @createFirstAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first account'**
+  String get createFirstAccount;
 }
 
 class _AppLocalizationsDelegate
