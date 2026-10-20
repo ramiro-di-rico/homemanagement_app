@@ -220,7 +220,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-07: Online data stays cached in repositories after a mode switch
 
-- [ ] Fixed
+- [x] Fixed in T053 (the four repositories and `Caching` reset when the mode flips; the Caching clear on an online logout is not covered)
 
 - **Severity**: Med. **Status**: Confirmed (code path). Needs overlapping ids to show.
 - **Where**: `lib/data/repositories/transaction.repository.dart`, `accountsContainer`, `loadFirstPage()` and `getPage()` (~lines 150-197). `lib/main.dart` (~line 204) only registers `invalidateSuggestions`.
@@ -434,7 +434,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### SP-05: `leaveLocalMode()` reload before login throws (T053)
 
-- [ ] T053 updated
+- [x] T053 done: no reload after leaving local mode, reset instead
 
 - **Severity**: Med. **Status**: Confirmed.
 - **Where**: T053 text. `authentication.service.dart:100` (`user!.token`).
@@ -492,7 +492,7 @@ All of these are justified, but they change online or mobile behaviour, so add a
 
 - [x] **UI-01 (T076): busy state on "Use without an account"** (`login-desktop.dart`). See RF-01. Disable the button and show a spinner while entering.
 - [x] **UI-02 (T077): actionable error screen** (`local_data_unavailable_screen.dart`). See RF-02. Text for each reason, "Use an online account instead", feedback after a failed Retry, autofocus on the main action.
-- [ ] **UI-03: empty state for a first-time local user** (`local_home_desktop.dart`, `account-list-desktop.dart`). With zero accounts, show an icon, "Your data is stored encrypted on this computer only", and a "Create your first account" button that opens `AccountSheetDesktop`. Today the only entry is a small "+", and adding a transaction is hidden in each row's ⋮ menu, which works against SC-001 (first transaction in under 2 minutes). Add a visible "Add transaction" action per account row.
+- [~] **UI-03 (T052: the empty state is done; the per-row "Add transaction" button is not): empty state for a first-time local user** (`local_home_desktop.dart`, `account-list-desktop.dart`). With zero accounts, show an icon, "Your data is stored encrypted on this computer only", and a "Create your first account" button that opens `AccountSheetDesktop`. Today the only entry is a small "+", and adding a transaction is hidden in each row's ⋮ menu, which works against SC-001 (first transaction in under 2 minutes). Add a visible "Add transaction" action per account row.
 - [x] **UI-04 (T084; the dialog title and confirm label are done in T053): wording, "account" is ambiguous.** In this app "Account/Cuenta" already means a money account ("Add Account" is right there on the local home).
   - Rename `createAccountToSync` to `createOnlineAccount`, text "Create online account" (es: "Crear cuenta online"). The key name promises sync, which FR-025 rules out.
   - "Use without an account" in es: "Usar sin registrarme" (es_AR keeps voseo where it applies).
