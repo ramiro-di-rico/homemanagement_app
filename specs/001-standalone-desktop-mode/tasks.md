@@ -375,15 +375,24 @@ description: "Task list for Standalone Desktop Mode"
 
 ### Tests for User Story 3
 
-- [ ] T048 [P] [US3] Extend `test/views/local_mode_guard_test.dart`. In local mode:
+- [X] T048 [P] [US3] Extend `test/views/local_mode_guard_test.dart`. In local mode:
   - These paths stay put: `/home_screen`, `/home_screen/account_detail_screen`, `/home_screen/settings_screen`, `/home_screen/logging_screen`, `/registration_screen`, `/home_screen/local_import`.
   - These redirect to `/home_screen`: `/home_screen/budget`, `/home_screen/invites`, `/home_screen/statistics`, `/home_screen/reconciliation`, `/home_screen/bulk_transactions`, `/home_screen/account_detail_screen/account_metrics_screen`, and both search paths.
+
+  Done, test-first. `test/views/local_mode_guard_test.dart` now also covers the allowlist: six paths that must stay put, and ten that must redirect to `/home_screen` (the nine listed here, plus reminders, plus an unknown path). Four of the "stay" cases (account detail, settings, the log screen and the import screen) failed until T051 was implemented, and pass now. The import path is written as a literal, because the screen arrives with T069.
+
 - [ ] T049 [P] [US3] Write `test/views/home_desktop_local_mode_test.dart`. In local mode, the AppBar shows only Settings and "Create account" and "Log in to an existing account" (the last one is hidden when `isImportPending`). Search, Bulk, Invitations, Statistics, Budget, Reminders and Logout are absent. The local-mode banner is visible.
 
 ### Implementation for User Story 3
 
-- [ ] T050 [US3] Add the l10n keys `localModeBanner` ("You're working locally on this computer"), `createAccountToSync`, `logInExistingAccount` and `logInExistingAccountConfirm` ("Your local data will stay on this computer and won't be moved to that account.") to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
-- [ ] T051 [US3] Complete the FR-016 allowlist in `lib/routing.dart`. In local mode, return `null` only for the paths listed in T048. Redirect everything else to `HomeScreen.fullPath`.
+- [X] T050 [US3] Add the l10n keys `localModeBanner` ("You're working locally on this computer"), `createAccountToSync`, `logInExistingAccount` and `logInExistingAccountConfirm` ("Your local data will stay on this computer and won't be moved to that account.") to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
+
+  Done. English text for the AppBar action and the banner button is just "Create account", which is what T049 expects, although the key says "ToSync" (there is no sync, only the one-time move). `it` and `pt` fall back to English (57 and 60 untranslated).
+
+- [X] T051 [US3] Complete the FR-016 allowlist in `lib/routing.dart`. In local mode, return `null` only for the paths listed in T048. Redirect everything else to `HomeScreen.fullPath`.
+
+  Done. In local mode the router's `redirect` now decides everything: `/login_screen` goes to the home, a path in `_localModeAllowedPaths` is allowed, and any other path, known or not, goes to the home. The set is the six paths from T048, with `/home_screen/local_import` as a literal until T069. Because that block always returns, the password-reset checks that T032 had to skip in local mode are no longer reachable from it, so their `!isLocal` conditions were removed. Online behaviour is unchanged. Account detail is now reachable in local mode, so T047 can be run by hand.
+
 - [ ] T052 [US3] Update the AppBar `actions` in `lib/ui/features/home/views/home-desktop.dart` (lines 63–121). When local, show only Settings and a `createAccountToSync` action that does `context.go(RegistrationScreen.fullPath)`. Also show a `logInExistingAccount` action unless `appMode.isImportPending` (see the next task). Hide Search, Bulk, Invitations, Statistics, Budget, Reminders and Logout.
 - [ ] T053 [US3] Implement "Log in to an existing account" (spec FR-027, US3 scenarios 7–8):
   - Add `Future<void> leaveLocalMode()` to `lib/data/services/app_mode.service.dart`. It closes the database **without renaming or deleting the file**, persists `appMode = online`, clears `Caching` and `TransactionRepository.invalidateSuggestions()`, notifies, and reloads the Account, Currency and Category repositories. It throws if `isImportPending`.
