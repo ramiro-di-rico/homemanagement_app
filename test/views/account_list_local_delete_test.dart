@@ -59,6 +59,7 @@ void main() {
         accountRepository: accounts,
         errorNotifierService: notifier);
     GetIt.I
+      ..registerSingleton<AppModeService>(appMode)
       ..registerSingleton<NotifierService>(notifier)
       ..registerSingleton<AccountRepository>(accounts)
       ..registerSingleton<TransactionRepository>(transactions)

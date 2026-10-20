@@ -14,6 +14,7 @@ import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/domain/models/overall.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/metrics.service.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
@@ -44,10 +45,13 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
       accountRepository.getById(widget.account.id) ?? widget.account;
   Overall? overall;
 
-  MetricService _metricService = GetIt.I<MetricService>();
+  /// Metrics, CSV and reconciliation are served by the backend. In local mode they
+  /// are neither shown nor created, so nothing here can reach the server (FR-004).
+  bool get _isLocal => GetIt.I<AppModeService>().isLocal;
+  MetricService get _metricService => GetIt.I<MetricService>();
+  TransactionService get transactionService => GetIt.I<TransactionService>();
   AccountRepository accountRepository = GetIt.I<AccountRepository>();
   CategoryRepository categoryRepository = GetIt.I<CategoryRepository>();
-  TransactionService transactionService = GetIt.I<TransactionService>();
   TransactionRepository transactionRepository =
       GetIt.I<TransactionRepository>();
   List<TransactionModel> transactions = [];
@@ -113,17 +117,19 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
                 onPressed: () => _archiveAccount(account),
                 child: Text(account.archive ? AppLocalizations.of(context)!.unarchive : AppLocalizations.of(context)!.archive),
               ),
-              MenuItemButton(
-                leadingIcon: Icon(Icons.upload_file, color: Colors.blueGrey),
-                onPressed: () => _importTransactions(account),
-                child: Text(AppLocalizations.of(context)!.importTransactions),
-              ),
-              MenuItemButton(
-                leadingIcon: Icon(Icons.compare_arrows, color: Colors.teal),
-                onPressed: () =>
-                    context.go(ReconciliationScreen.fullPath, extra: account),
-                child: Text(AppLocalizations.of(context)!.reconcileStatement),
-              ),
+              if (!_isLocal) ...[
+                MenuItemButton(
+                  leadingIcon: Icon(Icons.upload_file, color: Colors.blueGrey),
+                  onPressed: () => _importTransactions(account),
+                  child: Text(AppLocalizations.of(context)!.importTransactions),
+                ),
+                MenuItemButton(
+                  leadingIcon: Icon(Icons.compare_arrows, color: Colors.teal),
+                  onPressed: () =>
+                      context.go(ReconciliationScreen.fullPath, extra: account),
+                  child: Text(AppLocalizations.of(context)!.reconcileStatement),
+                ),
+              ],
             ],
           ),
         ],
@@ -143,7 +149,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           AccountDetailWidget(accountModel: account),
-                          account.measurable
+                          account.measurable && !_isLocal
                               ? Container(
                                   height: 300,
                                   child: Padding(
@@ -153,7 +159,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
                                   ),
                                 )
                               : Container(),
-                          account.measurable
+                          account.measurable && !_isLocal
                               ? Container(
                                   height: 300,
                                   child: Padding(
@@ -296,7 +302,9 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
   void load() async {
     refreshState();
     await transactionRepository.loadFirstPage(account.id);
-    overall = await _metricService.getOverallByAccountId(account.id);
+    if (!_isLocal) {
+      overall = await _metricService.getOverallByAccountId(account.id);
+    }
     refreshState();
   }
 

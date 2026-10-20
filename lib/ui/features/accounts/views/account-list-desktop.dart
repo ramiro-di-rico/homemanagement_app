@@ -8,6 +8,7 @@ import 'package:home_management_app/data/services/platform/platform_context.dart
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/ui/features/accounts/views/account-detail-desktop.dart';
@@ -29,7 +30,9 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
   AccountRepository accountsRepo = GetIt.instance<AccountRepository>();
   TransactionRepository transactionsRepo =
       GetIt.instance<TransactionRepository>();
-  TransactionService transactionService = GetIt.instance<TransactionService>();
+  // Created on use: CSV export and import are the only users, and local mode has none.
+  TransactionService get transactionService => GetIt.instance<TransactionService>();
+  bool get _isLocal => GetIt.instance<AppModeService>().isLocal;
   PlatformContext platform = GetIt.instance<PlatformContext>();
   bool showHidden = false;
   final TextEditingController _searchController = TextEditingController();
@@ -296,7 +299,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                               remove(item, index);
                             },
                           ),
-                          platform.isDownloadEnabled()
+                          // CSV export and import go through the server.
+                          !_isLocal && platform.isDownloadEnabled()
                               ? MenuItemButton(
                                   leadingIcon:
                                       Icon(Icons.download, color: Colors.blueAccent),
@@ -309,7 +313,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                                   },
                                 )
                               : Container(),
-                          platform.isDownloadEnabled()
+                          !_isLocal && platform.isDownloadEnabled()
                               ? MenuItemButton(
                                   leadingIcon:
                                       Icon(Icons.description, color: Colors.orangeAccent),
@@ -336,7 +340,7 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
                                   },
                                 )
                               : Container(),
-                          platform.isUploadEnabled()
+                          !_isLocal && platform.isUploadEnabled()
                               ? MenuItemButton(
                                   leadingIcon:
                                       Icon(Icons.upload, color: Colors.greenAccent),
