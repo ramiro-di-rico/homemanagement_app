@@ -31,6 +31,17 @@ import 'package:home_management_app/ui/core/screens/bulk_transactions_screen.dar
 
 class Routing{
 
+  /// Routes that work in local mode, where there is no server and no sign-in.
+  static const Set<String> _localModeAllowedPaths = {
+    HomeScreen.fullPath,
+    AccountDetailScreen.fullPath,
+    SettingsScreen.fullPath,
+    LoggingView.fullPath,
+    RegistrationScreen.fullPath,
+    // The import screen, added with the import (T069).
+    '/home_screen/local_import',
+  };
+
   static GoRouter createRoutes(bool isDesktop, AuthenticationService authenticationService, PasswordResetService passwordResetService, AppModeService appModeService){
     return GoRouter(
       refreshListenable: appModeService,
@@ -135,26 +146,26 @@ class Routing{
         // reach the server, and local mode makes no network calls (FR-004).
         if (appModeService.isLocal) {
           final location = state.matchedLocation;
-          if (location == LoginView.fullPath ||
-              location.startsWith('/public/invites/')) {
+          if (location == LoginView.fullPath) {
             return HomeScreen.fullPath;
           }
-          if (location == HomeScreen.fullPath) {
-            return null;
-          }
+          // Only what works without a server is reachable (FR-016). Anything
+          // else, including invite and reset links, goes back to the home.
+          return _localModeAllowedPaths.contains(location)
+              ? null
+              : HomeScreen.fullPath;
         }
 
         var emailQueryParam = state.uri.queryParameters['email'] ?? '';
         var tokenQueryParam = state.uri.queryParameters['token'] ?? '';
         var viewQueryParam = state.uri.queryParameters['view'] ?? '';
 
-        if (!appModeService.isLocal &&
-            passwordResetService.isResettingPassword()) {
+        if (passwordResetService.isResettingPassword()) {
           return ResetPasswordView.fullPath +
               passwordResetService.resetPasswordQueryParams();
         }
 
-        if (!appModeService.isLocal && viewQueryParam == 'reset_password') {
+        if (viewQueryParam == 'reset_password') {
           passwordResetService.setResetPasswordQueryParams(
               emailQueryParam.toString(), tokenQueryParam.toString());
           return ResetPasswordView.fullPath + passwordResetService.resetPasswordQueryParams();
