@@ -20,6 +20,7 @@ import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 import 'package:home_management_app/ui/features/home/views/shared/account.sheet.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_mode_banner.dart';
 import 'package:home_management_app/ui/features/home/views/shared/overview/overview-widget.dart';
 import 'package:home_management_app/ui/core/mixins/notifier_mixin.dart';
 import 'account-details-behaviors/account-list-scrolling-behavior.dart';
@@ -85,6 +86,7 @@ class _AccountDetailDesktopState extends State<AccountDetailDesktop>
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.accountLabel(account.name)),
+        bottom: const LocalModeBanner(),
         actions: [
           MenuAnchor(
             builder: (BuildContext context, MenuController controller, Widget? child) {

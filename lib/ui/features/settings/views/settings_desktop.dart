@@ -1,3 +1,4 @@
+import 'package:home_management_app/ui/features/local_mode/views/local_mode_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 
@@ -23,7 +24,7 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
   Widget build(BuildContext context) {
     var l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings)),
+      appBar: AppBar(title: Text(l10n.settings), bottom: const LocalModeBanner()),
       body: SafeArea(
         child: !_preferencesLoaded
             ? Center(child: CircularProgressIndicator())

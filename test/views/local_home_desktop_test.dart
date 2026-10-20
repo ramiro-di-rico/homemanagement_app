@@ -27,6 +27,7 @@ import 'package:home_management_app/ui/features/authentication/views/registratio
 import 'package:home_management_app/ui/features/home/views/home.dart';
 import 'package:home_management_app/ui/features/home/views/shared/account-sheet-dektop.dart';
 import 'package:home_management_app/ui/features/local_mode/views/local_home_desktop.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_mode_banner.dart';
 import 'package:home_management_app/ui/features/settings/views/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -128,7 +129,7 @@ void main() {
     testWidgets('has only what works without a server', (tester) async {
       await pumpHome(tester);
 
-      expect(find.text(createAction), findsOneWidget);
+      expect(find.text(createAction), findsNWidgets(2), reason: 'app bar and banner');
       expect(find.text(signInAction), findsOneWidget);
       expect(find.byIcon(Icons.settings), findsOneWidget);
       for (final server in [
@@ -144,6 +145,15 @@ void main() {
       }
     });
 
+    testWidgets('shows the local-mode banner, which also offers an online account', (tester) async {
+      await pumpHome(tester);
+
+      expect(find.byType(LocalModeBanner), findsOneWidget);
+      expect(find.text("You're working locally on this computer"), findsOneWidget);
+      expect(find.widgetWithText(TextButton, 'Create online account'), findsNWidgets(2),
+          reason: 'one in the app bar and one in the banner');
+    });
+
     testWidgets('hides signing in to another account while an import is pending', (tester) async {
       await pumpHome(tester);
       final db = appMode.database!;
@@ -153,16 +163,21 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(signInAction), findsNothing);
-      expect(find.text(createAction), findsOneWidget);
+      expect(find.text(createAction), findsNWidgets(2), reason: 'app bar and banner');
     });
 
-    testWidgets('"Create online account" opens registration', (tester) async {
-      await pumpHome(tester);
+    testWidgets('"Create online account" opens registration, from the app bar and from the banner', (tester) async {
+      for (final button in [
+        find.descendant(of: find.byType(LocalModeBanner).hitTestable(), matching: find.text(createAction)),
+        find.text(createAction).first,
+      ]) {
+        await pumpHome(tester);
 
-      await tester.tap(find.text(createAction));
-      await tester.pumpAndSettle();
+        await tester.tap(button);
+        await tester.pumpAndSettle();
 
-      expect(find.text('REGISTRATION SCREEN'), findsOneWidget);
+        expect(find.text('REGISTRATION SCREEN'), findsOneWidget);
+      }
     });
 
     testWidgets('Settings opens the settings screen', (tester) async {

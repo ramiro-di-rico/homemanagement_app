@@ -10,6 +10,7 @@ import 'package:home_management_app/ui/features/accounts/views/account-list-desk
 import 'package:home_management_app/ui/features/authentication/views/login.dart';
 import 'package:home_management_app/ui/features/authentication/views/registration.dart';
 import 'package:home_management_app/ui/features/home/views/shared/account-sheet-dektop.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_mode_banner.dart';
 import 'package:home_management_app/ui/features/settings/views/settings.dart';
 
 /// The desktop home in local mode. It replaces `HomeDesktop` rather than
@@ -93,6 +94,7 @@ class _LocalHomeDesktopState extends State<LocalHomeDesktop> {
       builder: (context, _) => Scaffold(
         appBar: AppBar(
           title: Text(l10n.appTitle),
+          bottom: const LocalModeBanner(),
           actions: [
             TextButton.icon(
               onPressed: () => context.go(RegistrationScreen.fullPath),

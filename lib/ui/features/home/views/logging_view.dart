@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:home_management_app/data/services/logging_file.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_mode_banner.dart';
 
 class LoggingView extends StatefulWidget {
   static const String fullPath = '/home_screen/logging_screen';
@@ -31,6 +32,7 @@ class _LoggingViewState extends State<LoggingView> {
     return Scaffold(
       appBar: AppBar(
           title: Text('Logging View'),
+          bottom: const LocalModeBanner(),
         leading: BackButton(
           onPressed: () => Navigator.pop(context),
         ),
