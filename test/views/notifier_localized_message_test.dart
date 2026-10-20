@@ -51,6 +51,18 @@ void main() {
     });
   }
 
+  testWidgets('a plain notice replaces a localized one nobody has shown', (tester) async {
+    notifier.notifyChangeNotSaved();
+    notifier.notify('Account Main added successfully');
+    await pumpHost(tester, const Locale('en'));
+    notifier.notify('Account Main added successfully');
+    await tester.pump();
+
+    expect(find.text('Account Main added successfully'), findsOneWidget);
+    expect(find.textContaining("couldn't be saved"), findsNothing);
+    expect(tester.widget<SnackBar>(find.byType(SnackBar)).backgroundColor, Colors.greenAccent);
+  });
+
   testWidgets('plain notices still work', (tester) async {
     await pumpHost(tester, const Locale('en'));
 

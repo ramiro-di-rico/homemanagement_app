@@ -15,6 +15,8 @@ class NotifierService extends ChangeNotifier {
   bool get hasError => _isError ?? false;
 
   void notify(String message, {bool isError = false}) {
+    // A newer plain message replaces a localized one that nobody has shown yet.
+    _localizedMessage = null;
     _message = message;
     _isError = isError;
     notifyListeners();

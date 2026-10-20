@@ -51,7 +51,8 @@ class UpdateCategoryModel{
 
   toJson() {
     return {
-      'categoryId': categoryId,
+      // The server binds `Id`. It used to get `categoryId`, so it looked for category 0.
+      'id': categoryId,
       'name': name,
       'icon': icon,
       'measurable': measurable,
