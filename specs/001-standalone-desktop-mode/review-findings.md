@@ -507,7 +507,7 @@ All of these are justified, but they change online or mobile behaviour, so add a
 
 ### Later
 
-- [ ] **UI-07: local-mode banner (T054).** Use `colorScheme.secondaryContainer` and `onSecondaryContainer`, an offline icon, "Your data is stored only on this computer", and the create-online-account action. Add a small "Local" chip in the AppBar so the status stays visible when the banner is dismissed or scrolled.
+- [~] **UI-07 (T054: colours, icon and action done; the extra text and the Local chip are not): local-mode banner (T054).** Use `colorScheme.secondaryContainer` and `onSecondaryContainer`, an offline icon, "Your data is stored only on this computer", and the create-online-account action. Add a small "Local" chip in the AppBar so the status stays visible when the banner is dismissed or scrolled.
 - [ ] **UI-08: local home layout.** The account list is fixed at 330 px. Let it fill the available height.
 - [ ] **UI-09: desktop interactions.**
   - Add a right-click context menu on transaction rows. Swipe is the only way to duplicate or delete, and `SlidableAction` has no label or tooltip.
