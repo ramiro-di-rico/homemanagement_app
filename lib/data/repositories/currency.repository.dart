@@ -10,6 +10,12 @@ class CurrencyRepository extends ChangeNotifier {
 
   CurrencyRepository({required this.currencyService});
 
+  /// Forgets everything held in memory, for a change between local and online data.
+  void reset() {
+    currencies.clear();
+    notifyListeners();
+  }
+
   Future load() async {
     var result = await this.currencyService.fetchCurrencies();
     currencies.clear();

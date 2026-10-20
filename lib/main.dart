@@ -200,8 +200,6 @@ void registerSingletons(PlatformContext platformContext) {
       accountRepository: accountRepository,
       errorNotifierService: errorNotifierService,
       tagRepository: tagRepository);
-  // Local and online suggestions must never mix.
-  appModeService.addListener(transactionRepository.invalidateSuggestions);
 
   var categoryRepository = CategoryRepository(ModeAwareCategoryDataSource(
       CategoryService(
@@ -210,6 +208,20 @@ void registerSingletons(PlatformContext platformContext) {
               ApiServiceFactory(authenticationService: authenticationService),
           notifierService: errorNotifierService),
       appModeService), notifierService: errorNotifierService);
+
+  // Local and online data must never mix: when the mode flips, forget what the
+  // other one loaded. The repositories are not reloaded here, because online that
+  // can't work before the user signs in. Each screen loads what it needs.
+  var wasLocal = appModeService.isLocal;
+  appModeService.addListener(() {
+    if (appModeService.isLocal == wasLocal) return;
+    wasLocal = appModeService.isLocal;
+    accountRepository.reset();
+    categoryRepository.reset();
+    currencyRepository.reset();
+    transactionRepository.reset();
+    GetIt.I<Caching>().clear();
+  });
 
   var identityUserRepository = IdentityUserRepository(
       IdentityUserService(authenticationService: authenticationService),

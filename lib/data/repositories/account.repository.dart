@@ -20,6 +20,16 @@ class AccountRepository extends ChangeNotifier {
 
   Future refresh() async => await load();
 
+  /// Forgets everything held in memory, for a change between local and online
+  /// data. Nothing is reloaded here: the next screen loads what it needs, and
+  /// online that can't happen before the user has signed in.
+  void reset() {
+    _internalAccounts.clear();
+    accounts.clear();
+    accountSeries.clear();
+    notifyListeners();
+  }
+
   displayHidden(bool show) {
     showHidden = show;
     _loadAccounts(_internalAccounts);

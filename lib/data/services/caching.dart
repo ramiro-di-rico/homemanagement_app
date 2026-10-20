@@ -12,6 +12,9 @@ class Caching {
     }
   }
 
+  /// Drops everything, e.g. when the data source changes between local and online.
+  clear() => this.store.clear();
+
   exists(String key) => this.store.any((element) => element.key == key);
 
   fetch(String key) {

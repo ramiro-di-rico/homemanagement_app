@@ -315,6 +315,18 @@ class TransactionRepository extends ChangeNotifier {
     return fetched;
   }
 
+  /// Forgets everything held in memory, for a change between local and online
+  /// data. Without it, ids that exist in both would show the other mode's rows.
+  void reset() {
+    accountsContainer.clear();
+    transactions.clear();
+    currentAccountId = 0;
+    page = TransactionPageModel.newPage(0, 1, pageSize);
+    nameFiltering = '';
+    _invalidateSuggestionsCache();
+    notifyListeners();
+  }
+
   /// Drops the cached suggestions, e.g. when switching between local and online data.
   void invalidateSuggestions() => _invalidateSuggestionsCache();
 

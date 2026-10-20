@@ -11,6 +11,12 @@ class CategoryRepository extends ChangeNotifier {
 
   CategoryRepository(this.categoryService, {this.notifierService});
 
+  /// Forgets everything held in memory, for a change between local and online data.
+  void reset() {
+    categories.clear();
+    notifyListeners();
+  }
+
   Future load() async {
     // Fetch before clearing, so a failed read keeps what is already shown.
     var result = await categoryService.fetch();
