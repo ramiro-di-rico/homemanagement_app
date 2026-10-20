@@ -11,7 +11,19 @@ import 'package:home_management_app/data/services/platform/platform_strategy.dar
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/main.dart';
 import 'package:home_management_app/routing.dart';
+import 'package:home_management_app/ui/core/screens/bulk_transactions_screen.dart';
+import 'package:home_management_app/ui/features/accounts/views/account-metrics.dart';
+import 'package:home_management_app/ui/features/accounts/views/account.detail.dart';
 import 'package:home_management_app/ui/features/authentication/views/login.dart';
+import 'package:home_management_app/ui/features/dashboard/views/budget_desktop_view.dart';
+import 'package:home_management_app/ui/features/home/views/logging_view.dart';
+import 'package:home_management_app/ui/features/invites/views/invite_management_screen.dart';
+import 'package:home_management_app/ui/features/settings/views/settings-widgets/reminders/reminders_desktop_view.dart';
+import 'package:home_management_app/ui/features/settings/views/settings.dart';
+import 'package:home_management_app/ui/features/statistics/views/statistics_view.dart';
+import 'package:home_management_app/ui/features/statistics/views/transactions_search_statistics_view.dart';
+import 'package:home_management_app/ui/features/transactions/views/reconciliation_screen.dart';
+import 'package:home_management_app/ui/features/transactions/views/transactions_search_desktop_view.dart';
 import 'package:home_management_app/ui/features/authentication/views/registration.dart';
 import 'package:home_management_app/ui/features/authentication/views/reset_password_view.dart';
 import 'package:home_management_app/ui/features/home/views/home.dart';
@@ -97,6 +109,40 @@ void main() {
     testWidgets('registration can still be reached', (tester) async {
       expect(await resolve(tester, createRouter(), RegistrationScreen.fullPath),
           RegistrationScreen.fullPath);
+    });
+
+    // The allowlist (FR-016): only what works without a server stays reachable.
+    const reachable = {
+      'the home': HomeScreen.fullPath,
+      'an account': AccountDetailScreen.fullPath,
+      'settings': SettingsScreen.fullPath,
+      'the log': LoggingView.fullPath,
+      'registration': RegistrationScreen.fullPath,
+      // The import screen arrives with US4 (T069), but the guard must allow it.
+      'the import': '/home_screen/local_import',
+    };
+    reachable.forEach((name, path) {
+      testWidgets('$name stays where it is', (tester) async {
+        expect(await resolve(tester, createRouter(), path), path);
+      });
+    });
+
+    const hidden = {
+      'the budget': BudgetDesktopView.fullPath,
+      'invitations': InviteManagementScreen.fullPath,
+      'statistics': StatisticsView.fullPath,
+      'reconciliation': ReconciliationScreen.fullPath,
+      'bulk transactions': BulkTransactionsScreen.fullPath,
+      'account metrics': AccountMetrics.fullPath,
+      'reminders': RemindersDesktopView.fullPath,
+      'transaction search': TransactionsSearchDesktopView.fullPath,
+      'search statistics': TransactionsSearchStatisticsView.fullPath,
+      'an unknown screen': '/home_screen/not_a_screen',
+    };
+    hidden.forEach((name, path) {
+      testWidgets('$name redirects to the home', (tester) async {
+        expect(await resolve(tester, createRouter(), path), HomeScreen.fullPath);
+      });
     });
   });
 
