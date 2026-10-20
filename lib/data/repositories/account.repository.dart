@@ -120,6 +120,8 @@ class AccountRepository extends ChangeNotifier {
       rethrow;
     } on LocalWriteFailedException {
       notifierService.notifyChangeNotSaved();
+      // The caller must not present the delete as done.
+      rethrow;
     } catch (ex) {
       print(ex);
       notifierService.notify('Failed to delete account ${accountModel.name}', isError: true);

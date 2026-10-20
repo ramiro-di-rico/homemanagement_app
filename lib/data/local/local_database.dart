@@ -35,8 +35,12 @@ class Accounts extends Table {
 class Categories extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  /// Unique ignoring case: see the `categories_name_lower` index in `onCreate`.
   TextColumn get name => text().withLength(min: 1, max: 100)();
+
+  /// [categoryNameKey] of the name. It is what must be unique, because SQLite's
+  /// `lower()` only folds ASCII, so a unique index on `lower(name)` lets "Útiles"
+  /// and "útiles" both in. The default only fills rows that existed before schema 2.
+  TextColumn get nameKey => text().withDefault(const Constant(''))();
   TextColumn get icon => text()();
   TextColumn get color => text().withDefault(const Constant('#ffffff'))();
   BoolColumn get measurable => boolean().withDefault(const Constant(true))();
@@ -80,6 +84,10 @@ class ImportStates extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// How category names are compared: trimmed and lower-cased with Dart's Unicode
+/// rules. The import (T065) must match server categories with this same folding.
+String categoryNameKey(String name) => name.trim().toLowerCase();
+
 @DriftDatabase(
     tables: [Currencies, Accounts, Categories, Transactions, ImportStates])
 class LocalDatabase extends _$LocalDatabase {
@@ -88,22 +96,45 @@ class LocalDatabase extends _$LocalDatabase {
   static const int singleImportStateId = 1;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async {
           await m.createAll();
           await customStatement(
-              'CREATE UNIQUE INDEX categories_name_lower ON categories (lower(name))');
+              'CREATE UNIQUE INDEX categories_name_key ON categories (name_key)');
           await customStatement(
               'CREATE INDEX transactions_account_date ON transactions (account_id, date DESC, id DESC)');
           await _seed();
+        },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await _addCategoryNameKey(m);
+          }
         },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
         },
       );
+
+  /// Schema 1 to 2: the uniqueness of category names moves from an ASCII-only
+  /// `lower(name)` index to a `name_key` column folded in Dart.
+  Future<void> _addCategoryNameKey(Migrator m) async {
+    await m.addColumn(categories, categories.nameKey);
+    final seen = <String>{};
+    for (final category in await select(categories).get()) {
+      var key = categoryNameKey(category.name);
+      // Two names that only differed by accents used to be allowed. Keep both
+      // rows, so no data is lost, and let the user rename one of them.
+      if (!seen.add(key)) key = '$key #${category.id}';
+      await (update(categories)..where((c) => c.id.equals(category.id)))
+          .write(CategoriesCompanion(nameKey: Value(key)));
+    }
+    await customStatement('DROP INDEX IF EXISTS categories_name_lower');
+    await customStatement(
+        'CREATE UNIQUE INDEX categories_name_key ON categories (name_key)');
+  }
 
   /// Income minus outcome for one account (FR-008). Balances are never stored.
   Future<double> accountBalance(int accountId) async {
@@ -126,7 +157,8 @@ class LocalDatabase extends _$LocalDatabase {
       ]);
       b.insertAll(categories, [
         for (final (name, icon) in _defaultCategories)
-          CategoriesCompanion.insert(name: name, icon: icon),
+          CategoriesCompanion.insert(
+              name: name, icon: icon, nameKey: Value(categoryNameKey(name))),
       ]);
       b.insert(
           importStates,

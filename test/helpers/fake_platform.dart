@@ -11,5 +11,11 @@ class FakePlatform implements PlatformContext {
   PlatformType getPlatformType() => type;
 
   @override
+  bool isDownloadEnabled() => false;
+
+  @override
+  bool isUploadEnabled() => false;
+
+  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

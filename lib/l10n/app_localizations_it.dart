@@ -932,14 +932,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get localModeKeyringUnavailable =>
-      'Local mode needs the system keyring to store its encryption key, but the keyring isn\'t available or is locked. Unlock it and try again.';
+      'Local mode needs your system\'s secure credential store to keep its encryption key, but it isn\'t available or is locked. Unlock it and try again.';
 
   @override
   String get localDataCannotBeOpened => 'Your local data can\'t be opened';
-
-  @override
-  String get localDataCannotBeOpenedDetail =>
-      'Your data is still on this computer and hasn\'t been changed. Check that the system keyring is unlocked, then try again.';
 
   @override
   String get retry => 'Retry';
@@ -966,12 +962,33 @@ class AppLocalizationsIt extends AppLocalizations {
   String get localModeBanner => 'You\'re working locally on this computer';
 
   @override
-  String get createAccountToSync => 'Create account';
+  String get createOnlineAccount => 'Create online account';
 
   @override
-  String get logInExistingAccount => 'Log in to an existing account';
+  String get signInExistingAccount => 'Sign in to an existing account';
 
   @override
-  String get logInExistingAccountConfirm =>
-      'Your local data will stay on this computer and won\'t be moved to that account.';
+  String get signInExistingAccountConfirm =>
+      'Your local data will stay on this computer and won\'t be moved to that account. Choose \"Use without an account\" later to get back to it.';
+
+  @override
+  String get useOnlineAccountInstead => 'Use an online account instead';
+
+  @override
+  String get startWithEmptyData => 'Start with empty data';
+
+  @override
+  String get localDataKeyMissing =>
+      'The key that protects your local data is gone, for example after reinstalling the system, so the data can\'t be opened. Your file was kept and nothing was deleted.';
+
+  @override
+  String get localDataUnreadable =>
+      'The local data file can\'t be read. It was kept and nothing was deleted.';
+
+  @override
+  String get localDataFileMissing =>
+      'Your local data file wasn\'t found. If it was moved, put it back and retry. Otherwise you can start again with empty data.';
+
+  @override
+  String get localDataRetryFailed => 'Still can\'t open your local data.';
 }

@@ -63,7 +63,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await GetIt.I.reset();
     appMode = AppModeService(FakePlatform(PlatformType.Desktop),
-        openDatabase: (_) async => LocalDatabase(NativeDatabase.memory()));
+        openDatabase: (_, {required mustExist}) async => LocalDatabase(NativeDatabase.memory()));
     await appMode.init();
     if (local) await appMode.enterLocalMode();
 

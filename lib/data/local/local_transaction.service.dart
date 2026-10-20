@@ -35,6 +35,9 @@ class LocalTransactionService implements TransactionDataSource {
       ])
       ..limit(page.pageCount, offset: (page.currentPage - 1) * page.pageCount);
     if (name != null && name.isNotEmpty) {
+      // `LIKE` ignores case for ASCII only, so "útil" doesn't find "ÚTIL". That is a
+      // known limit of SQLite without ICU, and applies to later pages only: the
+      // first page is filtered in memory by `TransactionRepository`.
       // `contains` doesn't escape, so `%` and `_` typed by the user would act as wildcards.
       final escaped = name.replaceAllMapped(
           RegExp(r'[\\%_]'), (m) => '\\${m[0]}');
@@ -69,7 +72,7 @@ class LocalTransactionService implements TransactionDataSource {
   /// There is no transfer mirroring locally, so `targetAccount` is always null.
   @override
   Future<TransactionWithBalanceModel> add(TransactionModel transaction) =>
-      guardWrite(() async {
+      guardedTransaction(_db, () async {
     final name = _validate(transaction);
     final id = await _db.into(_db.transactions).insert(
           TransactionsCompanion.insert(
@@ -96,7 +99,7 @@ class LocalTransactionService implements TransactionDataSource {
   });
 
   @override
-  Future update(TransactionModel transaction) => guardWrite(() async {
+  Future update(TransactionModel transaction) => guardedTransaction(_db, () async {
     final name = _validate(transaction);
     await (_db.update(_db.transactions)
           ..where((t) => t.id.equals(transaction.id)))
@@ -111,7 +114,7 @@ class LocalTransactionService implements TransactionDataSource {
   });
 
   @override
-  Future delete(int id) => guardWrite(() async {
+  Future delete(int id) => guardedTransaction(_db, () async {
     await (_db.delete(_db.transactions)..where((t) => t.id.equals(id))).go();
   });
 

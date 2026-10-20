@@ -21,11 +21,12 @@ class LocalCategoryService implements CategoryDataSource {
   }
 
   @override
-  Future<CategoryModel> add(CategoryModel category) => guardWrite(() async {
+  Future<CategoryModel> add(CategoryModel category) => guardedTransaction(_db, () async {
     final name = _validName(category.name);
     await _ensureNameFree(name, exceptId: null);
     final id = await _db.into(_db.categories).insert(CategoriesCompanion.insert(
           name: name,
+          nameKey: Value(categoryNameKey(name)),
           icon: category.icon,
           color: Value(category.color),
           measurable: Value(category.measurable),
@@ -38,12 +39,13 @@ class LocalCategoryService implements CategoryDataSource {
   });
 
   @override
-  Future update(CategoryModel category) => guardWrite(() async {
+  Future update(CategoryModel category) => guardedTransaction(_db, () async {
     final name = _validName(category.name);
     await _ensureNameFree(name, exceptId: category.id);
     await (_db.update(_db.categories)..where((c) => c.id.equals(category.id)))
         .write(CategoriesCompanion(
       name: Value(name),
+      nameKey: Value(categoryNameKey(name)),
       icon: Value(category.icon),
       color: Value(category.color),
       measurable: Value(category.measurable),
@@ -52,7 +54,7 @@ class LocalCategoryService implements CategoryDataSource {
   });
 
   @override
-  Future delete(CategoryModel category) => guardWrite(() async {
+  Future delete(CategoryModel category) => guardedTransaction(_db, () async {
     final used = await (_db.select(_db.transactions)
           ..where((t) => t.categoryId.equals(category.id))
           ..limit(1))
@@ -64,7 +66,7 @@ class LocalCategoryService implements CategoryDataSource {
 
   Future<void> _ensureNameFree(String name, {required int? exceptId}) async {
     final query = _db.select(_db.categories)
-      ..where((c) => c.name.lower().equals(name.toLowerCase()));
+      ..where((c) => c.nameKey.equals(categoryNameKey(name)));
     if (exceptId != null) query.where((c) => c.id.equals(exceptId).not());
     if ((await query.get()).isNotEmpty) throw CategoryNameTakenException();
   }

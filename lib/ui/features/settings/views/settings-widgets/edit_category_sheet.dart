@@ -6,6 +6,7 @@ import 'package:home_management_app/ui/core/extensions/hex_color_extension.dart'
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 
 class EditCategorySheet extends StatefulWidget {
@@ -113,6 +114,9 @@ class _EditCategorySheetState extends State<EditCategorySheet> {
               if (!mounted) return;
               setState(() =>
                   _nameError = AppLocalizations.of(context)!.categoryNameTaken);
+            } on LocalWriteFailedException {
+              // The "not saved" notice is showing and the stored values were
+              // reloaded. Keep the sheet and the typed name.
             }
           },
           child: Text('Update'),

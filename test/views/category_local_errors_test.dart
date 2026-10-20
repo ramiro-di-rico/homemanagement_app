@@ -10,6 +10,8 @@ import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/data/services/sources/mode_aware_data_sources.dart';
+
+import '../helpers/storage_failures.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/add_category_sheet.dart';
@@ -33,12 +35,14 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await GetIt.I.reset();
     appMode = AppModeService(FakePlatform(PlatformType.Desktop),
-        openDatabase: (_) async => LocalDatabase(NativeDatabase.memory()));
+        openDatabase: (_, {required mustExist}) async => LocalDatabase(NativeDatabase.memory()));
     await appMode.init();
     await appMode.enterLocalMode();
+    final notifier = NotifierService();
     categories = CategoryRepository(
-        ModeAwareCategoryDataSource(_UnreachableCategories(), appMode));
-    GetIt.I.registerSingleton(NotifierService());
+        ModeAwareCategoryDataSource(_UnreachableCategories(), appMode),
+        notifierService: notifier);
+    GetIt.I.registerSingleton(notifier);
     GetIt.I.registerSingleton(categories);
     await categories.load();
   });
@@ -112,6 +116,37 @@ void main() {
     expect(tester.widget<TextField>(sheetField(EditCategorySheet)).controller!.text, 'GIFT');
     expect(categories.categories.map((c) => c.name), contains('Rent'));
     expect(categories.categories.map((c) => c.name), isNot(contains('GIFT')));
+  });
+
+  testWidgets('a failed save keeps the add sheet open with the typed name', (tester) async {
+    await pumpList(tester);
+    await tester.tap(find.byIcon(Icons.add));
+    await tester.pumpAndSettle();
+    await tester.enterText(sheetField(AddCategorySheet), 'Pets');
+    await makeStorageReadOnly(appMode.database!);
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddCategorySheet), findsOneWidget);
+    expect(tester.widget<TextField>(sheetField(AddCategorySheet)).controller!.text, 'Pets');
+    expect(find.text("Your change couldn't be saved. Nothing was changed."), findsOneWidget);
+    expect(categories.categories, hasLength(17));
+  });
+
+  testWidgets('a failed save keeps the edit sheet open and the list unchanged', (tester) async {
+    await pumpList(tester);
+    await openRowMenu(tester, 'Rent', 'Edit');
+    await tester.enterText(sheetField(EditCategorySheet), 'Housing');
+    await makeStorageReadOnly(appMode.database!);
+
+    await tester.tap(find.text('Update'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(EditCategorySheet), findsOneWidget);
+    expect(tester.widget<TextField>(sheetField(EditCategorySheet)).controller!.text, 'Housing');
+    expect(categories.categories.map((c) => c.name), contains('Rent'));
+    expect(categories.categories.map((c) => c.name), isNot(contains('Housing')));
   });
 
   testWidgets('renaming to a free name saves it', (tester) async {

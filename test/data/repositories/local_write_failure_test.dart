@@ -9,6 +9,7 @@ import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/mode_aware_data_sources.dart';
 import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
@@ -20,6 +21,7 @@ import 'package:home_management_app/l10n/app_localizations_es.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../helpers/fake_platform.dart';
+import '../../helpers/storage_failures.dart';
 
 class _UnreachableAccounts implements AccountDataSource {
   @override
@@ -41,14 +43,6 @@ class _UnreachableTransactionService implements TransactionService {
   dynamic noSuchMethod(Invocation invocation) => throw StateError('reached the server');
 }
 
-Future<void> breakWrites(LocalDatabase db, String table) async {
-  for (final operation in ['INSERT', 'UPDATE', 'DELETE']) {
-    await db.customStatement(
-        "CREATE TRIGGER fail_${table}_$operation BEFORE $operation ON $table "
-        "BEGIN SELECT RAISE(ABORT, 'database or disk is full'); END");
-  }
-}
-
 void main() {
   const english = "Your change couldn't be saved. Nothing was changed.";
 
@@ -61,7 +55,7 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     appMode = AppModeService(FakePlatform(PlatformType.Desktop),
-        openDatabase: (_) async => LocalDatabase(NativeDatabase.memory()));
+        openDatabase: (_, {required mustExist}) async => LocalDatabase(NativeDatabase.memory()));
     await appMode.init();
     await appMode.enterLocalMode();
 
@@ -102,7 +96,7 @@ void main() {
       await transactions.loadFirstPage(account.id);
       income = transactions.transactions.single;
       notifier.getMessage();
-      await breakWrites(appMode.database!, 'transactions');
+      await makeStorageReadOnly(appMode.database!);
     });
 
     test('a failed add keeps the list and the balance, and says so', () async {
@@ -136,7 +130,7 @@ void main() {
 
     setUp(() async {
       account = accounts.getAllAccounts().single;
-      await breakWrites(appMode.database!, 'accounts');
+      await makeStorageReadOnly(appMode.database!);
     });
 
     test('a failed add adds nothing', () async {
@@ -165,8 +159,8 @@ void main() {
       expectNotSavedNotice();
     });
 
-    test('a failed delete keeps the account', () async {
-      await accounts.delete(account);
+    test('a failed delete keeps the account, and the caller is told', () async {
+      await expectLater(accounts.delete(account), throwsA(isA<LocalWriteFailedException>()));
 
       expect(accounts.accounts, hasLength(1));
       expectNotSavedNotice();
@@ -174,19 +168,21 @@ void main() {
   });
 
   group('categories', () {
-    setUp(() => breakWrites(appMode.database!, 'categories'));
+    setUp(() => makeStorageReadOnly(appMode.database!));
 
-    test('a failed add adds nothing', () async {
-      await categories.add(CategoryModel(0, 0, 'Pets', 'pets', true, true, '#ffffff'));
+    test('a failed add adds nothing, and the caller is told', () async {
+      await expectLater(
+          categories.add(CategoryModel(0, 0, 'Pets', 'pets', true, true, '#ffffff')),
+          throwsA(isA<LocalWriteFailedException>()));
 
       expect(categories.categories, hasLength(17));
       expectNotSavedNotice();
     });
 
-    test('a failed edit puts the stored values back', () async {
+    test('a failed edit puts the stored values back, and the caller is told', () async {
       final rent = categories.categories.firstWhere((c) => c.name == 'Rent');
       rent.name = 'Housing';
-      await categories.update(rent);
+      await expectLater(categories.update(rent), throwsA(isA<LocalWriteFailedException>()));
 
       expect(categories.categories.map((c) => c.name), contains('Rent'));
       expect(categories.categories.map((c) => c.name), isNot(contains('Housing')));

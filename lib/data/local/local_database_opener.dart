@@ -21,6 +21,10 @@ enum LocalDataUnavailableReason {
 
   /// The file exists but can't be read with the stored key.
   unreadable,
+
+  /// The app was in local mode, but its database file is gone (moved, deleted,
+  /// or the application folder changed). A new empty one is never created silently.
+  fileMissing,
 }
 
 class LocalDataUnavailableException implements Exception {
@@ -42,9 +46,14 @@ const String localDatabaseKeyName = 'local_db_key_v1';
 /// the form the T005 spike verified. A failure never deletes or overwrites the
 /// file, and never replaces the key of an existing file.
 ///
+/// With [mustExist], a missing file is [LocalDataUnavailableReason.fileMissing]
+/// and nothing is created, not even a key. Use it when the user was already in
+/// local mode, so there must be data. Leave it off for the first entry.
+///
 /// [secureStorage] and [supportDirectory] are only meant to be replaced in tests.
 Future<LocalDatabase> openLocalDatabase({
   required String fileName,
+  bool mustExist = false,
   FlutterSecureStorage? secureStorage,
   Future<Directory> Function()? supportDirectory,
 }) async {
@@ -55,7 +64,12 @@ Future<LocalDatabase> openLocalDatabase({
       : fileName;
   final file = File('${directory.path}${Platform.pathSeparator}$name.sqlite');
 
-  final key = await _readOrCreateKey(storage, fileExists: await file.exists());
+  final fileExists = await file.exists();
+  if (mustExist && !fileExists) {
+    throw LocalDataUnavailableException(LocalDataUnavailableReason.fileMissing);
+  }
+
+  final key = await _readOrCreateKey(storage, fileExists: fileExists);
 
   final database = LocalDatabase(driftDatabase(
     name: name,
@@ -97,7 +111,14 @@ Future<String> _readOrCreateKey(FlutterSecureStorage storage,
     final key =
         base64Url.encode(List<int>.generate(32, (_) => random.nextInt(256)));
     await storage.write(key: localDatabaseKeyName, value: key);
-    return key;
+    // Use what the keyring now holds, not what this call generated: if two
+    // calls raced, the file must be created with the key that stays stored.
+    final stored = await storage.read(key: localDatabaseKeyName);
+    if (stored == null || stored.isEmpty) {
+      throw LocalDataUnavailableException(
+          LocalDataUnavailableReason.keyringUnavailable);
+    }
+    return stored;
   } on PlatformException catch (e) {
     throw LocalDataUnavailableException(
         LocalDataUnavailableReason.keyringUnavailable,

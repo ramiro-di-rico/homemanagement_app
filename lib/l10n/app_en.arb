@@ -473,9 +473,8 @@
   "noSavingsRateDataAvailable": "No savings rate data available",
   "useWithoutAccount": "Use without an account",
   "localModeUnavailableTitle": "Local mode unavailable",
-  "localModeKeyringUnavailable": "Local mode needs the system keyring to store its encryption key, but the keyring isn't available or is locked. Unlock it and try again.",
+  "localModeKeyringUnavailable": "Local mode needs your system's secure credential store to keep its encryption key, but it isn't available or is locked. Unlock it and try again.",
   "localDataCannotBeOpened": "Your local data can't be opened",
-  "localDataCannotBeOpenedDetail": "Your data is still on this computer and hasn't been changed. Check that the system keyring is unlocked, then try again.",
   "retry": "Retry",
   "accountHasTransactions": "This account has transactions, so it can't be deleted. Delete its transactions first, or archive the account instead.",
   "categoryInUse": "This category is used by transactions, so it can't be deleted. You can deactivate it instead.",
@@ -483,7 +482,13 @@
   "categoryNameTaken": "A category with this name already exists.",
   "changeNotSaved": "Your change couldn't be saved. Nothing was changed.",
   "localModeBanner": "You're working locally on this computer",
-  "createAccountToSync": "Create account",
-  "logInExistingAccount": "Log in to an existing account",
-  "logInExistingAccountConfirm": "Your local data will stay on this computer and won't be moved to that account."
+  "createOnlineAccount": "Create online account",
+  "signInExistingAccount": "Sign in to an existing account",
+  "signInExistingAccountConfirm": "Your local data will stay on this computer and won't be moved to that account. Choose \"Use without an account\" later to get back to it.",
+  "useOnlineAccountInstead": "Use an online account instead",
+  "startWithEmptyData": "Start with empty data",
+  "localDataKeyMissing": "The key that protects your local data is gone, for example after reinstalling the system, so the data can't be opened. Your file was kept and nothing was deleted.",
+  "localDataUnreadable": "The local data file can't be read. It was kept and nothing was deleted.",
+  "localDataFileMissing": "Your local data file wasn't found. If it was moved, put it back and retry. Otherwise you can start again with empty data.",
+  "localDataRetryFailed": "Still can't open your local data."
 }

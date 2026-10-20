@@ -58,7 +58,7 @@ void main() {
     opened = [];
     await GetIt.I.reset();
     appMode = AppModeService(FakePlatform(PlatformType.Desktop),
-        openDatabase: (_) async {
+        openDatabase: (_, {required mustExist}) async {
       final db = LocalDatabase(NativeDatabase.memory());
       opened.add(db);
       return db;

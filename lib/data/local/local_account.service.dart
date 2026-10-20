@@ -27,7 +27,7 @@ class LocalAccountService implements AccountDataSource {
   }
 
   @override
-  Future<AccountModel> add(AccountModel account) => guardWrite(() async {
+  Future<AccountModel> add(AccountModel account) => guardedTransaction(_db, () async {
     final name = _validName(account.name);
     final id = await _db.into(_db.accounts).insert(AccountsCompanion.insert(
           name: name,
@@ -44,7 +44,7 @@ class LocalAccountService implements AccountDataSource {
   });
 
   @override
-  Future update(AccountModel account) => guardWrite(() async {
+  Future update(AccountModel account) => guardedTransaction(_db, () async {
     final name = _validName(account.name);
     await (_db.update(_db.accounts)..where((a) => a.id.equals(account.id)))
         .write(AccountsCompanion(
@@ -58,7 +58,7 @@ class LocalAccountService implements AccountDataSource {
   });
 
   @override
-  Future delete(AccountModel account) => guardWrite(() async {
+  Future delete(AccountModel account) => guardedTransaction(_db, () async {
     final used = await (_db.select(_db.transactions)
           ..where((t) => t.accountId.equals(account.id))
           ..limit(1))

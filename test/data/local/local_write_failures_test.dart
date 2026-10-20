@@ -6,19 +6,13 @@ import 'package:home_management_app/data/local/local_account.service.dart';
 import 'package:home_management_app/data/local/local_category.service.dart';
 import 'package:home_management_app/data/local/local_database.dart';
 import 'package:home_management_app/data/local/local_transaction.service.dart';
+import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 
-/// Makes every write to [table] fail, the way a full disk would.
-Future<void> breakWrites(LocalDatabase db, String table) async {
-  for (final operation in ['INSERT', 'UPDATE', 'DELETE']) {
-    await db.customStatement(
-        "CREATE TRIGGER fail_${table}_$operation BEFORE $operation ON $table "
-        "BEGIN SELECT RAISE(ABORT, 'database or disk is full'); END");
-  }
-}
+import '../../helpers/storage_failures.dart';
 
 final Matcher throwsWriteFailed = throwsA(isA<LocalWriteFailedException>());
 
@@ -51,7 +45,7 @@ void main() {
 
   group('a failing write is reported as LocalWriteFailedException', () {
     test('for accounts', () async {
-      await breakWrites(db, 'accounts');
+      await makeStorageReadOnly(db);
 
       await expectLater(accounts.add(newAccount()), throwsWriteFailed);
       account.name = 'Renamed';
@@ -61,7 +55,7 @@ void main() {
     });
 
     test('for categories', () async {
-      await breakWrites(db, 'categories');
+      await makeStorageReadOnly(db);
 
       await expectLater(
           categories.add(CategoryModel(0, 0, 'Other', 'x', true, true, '#ffffff')), throwsWriteFailed);
@@ -71,7 +65,7 @@ void main() {
     });
 
     test('for transactions', () async {
-      await breakWrites(db, 'transactions');
+      await makeStorageReadOnly(db);
 
       await expectLater(transactions.add(newTransaction(account.id)), throwsWriteFailed);
       await expectLater(transactions.update(transaction), throwsWriteFailed);
@@ -81,7 +75,7 @@ void main() {
 
     test('deleting an account whose row cannot be removed', () async {
       final empty = await accounts.add(newAccount());
-      await breakWrites(db, 'accounts');
+      await makeStorageReadOnly(db);
 
       await expectLater(accounts.delete(empty), throwsWriteFailed);
     });
@@ -112,7 +106,52 @@ void main() {
     await expectLater(transactions.add(newTransaction(account.id)..amount = 0), throwsArgumentError);
     await expectLater(
         categories.add(CategoryModel(0, 0, 'pets', 'x', true, true, '#ffffff')),
-        throwsA(isNot(isA<LocalWriteFailedException>())));
+        throwsA(isA<CategoryNameTakenException>()));
+  });
+
+  test('a constraint violation is a bug and is not shown as "not saved"', () async {
+    // Currency 99 doesn't exist, so the foreign key rejects the row.
+    await expectLater(
+        accounts.add(AccountModel(0, 'Main', 0, true, AccountType.Cash, 99, 0, false, false)),
+        throwsA(isA<SqliteException>()));
+  });
+
+  test('category names differing only by accents or case are the same name', () async {
+    await categories.add(CategoryModel(0, 0, 'Útiles', 'x', true, true, '#ffffff'));
+
+    for (final name in ['útiles', 'ÚTILES', '  Útiles  ', 'Útiles']) {
+      await expectLater(
+          categories.add(CategoryModel(0, 0, name, 'x', true, true, '#ffffff')),
+          throwsA(isA<CategoryNameTakenException>()),
+          reason: name);
+    }
+    final other = await categories.add(CategoryModel(0, 0, 'Libros', 'x', true, true, '#ffffff'));
+    other.name = 'úTILES';
+    await expectLater(categories.update(other), throwsA(isA<CategoryNameTakenException>()));
+  });
+
+  test('a double submit of an accented category name saves it once', () async {
+    final results = await Future.wait([
+      for (var i = 0; i < 2; i++)
+        categories
+            .add(CategoryModel(0, 0, 'Útiles', 'x', true, true, '#ffffff'))
+            .then((_) => 'saved', onError: (e) => e.runtimeType.toString()),
+    ]);
+
+    expect(results..sort(), ['CategoryNameTakenException', 'saved']);
+  });
+
+  test('a double submit of the same category name saves it once and reports the second as taken', () async {
+    final results = await Future.wait([
+      categories
+          .add(CategoryModel(0, 0, 'Books', 'x', true, true, '#ffffff'))
+          .then((_) => 'saved', onError: (e) => e.runtimeType.toString()),
+      categories
+          .add(CategoryModel(0, 0, 'Books', 'x', true, true, '#ffffff'))
+          .then((_) => 'saved', onError: (e) => e.runtimeType.toString()),
+    ]);
+
+    expect(results..sort(), ['CategoryNameTakenException', 'saved']);
   });
 
   test('a failure from the background isolate the app uses is unwrapped too', () async {
@@ -123,7 +162,7 @@ void main() {
     addTearDown(() => dir.deleteSync(recursive: true));
     await db.close();
     await setUpData(LocalDatabase(NativeDatabase.createInBackground(File('${dir.path}/local.sqlite'))));
-    await breakWrites(db, 'accounts');
+    await makeStorageReadOnly(db);
 
     await expectLater(accounts.add(newAccount()), throwsWriteFailed);
   });

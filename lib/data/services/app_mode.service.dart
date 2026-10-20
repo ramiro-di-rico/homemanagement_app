@@ -5,7 +5,12 @@ import 'package:home_management_app/data/services/platform/platform_context.dart
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-typedef LocalDatabaseOpener = Future<LocalDatabase> Function(String fileName);
+/// Opens the local database. With [mustExist], a missing file is an error and
+/// nothing is created.
+typedef LocalDatabaseOpener = Future<LocalDatabase> Function(String fileName,
+    {required bool mustExist});
+
+typedef PreferencesLoader = Future<SharedPreferences> Function();
 
 /// Whether the app works against the server (online) or the encrypted local
 /// database (standalone desktop mode). Repositories are built once with
@@ -21,7 +26,9 @@ class AppModeService extends ChangeNotifier {
 
   final PlatformContext _platform;
   final LocalDatabaseOpener _openDatabase;
+  final PreferencesLoader _loadPreferences;
   SharedPreferences? _preferences;
+  Future<void>? _entering;
 
   bool _isLocal = false;
   LocalDatabase? _database;
@@ -32,9 +39,12 @@ class AppModeService extends ChangeNotifier {
     this._platform, {
     SharedPreferences? preferences,
     LocalDatabaseOpener? openDatabase,
+    PreferencesLoader? loadPreferences,
   })  : _preferences = preferences,
-        _openDatabase =
-            openDatabase ?? ((fileName) => openLocalDatabase(fileName: fileName));
+        _loadPreferences = loadPreferences ?? SharedPreferences.getInstance,
+        _openDatabase = openDatabase ??
+            ((fileName, {required mustExist}) =>
+                openLocalDatabase(fileName: fileName, mustExist: mustExist));
 
   /// Desktop only. Not the web, which has no file system or keyring.
   bool get isLocalAvailable =>
@@ -55,13 +65,19 @@ class AppModeService extends ChangeNotifier {
 
   /// Runs at startup, and again on "Retry" after a [startupError].
   ///
-  /// A failure to open the local data is kept in [startupError] and the mode
-  /// stays local: the app must not fall back to online, nor touch the file.
+  /// Nothing here may throw: it runs before the first frame, so a failure would
+  /// mean no window at all, online users included. A failure to open the local
+  /// data is kept in [startupError] and the mode stays local: the app must not
+  /// fall back to online on its own, nor touch the file.
   Future<void> init() async {
-    _preferences ??= await SharedPreferences.getInstance();
     _startupError = null;
+    try {
+      _preferences ??= await _loadPreferences();
+    } catch (_) {
+      // Without preferences the app starts online, which needs none.
+    }
     final wantsLocal =
-        _preferences!.getString(preferenceKey) == localValue && isLocalAvailable;
+        _preferences?.getString(preferenceKey) == localValue && isLocalAvailable;
     if (!wantsLocal) {
       _isLocal = false;
       notifyListeners();
@@ -69,7 +85,8 @@ class AppModeService extends ChangeNotifier {
     }
     _isLocal = true;
     try {
-      await _open();
+      // The user was already in local mode, so the data must be there.
+      await _open(mustExist: true);
     } on LocalDataUnavailableException catch (e) {
       _startupError = e;
     }
@@ -78,19 +95,46 @@ class AppModeService extends ChangeNotifier {
 
   /// Opens or creates the local database and switches to local mode.
   ///
+  /// Also the way to start over with empty data after a
+  /// [LocalDataUnavailableReason.fileMissing], which only an explicit user action
+  /// may do.
+  ///
   /// Throws [LocalDataUnavailableException] (e.g. keyring unavailable). In that
-  /// case the mode is left unchanged.
-  Future<void> enterLocalMode() async {
+  /// case the mode is left unchanged. Calls made while one is running share it,
+  /// so a double click can't open the database twice.
+  Future<void> enterLocalMode() =>
+      _entering ??= _enterLocalMode().whenComplete(() => _entering = null);
+
+  Future<void> _enterLocalMode() async {
     if (!isLocalAvailable) {
       throw StateError('Local mode is only available on desktop');
     }
     if (!_isLocal || _database == null) {
-      await _open();
+      await _open(mustExist: false);
     }
-    _preferences ??= await SharedPreferences.getInstance();
+    _preferences ??= await _loadPreferences();
     await _preferences!.setString(preferenceKey, localValue);
     _isLocal = true;
     _startupError = null;
+    notifyListeners();
+  }
+
+  /// Goes back to online mode and keeps the local data: the file is closed, never
+  /// renamed or deleted, and entering local mode again reopens it.
+  ///
+  /// Also the way out of a [startupError], where the data can't be opened but the
+  /// user still needs the app. Not allowed while an import is pending.
+  Future<void> leaveLocalMode() async {
+    if (isImportPending) {
+      throw StateError('Finish the import before leaving local mode');
+    }
+    await _database?.close();
+    _database = null;
+    _preferences ??= await _loadPreferences();
+    await _preferences!.setString(preferenceKey, onlineValue);
+    _isLocal = false;
+    _startupError = null;
+    _importStatus = ImportStatus.notStarted;
     notifyListeners();
   }
 
@@ -109,12 +153,24 @@ class AppModeService extends ChangeNotifier {
     throw UnimplementedError('completeImport is implemented in T067');
   }
 
-  Future<void> _open() async {
+  Future<void> _open({required bool mustExist}) async {
     await _database?.close();
     _database = null;
-    _database = await _openDatabase(activeFileName);
-    final row = await _database!.select(_database!.importStates).getSingle();
-    _importStatus = row.status;
+    LocalDatabase? opened;
+    try {
+      opened = await _openDatabase(activeFileName, mustExist: mustExist);
+      final row = await opened.select(opened.importStates).getSingle();
+      _importStatus = row.status;
+      _database = opened;
+    } on LocalDataUnavailableException {
+      rethrow;
+    } catch (e) {
+      // Anything unexpected is reported like the known failures, so the caller can
+      // show the "can't be opened" screen instead of crashing.
+      await opened?.close();
+      throw LocalDataUnavailableException(LocalDataUnavailableReason.unreadable,
+          cause: e);
+    }
   }
 
   @override

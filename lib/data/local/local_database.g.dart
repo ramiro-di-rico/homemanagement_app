@@ -858,6 +858,18 @@ class $CategoriesTable extends Categories
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _nameKeyMeta = const VerificationMeta(
+    'nameKey',
+  );
+  @override
+  late final GeneratedColumn<String> nameKey = GeneratedColumn<String>(
+    'name_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   static const VerificationMeta _iconMeta = const VerificationMeta('icon');
   @override
   late final GeneratedColumn<String> icon = GeneratedColumn<String>(
@@ -923,6 +935,7 @@ class $CategoriesTable extends Categories
   List<GeneratedColumn> get $columns => [
     id,
     name,
+    nameKey,
     icon,
     color,
     measurable,
@@ -951,6 +964,12 @@ class $CategoriesTable extends Categories
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('name_key')) {
+      context.handle(
+        _nameKeyMeta,
+        nameKey.isAcceptableOrUnknown(data['name_key']!, _nameKeyMeta),
+      );
     }
     if (data.containsKey('icon')) {
       context.handle(
@@ -1001,6 +1020,10 @@ class $CategoriesTable extends Categories
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      nameKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_key'],
+      )!,
       icon: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}icon'],
@@ -1032,9 +1055,12 @@ class $CategoriesTable extends Categories
 
 class LocalCategory extends DataClass implements Insertable<LocalCategory> {
   final int id;
-
-  /// Unique ignoring case: see the `categories_name_lower` index in `onCreate`.
   final String name;
+
+  /// [categoryNameKey] of the name. It is what must be unique, because SQLite's
+  /// `lower()` only folds ASCII, so a unique index on `lower(name)` lets "Útiles"
+  /// and "útiles" both in. The default only fills rows that existed before schema 2.
+  final String nameKey;
   final String icon;
   final String color;
   final bool measurable;
@@ -1043,6 +1069,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
   const LocalCategory({
     required this.id,
     required this.name,
+    required this.nameKey,
     required this.icon,
     required this.color,
     required this.measurable,
@@ -1054,6 +1081,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['name_key'] = Variable<String>(nameKey);
     map['icon'] = Variable<String>(icon);
     map['color'] = Variable<String>(color);
     map['measurable'] = Variable<bool>(measurable);
@@ -1068,6 +1096,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
     return CategoriesCompanion(
       id: Value(id),
       name: Value(name),
+      nameKey: Value(nameKey),
       icon: Value(icon),
       color: Value(color),
       measurable: Value(measurable),
@@ -1086,6 +1115,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
     return LocalCategory(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      nameKey: serializer.fromJson<String>(json['nameKey']),
       icon: serializer.fromJson<String>(json['icon']),
       color: serializer.fromJson<String>(json['color']),
       measurable: serializer.fromJson<bool>(json['measurable']),
@@ -1099,6 +1129,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'nameKey': serializer.toJson<String>(nameKey),
       'icon': serializer.toJson<String>(icon),
       'color': serializer.toJson<String>(color),
       'measurable': serializer.toJson<bool>(measurable),
@@ -1110,6 +1141,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
   LocalCategory copyWith({
     int? id,
     String? name,
+    String? nameKey,
     String? icon,
     String? color,
     bool? measurable,
@@ -1118,6 +1150,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
   }) => LocalCategory(
     id: id ?? this.id,
     name: name ?? this.name,
+    nameKey: nameKey ?? this.nameKey,
     icon: icon ?? this.icon,
     color: color ?? this.color,
     measurable: measurable ?? this.measurable,
@@ -1128,6 +1161,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
     return LocalCategory(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      nameKey: data.nameKey.present ? data.nameKey.value : this.nameKey,
       icon: data.icon.present ? data.icon.value : this.icon,
       color: data.color.present ? data.color.value : this.color,
       measurable: data.measurable.present
@@ -1143,6 +1177,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
     return (StringBuffer('LocalCategory(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('nameKey: $nameKey, ')
           ..write('icon: $icon, ')
           ..write('color: $color, ')
           ..write('measurable: $measurable, ')
@@ -1153,14 +1188,23 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, icon, color, measurable, isActive, serverId);
+  int get hashCode => Object.hash(
+    id,
+    name,
+    nameKey,
+    icon,
+    color,
+    measurable,
+    isActive,
+    serverId,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is LocalCategory &&
           other.id == this.id &&
           other.name == this.name &&
+          other.nameKey == this.nameKey &&
           other.icon == this.icon &&
           other.color == this.color &&
           other.measurable == this.measurable &&
@@ -1171,6 +1215,7 @@ class LocalCategory extends DataClass implements Insertable<LocalCategory> {
 class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> nameKey;
   final Value<String> icon;
   final Value<String> color;
   final Value<bool> measurable;
@@ -1179,6 +1224,7 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
   const CategoriesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.nameKey = const Value.absent(),
     this.icon = const Value.absent(),
     this.color = const Value.absent(),
     this.measurable = const Value.absent(),
@@ -1188,6 +1234,7 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
   CategoriesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.nameKey = const Value.absent(),
     required String icon,
     this.color = const Value.absent(),
     this.measurable = const Value.absent(),
@@ -1198,6 +1245,7 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
   static Insertable<LocalCategory> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? nameKey,
     Expression<String>? icon,
     Expression<String>? color,
     Expression<bool>? measurable,
@@ -1207,6 +1255,7 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (nameKey != null) 'name_key': nameKey,
       if (icon != null) 'icon': icon,
       if (color != null) 'color': color,
       if (measurable != null) 'measurable': measurable,
@@ -1218,6 +1267,7 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
   CategoriesCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
+    Value<String>? nameKey,
     Value<String>? icon,
     Value<String>? color,
     Value<bool>? measurable,
@@ -1227,6 +1277,7 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
     return CategoriesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      nameKey: nameKey ?? this.nameKey,
       icon: icon ?? this.icon,
       color: color ?? this.color,
       measurable: measurable ?? this.measurable,
@@ -1243,6 +1294,9 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (nameKey.present) {
+      map['name_key'] = Variable<String>(nameKey.value);
     }
     if (icon.present) {
       map['icon'] = Variable<String>(icon.value);
@@ -1267,6 +1321,7 @@ class CategoriesCompanion extends UpdateCompanion<LocalCategory> {
     return (StringBuffer('CategoriesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('nameKey: $nameKey, ')
           ..write('icon: $icon, ')
           ..write('color: $color, ')
           ..write('measurable: $measurable, ')
@@ -3038,6 +3093,7 @@ typedef $$CategoriesTableCreateCompanionBuilder =
     CategoriesCompanion Function({
       Value<int> id,
       required String name,
+      Value<String> nameKey,
       required String icon,
       Value<String> color,
       Value<bool> measurable,
@@ -3048,6 +3104,7 @@ typedef $$CategoriesTableUpdateCompanionBuilder =
     CategoriesCompanion Function({
       Value<int> id,
       Value<String> name,
+      Value<String> nameKey,
       Value<String> icon,
       Value<String> color,
       Value<bool> measurable,
@@ -3094,6 +3151,11 @@ class $$CategoriesTableFilterComposer
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameKey => $composableBuilder(
+    column: $table.nameKey,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3167,6 +3229,11 @@ class $$CategoriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get nameKey => $composableBuilder(
+    column: $table.nameKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get icon => $composableBuilder(
     column: $table.icon,
     builder: (column) => ColumnOrderings(column),
@@ -3207,6 +3274,9 @@ class $$CategoriesTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get nameKey =>
+      $composableBuilder(column: $table.nameKey, builder: (column) => column);
 
   GeneratedColumn<String> get icon =>
       $composableBuilder(column: $table.icon, builder: (column) => column);
@@ -3281,6 +3351,7 @@ class $$CategoriesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
+                Value<String> nameKey = const Value.absent(),
                 Value<String> icon = const Value.absent(),
                 Value<String> color = const Value.absent(),
                 Value<bool> measurable = const Value.absent(),
@@ -3289,6 +3360,7 @@ class $$CategoriesTableTableManager
               }) => CategoriesCompanion(
                 id: id,
                 name: name,
+                nameKey: nameKey,
                 icon: icon,
                 color: color,
                 measurable: measurable,
@@ -3299,6 +3371,7 @@ class $$CategoriesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
+                Value<String> nameKey = const Value.absent(),
                 required String icon,
                 Value<String> color = const Value.absent(),
                 Value<bool> measurable = const Value.absent(),
@@ -3307,6 +3380,7 @@ class $$CategoriesTableTableManager
               }) => CategoriesCompanion.insert(
                 id: id,
                 name: name,
+                nameKey: nameKey,
                 icon: icon,
                 color: color,
                 measurable: measurable,

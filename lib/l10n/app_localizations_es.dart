@@ -927,28 +927,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noSavingsRateDataAvailable => 'No hay datos de tasa de ahorro';
 
   @override
-  String get useWithoutAccount => 'Usar sin una cuenta';
+  String get useWithoutAccount => 'Usar sin registrarme';
 
   @override
   String get localModeUnavailableTitle => 'Modo local no disponible';
 
   @override
   String get localModeKeyringUnavailable =>
-      'El modo local necesita el llavero del sistema para guardar su clave de cifrado, pero el llavero no está disponible o está bloqueado. Desbloquéalo e inténtalo de nuevo.';
+      'El modo local necesita el almacén seguro de credenciales del sistema para guardar su clave de cifrado, pero no está disponible o está bloqueado. Desbloquéalo e inténtalo de nuevo.';
 
   @override
   String get localDataCannotBeOpened => 'No se pueden abrir tus datos locales';
-
-  @override
-  String get localDataCannotBeOpenedDetail =>
-      'Tus datos siguen en este equipo y no se han modificado. Comprueba que el llavero del sistema esté desbloqueado e inténtalo de nuevo.';
 
   @override
   String get retry => 'Reintentar';
 
   @override
   String get accountHasTransactions =>
-      'Esta cuenta tiene transacciones, por lo que no se puede eliminar. Elimina primero sus transacciones, o archívala.';
+      'Esta cuenta tiene transacciones, por lo que no se puede eliminar. Elimina primero sus transacciones o archívala.';
 
   @override
   String get categoryInUse =>
@@ -969,14 +965,36 @@ class AppLocalizationsEs extends AppLocalizations {
       'Estás trabajando de forma local en este equipo';
 
   @override
-  String get createAccountToSync => 'Crear cuenta';
+  String get createOnlineAccount => 'Crear cuenta online';
 
   @override
-  String get logInExistingAccount => 'Iniciar sesión en una cuenta existente';
+  String get signInExistingAccount => 'Iniciar sesión en una cuenta existente';
 
   @override
-  String get logInExistingAccountConfirm =>
-      'Tus datos locales se quedarán en este equipo y no se moverán a esa cuenta.';
+  String get signInExistingAccountConfirm =>
+      'Tus datos locales se quedarán en este equipo y no se moverán a esa cuenta. Elige \"Usar sin registrarme\" más tarde para volver a ellos.';
+
+  @override
+  String get useOnlineAccountInstead => 'Usar una cuenta online';
+
+  @override
+  String get startWithEmptyData => 'Empezar con datos vacíos';
+
+  @override
+  String get localDataKeyMissing =>
+      'La clave que protege tus datos locales ya no existe, por ejemplo tras reinstalar el sistema, así que los datos no se pueden abrir. Tu archivo se conservó y no se borró nada.';
+
+  @override
+  String get localDataUnreadable =>
+      'No se puede leer el archivo de datos locales. Se conservó y no se borró nada.';
+
+  @override
+  String get localDataFileMissing =>
+      'No se encontró tu archivo de datos locales. Si lo moviste, vuelve a ponerlo y reintenta. Si no, puedes empezar de nuevo con datos vacíos.';
+
+  @override
+  String get localDataRetryFailed =>
+      'Todavía no se pueden abrir tus datos locales.';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1876,28 +1894,24 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   String get noSavingsRateDataAvailable => 'No hay datos de tasa de ahorro';
 
   @override
-  String get useWithoutAccount => 'Usar sin una cuenta';
+  String get useWithoutAccount => 'Usar sin registrarme';
 
   @override
   String get localModeUnavailableTitle => 'Modo local no disponible';
 
   @override
   String get localModeKeyringUnavailable =>
-      'El modo local necesita el llavero del sistema para guardar su clave de cifrado, pero el llavero no está disponible o está bloqueado. Desbloquealo y volvé a intentar.';
+      'El modo local necesita el almacén seguro de credenciales del sistema para guardar su clave de cifrado, pero no está disponible o está bloqueado. Desbloquealo y volvé a intentar.';
 
   @override
   String get localDataCannotBeOpened => 'No se pueden abrir tus datos locales';
-
-  @override
-  String get localDataCannotBeOpenedDetail =>
-      'Tus datos siguen en esta computadora y no se modificaron. Verificá que el llavero del sistema esté desbloqueado y volvé a intentar.';
 
   @override
   String get retry => 'Reintentar';
 
   @override
   String get accountHasTransactions =>
-      'Esta cuenta tiene transacciones, por lo que no se puede eliminar. Eliminá primero sus transacciones, o archivala.';
+      'Esta cuenta tiene transacciones, por lo que no se puede eliminar. Eliminá primero sus transacciones o archivala.';
 
   @override
   String get categoryInUse =>
@@ -1918,12 +1932,34 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
       'Estás trabajando de forma local en esta computadora';
 
   @override
-  String get createAccountToSync => 'Crear cuenta';
+  String get createOnlineAccount => 'Crear cuenta online';
 
   @override
-  String get logInExistingAccount => 'Iniciar sesión en una cuenta existente';
+  String get signInExistingAccount => 'Iniciar sesión en una cuenta existente';
 
   @override
-  String get logInExistingAccountConfirm =>
-      'Tus datos locales se quedarán en esta computadora y no se moverán a esa cuenta.';
+  String get signInExistingAccountConfirm =>
+      'Tus datos locales se quedarán en esta computadora y no se moverán a esa cuenta. Elegí \"Usar sin registrarme\" más tarde para volver a ellos.';
+
+  @override
+  String get useOnlineAccountInstead => 'Usar una cuenta online';
+
+  @override
+  String get startWithEmptyData => 'Empezar con datos vacíos';
+
+  @override
+  String get localDataKeyMissing =>
+      'La clave que protege tus datos locales ya no existe, por ejemplo tras reinstalar el sistema, así que los datos no se pueden abrir. Tu archivo se conservó y no se borró nada.';
+
+  @override
+  String get localDataUnreadable =>
+      'No se puede leer el archivo de datos locales. Se conservó y no se borró nada.';
+
+  @override
+  String get localDataFileMissing =>
+      'No se encontró tu archivo de datos locales. Si lo moviste, volvé a ponerlo y reintentá. Si no, podés empezar de nuevo con datos vacíos.';
+
+  @override
+  String get localDataRetryFailed =>
+      'Todavía no se pueden abrir tus datos locales.';
 }

@@ -9,6 +9,7 @@ import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/ui/features/accounts/views/account-detail-desktop.dart';
 import 'package:home_management_app/ui/features/accounts/views/account.detail.dart';
 import 'package:home_management_app/ui/features/accounts/views/widgets/add_transaction_sheet_desktop.dart';
@@ -377,15 +378,19 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
   Future remove(item, index) async {
     try {
       await this.accountsRepo.delete(item);
-      setState(() {
-        accounts.remove(item);
-      });
+      if (!mounted) return;
+      // The repository already took it out of the list.
+      setState(() {});
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.removed(item.name))));
     } on AccountHasTransactionsException {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(AppLocalizations.of(context)!.accountHasTransactions)));
+    } on LocalWriteFailedException {
+      // The "not saved" notice is already showing, and the account is still listed.
     } catch (ex) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
         AppLocalizations.of(context)!.failedToRemove(item.name),

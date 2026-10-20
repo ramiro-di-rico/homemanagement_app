@@ -5,6 +5,7 @@ import 'package:home_management_app/data/local/local_database_opener.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/home/views/home.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_data_unavailable_message.dart';
 import 'package:home_management_app/ui/features/authentication/views/user-controls-mixins/authentication-behavior.dart';
 import 'package:home_management_app/ui/features/authentication/views/registration.dart';
 
@@ -28,22 +29,25 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
   final IdentityService _identityService = GetIt.I.get<IdentityService>();
   final TextEditingController emailPasswordResetController = TextEditingController();
   final AppModeService _appModeService = GetIt.I.get<AppModeService>();
+  bool _enteringLocal = false;
 
   Future<void> _useWithoutAccount() async {
+    if (_enteringLocal) return;
+    setState(() => _enteringLocal = true);
     try {
       await _appModeService.enterLocalMode();
       if (!mounted) return;
       context.go(HomeScreen.fullPath);
     } on LocalDataUnavailableException catch (e) {
       if (!mounted) return;
+      // Not busy any more, so the button is not left spinning behind the dialog.
+      setState(() => _enteringLocal = false);
       final l10n = AppLocalizations.of(context)!;
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text(l10n.localModeUnavailableTitle),
-          content: Text(e.reason == LocalDataUnavailableReason.keyringUnavailable
-              ? l10n.localModeKeyringUnavailable
-              : l10n.localDataCannotBeOpenedDetail),
+          content: Text(localDataUnavailableMessage(l10n, e.reason)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -52,6 +56,8 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
           ],
         ),
       );
+    } finally {
+      if (mounted) setState(() => _enteringLocal = false);
     }
   }
 
@@ -200,10 +206,19 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                   if (_appModeService.isLocalAvailable)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: TextButton(
-                        onPressed: isAuthenticating ? null : _useWithoutAccount,
-                        child: Text(AppLocalizations.of(context)!.useWithoutAccount),
-                      ),
+                      child: _enteringLocal
+                          ? TextButton.icon(
+                              onPressed: null,
+                              icon: const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2)),
+                              label: Text(AppLocalizations.of(context)!.useWithoutAccount),
+                            )
+                          : TextButton(
+                              onPressed: isAuthenticating ? null : _useWithoutAccount,
+                              child: Text(AppLocalizations.of(context)!.useWithoutAccount),
+                            ),
                     ),
                 ],
               ),

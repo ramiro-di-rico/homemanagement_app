@@ -21,10 +21,14 @@ void main() {
   const buttonLabel = 'Use without an account';
   late List<LocalDatabase> opened;
   late LocalDataUnavailableReason? failWith;
+  late Duration openingTime;
+  late int opens;
 
   AppModeService createAppMode(PlatformType type) => AppModeService(
         FakePlatform(type),
-        openDatabase: (_) async {
+        openDatabase: (_, {required mustExist}) async {
+          opens++;
+          await Future.delayed(openingTime);
           final reason = failWith;
           if (reason != null) throw LocalDataUnavailableException(reason);
           final db = LocalDatabase(NativeDatabase.memory());
@@ -60,6 +64,8 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     opened = [];
     failWith = null;
+    openingTime = Duration.zero;
+    opens = 0;
     await GetIt.I.reset();
     // Everything the login view needs apart from the app mode, which each test registers.
     final platform = PlatformStrategy.createPlatform();
@@ -101,6 +107,38 @@ void main() {
     expect(find.text('LOCAL HOME'), findsOneWidget);
   });
 
+  testWidgets('a second click while it is opening does nothing, and the button shows it is busy', (tester) async {
+    openingTime = const Duration(milliseconds: 300);
+    final appMode = createAppMode(PlatformType.Desktop);
+    final router = await pumpLogin(tester, appMode);
+
+    await tester.tap(find.text(buttonLabel));
+    await tester.pump(const Duration(milliseconds: 50));
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(tester.widget<TextButton>(find.widgetWithText(TextButton, buttonLabel)).onPressed, isNull,
+        reason: 'disabled while it opens');
+    await tester.tap(find.text(buttonLabel), warnIfMissed: false);
+    await tester.pumpAndSettle();
+
+    expect(opens, 1);
+    expect(appMode.isLocal, isTrue);
+    expect(find.text('LOCAL HOME'), findsOneWidget);
+    expect(router.routerDelegate.currentConfiguration.uri.path, HomeScreen.fullPath);
+  });
+
+  testWidgets('after a failure the button works again', (tester) async {
+    failWith = LocalDataUnavailableReason.keyringUnavailable;
+    await pumpLogin(tester, createAppMode(PlatformType.Desktop));
+    await tester.tap(find.text(buttonLabel));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<TextButton>(find.widgetWithText(TextButton, buttonLabel)).onPressed, isNotNull);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
   testWidgets('an unavailable keyring shows a dialog and stays on the login', (tester) async {
     failWith = LocalDataUnavailableReason.keyringUnavailable;
     final appMode = createAppMode(PlatformType.Desktop);
@@ -110,7 +148,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Local mode unavailable'), findsOneWidget);
-    expect(find.textContaining('system keyring'), findsOneWidget);
+    expect(find.textContaining('credential store'), findsOneWidget);
     expect(appMode.isLocal, isFalse);
     expect(router.routerDelegate.currentConfiguration.uri.path, LoginView.fullPath);
 

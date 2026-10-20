@@ -106,7 +106,7 @@ void main() {
   AppModeService createService({PlatformType platform = PlatformType.Desktop, LocalDatabaseOpener? opener}) =>
       AppModeService(FakePlatform(platform),
           openDatabase: opener ??
-              (_) async {
+              (_, {required mustExist}) async {
                 final db = LocalDatabase(NativeDatabase.memory());
                 opened.add(db);
                 return db;
@@ -217,7 +217,7 @@ void main() {
     test('data that cannot be opened is reported, stays local, and Retry can succeed', () async {
       SharedPreferences.setMockInitialValues({'appMode': 'local'});
       var fail = true;
-      final appMode = createService(opener: (_) async {
+      final appMode = createService(opener: (_, {required mustExist}) async {
         if (fail) {
           throw LocalDataUnavailableException(LocalDataUnavailableReason.keyringUnavailable);
         }
@@ -239,13 +239,144 @@ void main() {
 
     test('entering local mode while the data cannot be opened leaves the mode unchanged', () async {
       final appMode = createService(
-          opener: (_) async => throw LocalDataUnavailableException(LocalDataUnavailableReason.keyringUnavailable));
+          opener: (_, {required mustExist}) async => throw LocalDataUnavailableException(LocalDataUnavailableReason.keyringUnavailable));
       await appMode.init();
 
       await expectLater(appMode.enterLocalMode(), throwsA(isA<LocalDataUnavailableException>()));
 
       expect(appMode.isLocal, isFalse);
       expect((await SharedPreferences.getInstance()).getString('appMode'), isNull);
+    });
+
+    test('calls made while local mode is being entered share one opening', () async {
+      var opens = 0;
+      final appMode = createService(opener: (_, {required mustExist}) async {
+        opens++;
+        await Future.delayed(const Duration(milliseconds: 20));
+        final db = LocalDatabase(NativeDatabase.memory());
+        opened.add(db);
+        return db;
+      });
+      await appMode.init();
+
+      await Future.wait([appMode.enterLocalMode(), appMode.enterLocalMode(), appMode.enterLocalMode()]);
+
+      expect(opens, 1);
+      expect(appMode.isLocal, isTrue);
+      expect(appMode.database, isNotNull);
+    });
+
+    test('a failed entry does not block the next one', () async {
+      var fail = true;
+      final appMode = createService(opener: (_, {required mustExist}) async {
+        if (fail) throw LocalDataUnavailableException(LocalDataUnavailableReason.keyringUnavailable);
+        final db = LocalDatabase(NativeDatabase.memory());
+        opened.add(db);
+        return db;
+      });
+      await appMode.init();
+      await expectLater(appMode.enterLocalMode(), throwsA(isA<LocalDataUnavailableException>()));
+
+      fail = false;
+      await appMode.enterLocalMode();
+
+      expect(appMode.isLocal, isTrue);
+    });
+
+    test('the file must exist when the user was already in local mode, not on the first entry', () async {
+      final asked = <bool>[];
+      Future<LocalDatabase> opener(String _, {required bool mustExist}) async {
+        asked.add(mustExist);
+        final db = LocalDatabase(NativeDatabase.memory());
+        opened.add(db);
+        return db;
+      }
+
+      SharedPreferences.setMockInitialValues({'appMode': 'local'});
+      final returning = createService(opener: opener);
+      await returning.init();
+      SharedPreferences.setMockInitialValues({});
+      final first = createService(opener: opener);
+      await first.init();
+      await first.enterLocalMode();
+
+      expect(asked, [true, false]);
+    });
+
+    test('a missing file is reported and nothing is created', () async {
+      SharedPreferences.setMockInitialValues({'appMode': 'local'});
+      final appMode = createService(
+          opener: (_, {required mustExist}) async => throw LocalDataUnavailableException(
+              LocalDataUnavailableReason.fileMissing));
+
+      await appMode.init();
+
+      expect(appMode.startupError?.reason, LocalDataUnavailableReason.fileMissing);
+      expect(appMode.isLocal, isTrue);
+      expect(appMode.database, isNull);
+    });
+
+    test('an unexpected error while opening is reported, not thrown', () async {
+      SharedPreferences.setMockInitialValues({'appMode': 'local'});
+      final appMode = createService(
+          opener: (_, {required mustExist}) async => throw StateError('disk exploded'));
+
+      await appMode.init();
+
+      expect(appMode.startupError?.reason, LocalDataUnavailableReason.unreadable);
+      expect(appMode.startupError?.cause, isA<StateError>());
+    });
+
+    test('a broken preferences file still lets the app start, online', () async {
+      final appMode = AppModeService(FakePlatform(PlatformType.Desktop),
+          loadPreferences: () async => throw const FormatException('broken json'));
+
+      await appMode.init();
+
+      expect(appMode.isLocal, isFalse);
+      expect(appMode.startupError, isNull);
+    });
+
+    test('leaving local mode keeps the data and the way back', () async {
+      final appMode = createService();
+      await appMode.init();
+      await appMode.enterLocalMode();
+      final database = appMode.database!;
+      await database.into(database.accounts).insert(
+          AccountsCompanion.insert(name: 'Kept', accountType: 0, currencyId: 1));
+
+      await appMode.leaveLocalMode();
+
+      expect(appMode.isLocal, isFalse);
+      expect(appMode.database, isNull);
+      expect(appMode.startupError, isNull);
+      expect((await SharedPreferences.getInstance()).getString('appMode'), 'online');
+    });
+
+    test('leaving local mode is also the way out of an unreadable file', () async {
+      SharedPreferences.setMockInitialValues({'appMode': 'local'});
+      final appMode = createService(
+          opener: (_, {required mustExist}) async =>
+              throw LocalDataUnavailableException(LocalDataUnavailableReason.keyMissing));
+      await appMode.init();
+      expect(appMode.startupError, isNotNull);
+
+      await appMode.leaveLocalMode();
+
+      expect(appMode.isLocal, isFalse);
+      expect(appMode.startupError, isNull);
+    });
+
+    test('leaving local mode is refused while an import is pending', () async {
+      final appMode = createService();
+      await appMode.init();
+      await appMode.enterLocalMode();
+      final db = appMode.database!;
+      await db.update(db.importStates).write(ImportStatesCompanion(status: Value(ImportStatus.inProgress)));
+      await appMode.refreshImportStatus();
+
+      await expectLater(appMode.leaveLocalMode(), throwsStateError);
+      expect(appMode.isLocal, isTrue);
     });
 
     test('isImportPending follows import_states.status', () async {

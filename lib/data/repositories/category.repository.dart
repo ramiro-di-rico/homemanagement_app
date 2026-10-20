@@ -28,6 +28,8 @@ class CategoryRepository extends ChangeNotifier {
       notifyListeners();
     } on LocalWriteFailedException {
       notifierService?.notifyChangeNotSaved();
+      // The sheet that asked must stay open, so it must not see a success.
+      rethrow;
     }
   }
 
@@ -43,6 +45,7 @@ class CategoryRepository extends ChangeNotifier {
       } catch (_) {
         // Keep what is shown if the stored values can't be read either.
       }
+      rethrow;
     }
   }
 

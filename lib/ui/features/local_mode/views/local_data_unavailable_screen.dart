@@ -3,11 +3,16 @@ import 'package:home_management_app/data/local/local_database_opener.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 
+import 'local_data_unavailable_message.dart';
+
 /// Shown instead of the app when the local data exists but can't be opened
-/// (locked keyring, lost key, unreadable file).
+/// (locked keyring, lost key, unreadable or missing file).
 ///
-/// It only offers Retry. The data is never deleted or reset from here: a locked
-/// keyring is usually temporary, and the file is the user's only copy.
+/// The data is never deleted or reset from here: the file is the user's only
+/// copy. The user can retry when that can help, and can always leave to the online
+/// app, so a broken local file never makes the whole app unusable. Starting again
+/// with empty data is offered only when the file is missing, and only as an
+/// explicit choice.
 class LocalDataUnavailableScreen extends StatefulWidget {
   final AppModeService appModeService;
 
@@ -20,25 +25,56 @@ class LocalDataUnavailableScreen extends StatefulWidget {
 
 class _LocalDataUnavailableScreenState
     extends State<LocalDataUnavailableScreen> {
-  bool _retrying = false;
+  bool _busy = false;
+
+  Future<void> _run(Future<void> Function() action) async {
+    setState(() => _busy = true);
+    try {
+      await action();
+    } on LocalDataUnavailableException {
+      // The service keeps the reason; the screen rebuilds with it.
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
 
   Future<void> _retry() async {
-    setState(() => _retrying = true);
-    try {
-      await widget.appModeService.init();
-    } finally {
-      if (mounted) setState(() => _retrying = false);
-    }
+    await _run(widget.appModeService.init);
+    if (!mounted || widget.appModeService.startupError == null) return;
+    // Say that it ran, so a retry that fails the same way isn't mistaken for a dead button.
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.localDataRetryFailed)));
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final reason = widget.appModeService.startupError?.reason;
-    final detail = reason == LocalDataUnavailableReason.keyringUnavailable
-        ? l10n.localModeKeyringUnavailable
-        : l10n.localDataCannotBeOpenedDetail;
+    final reason = widget.appModeService.startupError?.reason ??
+        LocalDataUnavailableReason.unreadable;
+    final canRetry = localDataRetryCanHelp(reason);
+    final canStartEmpty = reason == LocalDataUnavailableReason.fileMissing;
+
+    final retry = FilledButton.icon(
+      autofocus: true,
+      onPressed: _busy ? null : _retry,
+      icon: _busy
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2))
+          : const Icon(Icons.refresh),
+      label: Text(l10n.retry),
+    );
+    final online = TextButton(
+      autofocus: !canRetry,
+      onPressed: _busy ? null : () => _run(widget.appModeService.leaveLocalMode),
+      child: Text(l10n.useOnlineAccountInstead),
+    );
+    final startEmpty = OutlinedButton(
+      onPressed: _busy ? null : () => _run(widget.appModeService.enterLocalMode),
+      child: Text(l10n.startWithEmptyData),
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -57,20 +93,14 @@ class _LocalDataUnavailableScreenState
                       textAlign: TextAlign.center,
                       style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 12),
-                  Text(detail,
+                  Text(localDataUnavailableMessage(l10n, reason),
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium),
                   const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: _retrying ? null : _retry,
-                    icon: _retrying
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.refresh),
-                    label: Text(l10n.retry),
-                  ),
+                  if (canRetry) retry,
+                  if (canStartEmpty) ...[const SizedBox(height: 12), startEmpty],
+                  const SizedBox(height: 12),
+                  online,
                 ],
               ),
             ),

@@ -1744,7 +1744,7 @@ abstract class AppLocalizations {
   /// No description provided for @localModeKeyringUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'Local mode needs the system keyring to store its encryption key, but the keyring isn\'t available or is locked. Unlock it and try again.'**
+  /// **'Local mode needs your system\'s secure credential store to keep its encryption key, but it isn\'t available or is locked. Unlock it and try again.'**
   String get localModeKeyringUnavailable;
 
   /// No description provided for @localDataCannotBeOpened.
@@ -1752,12 +1752,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your local data can\'t be opened'**
   String get localDataCannotBeOpened;
-
-  /// No description provided for @localDataCannotBeOpenedDetail.
-  ///
-  /// In en, this message translates to:
-  /// **'Your data is still on this computer and hasn\'t been changed. Check that the system keyring is unlocked, then try again.'**
-  String get localDataCannotBeOpenedDetail;
 
   /// No description provided for @retry.
   ///
@@ -1801,23 +1795,59 @@ abstract class AppLocalizations {
   /// **'You\'re working locally on this computer'**
   String get localModeBanner;
 
-  /// No description provided for @createAccountToSync.
+  /// No description provided for @createOnlineAccount.
   ///
   /// In en, this message translates to:
-  /// **'Create account'**
-  String get createAccountToSync;
+  /// **'Create online account'**
+  String get createOnlineAccount;
 
-  /// No description provided for @logInExistingAccount.
+  /// No description provided for @signInExistingAccount.
   ///
   /// In en, this message translates to:
-  /// **'Log in to an existing account'**
-  String get logInExistingAccount;
+  /// **'Sign in to an existing account'**
+  String get signInExistingAccount;
 
-  /// No description provided for @logInExistingAccountConfirm.
+  /// No description provided for @signInExistingAccountConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Your local data will stay on this computer and won\'t be moved to that account.'**
-  String get logInExistingAccountConfirm;
+  /// **'Your local data will stay on this computer and won\'t be moved to that account. Choose \"Use without an account\" later to get back to it.'**
+  String get signInExistingAccountConfirm;
+
+  /// No description provided for @useOnlineAccountInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Use an online account instead'**
+  String get useOnlineAccountInstead;
+
+  /// No description provided for @startWithEmptyData.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with empty data'**
+  String get startWithEmptyData;
+
+  /// No description provided for @localDataKeyMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The key that protects your local data is gone, for example after reinstalling the system, so the data can\'t be opened. Your file was kept and nothing was deleted.'**
+  String get localDataKeyMissing;
+
+  /// No description provided for @localDataUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'The local data file can\'t be read. It was kept and nothing was deleted.'**
+  String get localDataUnreadable;
+
+  /// No description provided for @localDataFileMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Your local data file wasn\'t found. If it was moved, put it back and retry. Otherwise you can start again with empty data.'**
+  String get localDataFileMissing;
+
+  /// No description provided for @localDataRetryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Still can\'t open your local data.'**
+  String get localDataRetryFailed;
 }
 
 class _AppLocalizationsDelegate

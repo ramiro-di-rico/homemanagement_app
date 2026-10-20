@@ -6,6 +6,7 @@ import 'package:home_management_app/ui/core/extensions/hex_color_extension.dart'
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 
 class AddCategorySheet extends StatefulWidget {
@@ -100,6 +101,8 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
               if (!mounted) return;
               setState(() =>
                   _nameError = AppLocalizations.of(context)!.categoryNameTaken);
+            } on LocalWriteFailedException {
+              // The "not saved" notice is showing. Keep the sheet and the typed name.
             }
           },
           child: Text('Add'),
