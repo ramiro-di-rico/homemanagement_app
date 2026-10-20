@@ -249,7 +249,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-09: Server calls still reachable in local mode (FR-004)
 
-- [ ] Fixed
+- [~] Account detail and the account list are done (T055, T056). Still open: the add-transaction sheet (T057), settings (T058), the kill switch in `ApiServiceFactory`, and signing out the stale user when entering local mode
 
 - **Severity**: Med. **Status**: Confirmed for account detail. Plausible for the stale-user path.
 - **Where**:
