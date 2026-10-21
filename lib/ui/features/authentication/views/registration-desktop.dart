@@ -1,3 +1,4 @@
+import 'package:home_management_app/data/services/identity.service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -39,7 +40,8 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
     var registrationResult = await this.authenticationService.register(
         this.userViewModel.email, this.userViewModel.password, locale);
 
-    if (registrationResult) {
+    // T064 handles emailTaken and the import hand-off.
+    if (registrationResult == RegistrationResult.success) {
       var authenticatedSuccessfully =
           await this.authenticationService.authenticate(this.userViewModel);
 

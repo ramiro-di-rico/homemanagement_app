@@ -449,7 +449,7 @@ description: "Task list for Standalone Desktop Mode"
 
 ### Tests for User Story 4
 
-- [ ] T060 [P] [US4] Write `test/data/services/local_import_service_test.dart` with hand-written fakes for `AccountDataSource`, `CategoryDataSource`, `CurrencyDataSource` and a fake bulk/verify client, over an in-memory local database. Cover:
+- [X] T060 [P] [US4] Write `test/data/services/local_import_service_test.dart` with hand-written fakes for `AccountDataSource`, `CategoryDataSource`, `CurrencyDataSource` and a fake bulk/verify client, over an in-memory local database. Cover:
   - The happy path, mapping all ids (transactions keep account and category).
   - Default categories matched by name (case-insensitive), not created.
   - A created category followed by an update to active/icon/color/measurable.
@@ -460,20 +460,31 @@ description: "Task list for Standalone Desktop Mode"
   - At the moment each bulk request is sent, every fake server account has a temporary name (`⟨import <tag>-…⟩`), so a transaction named like a real account name matches no account. After step 5, all accounts have their real names plus local `archive`, `measurable` and `isHidden`.
   - Resume after an account was created but its `server_id` wasn't stored: the account is found by its exact temporary name, not created twice.
   - Accounts with zero transactions never sent.
-- [ ] T061 [P] [US4] Write `test/data/services/identity_service_register_test.dart` using an `http` `MockClient` (from `package:http/testing.dart`, already available through `http`):
+
+  Written, test-first: it does not compile until T065 exists, and none of it has been run. It fixes the API T065 must provide, in `lib/data/services/local_import.service.dart`:
+  - `LocalImportService({database, accounts, categories, currencies, transactions})`, with `Future<ImportResult> run({required String email, ImportProgress? onProgress})`. `ImportResult.mismatches` is a list of `ImportMismatch(accountName, localBalance, serverBalance)`.
+  - `abstract interface class BulkTransactionClient { Future<void> bulkAdd(List<TransactionModel>); Future<bool> hasTransactions(int serverAccountId); }`
+  - `LocalImportService.temporaryName(name, tag, suffix)`, `enum ImportStep` (preflight, categories, accounts, transactions, restoring, verifying) and `typedef ImportProgress = void Function(ImportStep, int done, int total)`.
+  - `ImportCurrencyMissingException(codes)` and `ImportWrongUserException`. Any failure leaves `status = failed` and `last_error` set. A run that ends, even with mismatches, sets `status = completed`.
+  - The remaining item (writes locked while pending) belongs to T066.
+- [X] T061 [P] [US4] Write `test/data/services/identity_service_register_test.dart` using an `http` `MockClient` (from `package:http/testing.dart`, already available through `http`):
   - 200 → `success`.
   - 400 with a body containing `DuplicateEmail` or `DuplicateUserName` → `emailTaken`.
   - Other 400s and 5xx → `failed`.
 
 ### Implementation for User Story 4
 
+
+  Written, test-first: it needs `RegistrationResult` from T063 (in `identity.service.dart`) and has not been run. It swaps the HTTP client with `http.runWithClient`, so `IdentityService` needs no change to be testable.
 - [ ] T062 [US4] Add the l10n keys `importTitle`, `importProgressCategories`, `importProgressAccounts`, `importProgressTransactions`, `importVerifying`, `importDone`, `importBalanceMismatch`, `importFailed`, `importResume`, `importCurrencyMissing`, `emailAlreadyRegistered`, `importWrongUser` and `importPendingReadOnly` to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
-- [ ] T063 [US4] In `lib/data/services/identity.service.dart`, change `register` to return `enum RegistrationResult { success, emailTaken, failed }`. Parse the 400 body for `DuplicateEmail` or `DuplicateUserName` (research R8). First confirm in `../Altair/AltairUserManagement` that `RegisterUserAsync` uses `UserManager.CreateAsync`, and note the result in research.md R8. Update `AuthenticationService.register` in `lib/data/services/authentication.service.dart` to pass the enum through.
+- [X] T063 [US4] In `lib/data/services/identity.service.dart`, change `register` to return `enum RegistrationResult { success, emailTaken, failed }`. Parse the 400 body for `DuplicateEmail` or `DuplicateUserName` (research R8). First confirm in `../Altair/AltairUserManagement` that `RegisterUserAsync` uses `UserManager.CreateAsync`, and note the result in research.md R8. Update `AuthenticationService.register` in `lib/data/services/authentication.service.dart` to pass the enum through.
+
+  Done. `RegistrationResult` lives in `identity.service.dart`, and `AuthenticationService.register` passes it through. Confirmed in Altair that `RegisterUserAsync` calls `UserManager.CreateAsync` and the controller returns `BadRequest(result.Errors)` (noted in research R8). The two registration screens only compare against `RegistrationResult.success` so far, and T064 adds the `emailTaken` handling.
 - [ ] T064 [US4] Update every caller of `register`: `lib/ui/features/authentication/views/registration-desktop.dart` (lines 29–63) and the mobile `registration.dart`.
   - On `emailTaken`, show `l10n.emailAlreadyRegistered` and stay on the screen, in local mode (FR-026).
   - On success in local mode with local data present, go to `LocalImportScreen.fullPath` instead of home.
   - With no local data (only seeds: no accounts, no transactions, categories untouched), call `appMode.completeImport()` directly (US4 scenario 6).
-- [ ] T065 [US4] Create `lib/data/services/local_import.service.dart` implementing the import state machine in `specs/001-standalone-desktop-mode/data-model.md`. It takes `LocalDatabase` plus the remote `AccountService`, `CategoryService`, `CurrencyService`, `TransactionService` (via the interfaces and a small `BulkTransactionClient` interface for fakes) and `AuthenticationService`.
+- [X] T065 [US4] Create `lib/data/services/local_import.service.dart` implementing the import state machine in `specs/001-standalone-desktop-mode/data-model.md`. It takes `LocalDatabase` plus the remote `AccountService`, `CategoryService`, `CurrencyService`, `TransactionService` (via the interfaces and a small `BulkTransactionClient` interface for fakes) and `AuthenticationService`.
   - **Step 0**: set `import_states.status = inProgress`, `target_email`, `started_at`, and (once) `import_tag` = 8 random hex chars. On resume, require `authenticationService.user.email == target_email`, otherwise fail with `importWrongUser`.
   - **Step 1, preflight**: check currencies by `name`. If any is missing, throw `importCurrencyMissing` listing the codes.
   - Match category names with `categoryNameKey` (trimmed, Dart `toLowerCase()`), the same folding the local uniqueness uses (RF-06), not SQLite's `lower()`.
@@ -488,6 +499,13 @@ description: "Task list for Standalone Desktop Mode"
   - **Step 5, restore names**: `update` each mapped account with its real name and local `archive`, `measurable` and `is_hidden` (a `PUT account/{id}` with `UpdateAccountDto`), and restore the default account's original name. Idempotent.
   - **Step 6, verify**: compare each mapped server balance with the local derived balance (tolerance 0.005) and collect mismatches.
   - On any exception: `status = failed`, `last_error = message`, rethrow. Expose progress through a callback `(step, done, total)`.
+
+  Done, in `lib/data/services/local_import.service.dart`. It passes the 13 cases of `local_import_service_test.dart` (T060).
+  - A matched category is updated only when its icon, color, measurable or active flag differs from the local one. That also repairs a category that was created just before an earlier failure.
+  - The step that renames unmapped server accounts renames every pre-existing account that isn't mapped, not only "Cash". The first gets the `default` suffix and is stored as `default_account_server_id`. Any others get `default-<server id>`.
+  - One class per file: `LocalImportService` stays in `lib/data/services/local_import.service.dart`. `ImportStep` and `ImportProgress` are in `lib/data/models/import_progress.dart`, with `ImportMismatch` and `ImportResult` in their own files there. `BulkTransactionClient`, `RemoteBulkTransactionClient` and the two exceptions are in `lib/data/services/sources/`.
+  - `RemoteBulkTransactionClient` wraps `TransactionService` for production: `bulkAdd`, and `hasTransactions` as a first page of size 1. T068 registers it.
+  - `AuthenticationService` is not a constructor argument. The caller passes the signed-in email to `run`.
 - [ ] T066 [US4] Lock local writes while an import is pending (spec FR-022, data-model "Local writes are locked"):
   - In `lib/data/services/sources/mode_aware_data_sources.dart`, every add, update and delete throws `LocalDataLockedException` when `appMode.isLocal && appMode.isImportPending`. Reads are unaffected.
   - The repositories catch it and show `l10n.importPendingReadOnly` through `NotifierService`.

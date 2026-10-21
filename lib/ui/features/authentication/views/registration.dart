@@ -1,3 +1,4 @@
+import 'package:home_management_app/data/services/identity.service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -41,7 +42,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                 var result =
                     await authenticationService.register(userViewModel.email, userViewModel.password, locale);
 
-                if (result) {
+                if (result == RegistrationResult.success) {
                   var authenticatedSuccessfully = await authenticationService.authenticate(userViewModel);
                   if (authenticatedSuccessfully) {
                     context.go(HomeScreen.fullPath);

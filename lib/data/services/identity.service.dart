@@ -1,38 +1,48 @@
-
 import 'package:home_management_app/data/services/backend_environment.dart';
 import 'package:home_management_app/domain/models/user.dart';
 import 'package:home_management_app/data/services/logger_wrapper.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+enum RegistrationResult { success, emailTaken, failed }
+
 class IdentityService {
   String authenticateApi = 'identity/api/Authentication/SignIn';
   String authenticateApiV2 = 'identity/api/Authentication/V2/SignIn';
   String registrationApi = 'identity/api/registration';
   String refreshTokenApi = 'identity/api/Authentication/UseRefreshToken';
-  String twoFactorApi = 'identity/api/Authentication/CompleteTwoFactorAuthenticationSignIn';
+  String twoFactorApi =
+      'identity/api/Authentication/CompleteTwoFactorAuthenticationSignIn';
   final LoggerWrapper? _logger;
 
   IdentityService(this._logger);
 
   Future<UserModel?> internalAuthenticate(String email, String password) async {
     _logger?.i('Calling v1 authentication endpoint');
-    var response = await http.post(BackendEnvironment.uri(this.authenticateApi),
-        headers: <String, String>{'Content-Type': 'application/json'},
-        body:
-        jsonEncode(<String, String>{'email': email, 'password': password}));
+    var response = await http.post(
+      BackendEnvironment.uri(this.authenticateApi),
+      headers: <String, String>{'Content-Type': 'application/json'},
+      body: jsonEncode(<String, String>{'email': email, 'password': password}),
+    );
 
     return _handleAuthResponse(response, password);
   }
 
-  Future<UserModel?> internalAuthenticateV2(String username, String password) async {
+  Future<UserModel?> internalAuthenticateV2(
+    String username,
+    String password,
+  ) async {
     _logger?.i('Calling v2 authentication endpoint');
-    var params = <String, String>{'api-version': '2' };
+    var params = <String, String>{'api-version': '2'};
     var uri = BackendEnvironment.uri(this.authenticateApi, params);
-    var response = await http.post(uri,
-        headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(
-            <String, String>{'username': username, 'password': password}));
+    var response = await http.post(
+      uri,
+      headers: <String, String>{'Content-Type': 'application/json'},
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+      }),
+    );
 
     return _handleAuthResponse(response, password);
   }
@@ -51,18 +61,53 @@ class IdentityService {
     }
   }
 
-  Future<bool> register(String email, String password, [String language = 'en']) async {
-    var response = await http.post(BackendEnvironment.uri(this.registrationApi),
-        headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{'email': email, 'password': password, 'language': language}));
+  Future<RegistrationResult> register(
+    String email,
+    String password, [
+    String language = 'en',
+  ]) async {
+    var response = await http.post(
+      BackendEnvironment.uri(this.registrationApi),
+      headers: <String, String>{'Content-Type': 'application/json'},
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'password': password,
+        'language': language,
+      }),
+    );
 
-    return response.statusCode == 200;
+    if (response.statusCode == 200) return RegistrationResult.success;
+    if (response.statusCode == 400 && _isDuplicateUser(response.body)) {
+      return RegistrationResult.emailTaken;
+    }
+    return RegistrationResult.failed;
   }
 
-  Future<UserModel?> completeTwoFactorAuthentication(String username, String code) async {
-    var response = await http.post(BackendEnvironment.uri(this.twoFactorApi),
-        headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{'username': username, 'code': code}));
+  /// A taken email comes back as a 400 whose body is the list of ASP.NET Identity
+  /// errors, with the code `DuplicateEmail` or `DuplicateUserName`.
+  bool _isDuplicateUser(String body) {
+    try {
+      final errors = jsonDecode(body);
+      if (errors is! List) return false;
+      return errors.any(
+        (e) =>
+            e is Map &&
+            (e['code'] == 'DuplicateEmail' || e['code'] == 'DuplicateUserName'),
+      );
+    } on FormatException {
+      return false;
+    }
+  }
+
+  Future<UserModel?> completeTwoFactorAuthentication(
+    String username,
+    String code,
+  ) async {
+    var response = await http.post(
+      BackendEnvironment.uri(this.twoFactorApi),
+      headers: <String, String>{'Content-Type': 'application/json'},
+      body: jsonEncode(<String, String>{'username': username, 'code': code}),
+    );
 
     if (response.statusCode == 200) {
       var jsonModel = json.decode(response.body);
@@ -81,16 +126,18 @@ class IdentityService {
     var token = user.token;
 
     try {
-      var response = await http.put(BackendEnvironment.uri(this.refreshTokenApi),
-          headers: <String, String>{
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-          body: jsonEncode(<String, String>{
-            'username': user.username,
-            'refreshToken': user.refreshToken
-          }));
+      var response = await http.put(
+        BackendEnvironment.uri(this.refreshTokenApi),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, String>{
+          'username': user.username,
+          'refreshToken': user.refreshToken,
+        }),
+      );
 
       return _handleAuthResponse(response, user.password);
     } catch (e) {
@@ -100,19 +147,38 @@ class IdentityService {
   }
 
   Future<bool> requestPasswordChange(String email) async {
-    var uri = createPasswordResetUri('identity/api/PasswordManagement/forgotpassword');
-    var response = await http.post(uri,
-        headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{'email': email, 'source': "FlutterApp"}));
+    var uri = createPasswordResetUri(
+      'identity/api/PasswordManagement/forgotpassword',
+    );
+    var response = await http.post(
+      uri,
+      headers: <String, String>{'Content-Type': 'application/json'},
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'source': "FlutterApp",
+      }),
+    );
 
     return response.statusCode == 200;
   }
 
-  Future<bool> changePassword(String email, String password, String token) async {
-    var uri = createPasswordResetUri('identity/api/PasswordManagement/tokenpasswordchange');
-    var response = await http.post(uri,
-        headers: <String, String>{'Content-Type': 'application/json'},
-        body: jsonEncode(<String, String>{'email': email, 'newPassword': password, 'token': token}));
+  Future<bool> changePassword(
+    String email,
+    String password,
+    String token,
+  ) async {
+    var uri = createPasswordResetUri(
+      'identity/api/PasswordManagement/tokenpasswordchange',
+    );
+    var response = await http.post(
+      uri,
+      headers: <String, String>{'Content-Type': 'application/json'},
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'newPassword': password,
+        'token': token,
+      }),
+    );
 
     return response.statusCode == 200;
   }

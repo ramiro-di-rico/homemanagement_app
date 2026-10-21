@@ -127,7 +127,7 @@
   - Identity is a separate service (`Altair/AltairUserManagement/Controllers/UserManagement/RegistrationController.cs`).
   - On failure it returns **400** with ASP.NET Identity `IdentityError`s; a taken email produces the `DuplicateEmail` / `DuplicateUserName` codes. The client's `IdentityService.register` returns only `statusCode == 200`.
 - **Decision**: `register` returns `RegistrationResult { success, emailTaken, failed }`, which it gets by parsing the 400 body for those codes. On `emailTaken`, the registration screen asks for a different email and stays in local mode.
-- **Unverified**: that `RegisterUserAsync` uses `UserManager.CreateAsync` (which produces the standard codes). Check in Altair during Phase 5.
+- **Verified (T063)**: `UserService.RegisterUserAsync` calls `UserManager.CreateAsync`, and `RegistrationController.Register` returns `BadRequest(result.Errors)`, a JSON array of `{code, description}`. So the standard codes are what the client sees. Other 400s (`Invalid Password.`, model state) and 5xx are plain failures.
 
 ## R9. Mode switching without rebuilding DI
 
