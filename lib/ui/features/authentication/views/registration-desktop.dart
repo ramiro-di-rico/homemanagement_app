@@ -2,6 +2,7 @@ import 'package:home_management_app/data/services/identity.service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_management_app/l10n/app_localizations.dart';
 import '2fa_view.dart';
 
 import 'package:home_management_app/ui/core/custom/components/email-textfield.dart';
@@ -12,6 +13,7 @@ import 'user-controls-mixins/authentication-behavior.dart';
 import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 import 'user-controls-mixins/password-strength-behavior.dart';
+import 'user-controls-mixins/post-sign-in.dart';
 
 class RegistrationDesktop extends StatefulWidget {
   const RegistrationDesktop({super.key});
@@ -40,7 +42,6 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
     var registrationResult = await this.authenticationService.register(
         this.userViewModel.email, this.userViewModel.password, locale);
 
-    // T064 handles emailTaken and the import hand-off.
     if (registrationResult == RegistrationResult.success) {
       var authenticatedSuccessfully =
           await this.authenticationService.authenticate(this.userViewModel);
@@ -48,7 +49,7 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
       setAuthenticatingStatus(false);
 
       if (authenticatedSuccessfully) {
-        await successFullAuthentication();
+        await _afterRegistration();
       } else {
         if (this.authenticationService.user?.twoFactorRequired == true) {
           this.context.go(TwoFactorAuthenticationView.fullPath);
@@ -56,10 +57,20 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
           _showErrorDialog('Authentication error.', 'Could not authenticate user.');
         }
       }
+    } else if (registrationResult == RegistrationResult.emailTaken) {
+      // Stays here, and in local mode if that's where the user is (FR-026).
+      setAuthenticatingStatus(false);
+      _showErrorDialog('Registration error.',
+          AppLocalizations.of(this.context)!.emailAlreadyRegistered);
     } else {
       setAuthenticatingStatus(false);
       _showErrorDialog('Registration error.', 'Could not register user.');
     }
+  }
+
+  Future<void> _afterRegistration() async {
+    if (!mounted) return;
+    await goAfterSignIn(this.context);
   }
 
   void _showErrorDialog(String title, String message) {

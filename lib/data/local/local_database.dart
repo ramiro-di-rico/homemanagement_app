@@ -147,6 +147,22 @@ class LocalDatabase extends _$LocalDatabase {
     return row.read<double>('balance');
   }
 
+  /// Whether the user put anything here: an account, a transaction, or a change
+  /// to the seeded categories (added, removed, renamed, restyled or deactivated).
+  /// Without any of it there is nothing worth importing (US4 scenario 6).
+  Future<bool> hasUserData() async {
+    if ((await (select(accounts)..limit(1)).get()).isNotEmpty) return true;
+    if ((await (select(transactions)..limit(1)).get()).isNotEmpty) return true;
+    final current = await select(categories).get();
+    if (current.length != _defaultCategories.length) return true;
+    final seeded = {for (final (name, icon) in _defaultCategories) name: icon};
+    return current.any((c) =>
+        seeded[c.name] != c.icon ||
+        c.color != '#ffffff' ||
+        !c.measurable ||
+        !c.isActive);
+  }
+
   Future<void> _seed() async {
     await batch((b) {
       // Same rows as the server's CurrencySeed.

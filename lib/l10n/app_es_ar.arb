@@ -318,5 +318,19 @@
   "localDataFileMissing": "No se encontró tu archivo de datos locales. Si lo moviste, volvé a ponerlo y reintentá. Si no, podés empezar de nuevo con datos vacíos.",
   "localDataRetryFailed": "Todavía no se pueden abrir tus datos locales.",
   "localModeEmptyDescription": "Tus datos se guardan cifrados solo en esta computadora.",
-  "createFirstAccount": "Creá tu primera cuenta"
+  "createFirstAccount": "Creá tu primera cuenta",
+  "importTitle": "Moviendo tus datos a tu cuenta online",
+  "importProgressCategories": "Moviendo categorías",
+  "importProgressAccounts": "Moviendo cuentas",
+  "importProgressTransactions": "Moviendo transacciones",
+  "importVerifying": "Verificando saldos",
+  "importDone": "Tus datos ya están en tu cuenta online.",
+  "importBalanceMismatch": "El saldo de {account} no coincide: {local} acá, {server} online.",
+  "importFailed": "El traslado no terminó. Tus datos locales están intactos y no se perdió nada.",
+  "importResume": "Terminá de mover tus datos locales",
+  "importCurrencyMissing": "La cuenta online no ofrece estas monedas: {currencies}. Todavía no se pueden mover tus datos.",
+  "emailAlreadyRegistered": "Este correo ya está registrado. Usá otro correo.",
+  "importWrongUser": "El traslado se inició para {email}. Iniciá sesión con esa cuenta para terminarlo.",
+  "importPendingReadOnly": "Tus datos locales se están moviendo a tu cuenta online, así que no se pueden modificar hasta que termine.",
+  "localSwitchFailed": "Tu cuenta se creó, pero la aplicación todavía no pudo cambiar a ella. Tus datos locales están intactos. Usá \"Iniciar sesión en una cuenta existente\" para continuar."
 }

@@ -79,4 +79,27 @@ void main() {
             name: '', accountType: 0, currencyId: 1)),
         throwsA(isA<InvalidDataException>()));
   });
+
+  group('hasUserData', () {
+    test('a fresh database has none', () async {
+      expect(await db.hasUserData(), isFalse);
+    });
+
+    test('an account counts', () async {
+      await addAccount();
+      expect(await db.hasUserData(), isTrue);
+    });
+
+    test('a change to the seeded categories counts', () async {
+      await (db.update(db.categories)..where((c) => c.id.equals(1)))
+          .write(const CategoriesCompanion(isActive: Value(false)));
+      expect(await db.hasUserData(), isTrue);
+    });
+
+    test('a new category counts', () async {
+      await db.into(db.categories).insert(CategoriesCompanion.insert(
+          name: 'Pets', icon: 'pets', nameKey: const Value('pets')));
+      expect(await db.hasUserData(), isTrue);
+    });
+  });
 }

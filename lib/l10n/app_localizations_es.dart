@@ -1002,6 +1002,58 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get createFirstAccount => 'Crea tu primera cuenta';
+
+  @override
+  String get importTitle => 'Moviendo tus datos a tu cuenta online';
+
+  @override
+  String get importProgressCategories => 'Moviendo categorías';
+
+  @override
+  String get importProgressAccounts => 'Moviendo cuentas';
+
+  @override
+  String get importProgressTransactions => 'Moviendo transacciones';
+
+  @override
+  String get importVerifying => 'Comprobando saldos';
+
+  @override
+  String get importDone => 'Tus datos ya están en tu cuenta online.';
+
+  @override
+  String importBalanceMismatch(String account, String local, String server) {
+    return 'El saldo de $account no coincide: $local aquí, $server online.';
+  }
+
+  @override
+  String get importFailed =>
+      'El traslado no terminó. Tus datos locales están intactos y no se perdió nada.';
+
+  @override
+  String get importResume => 'Terminar de mover tus datos locales';
+
+  @override
+  String importCurrencyMissing(String currencies) {
+    return 'La cuenta online no ofrece estas monedas: $currencies. Todavía no se pueden mover tus datos.';
+  }
+
+  @override
+  String get emailAlreadyRegistered =>
+      'Este correo ya está registrado. Usa otro correo.';
+
+  @override
+  String importWrongUser(String email) {
+    return 'El traslado se inició para $email. Inicia sesión con esa cuenta para terminarlo.';
+  }
+
+  @override
+  String get importPendingReadOnly =>
+      'Tus datos locales se están moviendo a tu cuenta online, así que no se pueden modificar hasta que termine.';
+
+  @override
+  String get localSwitchFailed =>
+      'Tu cuenta se creó, pero la aplicación no pudo cambiar a ella todavía. Tus datos locales están intactos. Usa \"Iniciar sesión en una cuenta existente\" para continuar.';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -1976,4 +2028,56 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get createFirstAccount => 'Creá tu primera cuenta';
+
+  @override
+  String get importTitle => 'Moviendo tus datos a tu cuenta online';
+
+  @override
+  String get importProgressCategories => 'Moviendo categorías';
+
+  @override
+  String get importProgressAccounts => 'Moviendo cuentas';
+
+  @override
+  String get importProgressTransactions => 'Moviendo transacciones';
+
+  @override
+  String get importVerifying => 'Verificando saldos';
+
+  @override
+  String get importDone => 'Tus datos ya están en tu cuenta online.';
+
+  @override
+  String importBalanceMismatch(String account, String local, String server) {
+    return 'El saldo de $account no coincide: $local acá, $server online.';
+  }
+
+  @override
+  String get importFailed =>
+      'El traslado no terminó. Tus datos locales están intactos y no se perdió nada.';
+
+  @override
+  String get importResume => 'Terminá de mover tus datos locales';
+
+  @override
+  String importCurrencyMissing(String currencies) {
+    return 'La cuenta online no ofrece estas monedas: $currencies. Todavía no se pueden mover tus datos.';
+  }
+
+  @override
+  String get emailAlreadyRegistered =>
+      'Este correo ya está registrado. Usá otro correo.';
+
+  @override
+  String importWrongUser(String email) {
+    return 'El traslado se inició para $email. Iniciá sesión con esa cuenta para terminarlo.';
+  }
+
+  @override
+  String get importPendingReadOnly =>
+      'Tus datos locales se están moviendo a tu cuenta online, así que no se pueden modificar hasta que termine.';
+
+  @override
+  String get localSwitchFailed =>
+      'Tu cuenta se creó, pero la aplicación todavía no pudo cambiar a ella. Tus datos locales están intactos. Usá \"Iniciar sesión en una cuenta existente\" para continuar.';
 }

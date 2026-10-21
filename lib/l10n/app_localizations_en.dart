@@ -993,4 +993,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createFirstAccount => 'Create your first account';
+
+  @override
+  String get importTitle => 'Moving your data to your online account';
+
+  @override
+  String get importProgressCategories => 'Moving categories';
+
+  @override
+  String get importProgressAccounts => 'Moving accounts';
+
+  @override
+  String get importProgressTransactions => 'Moving transactions';
+
+  @override
+  String get importVerifying => 'Checking balances';
+
+  @override
+  String get importDone => 'Your data is now in your online account.';
+
+  @override
+  String importBalanceMismatch(String account, String local, String server) {
+    return 'The balance of $account doesn\'t match: $local here, $server online.';
+  }
+
+  @override
+  String get importFailed =>
+      'The move didn\'t finish. Your local data is intact and nothing was lost.';
+
+  @override
+  String get importResume => 'Finish moving your local data';
+
+  @override
+  String importCurrencyMissing(String currencies) {
+    return 'The online account doesn\'t offer these currencies: $currencies. Your data can\'t be moved yet.';
+  }
+
+  @override
+  String get emailAlreadyRegistered =>
+      'This email is already registered. Use a different email.';
+
+  @override
+  String importWrongUser(String email) {
+    return 'The move was started for $email. Sign in with that account to finish it.';
+  }
+
+  @override
+  String get importPendingReadOnly =>
+      'Your local data is being moved to your online account, so it can\'t be changed until that finishes.';
+
+  @override
+  String get localSwitchFailed =>
+      'Your account was created, but the app couldn\'t switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue.';
 }

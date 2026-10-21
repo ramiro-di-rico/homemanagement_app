@@ -74,7 +74,9 @@ class _RegistrationScreenState extends State<RegistrationScreen>
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Text('Registration error.'),
-                          content: Text('Could not register user.'),
+                          content: Text(result == RegistrationResult.emailTaken
+                              ? AppLocalizations.of(context)!.emailAlreadyRegistered
+                              : 'Could not register user.'),
                           actions: [
                             TextButton(
                               child: Text('ok'),

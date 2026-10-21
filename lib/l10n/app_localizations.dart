@@ -1860,6 +1860,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create your first account'**
   String get createFirstAccount;
+
+  /// No description provided for @importTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving your data to your online account'**
+  String get importTitle;
+
+  /// No description provided for @importProgressCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving categories'**
+  String get importProgressCategories;
+
+  /// No description provided for @importProgressAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving accounts'**
+  String get importProgressAccounts;
+
+  /// No description provided for @importProgressTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving transactions'**
+  String get importProgressTransactions;
+
+  /// No description provided for @importVerifying.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking balances'**
+  String get importVerifying;
+
+  /// No description provided for @importDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is now in your online account.'**
+  String get importDone;
+
+  /// No description provided for @importBalanceMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'The balance of {account} doesn\'t match: {local} here, {server} online.'**
+  String importBalanceMismatch(String account, String local, String server);
+
+  /// No description provided for @importFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The move didn\'t finish. Your local data is intact and nothing was lost.'**
+  String get importFailed;
+
+  /// No description provided for @importResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish moving your local data'**
+  String get importResume;
+
+  /// No description provided for @importCurrencyMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'The online account doesn\'t offer these currencies: {currencies}. Your data can\'t be moved yet.'**
+  String importCurrencyMissing(String currencies);
+
+  /// No description provided for @emailAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered. Use a different email.'**
+  String get emailAlreadyRegistered;
+
+  /// No description provided for @importWrongUser.
+  ///
+  /// In en, this message translates to:
+  /// **'The move was started for {email}. Sign in with that account to finish it.'**
+  String importWrongUser(String email);
+
+  /// No description provided for @importPendingReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Your local data is being moved to your online account, so it can\'t be changed until that finishes.'**
+  String get importPendingReadOnly;
+
+  /// No description provided for @localSwitchFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account was created, but the app couldn\'t switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue.'**
+  String get localSwitchFailed;
 }
 
 class _AppLocalizationsDelegate

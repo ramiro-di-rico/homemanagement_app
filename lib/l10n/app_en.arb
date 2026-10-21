@@ -492,5 +492,46 @@
   "localDataFileMissing": "Your local data file wasn't found. If it was moved, put it back and retry. Otherwise you can start again with empty data.",
   "localDataRetryFailed": "Still can't open your local data.",
   "localModeEmptyDescription": "Your data is stored encrypted on this computer only.",
-  "createFirstAccount": "Create your first account"
+  "createFirstAccount": "Create your first account",
+  "importTitle": "Moving your data to your online account",
+  "importProgressCategories": "Moving categories",
+  "importProgressAccounts": "Moving accounts",
+  "importProgressTransactions": "Moving transactions",
+  "importVerifying": "Checking balances",
+  "importDone": "Your data is now in your online account.",
+  "importBalanceMismatch": "The balance of {account} doesn't match: {local} here, {server} online.",
+  "@importBalanceMismatch": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      },
+      "local": {
+        "type": "String"
+      },
+      "server": {
+        "type": "String"
+      }
+    }
+  },
+  "importFailed": "The move didn't finish. Your local data is intact and nothing was lost.",
+  "importResume": "Finish moving your local data",
+  "importCurrencyMissing": "The online account doesn't offer these currencies: {currencies}. Your data can't be moved yet.",
+  "@importCurrencyMissing": {
+    "placeholders": {
+      "currencies": {
+        "type": "String"
+      }
+    }
+  },
+  "emailAlreadyRegistered": "This email is already registered. Use a different email.",
+  "importWrongUser": "The move was started for {email}. Sign in with that account to finish it.",
+  "@importWrongUser": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "importPendingReadOnly": "Your local data is being moved to your online account, so it can't be changed until that finishes.",
+  "localSwitchFailed": "Your account was created, but the app couldn't switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue."
 }

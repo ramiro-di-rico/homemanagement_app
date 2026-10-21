@@ -476,7 +476,9 @@ description: "Task list for Standalone Desktop Mode"
 
 
   Written, test-first: it needs `RegistrationResult` from T063 (in `identity.service.dart`) and has not been run. It swaps the HTTP client with `http.runWithClient`, so `IdentityService` needs no change to be testable.
-- [ ] T062 [US4] Add the l10n keys `importTitle`, `importProgressCategories`, `importProgressAccounts`, `importProgressTransactions`, `importVerifying`, `importDone`, `importBalanceMismatch`, `importFailed`, `importResume`, `importCurrencyMissing`, `emailAlreadyRegistered`, `importWrongUser` and `importPendingReadOnly` to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
+- [X] T062 [US4] Add the l10n keys `importTitle`, `importProgressCategories`, `importProgressAccounts`, `importProgressTransactions`, `importVerifying`, `importDone`, `importBalanceMismatch`, `importFailed`, `importResume`, `importCurrencyMissing`, `emailAlreadyRegistered`, `importWrongUser` and `importPendingReadOnly` to `lib/l10n/app_en.arb`, `app_es.arb` and `app_es_ar.arb`, then run `flutter gen-l10n`.
+
+  Done, in `en`, `es` and `es_AR` as the task says. `it` and `pt` fall back to English for these keys until they are translated. `importBalanceMismatch` takes `{account}`, `{local}`, `{server}`, `importCurrencyMissing` takes `{currencies}` and `importWrongUser` takes `{email}`.
 - [X] T063 [US4] In `lib/data/services/identity.service.dart`, change `register` to return `enum RegistrationResult { success, emailTaken, failed }`. Parse the 400 body for `DuplicateEmail` or `DuplicateUserName` (research R8). First confirm in `../Altair/AltairUserManagement` that `RegisterUserAsync` uses `UserManager.CreateAsync`, and note the result in research.md R8. Update `AuthenticationService.register` in `lib/data/services/authentication.service.dart` to pass the enum through.
 
   Done. `RegistrationResult` lives in `identity.service.dart`, and `AuthenticationService.register` passes it through. Confirmed in Altair that `RegisterUserAsync` calls `UserManager.CreateAsync` and the controller returns `BadRequest(result.Errors)` (noted in research R8). The two registration screens only compare against `RegistrationResult.success` so far, and T064 adds the `emailTaken` handling.
@@ -484,6 +486,11 @@ description: "Task list for Standalone Desktop Mode"
   - On `emailTaken`, show `l10n.emailAlreadyRegistered` and stay on the screen, in local mode (FR-026).
   - On success in local mode with local data present, go to `LocalImportScreen.fullPath` instead of home.
   - With no local data (only seeds: no accounts, no transactions, categories untouched), call `appMode.completeImport()` directly (US4 scenario 6).
+
+  Partly done. Both registration screens handle `emailTaken`. The post-sign-in hand-off is shared in `user-controls-mixins/post-sign-in.dart` (`goAfterSignIn`) and used by the desktop registration and the 2FA view, so the two-factor path no longer skips it. In local mode it goes to `/home_screen/local_import` when `LocalDatabase.hasUserData()` is true, and otherwise calls `completeImport()`; if that fails it shows `importFailed` and stays put.
+  - **Still open**: the route is a literal and has no screen until T069, and `completeImport()` throws until T067. Close this task when both land.
+  - The mobile `registration.dart` only gets the `emailTaken` message. Local mode is desktop-only.
+  - `hasUserData` is covered in `test/data/local/local_database_test.dart`. `goAfterSignIn` is covered in `test/views/post_sign_in_test.dart` (online, local with data, local with only the seeds, failed switch). The registration screens themselves are not widget-tested.
 - [X] T065 [US4] Create `lib/data/services/local_import.service.dart` implementing the import state machine in `specs/001-standalone-desktop-mode/data-model.md`. It takes `LocalDatabase` plus the remote `AccountService`, `CategoryService`, `CurrencyService`, `TransactionService` (via the interfaces and a small `BulkTransactionClient` interface for fakes) and `AuthenticationService`.
   - **Step 0**: set `import_states.status = inProgress`, `target_email`, `started_at`, and (once) `import_tag` = 8 random hex chars. On resume, require `authenticationService.user.email == target_email`, otherwise fail with `importWrongUser`.
   - **Step 1, preflight**: check currencies by `name`. If any is missing, throw `importCurrencyMissing` listing the codes.

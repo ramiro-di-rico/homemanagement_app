@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:home_management_app/data/services/authentication.service.dart';
-import 'package:home_management_app/ui/features/home/views/home.dart';
+import 'package:home_management_app/ui/features/authentication/views/user-controls-mixins/post-sign-in.dart';
 
 class TwoFactorAuthenticationView extends StatefulWidget {
   static const String fullPath = '/2fa_screen';
@@ -54,10 +53,10 @@ class _TwoFactorAuthenticationViewState extends State<TwoFactorAuthenticationVie
   Future completeTwoFactorAuthentication() async {
     var result = await authenticationService.completeTwoFactorAuthentication(code);
 
-    if (result) {
-      //Navigator.popUntil(context, (route) => HomeScreen.id == route.settings.name);
-      context.pop();
-      context.go(HomeScreen.fullPath);
+    if (result && mounted) {
+      // No pop first: `go` replaces the stack, and popping would dispose this view
+      // while the hand-off is still awaiting the local database.
+      await goAfterSignIn(context);
     }
   }
 }
