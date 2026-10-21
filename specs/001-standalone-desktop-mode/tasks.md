@@ -488,7 +488,7 @@ description: "Task list for Standalone Desktop Mode"
   - With no local data (only seeds: no accounts, no transactions, categories untouched), call `appMode.completeImport()` directly (US4 scenario 6).
 
   Partly done. Both registration screens handle `emailTaken`. The post-sign-in hand-off is shared in `user-controls-mixins/post-sign-in.dart` (`goAfterSignIn`) and used by the desktop registration and the 2FA view, so the two-factor path no longer skips it. In local mode it goes to `/home_screen/local_import` when `LocalDatabase.hasUserData()` is true, and otherwise calls `completeImport()`; if that fails it shows `importFailed` and stays put.
-  - **Still open**: the route is a literal and has no screen until T069, and `completeImport()` throws until T067. Close this task when both land.
+  - **Still open**: the route is a literal and has no screen until T069, and `completeImport()` is now real (T067). Close this task when T069 lands.
   - The mobile `registration.dart` only gets the `emailTaken` message. Local mode is desktop-only.
   - `hasUserData` is covered in `test/data/local/local_database_test.dart`. `goAfterSignIn` is covered in `test/views/post_sign_in_test.dart` (online, local with data, local with only the seeds, failed switch). The registration screens themselves are not widget-tested.
 - [X] T065 [US4] Create `lib/data/services/local_import.service.dart` implementing the import state machine in `specs/001-standalone-desktop-mode/data-model.md`. It takes `LocalDatabase` plus the remote `AccountService`, `CategoryService`, `CurrencyService`, `TransactionService` (via the interfaces and a small `BulkTransactionClient` interface for fakes) and `AuthenticationService`.
@@ -518,17 +518,32 @@ description: "Task list for Standalone Desktop Mode"
   - The repositories catch it and show `l10n.importPendingReadOnly` through `NotifierService`.
   - Add cases to `test/data/services/mode_aware_data_sources_test.dart`: writes are rejected while the status is `inProgress` or `failed`, and allowed when it is `notStarted`.
   - Add a case to `test/data/services/local_import_service_test.dart`: fail at step 4 → a write attempt is rejected → resume → the server data equals the local data.
-- [ ] T067 [US4] Implement `AppModeService.completeImport()` in `lib/data/services/app_mode.service.dart`:
+- [X] T067 [US4] Implement `AppModeService.completeImport()` in `lib/data/services/app_mode.service.dart`:
   - Close the database.
   - Rename the file in `getApplicationSupportDirectory()` to `homemanagement_local.backup-YYYY-MM-DD.sqlite`, adding `-N` if it exists.
   - The rename alone makes the next local session start fresh (spec edge case "returning to local mode later"), since the active file name is constant.
   - Set `appMode = online`, call `Caching` clear-all (`lib/data/services/caching.dart`) and `TransactionRepository.invalidateSuggestions()`, and notify.
   - Then reload `AccountRepository`, `CurrencyRepository` and `CategoryRepository`.
-- [ ] T068 [US4] Create `lib/data/repositories/local_import.repository.dart`: `LocalImportRepository extends ChangeNotifier`, wrapping `LocalImportService`.
+
+  Done, in `AppModeService.completeImport()`. Tests in `test/data/services/app_mode_complete_import_test.dart`.
+  - **Order matters.** It closes the database, renames the file (and any `-wal`, `-shm` or `-journal` side files) to `homemanagement_local.backup-YYYY-MM-DD.sqlite`, with `-1`, `-2`... when that name is taken, and only then persists `online`. A crash in between leaves the app in local mode with its file missing (the "data not found" screen, which keeps the backup), and never an online app whose old file could be imported again.
+  - If the rename fails, it reopens the database and rethrows, so the app stays local and usable.
+  - It throws `StateError` outside local mode, and also while the stored import status is `inProgress` or `failed` (it re-reads the status first, so a caller that just finished the import doesn't need to refresh). `notStarted` is allowed, for a user who had nothing to move.
+  - **Review fix:** `isImportPending` is now also true for `completed` while the file is still active. That state means the data was sent but archiving failed, so new local writes would never reach the account. T066's lock and T070's banner must use `isImportPending`, so they cover it too.
+  - **Repositories and `Caching` are not cleared here.** The listener in `registerSingletons` already does it when the mode flips (T053), and calls `reset()` rather than reloading, because the user's screens load on open. The task text said "reload"; that listener is the single place for it.
+  - New constructor options `supportDirectory` and `now`, for tests, and an `importStatus` getter.
+- [X] T068 [US4] Create `lib/data/repositories/local_import.repository.dart`: `LocalImportRepository extends ChangeNotifier`, wrapping `LocalImportService`.
   - Exposes `status`, `step`, `progress`, `mismatches` and `error`.
   - `start()` and `resume()` methods.
   - On success it calls `AppModeService.completeImport()`.
   - Register it in `lib/main.dart` (hand-registered).
+
+  Done, in `lib/data/repositories/local_import.repository.dart`, registered in `registerSingletons`. Tests in `test/data/repositories/local_import_repository_test.dart`.
+  - It builds a `LocalImportService` on demand from `AppModeService.database`, using the **remote** services (not the mode-aware delegates, which would read the local data back). The remote category and currency services in `main.dart` are now named variables so both the delegates and the import share them.
+  - `start()` and `resume()` are the same call, because the service resumes from what it stored. A call while one is running does nothing.
+  - On the first progress report it asks `AppModeService.refreshImportStatus()`, so local writes are locked from then on. A failure refreshes it again, keeping the lock until a retry.
+  - **Review fix:** it listens to `AppModeService` and, when a new local session starts, resets its status, error, step, progress and mismatches. The summary of a finished import survives while the app is online. A singleton would otherwise show the last import's `completed` to T069.
+  - A success sets `completed` and then calls `completeImport()`. The mismatches stay on the repository for the summary screen.
 - [ ] T069 [US4] Create `lib/ui/features/local_mode/views/local_import_screen.dart` (`static const path = '/local_import'`, `fullPath = '/home_screen/local_import'`).
   - On open, calls `LocalImportRepository.start()` automatically when the status is `notStarted` (US4 scenario 1). With `inProgress` (an app restart mid-import), it calls `resume()`. With `failed`, it shows Retry and waits.
   - Shows per-step progress from `LocalImportRepository` via `ListenableBuilder`.

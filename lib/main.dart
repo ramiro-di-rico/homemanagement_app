@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:home_management_app/data/repositories/local_import.repository.dart';
+import 'package:home_management_app/data/services/local_import.service.dart';
+import 'package:home_management_app/data/services/sources/remote_bulk_transaction_client.dart';
 import 'package:get_it/get_it.dart';
 import 'myapp.dart';
 import 'package:home_management_app/data/services/main_account.service.dart';
@@ -169,13 +172,13 @@ void registerSingletons(PlatformContext platformContext) {
       accountService: ModeAwareAccountDataSource(accountService, appModeService),
       notifierService: errorNotifierService);
 
+  var currencyService = CurrencyService(
+      authenticationService: GetIt.I<AuthenticationService>(),
+      apiServiceFactory: ApiServiceFactory(
+          authenticationService: GetIt.I<AuthenticationService>()));
   var currencyRepository = CurrencyRepository(
-      currencyService: ModeAwareCurrencyDataSource(
-          CurrencyService(
-              authenticationService: GetIt.I<AuthenticationService>(),
-              apiServiceFactory: ApiServiceFactory(
-                  authenticationService: GetIt.I<AuthenticationService>())),
-          appModeService));
+      currencyService:
+          ModeAwareCurrencyDataSource(currencyService, appModeService));
 
 
   var notificationRepository = NotificationRepository(
@@ -201,13 +204,26 @@ void registerSingletons(PlatformContext platformContext) {
       errorNotifierService: errorNotifierService,
       tagRepository: tagRepository);
 
-  var categoryRepository = CategoryRepository(ModeAwareCategoryDataSource(
-      CategoryService(
-          authenticationService: authenticationService,
-          apiServiceFactory:
-              ApiServiceFactory(authenticationService: authenticationService),
-          notifierService: errorNotifierService),
-      appModeService), notifierService: errorNotifierService);
+  var categoryService = CategoryService(
+      authenticationService: authenticationService,
+      apiServiceFactory:
+          ApiServiceFactory(authenticationService: authenticationService),
+      notifierService: errorNotifierService);
+  var categoryRepository = CategoryRepository(
+      ModeAwareCategoryDataSource(categoryService, appModeService),
+      notifierService: errorNotifierService);
+
+  // The import talks to the server directly, never through the mode-aware
+  // delegates, which would read the local data back.
+  var localImportRepository = LocalImportRepository(
+      appMode: appModeService,
+      authentication: authenticationService,
+      createService: (database) => LocalImportService(
+          database: database,
+          accounts: accountService,
+          categories: categoryService,
+          currencies: currencyService,
+          transactions: RemoteBulkTransactionClient(transactionService)));
 
   // Local and online data must never mix: when the mode flips, forget what the
   // other one loaded. The repositories are not reloaded here, because online that
@@ -274,5 +290,6 @@ void registerSingletons(PlatformContext platformContext) {
   GetIt.instance.registerSingleton(reminderRepository);
   GetIt.instance.registerSingleton(mainAccountRepository);
   GetIt.instance.registerSingleton(reconciliationRepository);
+  GetIt.instance.registerSingleton(localImportRepository);
   GetIt.instance.registerSingleton(InviteLinkService());
 }

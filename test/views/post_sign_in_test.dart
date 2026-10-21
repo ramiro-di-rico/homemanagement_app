@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_platform.dart';
 
-/// `completeImport` is not implemented yet (T067), so the outcome is chosen here.
+/// `completeImport` is replaced so each test chooses its outcome without a file system.
 class _AppMode extends AppModeService {
   final bool completeSucceeds;
   int completed = 0;

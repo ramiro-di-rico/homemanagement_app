@@ -116,7 +116,7 @@ notStarted ──register+login──▶ inProgress ──all steps ok──▶ 
                                 failed
 ```
 
-**Local writes are locked** while the status is `inProgress` or `failed`. The `ModeAware*` delegates reject add, update and delete with `LocalDataLockedException` (spec FR-022), so the local data can't drift from what was already sent. Reads still work.
+**Local writes are locked** while the status is `inProgress` or `failed`, and also `completed` while the file is still the active one (archiving failed: the data was already sent, so new writes would never reach the account). The `ModeAware*` delegates reject add, update and delete with `LocalDataLockedException` (spec FR-022), so the local data can't drift from what was already sent. Reads still work.
 
 Steps run in order inside `inProgress`. Each one is idempotent, so a retry repeats safely (FR-021):
 
