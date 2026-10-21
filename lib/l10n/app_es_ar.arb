@@ -332,5 +332,6 @@
   "emailAlreadyRegistered": "Este correo ya está registrado. Usá otro correo.",
   "importWrongUser": "El traslado se inició para {email}. Iniciá sesión con esa cuenta para terminarlo.",
   "importPendingReadOnly": "Tus datos locales se están moviendo a tu cuenta online, así que no se pueden modificar hasta que termine.",
-  "localSwitchFailed": "Tu cuenta se creó, pero la aplicación todavía no pudo cambiar a ella. Tus datos locales están intactos. Usá \"Iniciar sesión en una cuenta existente\" para continuar."
+  "localSwitchFailed": "Tu cuenta se creó, pero la aplicación todavía no pudo cambiar a ella. Tus datos locales están intactos. Usá \"Iniciar sesión en una cuenta existente\" para continuar.",
+  "continueButton": "Continuar"
 }

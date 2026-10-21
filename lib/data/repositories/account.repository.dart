@@ -64,8 +64,8 @@ class AccountRepository extends ChangeNotifier {
       this.accounts.add(created);
       notifyListeners();
       notifierService.notify('Account ${accountModel.name} added successfully');
-    } on LocalWriteFailedException {
-      notifierService.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      notifierService.notifyWriteRejected(error);
     } catch (ex) {
       print(ex);
       notifierService.notify('Failed to add account ${accountModel.name}', isError: true);
@@ -77,8 +77,8 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
       notifierService.notify('Account ${accountModel.name} updated successfully');
-    } on LocalWriteFailedException {
-      notifierService.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      notifierService.notifyWriteRejected(error);
       // The caller edited the model before saving, so take the stored values back.
       await _reloadQuietly();
     } catch (ex) {
@@ -94,9 +94,9 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
       notifierService.notify('Account ${accountModel.name} $archiveLabel successfully');
-    } on LocalWriteFailedException {
+    } on LocalWriteFailedException catch (error) {
       accountModel.archive = !accountModel.archive;
-      notifierService.notifyChangeNotSaved();
+      notifierService.notifyWriteRejected(error);
     } catch (ex) {
       notifierService.notify('Failed to $archiveLabel account ${accountModel.name}', isError: true);
       print(ex);
@@ -110,9 +110,9 @@ class AccountRepository extends ChangeNotifier {
       await accountService.update(accountModel);
       _loadAccounts(accounts);
       notifierService.notify('Account ${accountModel.name} $hideLabel successfully');
-    } on LocalWriteFailedException {
+    } on LocalWriteFailedException catch (error) {
       accountModel.isHidden = !accountModel.isHidden;
-      notifierService.notifyChangeNotSaved();
+      notifierService.notifyWriteRejected(error);
     } catch (ex) {
       notifierService.notify('Failed to $hideLabel account ${accountModel.name}', isError: true);
       print(ex);
@@ -128,8 +128,8 @@ class AccountRepository extends ChangeNotifier {
     } on AccountHasTransactionsException {
       // The caller explains it to the user, so there is no generic failure notice.
       rethrow;
-    } on LocalWriteFailedException {
-      notifierService.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      notifierService.notifyWriteRejected(error);
       // The caller must not present the delete as done.
       rethrow;
     } catch (ex) {

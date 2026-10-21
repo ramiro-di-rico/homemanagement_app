@@ -11,6 +11,8 @@ import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/data/services/sources/currency_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_data_locked_exception.dart';
+import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/mode_aware_data_sources.dart';
 import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 import 'package:home_management_app/domain/models/account.dart';
@@ -422,6 +424,107 @@ void main() {
         await appMode.refreshImportStatus();
         expect(appMode.isImportPending, pending, reason: status.name);
       }
+    });
+  });
+
+  group('write lock while an import is pending (FR-022)', () {
+    late AppModeService appMode;
+    late FakeRemoteAccounts remote;
+    late ModeAwareAccountDataSource accounts;
+    late ModeAwareCategoryDataSource categories;
+    late ModeAwareTransactionDataSource transactions;
+
+    setUp(() async {
+      appMode = createService();
+      await appMode.init();
+      await appMode.enterLocalMode();
+      remote = FakeRemoteAccounts();
+      accounts = ModeAwareAccountDataSource(remote, appMode);
+      categories = ModeAwareCategoryDataSource(FakeRemoteCategories(), appMode);
+      transactions =
+          ModeAwareTransactionDataSource(FakeRemoteTransactions(), appMode);
+    });
+
+    Future<void> setStatus(ImportStatus status) async {
+      final db = appMode.database!;
+      await (db.update(db.importStates)..where((s) => s.id.equals(1)))
+          .write(ImportStatesCompanion(status: Value(status)));
+      await appMode.refreshImportStatus();
+    }
+
+    final account =
+        AccountModel(0, 'Main', 0, true, AccountType.Cash, 1, 0, false, false);
+
+    test('writes are allowed while the import has not started', () async {
+      final created = await accounts.add(account);
+
+      expect(created.id, greaterThan(0));
+    });
+
+    for (final status in [
+      ImportStatus.inProgress,
+      ImportStatus.failed,
+      ImportStatus.completed,
+    ]) {
+      test('every write is rejected while the status is ${status.name}, '
+          'and nothing reaches the database or the server', () async {
+        final created = await accounts.add(account);
+        final category = (await categories.fetch()).first;
+        final transaction = TransactionModel(
+            0, created.id, category.id, 'Pay', 5, DateTime(2026, 1, 1), TransactionType.Income);
+        await setStatus(status);
+
+        for (final write in <Future Function()>[
+          () => accounts.add(account),
+          () => accounts.update(created),
+          () => accounts.delete(created),
+          () => categories.add(CategoryModel(0, 0, 'New', 'home', true, true, '#ffffff')),
+          () => categories.update(category),
+          () => categories.delete(category),
+          () => transactions.add(transaction),
+          () => transactions.update(transaction),
+          () => transactions.delete(1),
+        ]) {
+          await expectLater(write(), throwsA(isA<LocalDataLockedException>()));
+        }
+
+        expect((await accounts.fetchAccounts()).map((a) => a.name), ['Main']);
+        expect(remote.calls, isEmpty);
+      });
+    }
+
+    test('reads still work while locked', () async {
+      await accounts.add(account);
+      await setStatus(ImportStatus.inProgress);
+
+      expect(await accounts.fetchAccounts(), hasLength(1));
+      expect(await categories.fetch(), isNotEmpty);
+      expect(await transactions.suggested(), isEmpty);
+    });
+
+    test('online, writes go to the server as before', () async {
+      // The group's setUp saved "local", so start from clean preferences.
+      SharedPreferences.setMockInitialValues({});
+      final online = createService();
+      await online.init();
+      final onlineRemote = FakeRemoteAccounts();
+
+      await ModeAwareAccountDataSource(onlineRemote, online).add(account);
+
+      expect(onlineRemote.calls, ['add']);
+    });
+
+    test('leaving local mode is refused while locked, so the lock can\'t be dodged',
+        () async {
+      await setStatus(ImportStatus.failed);
+
+      await expectLater(appMode.leaveLocalMode(), throwsStateError);
+
+      expect(appMode.isLocal, isTrue);
+    });
+
+    test('a locked rejection is a "not saved" failure too', () {
+      expect(LocalDataLockedException(), isA<LocalWriteFailedException>());
     });
   });
 }

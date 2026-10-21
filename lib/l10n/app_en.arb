@@ -533,5 +533,6 @@
     }
   },
   "importPendingReadOnly": "Your local data is being moved to your online account, so it can't be changed until that finishes.",
-  "localSwitchFailed": "Your account was created, but the app couldn't switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue."
+  "localSwitchFailed": "Your account was created, but the app couldn't switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue.",
+  "continueButton": "Continue"
 }

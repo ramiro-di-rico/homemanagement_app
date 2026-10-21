@@ -1045,4 +1045,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get localSwitchFailed =>
       'Your account was created, but the app couldn\'t switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue.';
+
+  @override
+  String get continueButton => 'Continue';
 }

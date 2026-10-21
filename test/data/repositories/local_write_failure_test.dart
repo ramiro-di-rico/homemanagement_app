@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:home_management_app/data/local/local_database.dart';
@@ -9,6 +10,7 @@ import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_data_locked_exception.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/mode_aware_data_sources.dart';
 import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
@@ -216,6 +218,55 @@ void main() {
       notifier.getMessage();
 
       expect(notifier.getMessage(), isNull);
+    });
+  });
+
+  group('while an import is pending', () {
+    const pendingNotice =
+        "Your local data is being moved to your online account, so it can't be changed until that finishes.";
+
+    setUp(() async {
+      final db = appMode.database!;
+      await (db.update(db.importStates)..where((s) => s.id.equals(1)))
+          .write(const ImportStatesCompanion(status: Value(ImportStatus.inProgress)));
+      await appMode.refreshImportStatus();
+    });
+
+    test('a rejected account add says why, and keeps the list', () async {
+      await accounts.add(AccountModel(0, 'Other', 0, true, AccountType.Cash, 1, 0, false, false));
+
+      expect(accounts.getAllAccounts().map((a) => a.name), ['Main']);
+      expect(notifier.hasError, isTrue);
+      expect(notifier.getMessage(), pendingNotice);
+    });
+
+    test('a rejected transaction add says why, and keeps the balance', () async {
+      final account = accounts.getAllAccounts().single;
+      await transactions.loadFirstPage(account.id);
+
+      await transactions.add(
+          TransactionModel(0, account.id, 1, 'Coffee', 5, DateTime(2026, 1, 2), TransactionType.Outcome));
+
+      expect(accounts.getAllAccounts().single.balance, 0);
+      expect(transactions.transactions, isEmpty);
+      expect(notifier.getMessage(), pendingNotice);
+    });
+
+    test('a rejected category add says why, and the sheet sees the failure', () async {
+      await expectLater(
+          categories.add(CategoryModel(0, 0, 'New', 'home', true, true, '#ffffff')),
+          throwsA(isA<LocalDataLockedException>()));
+
+      expect(notifier.getMessage(), pendingNotice);
+    });
+
+    test('a rejected account delete says why, and is not presented as done', () async {
+      final account = accounts.getAllAccounts().single;
+
+      await expectLater(accounts.delete(account), throwsA(isA<LocalDataLockedException>()));
+
+      expect(accounts.getAllAccounts(), hasLength(1));
+      expect(notifier.getMessage(), pendingNotice);
     });
   });
 }

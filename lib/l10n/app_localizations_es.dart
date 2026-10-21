@@ -1054,6 +1054,9 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get localSwitchFailed =>
       'Tu cuenta se creó, pero la aplicación no pudo cambiar a ella todavía. Tus datos locales están intactos. Usa \"Iniciar sesión en una cuenta existente\" para continuar.';
+
+  @override
+  String get continueButton => 'Continuar';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -2080,4 +2083,7 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get localSwitchFailed =>
       'Tu cuenta se creó, pero la aplicación todavía no pudo cambiar a ella. Tus datos locales están intactos. Usá \"Iniciar sesión en una cuenta existente\" para continuar.';
+
+  @override
+  String get continueButton => 'Continuar';
 }

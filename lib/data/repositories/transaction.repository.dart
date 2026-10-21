@@ -49,8 +49,8 @@ class TransactionRepository extends ChangeNotifier {
     final TransactionWithBalanceModel transactionResult;
     try {
       transactionResult = await this._dataSource.add(transaction);
-    } on LocalWriteFailedException {
-      errorNotifierService.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      errorNotifierService.notifyWriteRejected(error);
       return;
     }
     if (accountsContainer.any((element) =>
@@ -86,8 +86,8 @@ class TransactionRepository extends ChangeNotifier {
   Future remove(TransactionModel transactionModel) async {
     try {
       await this._dataSource.delete(transactionModel.id);
-    } on LocalWriteFailedException {
-      errorNotifierService.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      errorNotifierService.notifyWriteRejected(error);
       return;
     }
     var container = accountsContainer.firstWhere(
@@ -107,8 +107,8 @@ class TransactionRepository extends ChangeNotifier {
   Future update(TransactionModel transactionModel) async {
     try {
       await this._dataSource.update(transactionModel);
-    } on LocalWriteFailedException {
-      errorNotifierService.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      errorNotifierService.notifyWriteRejected(error);
       return;
     }
     var currentContainer = _getCurrentContainer();

@@ -10,10 +10,17 @@ import 'package:home_management_app/data/services/sources/import_wrong_user_exce
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/data/services/sources/currency_data_source.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
+import 'package:home_management_app/data/services/platform/platform_type.dart';
+import 'package:home_management_app/data/services/sources/local_data_locked_exception.dart';
+import 'package:home_management_app/data/services/sources/mode_aware_data_sources.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/domain/models/currency.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../helpers/fake_platform.dart';
 
 /// One in-memory "server" behind all four seams (the account one through
 /// [_AccountsOf], because account and category `add`/`update` clash) the import talks to. It behaves
@@ -485,6 +492,60 @@ void main() {
       }
       state = await importState();
       expect(state.status, ImportStatus.completed);
+    },
+  );
+
+  test(
+    'after a failure the local data is read-only, and the retry matches it',
+    () async {
+      await seedLocal();
+      final appMode = AppModeService(
+        FakePlatform(PlatformType.Desktop),
+        openDatabase: (_, {required mustExist}) async => db,
+      );
+      SharedPreferences.setMockInitialValues({});
+      await appMode.init();
+      await appMode.enterLocalMode();
+      final localAccounts = ModeAwareAccountDataSource(
+        _AccountsOf(server),
+        appMode,
+      );
+      server.failAfterApplyingBulkCall = 2;
+      await expectLater(service.run(email: 'a@b.com'), throwsException);
+      await appMode.refreshImportStatus();
+
+      await expectLater(
+        localAccounts.add(
+          AccountModel(
+            0,
+            'Late',
+            0,
+            true,
+            AccountType.Cash,
+            1,
+            0,
+            false,
+            false,
+          ),
+        ),
+        throwsA(isA<LocalDataLockedException>()),
+      );
+
+      server.failAfterApplyingBulkCall = null;
+      final result = await service.run(email: 'a@b.com');
+
+      expect(result.mismatches, isEmpty);
+      expect(
+        (await db.select(db.accounts).get()).map((a) => a.name),
+        isNot(contains('Late')),
+      );
+      for (final id in [cash, savings, travel]) {
+        final a = await local(id);
+        expect(
+          server.account(a.serverId!).balance,
+          closeTo(await db.accountBalance(id), 0.005),
+        );
+      }
     },
   );
 

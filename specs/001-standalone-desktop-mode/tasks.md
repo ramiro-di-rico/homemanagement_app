@@ -488,7 +488,7 @@ description: "Task list for Standalone Desktop Mode"
   - With no local data (only seeds: no accounts, no transactions, categories untouched), call `appMode.completeImport()` directly (US4 scenario 6).
 
   Partly done. Both registration screens handle `emailTaken`. The post-sign-in hand-off is shared in `user-controls-mixins/post-sign-in.dart` (`goAfterSignIn`) and used by the desktop registration and the 2FA view, so the two-factor path no longer skips it. In local mode it goes to `/home_screen/local_import` when `LocalDatabase.hasUserData()` is true, and otherwise calls `completeImport()`; if that fails it shows `importFailed` and stays put.
-  - **Still open**: the route is a literal and has no screen until T069, and `completeImport()` is now real (T067). Close this task when T069 lands.
+  - **Still open**: the route and `completeImport()` now exist (T069, T067). What is left is checking the whole flow by hand (T071).
   - The mobile `registration.dart` only gets the `emailTaken` message. Local mode is desktop-only.
   - `hasUserData` is covered in `test/data/local/local_database_test.dart`. `goAfterSignIn` is covered in `test/views/post_sign_in_test.dart` (online, local with data, local with only the seeds, failed switch). The registration screens themselves are not widget-tested.
 - [X] T065 [US4] Create `lib/data/services/local_import.service.dart` implementing the import state machine in `specs/001-standalone-desktop-mode/data-model.md`. It takes `LocalDatabase` plus the remote `AccountService`, `CategoryService`, `CurrencyService`, `TransactionService` (via the interfaces and a small `BulkTransactionClient` interface for fakes) and `AuthenticationService`.
@@ -513,11 +513,16 @@ description: "Task list for Standalone Desktop Mode"
   - One class per file: `LocalImportService` stays in `lib/data/services/local_import.service.dart`. `ImportStep` and `ImportProgress` are in `lib/data/models/import_progress.dart`, with `ImportMismatch` and `ImportResult` in their own files there. `BulkTransactionClient`, `RemoteBulkTransactionClient` and the two exceptions are in `lib/data/services/sources/`.
   - `RemoteBulkTransactionClient` wraps `TransactionService` for production: `bulkAdd`, and `hasTransactions` as a first page of size 1. T068 registers it.
   - `AuthenticationService` is not a constructor argument. The caller passes the signed-in email to `run`.
-- [ ] T066 [US4] Lock local writes while an import is pending (spec FR-022, data-model "Local writes are locked"):
+- [X] T066 [US4] Lock local writes while an import is pending (spec FR-022, data-model "Local writes are locked"):
   - In `lib/data/services/sources/mode_aware_data_sources.dart`, every add, update and delete throws `LocalDataLockedException` when `appMode.isLocal && appMode.isImportPending`. Reads are unaffected.
   - The repositories catch it and show `l10n.importPendingReadOnly` through `NotifierService`.
   - Add cases to `test/data/services/mode_aware_data_sources_test.dart`: writes are rejected while the status is `inProgress` or `failed`, and allowed when it is `notStarted`.
   - Add a case to `test/data/services/local_import_service_test.dart`: fail at step 4 → a write attempt is rejected → resume → the server data equals the local data.
+
+  Done.
+  - `_ModeSwitch.writable` throws `LocalDataLockedException` for every add, update and delete when `appMode.isLocal && appMode.isImportPending` (which includes `completed` while the file is still active, see T067). The write methods are `async`, so the lock arrives as a failed future, never a synchronous throw. Reads and the online path are unchanged.
+  - `LocalDataLockedException` **extends** `LocalWriteFailedException`: the write was rejected and nothing changed, so every place that already handles "not saved" (repositories, account delete, the category sheets) keeps working with no new catch. Only the notice differs: the repositories now call `NotifierService.notifyWriteRejected(error)`, which shows `importPendingReadOnly` for the lock and the generic "not saved" otherwise.
+  - Tests: `mode_aware_data_sources_test.dart` (rejected in `inProgress`, `failed` and `completed`; allowed in `notStarted`; reads still work; online unchanged; leaving local mode refused while locked), `local_write_failure_test.dart` (the notice and unchanged data for accounts, transactions and categories), and `local_import_service_test.dart` (fail at step 4, a write is rejected, resume, server data equals local).
 - [X] T067 [US4] Implement `AppModeService.completeImport()` in `lib/data/services/app_mode.service.dart`:
   - Close the database.
   - Rename the file in `getApplicationSupportDirectory()` to `homemanagement_local.backup-YYYY-MM-DD.sqlite`, adding `-N` if it exists.
@@ -544,12 +549,20 @@ description: "Task list for Standalone Desktop Mode"
   - On the first progress report it asks `AppModeService.refreshImportStatus()`, so local writes are locked from then on. A failure refreshes it again, keeping the lock until a retry.
   - **Review fix:** it listens to `AppModeService` and, when a new local session starts, resets its status, error, step, progress and mismatches. The summary of a finished import survives while the app is online. A singleton would otherwise show the last import's `completed` to T069.
   - A success sets `completed` and then calls `completeImport()`. The mismatches stay on the repository for the summary screen.
-- [ ] T069 [US4] Create `lib/ui/features/local_mode/views/local_import_screen.dart` (`static const path = '/local_import'`, `fullPath = '/home_screen/local_import'`).
+- [X] T069 [US4] Create `lib/ui/features/local_mode/views/local_import_screen.dart` (`static const path = '/local_import'`, `fullPath = '/home_screen/local_import'`).
   - On open, calls `LocalImportRepository.start()` automatically when the status is `notStarted` (US4 scenario 1). With `inProgress` (an app restart mid-import), it calls `resume()`. With `failed`, it shows Retry and waits.
   - Shows per-step progress from `LocalImportRepository` via `ListenableBuilder`.
   - Shows the summary with any balance mismatches (FR-023), then a "Continue" button to `HomeScreen.fullPath`, which is now online.
   - On failure, shows `importFailed` with **Retry** (calls `resume()`). The app stays local and the data stays intact (FR-022).
   - Register the route as a child of `/home_screen` in `lib/routing.dart`, following `.claude/skills/flutter-add-route/SKILL.md`.
+
+  Done, in `lib/ui/features/local_mode/views/local_import_screen.dart`, with the route under `/home_screen` and the allowlist entry now using `LocalImportScreen.fullPath` (the literals in `routing.dart` and `post-sign-in.dart` are gone). Tests: `test/views/local_import_screen_test.dart`.
+  - On open, while local: `notStarted` starts, `inProgress` resumes, `completed` resumes too (archiving had failed), and `failed` waits for Retry. Online, it starts nothing and shows only the summary.
+  - Shows four steps (categories, accounts, transactions, balances) with a spinner or check and the "done / total" of the active one. Preflight and restoring names are not shown separately.
+  - On success: `importDone`, one `importBalanceMismatch` line per differing account, and Continue to the home (now online).
+  - On failure: the message for the error (`importCurrencyMissing` with the codes, `importWrongUser` with the email, otherwise `importFailed`) and Retry. The app stays local. `ImportWrongUserException` now carries `expectedEmail` for that message.
+  - New key `continueButton` (en, es, es_AR).
+  - **Not covered here:** a user who is not signed in (e.g. after an app restart) gets the generic failure text with Retry. Getting them to sign in is T070.
 - [ ] T070 [US4] Handle a resumed import:
   - In `lib/ui/features/local_mode/views/local_mode_banner.dart`, when `import_states.status` is `inProgress` or `failed`, show `importResume`. It opens the import screen, or registration/login if unauthenticated.
   - In `lib/routing.dart`, while an import is pending and the user isn't authenticated, allow `/login_screen` in local mode instead of redirecting it home.

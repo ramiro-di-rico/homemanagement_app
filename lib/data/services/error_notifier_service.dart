@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:home_management_app/data/services/sources/local_data_locked_exception.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/l10n/app_localizations_en.dart';
 
@@ -25,6 +26,16 @@ class NotifierService extends ChangeNotifier {
   /// A local write failed and nothing was saved.
   void notifyChangeNotSaved() =>
       notifyLocalized((l10n) => l10n.changeNotSaved, isError: true);
+
+  /// A local write was rejected and nothing changed. While an import is pending the
+  /// notice says why, and otherwise it is the generic "not saved".
+  void notifyWriteRejected(Object error) {
+    if (error is LocalDataLockedException) {
+      notifyLocalized((l10n) => l10n.importPendingReadOnly, isError: true);
+    } else {
+      notifyChangeNotSaved();
+    }
+  }
 
   void notifyLocalized(LocalizedMessage message, {bool isError = false}) {
     _localizedMessage = message;

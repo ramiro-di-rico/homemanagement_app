@@ -32,8 +32,8 @@ class CategoryRepository extends ChangeNotifier {
       categories.add(addedCategory);
       categories.sort((a, b) => a.name.compareTo(b.name));
       notifyListeners();
-    } on LocalWriteFailedException {
-      notifierService?.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      notifierService?.notifyWriteRejected(error);
       // The sheet that asked must stay open, so it must not see a success.
       rethrow;
     }
@@ -43,8 +43,8 @@ class CategoryRepository extends ChangeNotifier {
     try {
       await categoryService.update(category);
       notifyListeners();
-    } on LocalWriteFailedException {
-      notifierService?.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      notifierService?.notifyWriteRejected(error);
       // The caller edited the model before saving, so take the stored values back.
       try {
         await load();
@@ -61,8 +61,8 @@ class CategoryRepository extends ChangeNotifier {
       categories.removeWhere((element) => element.id == category.id);
       categories.sort((a, b) => a.name.compareTo(b.name));
       notifyListeners();
-    } on LocalWriteFailedException {
-      notifierService?.notifyChangeNotSaved();
+    } on LocalWriteFailedException catch (error) {
+      notifierService?.notifyWriteRejected(error);
     }
   }
 

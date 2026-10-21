@@ -1944,6 +1944,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your account was created, but the app couldn\'t switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue.'**
   String get localSwitchFailed;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
 }
 
 class _AppLocalizationsDelegate

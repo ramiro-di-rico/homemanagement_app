@@ -8,6 +8,7 @@ import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/data/services/sources/currency_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_data_locked_exception.dart';
 import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
@@ -35,6 +36,15 @@ class _ModeSwitch<T> {
     }
     return _local as T;
   }
+
+  /// The source for a write. Local data is read-only while an import is pending,
+  /// so the data sent can't drift from what is kept (FR-022).
+  T get writable {
+    if (appMode.isLocal && appMode.isImportPending) {
+      throw LocalDataLockedException();
+    }
+    return current;
+  }
 }
 
 class ModeAwareAccountDataSource implements AccountDataSource {
@@ -47,13 +57,13 @@ class ModeAwareAccountDataSource implements AccountDataSource {
   Future<List<AccountModel>> fetchAccounts() => _source.current.fetchAccounts();
 
   @override
-  Future<AccountModel> add(AccountModel account) => _source.current.add(account);
+  Future<AccountModel> add(AccountModel account) async => _source.writable.add(account);
 
   @override
-  Future update(AccountModel account) => _source.current.update(account);
+  Future update(AccountModel account) async => _source.writable.update(account);
 
   @override
-  Future delete(AccountModel account) => _source.current.delete(account);
+  Future delete(AccountModel account) async => _source.writable.delete(account);
 }
 
 class ModeAwareCategoryDataSource implements CategoryDataSource {
@@ -66,14 +76,14 @@ class ModeAwareCategoryDataSource implements CategoryDataSource {
   Future<List<CategoryModel>> fetch() => _source.current.fetch();
 
   @override
-  Future<CategoryModel> add(CategoryModel category) =>
-      _source.current.add(category);
+  Future<CategoryModel> add(CategoryModel category) async =>
+      _source.writable.add(category);
 
   @override
-  Future update(CategoryModel category) => _source.current.update(category);
+  Future update(CategoryModel category) async => _source.writable.update(category);
 
   @override
-  Future delete(CategoryModel category) => _source.current.delete(category);
+  Future delete(CategoryModel category) async => _source.writable.delete(category);
 }
 
 class ModeAwareCurrencyDataSource implements CurrencyDataSource {
@@ -107,13 +117,13 @@ class ModeAwareTransactionDataSource implements TransactionDataSource {
   Future<List<TransactionModel>> suggested() => _source.current.suggested();
 
   @override
-  Future<TransactionWithBalanceModel> add(TransactionModel transaction) =>
-      _source.current.add(transaction);
+  Future<TransactionWithBalanceModel> add(TransactionModel transaction) async =>
+      _source.writable.add(transaction);
 
   @override
-  Future update(TransactionModel transaction) =>
-      _source.current.update(transaction);
+  Future update(TransactionModel transaction) async =>
+      _source.writable.update(transaction);
 
   @override
-  Future delete(int id) => _source.current.delete(id);
+  Future delete(int id) async => _source.writable.delete(id);
 }

@@ -18,6 +18,7 @@ import 'package:home_management_app/ui/features/invites/views/public_invite_scre
 import 'package:home_management_app/ui/features/dashboard/views/budget_desktop_view.dart';
 import 'package:home_management_app/ui/features/home/views/home-desktop.dart';
 import 'package:home_management_app/ui/features/local_mode/views/local_home_desktop.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_import_screen.dart';
 import 'ui/features/home/views/home.dart';
 import 'package:home_management_app/ui/features/home/views/logging_view.dart';
 import 'package:home_management_app/ui/features/settings/views/settings.dart';
@@ -38,8 +39,7 @@ class Routing{
     SettingsScreen.fullPath,
     LoggingView.fullPath,
     RegistrationScreen.fullPath,
-    // The import screen, added with the import (T069).
-    '/home_screen/local_import',
+    LocalImportScreen.fullPath,
   };
 
   static GoRouter createRoutes(bool isDesktop, AuthenticationService authenticationService, PasswordResetService passwordResetService, AppModeService appModeService){
@@ -93,6 +93,10 @@ class Routing{
                 path: SettingsScreen.path,
                 builder: (context, state) =>
                 !isDesktop ? SettingsScreen() : SettingsDesktopView(),
+              ),
+              GoRoute(
+                path: LocalImportScreen.path,
+                builder: (context, state) => const LocalImportScreen(),
               ),
               GoRoute(
                 path: LoggingView.path,

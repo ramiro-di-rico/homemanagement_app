@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/home/views/home.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_import_screen.dart';
 
 /// Where a sign-in ends up. From local mode the new account takes the local data
 /// along (FR-018); with nothing but the seeds there is nothing to move, so the
@@ -22,7 +23,7 @@ Future<void> goAfterSignIn(BuildContext context) async {
   final hasLocalData = await database.hasUserData();
   if (!context.mounted) return;
   if (hasLocalData) {
-    context.go('/home_screen/local_import');
+    context.go(LocalImportScreen.fullPath);
     return;
   }
 

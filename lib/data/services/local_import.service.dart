@@ -82,7 +82,7 @@ class LocalImportService {
     if (pending &&
         target != null &&
         target.trim().toLowerCase() != email.trim().toLowerCase()) {
-      throw ImportWrongUserException();
+      throw ImportWrongUserException(target);
     }
     final tag = state.importTag ?? _newTag();
     await (_db.update(
