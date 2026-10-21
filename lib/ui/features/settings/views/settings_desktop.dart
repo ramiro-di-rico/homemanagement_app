@@ -7,7 +7,10 @@ import 'settings-widgets/authentication_settings_widget.dart';
 import 'settings-widgets/categories_list_widget.dart';
 import 'settings-widgets/feature-toggles.widget.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/reminders/notification_preferences_widget.dart';
+import 'settings-widgets/local_preferences_widget.dart';
 import 'settings-widgets/user-settings-widget.dart';
+import 'package:get_it/get_it.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 
 class SettingsDesktopView extends StatefulWidget {
   const SettingsDesktopView({super.key});
@@ -20,11 +23,20 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
   final bool _isDeveloper = false;
   final bool _preferencesLoaded = true;
 
+  // Local mode has no signed-in user, so everything that talks to the
+  // identity, user-settings, invite or reminder endpoints is left out.
+  bool get _isLocal =>
+      GetIt.I.isRegistered<AppModeService>() &&
+      GetIt.I<AppModeService>().isLocal;
+
   @override
   Widget build(BuildContext context) {
     var l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings), bottom: const LocalModeBanner()),
+      appBar: AppBar(
+        title: Text(l10n.settings),
+        bottom: const LocalModeBanner(),
+      ),
       body: SafeArea(
         child: !_preferencesLoaded
             ? Center(child: CircularProgressIndicator())
@@ -42,12 +54,16 @@ class _SettingsDesktopViewState extends State<SettingsDesktopView> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AuthenticationSettingsWidget(),
-                                  //PreferredCurrency(),
-                                  FeatureTogglesWidget(),
-                                  UserSettingsWidget(),
-                                  const SizedBox(height: 20),
-                                  const NotificationPreferencesWidget(),
+                                  if (_isLocal)
+                                    const LocalPreferencesWidget()
+                                  else ...[
+                                    AuthenticationSettingsWidget(),
+                                    //PreferredCurrency(),
+                                    FeatureTogglesWidget(),
+                                    UserSettingsWidget(),
+                                    const SizedBox(height: 20),
+                                    const NotificationPreferencesWidget(),
+                                  ],
                                   Padding(
                                     padding: EdgeInsets.all(10),
                                     child: _isDeveloper

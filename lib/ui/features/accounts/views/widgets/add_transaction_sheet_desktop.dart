@@ -13,6 +13,7 @@ import 'package:home_management_app/data/repositories/category.repository.dart';
 import 'package:home_management_app/data/repositories/transaction.repository.dart';
 import 'package:home_management_app/data/models/voice_transaction_draft.dart';
 import 'package:home_management_app/data/models/document_transaction_draft.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/accounts/views/widgets/voice_dictation_button.dart';
@@ -59,6 +60,10 @@ class _AddTransactionSheetDesktopState
   AccountModel accountModel = AccountModel.empty(0);
   String? _localeCode;
   bool _syncingPriceText = false;
+
+  // Voice dictation and receipt scanning go through the server.
+  bool get _isLocal =>
+      GetIt.I.isRegistered<AppModeService>() && GetIt.I<AppModeService>().isLocal;
 
   List<TransactionModel> suggestions = [];
 
@@ -276,12 +281,12 @@ class _AddTransactionSheetDesktopState
                     },
               ),
             ),
-            if (!widget.isEditing)
+            if (!widget.isEditing && !_isLocal)
               VoiceDictationButton(
                 accountId: accountModel.id,
                 onDraft: applyVoiceDraft,
               ),
-            if (!widget.isEditing)
+            if (!widget.isEditing && !_isLocal)
               DocumentScanButton(
                 accountId: accountModel.id,
                 onPreviews: applyDocumentPreviews,

@@ -53,6 +53,13 @@ class IdentityUserRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Saves the language on this device only, without calling the server.
+  /// Used in local mode, where there is no signed-in user.
+  Future setLocalLanguage(String language) async {
+    await _userRepository.preferences?.setString(languageKey, language);
+    notifyListeners();
+  }
+
   Future<MyUserViewModel> updateLanguage(
     String language,
     String timeZone,
