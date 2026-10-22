@@ -675,6 +675,152 @@ void main() {
     expect(result.mismatches, isEmpty);
   });
 
+  group('matching categories whose names differ only by case or accents (SP-04)', () {
+    Future<LocalCategory> localCategory(String name) =>
+        (db.select(db.categories)..where((c) => c.nameKey.equals(categoryNameKey(name)))).getSingle();
+
+    Future<void> addLocalCategory(String name) =>
+        db.into(db.categories).insert(CategoriesCompanion.insert(
+            name: name, icon: 'home', nameKey: Value(categoryNameKey(name))));
+
+    CategoryModel serverCategory(int id, String name) =>
+        CategoryModel(id, 1, name, 'home', true, true, '#ffffff');
+
+    test('an exact name wins over one that only matches by case', () async {
+      await seedLocal();
+      await addLocalCategory('Gym');
+      // Listed with the case-only match last, and with the lower id: neither "last wins"
+      // nor "lowest id" gives the exact one.
+      server.categoryList.addAll([serverCategory(701, 'Gym'), serverCategory(700, 'gym')]);
+
+      await service.run(email: 'a@b.com');
+
+      expect((await localCategory('Gym')).serverId, 701);
+      expect(server.createdCategoryNames, isEmpty);
+    });
+
+    test('with no exact name, the lowest id is used, whatever order the server lists them',
+        () async {
+      await seedLocal();
+      await addLocalCategory('CAFÉ');
+      server.categoryList.addAll([serverCategory(702, 'café'), serverCategory(703, 'Café')]);
+
+      await service.run(email: 'a@b.com');
+
+      expect((await localCategory('CAFÉ')).serverId, 702);
+    });
+
+    test('the same choice is made on a retry', () async {
+      await seedLocal();
+      await addLocalCategory('Gym');
+      server.categoryList.addAll([serverCategory(700, 'gym'), serverCategory(701, 'Gym')]);
+      server.failAfterApplyingBulkCall = 1;
+      await expectLater(service.run(email: 'a@b.com'), throwsException);
+      final first = (await localCategory('Gym')).serverId;
+      server.failAfterApplyingBulkCall = null;
+
+      await service.run(email: 'a@b.com');
+
+      expect((await localCategory('Gym')).serverId, first);
+    });
+  });
+
+  test('a default account renamed by an earlier attempt is recovered by its suffix',
+      () async {
+    await seedLocal(withCash: false);
+    // The earlier run renamed the server's "Cash" and died before storing anything.
+    await (db.update(db.importStates)..where((s) => s.id.equals(1))).write(
+        const ImportStatesCompanion(
+            status: Value(ImportStatus.inProgress),
+            targetEmail: Value('a@b.com'),
+            importTag: Value('cafe1234')));
+    server.account(1).name = LocalImportService.temporaryName('Cash', 'cafe1234', 'default');
+
+    await service.run(email: 'a@b.com');
+
+    for (final names in server.accountNamesAtBulk) {
+      expect(names, everyElement(contains('⟨import ')));
+    }
+    expect(server.accountList.map((a) => a.name).toSet(),
+        {'Cash', 'Savings', 'Travel', 'Empty'});
+    expect(server.accountList, hasLength(4), reason: 'no second default account was created');
+  });
+
+  group('refreshing the status that locks local writes', () {
+    LocalImportService serviceNotifying(Future<void> Function() onStateChanged) =>
+        LocalImportService(
+          database: db,
+          accounts: _AccountsOf(server),
+          categories: server,
+          currencies: server,
+          transactions: server,
+          onStateChanged: onStateChanged,
+        );
+
+    test('the app is told after every status write, with the new status already stored',
+        () async {
+      await seedLocal();
+      final seen = <ImportStatus>[];
+
+      await serviceNotifying(() async {
+        seen.add((await db.select(db.importStates).getSingle()).status);
+      }).run(email: 'a@b.com');
+
+      expect(seen, [ImportStatus.inProgress, ImportStatus.completed]);
+    });
+
+    test('and after a failure', () async {
+      await seedLocal();
+      server.failAfterApplyingBulkCall = 1;
+      final seen = <ImportStatus>[];
+
+      await expectLater(
+          serviceNotifying(() async {
+            seen.add((await db.select(db.importStates).getSingle()).status);
+          }).run(email: 'a@b.com'),
+          throwsException);
+
+      expect(seen, [ImportStatus.inProgress, ImportStatus.failed]);
+    });
+
+    test('a failing callback does not abort the move', () async {
+      await seedLocal();
+
+      final result = await serviceNotifying(() async => throw StateError('database closed'))
+          .run(email: 'a@b.com');
+
+      expect(result.mismatches, isEmpty);
+    });
+  });
+
+  test('a balance mismatch still completes the move, and the local file is then archived as the backup',
+      () async {
+    await seedLocal();
+    server.balanceSkew = 5;
+
+    final result = await service.run(email: 'a@b.com');
+
+    expect(result.mismatches, isNotEmpty);
+    final state = await (db.select(db.importStates)..where((s) => s.id.equals(1))).getSingle();
+    expect(state.status, ImportStatus.completed);
+  });
+
+  test('dates are sent as the chosen day, with no time zone, so the server keeps that day',
+      () async {
+    await seedLocal();
+
+    await service.run(email: 'a@b.com');
+
+    final dates = [
+      for (final request in server.bulkRequests)
+        for (final t in request) t.toJson()['date'] as String,
+    ];
+    expect(dates, isNotEmpty);
+    expect(dates, everyElement(matches(RegExp(r'^\d{4}-\d{2}-\d{2}T00:00:00\.000$'))),
+        reason: 'no Z and no offset: the server shifts strings that carry one');
+    expect(dates, contains('2026-03-01T00:00:00.000'));
+  });
+
   test('a retry by another user is refused', () async {
     await seedLocal();
     server.failAfterApplyingBulkCall = 1;

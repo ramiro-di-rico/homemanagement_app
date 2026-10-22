@@ -645,6 +645,12 @@ description: "Task list for Standalone Desktop Mode"
   - New `ImportStep.serverSetup`, shown on the import screen as "Waiting for your online account to be ready", and the "isn't ready yet" message. Strings in en, es, es_AR.
   - Documented the backend setup (Altair `UseKafka` and the API's `UserRegistrationKafka`) in the contract and the quickstart prerequisites, with Q17.
   - Tests in `local_import_service_test.dart` (ready at once, waits then no duplicates, waits for the account, backoff, timeout then retry, shorter timeout) and `local_import_screen_test.dart`. **Not verified against a real backend.**
+- [X] T088 SP-04 Smaller US4 design gaps, each checked against the code and the backend:
+  - **Already handled** (now with tests where missing): `DuplicateUserName` is the code Altair returns and both are accepted (T061, T063); every mapped category is updated when it differs, not only created ones (T065); the default account is recovered by its `-default` suffix (new test); dates carry no offset (new test locks the format); the bulk endpoint, not single `POST transactions`, is used; "categories untouched" means equal to the seed (`hasUserData`).
+  - **Changed:** category matching takes the exact name first, then the lowest id, so a retry picks the same one; `LocalImportService` tells the app after every status write (`onStateChanged`, wired in `main.dart`) so the write lock never lags behind.
+  - **Decided and recorded** (research R12 and R13, spec FR-023, data-model step 6): a balance mismatch is reported but the move still completes and the file is archived; `POST api/users/import` is not used (it deletes first, is not atomic, and ignores `IsHidden`); `transactions/filter` is safe here because it only asks about an account id the server created for this user.
+  - **Docs fixed:** the `...Z` date example in the contract, and the duplicate-email code note in R8 and the contract.
+  - Tests: category tie-break (with a negative control: two fail on the old logic), default-suffix recovery, status-refresh callback, mismatch still completes, date format.
 
 ## Dependencies & Execution Order
 

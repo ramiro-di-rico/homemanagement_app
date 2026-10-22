@@ -127,6 +127,7 @@
   - Identity is a separate service (`Altair/AltairUserManagement/Controllers/UserManagement/RegistrationController.cs`).
   - On failure it returns **400** with ASP.NET Identity `IdentityError`s; a taken email produces the `DuplicateEmail` / `DuplicateUserName` codes. The client's `IdentityService.register` returns only `statusCode == 200`.
 - **Decision**: `register` returns `RegistrationResult { success, emailTaken, failed }`, which it gets by parsing the 400 body for those codes. On `emailTaken`, the registration screen asks for a different email and stays in local mode.
+- **Which code (SP-04)**: Altair sets `UserName = Email`, so a taken email always yields `DuplicateUserName`; `DuplicateEmail` appears only when Identity's unique-email option is on. The client accepts either, and both are tested.
 - **Verified (T063)**: `UserService.RegisterUserAsync` calls `UserManager.CreateAsync`, and `RegistrationController.Register` returns `BadRequest(result.Errors)`, a JSON array of `{code, description}`. So the standard codes are what the client sees. Other 400s (`Invalid Password.`, model state) and 5xx are plain failures.
 
 ## R9. Mode switching without rebuilding DI
@@ -148,3 +149,23 @@
 
 - **Field rename**: branch `feat/price-to-amount` (commit `fdd2e4e`, not yet on `master`) renames `TransactionModel.price` to `amount`. Local tables use `amount`, and the mapping code follows whichever name `master` has when implementation starts. Merging that branch first avoids touching both names.
 - **Exposure**: the unmapped 500 on account delete and the category cascade (R7) only affect online mode.
+
+## R12. Alternative considered: the existing `POST api/users/import`
+
+- **What it is**: a multipart upload of the zip that `GET api/users/export` produces, handled by `UserService.ImportUserDataAsync` (`HomeManagement.Business/Features/User/UserService.cs`, ~lines 136-260).
+- **Why it was not used**:
+  - It **deletes the user's data first** (`DeleteUserOwnedDataAsync`), including the default categories and account, and then recreates it from the archive.
+  - It is **not atomic**: there are three separate `SaveChanges` calls (after the delete, and then per stage), so a failure in the middle leaves the user with part of the data and no way to tell which part.
+  - It copies `Archive` but **not `IsHidden`**, so hidden accounts would come back visible.
+  - It needs the local data in the archive's own schema (zip of per-account files with a schema version), which is a second format to build and keep in step with the server's, for something that only has to run once.
+- **Decision**: keep the per-account bulk import with temporary names (R6). Each request is atomic, a failed step can be retried without duplicates, and nothing is deleted online.
+
+## R13. Smaller import decisions (SP-04)
+
+- **A balance mismatch still completes the move (FR-023, FR-024).** It is reported to the user, and the local file is archived as the backup like any other move. Blocking the switch would not help: the steps are idempotent, so retrying cannot change a mismatch, and the user would be stuck in local mode with no way forward. The backup is what lets them compare.
+- **Dates.** The server converts a date string that carries an offset into its own local time before taking the day, which can move it by one. The client sends `DateTime.toIso8601String()` of a local-midnight value, which has no offset (`2026-03-01T00:00:00.000`), so the chosen day is kept. A test checks the format.
+- **Category matching.** Names are compared with the same folding the local uniqueness uses (`categoryNameKey`). If the server holds names that differ only by case or accents, the **exact name wins**, then the **lowest id**, so a retry always picks the same one.
+- **Recovering a renamed account.** An account renamed to its temporary name by an earlier attempt is found by the `⟨import <tag>-…⟩` suffix, for the local id and for `default`, so a crash between the rename and storing its id leaves nothing behind. The stored `default_account_server_id` is informational: the final step restores every temporary name of this import.
+- **`transactions/filter` scope.** The endpoint is not limited to the signed-in user unless given a `userId`. The import only asks about one account id at a time, taken from what the server returned when it created that account for this user, so it can only see that account's transactions.
+- **"Categories untouched"** (the no-data shortcut) means equal to the seed: the same 17 names and icons, with default color and active and measurable flags.
+- **Lock freshness.** The service tells the app after every status write (`onStateChanged`), so the write lock reads the new status at once instead of at the next progress report.

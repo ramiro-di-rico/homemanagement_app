@@ -4,7 +4,7 @@ The import is the only part of this feature that talks to a server. All endpoint
 
 | Step | Call | Notes |
 |---|---|---|
-| Register | `POST identity/api/registration` `{email, password(AES), language}` | 200 = ok. **400** with ASP.NET Identity errors; a body containing `DuplicateEmail` or `DuplicateUserName` means the email is taken (spec US4-7, FR-026). Client change: `IdentityService.register` returns a result enum instead of `bool` |
+| Register | `POST identity/api/registration` `{email, password(AES), language}` | 200 = ok. **400** with ASP.NET Identity errors; a body containing `DuplicateUserName` (always, since the username is the email) or `DuplicateEmail` means the email is taken (spec US4-7, FR-026). Client change: `IdentityService.register` returns a result enum instead of `bool` |
 | Login | existing `authenticate` flow | Registration does **not** log in: `registration-desktop.dart` calls `register` and then `authenticate` as two steps, and the app records `registered` in between (SP-01). The sign-in may ask for a two-factor code |
 | Wait | poll `GET category/v1` and `GET account` | The server creates the Cash account and the 17 default categories **after** registration returns (SP-02). Poll with backoff (up to 30 s) until the seeded categories and an account exist. Until then `GET` returns `[]` and any `POST` answers 404 |
 | Currencies | `GET currency` → `[{id, name, value}]` | `name` is the ISO code |
@@ -39,7 +39,7 @@ The import therefore writes nothing until the defaults are visible, and fails re
 // POST transactions/bulk   (accounts currently named e.g. "Savings ⟨import 3fa9c2d1-7⟩")
 { "transactions": [
     { "accountId": 101, "categoryId": 55, "name": "Savings",
-      "amount": 1234.5, "date": "2026-09-30T00:00:00.000Z", "transactionType": 1 } ] }
+      "amount": 1234.5, "date": "2026-09-30T00:00:00.000", "transactionType": 1 } ] }
 // 200 → [{ "id": 101, "name": "Wallet ⟨import 3fa9c2d1-4⟩", "balance": -1234.5, ... }]
 // then: PUT account/101 { "accountId": 101, "name": "Wallet", "archive": false, "measurable": true, "isHidden": false }
 ```
@@ -53,3 +53,7 @@ Properties of the existing bulk endpoint that the import depends on:
 If the import fails and is never resumed, the server accounts keep their temporary names. The user is still in local mode, and resuming fixes them.
 
 The amount field is `amount` from branch `feat/price-to-amount` onward. Before that merges, the client serializes `price`. The import uses whatever `TransactionModel.toJson()` emits.
+
+## Dates
+
+Send the day as an ISO string **without** an offset, which is what `DateTime.toIso8601String()` gives for a local-midnight value (`2026-09-30T00:00:00.000`). The server converts a string with an offset (`...Z` or `+02:00`) to its own local time before taking the date, so it can move the transaction by a day. Details in research R13.

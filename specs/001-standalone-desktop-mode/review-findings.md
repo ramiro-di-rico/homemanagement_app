@@ -417,7 +417,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### SP-04: Smaller US4 design gaps
 
-- [ ] Spec and tasks updated
+- [x] Done (T088). Each item was checked against the code and the backend; most were already handled by T063/T065. New: exact-name-first category matching, a status refresh after every write, and the recorded decisions in research R12 and R13.
 
 - **Severity**: Med. **Status**: Confirmed.
 - **Duplicate email**: Altair returns 400 `DuplicateUserName`, never `DuplicateEmail` (username is the email). T061 and T063 must key on `DuplicateUserName`. Keeping `DuplicateEmail` is harmless.

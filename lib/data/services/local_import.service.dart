@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'dart:math';
 
 import 'package:drift/drift.dart';
@@ -33,6 +34,7 @@ class LocalImportService {
   final Random _random;
   final Duration _serverReadyTimeout;
   final Future<void> Function(Duration) _delay;
+  final Future<void> Function()? _onStateChanged;
 
   LocalImportService({
     required LocalDatabase database,
@@ -43,7 +45,9 @@ class LocalImportService {
     Random? random,
     Duration serverReadyTimeout = const Duration(seconds: 30),
     Future<void> Function(Duration)? delay,
-  }) : _serverReadyTimeout = serverReadyTimeout,
+    Future<void> Function()? onStateChanged,
+  }) : _onStateChanged = onStateChanged,
+        _serverReadyTimeout = serverReadyTimeout,
        _delay = delay ?? Future<void>.delayed,
        _db = database,
        _accounts = accounts,
@@ -105,7 +109,20 @@ class LocalImportService {
         lastError: const Value(null),
       ),
     );
+    await _stateChanged();
     return tag;
+  }
+
+  /// Tells the app that `import_states` changed, so it re-reads the status that
+  /// locks local writes right away, not at the next progress report. A failure here
+  /// must not abort the move.
+  Future<void> _stateChanged() async {
+    try {
+      await _onStateChanged?.call();
+    } catch (error, stackTrace) {
+      developer.log('Could not refresh the import status',
+          name: 'local-import', error: error, stackTrace: stackTrace);
+    }
   }
 
   String _newTag() =>
@@ -124,6 +141,7 @@ class LocalImportService {
     )..where((s) => s.id.equals(LocalDatabase.singleImportStateId))).write(
       ImportStatesCompanion(status: Value(status), lastError: lastError),
     );
+    await _stateChanged();
   }
 
   // Step 1
@@ -194,16 +212,23 @@ class LocalImportService {
 
   /// Returns local category id -> server category id.
   Future<Map<int, int>> _importCategories(ImportProgress? onProgress) async {
-    final remote = {
-      for (final c in await _categories.fetch()) categoryNameKey(c.name): c,
-    };
+    // The server may hold names that differ only by case or accents. Prefer the
+    // exact name, then the first one by id, so a retry always picks the same one.
+    final serverCategories = [...await _categories.fetch()]
+      ..sort((a, b) => a.id.compareTo(b.id));
+    final byName = <String, CategoryModel>{};
+    final byKey = <String, CategoryModel>{};
+    for (final c in serverCategories) {
+      byName.putIfAbsent(c.name, () => c);
+      byKey.putIfAbsent(categoryNameKey(c.name), () => c);
+    }
     final local = await (_db.select(
       _db.categories,
     )..orderBy([(c) => OrderingTerm.asc(c.id)])).get();
     final ids = <int, int>{};
     var done = 0;
     for (final category in local) {
-      var server = remote[categoryNameKey(category.name)];
+      var server = byName[category.name] ?? byKey[categoryNameKey(category.name)];
       // The server ignores icon, color, measurable and isActive on create (R4),
       // so a created category is always followed by an update. The same check
       // also repairs a category that was created before an earlier failure.

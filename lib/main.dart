@@ -223,7 +223,8 @@ void registerSingletons(PlatformContext platformContext) {
           accounts: accountService,
           categories: categoryService,
           currencies: currencyService,
-          transactions: RemoteBulkTransactionClient(transactionService)));
+          transactions: RemoteBulkTransactionClient(transactionService),
+          onStateChanged: appModeService.refreshImportStatus));
 
   // Local and online data must never mix: when the mode flips, forget what the
   // other one loaded. The repositories are not reloaded here, because online that
