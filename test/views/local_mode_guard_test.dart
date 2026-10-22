@@ -110,6 +110,14 @@ void main() {
       expect(passwordReset.isResettingPassword(), isFalse);
     });
 
+    testWidgets('a direct reset-password link goes to the home and is not recorded', (tester) async {
+      final result = await resolve(tester, createRouter(),
+          '${ResetPasswordView.fullPath}?email=a%40b.c&token=xyz');
+
+      expect(result, HomeScreen.fullPath);
+      expect(passwordReset.isResettingPassword(), isFalse);
+    });
+
     testWidgets('registration can still be reached', (tester) async {
       expect(await resolve(tester, createRouter(), RegistrationScreen.fullPath),
           RegistrationScreen.fullPath);

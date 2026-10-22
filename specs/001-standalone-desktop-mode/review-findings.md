@@ -348,7 +348,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-18: Test gaps and weak assertions
 
-- [ ] Fixed
+- [x] Fixed in T095. Most of the gaps were closed earlier by other tasks; the rest are in T095.
 
 - **Severity**: Low. **Status**: Confirmed.
 - **Gaps**:

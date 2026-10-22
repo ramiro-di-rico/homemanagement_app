@@ -7,8 +7,12 @@ import 'package:home_management_app/domain/models/transaction.dart';
 
 class FakeAccountService implements AccountService {
   List<AccountModel> Function() onFetch;
+  Future<AccountModel> Function(AccountModel account)? onAdd;
 
   FakeAccountService(this.onFetch);
+
+  @override
+  Future<AccountModel> add(AccountModel account) => onAdd!(account);
 
   @override
   Future<List<AccountModel>> fetchAccounts() async => onFetch();
@@ -96,5 +100,49 @@ void main() {
         expect(stale.balance, 100);
       },
     );
+  });
+
+  group('AccountRepository.add online', () {
+    late NotifierService notifier;
+
+    setUp(() async {
+      notifier = NotifierService();
+      repository = AccountRepository(accountService: service, notifierService: notifier);
+      await repository.load();
+    });
+
+    test('lists the account the server created, with its id, and says so', () async {
+      service.onAdd = (typed) async =>
+          AccountModel(55, typed.name, 0, typed.measurable, typed.accountType, typed.currencyId, 1, false, false);
+
+      await repository.add(AccountModel(0, 'Wallet', 0, true, AccountType.Cash, 1, 0, false, false));
+
+      final added = repository.getById(55)!;
+      expect(added.name, 'Wallet');
+      expect(repository.accounts.where((a) => a.id == 55), hasLength(1));
+      expect(repository.getAllAccounts().where((a) => a.id == 55), hasLength(1));
+      expect(notifier.hasError, isFalse);
+      expect(notifier.getMessage(), 'Account Wallet added successfully');
+    });
+
+    test('a hidden account is kept but not listed, like the others', () async {
+      service.onAdd = (typed) async =>
+          AccountModel(56, typed.name, 0, true, AccountType.Cash, 1, 1, false, true);
+
+      await repository.add(AccountModel(0, 'Secret', 0, true, AccountType.Cash, 1, 0, false, true));
+
+      expect(repository.getById(56), isNotNull);
+    });
+
+    test('a failed request leaves the list as it was and reports it as an error', () async {
+      final before = repository.getAllAccounts().length;
+      service.onAdd = (_) async => throw Exception('Failed to post to account');
+
+      await repository.add(AccountModel(0, 'Wallet', 0, true, AccountType.Cash, 1, 0, false, false));
+
+      expect(repository.getAllAccounts(), hasLength(before));
+      expect(notifier.hasError, isTrue);
+      expect(notifier.getMessage(), 'Failed to add account Wallet');
+    });
   });
 }

@@ -134,40 +134,91 @@ void main() {
         hasLength(4));
   });
 
-  test('1,000 random operations across 5 accounts never let the balances drift', () async {
-    final random = Random(20261018);
-    var operations = 0;
-    var adds = 0, updates = 0, removes = 0;
+  /// The sum of each account's rows, worked out here from the raw table: neither the
+  /// repository's running balance nor the query the data source uses for it.
+  Future<Map<int, double>> rawSums() async {
+    final sums = <int, double>{for (final a in created) a.id: 0};
+    for (final row in await database.select(database.transactions).get()) {
+      sums[row.accountId] = sums[row.accountId]! +
+          (row.transactionType == 0 ? row.amount : -row.amount);
+    }
+    return sums;
+  }
 
-    while (operations < 1000) {
+  Future<void> expectBalancesEqualRawSums() async {
+    final sums = await rawSums();
+    for (final account in accounts.getAllAccounts()) {
+      expect(account.balance, closeTo(sums[account.id]!, 0.001),
+          reason: 'account ${account.id}: what is shown is not the sum of its transactions');
+    }
+  }
+
+  Future<int> rowCount() async =>
+      (await database.select(database.transactions).get()).length;
+
+  test('balances stay equal to the sum of the transactions across 1,000 of them in 5 accounts, '
+      'through every kind of edit (SC-003, US2-3)', () async {
+    final random = Random(20261018);
+    double randomAmount() => (random.nextInt(50000) + 1) / 100;
+    TransactionType randomType() =>
+        random.nextBool() ? TransactionType.Income : TransactionType.Outcome;
+
+    // The dataset first: 1,000 transactions, spread over the 5 accounts and many days.
+    for (var i = 0; i < 1000; i++) {
+      final account = created[i % created.length];
+      await transactions.loadFirstPage(account.id);
+      await transactions.add(newTransaction(account, randomAmount(), randomType(),
+          day: 1 + random.nextInt(28)));
+    }
+    expect(await rowCount(), 1000);
+    await expectBalancesMatchDatabase();
+    await expectBalancesEqualRawSums();
+
+    // Then edits of every kind, on what an account's page shows, as in the UI.
+    final done = <String, int>{};
+    void count(String what) => done[what] = (done[what] ?? 0) + 1;
+
+    for (var operation = 0; operation < 600; operation++) {
       final account = created[random.nextInt(created.length)];
       await transactions.loadFirstPage(account.id);
-      // Only what the account's page shows can be edited or removed, as in the UI.
       final visible = transactions.transactions;
       final roll = random.nextInt(100);
-      final amount = (random.nextInt(50000) + 1) / 100;
-      final type = random.nextBool() ? TransactionType.Income : TransactionType.Outcome;
 
-      if (roll < 50 || visible.isEmpty) {
-        await transactions.add(newTransaction(account, amount, type,
+      if (roll < 25 || visible.isEmpty) {
+        await transactions.add(newTransaction(account, randomAmount(), randomType(),
             day: 1 + random.nextInt(28)));
-        adds++;
+        count('add');
+      } else if (roll < 45) {
+        await transactions.update(visible[random.nextInt(visible.length)].clone()
+          ..amount = randomAmount());
+        count('amount');
+      } else if (roll < 60) {
+        await transactions.update(visible[random.nextInt(visible.length)].clone()
+          ..transactionType = randomType());
+        count('type');
       } else if (roll < 75) {
-        final target = visible[random.nextInt(visible.length)].clone()
-          ..amount = amount
-          ..transactionType = type;
-        await transactions.update(target);
-        updates++;
+        await transactions.update(visible[random.nextInt(visible.length)].clone()
+          ..date = DateTime(2026, 1, 1 + random.nextInt(28)));
+        count('date');
+      } else if (roll < 88) {
+        final others = created.where((a) => a.id != account.id).toList();
+        await transactions.update(visible[random.nextInt(visible.length)].clone()
+          ..accountId = others[random.nextInt(others.length)].id);
+        count('account');
       } else {
         await transactions.remove(visible[random.nextInt(visible.length)]);
-        removes++;
+        count('delete');
       }
-      operations++;
-      await expectBalancesMatchDatabase();
-    }
 
-    expect(adds, greaterThan(300));
-    expect(updates, greaterThan(100));
-    expect(removes, greaterThan(100));
-  }, timeout: const Timeout(Duration(minutes: 2)));
+      await expectBalancesMatchDatabase();
+      if (operation % 25 == 0) await expectBalancesEqualRawSums();
+    }
+    await expectBalancesEqualRawSums();
+
+    for (final kind in ['add', 'amount', 'type', 'date', 'account', 'delete']) {
+      expect(done[kind] ?? 0, greaterThan(40), reason: 'only ${done[kind]} "$kind" operations ran');
+    }
+    expect(await rowCount(), greaterThanOrEqualTo(1000),
+        reason: 'the dataset stayed at the size SC-003 asks for');
+  }, timeout: const Timeout(Duration(minutes: 3)));
 }
