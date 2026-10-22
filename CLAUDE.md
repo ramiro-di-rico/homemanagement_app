@@ -26,6 +26,10 @@ flutter test test/path/to/test_file.dart
 # Regenerate localizations after editing lib/l10n/*.arb
 flutter gen-l10n
 
+# Regenerate the drift code after editing the tables in lib/data/local/local_database.dart.
+# The result (local_database.g.dart) is checked in, so commit it.
+dart run build_runner build --delete-conflicting-outputs
+
 # Build
 flutter build apk --release --split-per-abi   # Android
 flutter build linux --release                  # Linux (needs cmake installed)
@@ -40,7 +44,7 @@ This is a **Flutter personal finance app** supporting mobile (Android/iOS), desk
 
 ```
 lib/
-  data/          services (HTTP), repositories, and API-shaped models
+  data/          services (HTTP), repositories, API-shaped models, and the local database (data/local/)
   domain/        domain models
   ui/
     core/        shared widgets, screens, themes, converters, mixins, extensions
@@ -54,7 +58,7 @@ lib/
 
 ### Dependency Injection
 
-The app uses **GetIt** as a service locator (no BLoC/Provider/Riverpod). Registration is **hand-written** in `lib/main.dart`, in `registerDependencies()`, `registerServices()` and `registerSingletons()`. The `injectable` package is a dependency but is not used: there is no `@injectable`/`@Injectable()` code generation in this repo, so a new service or repository has to be registered by hand — don't add those annotations expecting them to be picked up. Widgets retrieve dependencies via `GetIt.I<T>()` or the equivalent `GetIt.instance<T>()`; both spellings are in use.
+The app uses **GetIt** as a service locator (no BLoC/Provider/Riverpod). Registration is **hand-written** in `lib/main.dart`, in `registerDependencies()`, `registerServices()` and `registerSingletons()`. The `injectable` package is a dependency but is not used: there is no `@injectable`/`@Injectable()` code generation in this repo, so a new service or repository has to be registered by hand — don't add those annotations expecting them to be picked up. Widgets retrieve dependencies via `GetIt.I<T>()` or the equivalent `GetIt.instance<T>()`; both spellings are in use. `AppModeService` is registered first (the repositories built in `registerSingletons()` depend on it), and `registerDependencies()` accepts one as a parameter so tests can pass their own.
 
 ### Data Flow
 
@@ -90,6 +94,22 @@ Key route hierarchy:
 
 Translations live in `lib/l10n/*.arb` (`en` is the template, plus `es`, `es_AR`, `it`, `pt`). The generated `app_localizations*.dart` files are **checked into the repo**, so run `flutter gen-l10n` after editing any `.arb` and commit the result. **Never hand-edit `app_localizations*.dart`** — the next `gen-l10n` run overwrites manual changes silently. Non-English locales are partially translated and fall back to English for missing keys. See the `flutter-add-locale-string` skill for the full workflow.
 
+### Standalone (local) mode
+
+On desktop the app can run with no account and no network (`AppModeService.isLocal`), keeping its data in an encrypted SQLite file. The repositories don't know which source they use:
+
+```
+Repository  →  *DataSource interface  →  ModeAware*DataSource  →  remote service   (online)
+                                                              →  Local*Service     (local)
+```
+
+- **`lib/data/services/sources/`** — one interface per resource the repositories depend on (`AccountDataSource`, `CategoryDataSource`, `CurrencyDataSource`, `TransactionDataSource`). The HTTP services implement them. `mode_aware_data_sources.dart` has the `ModeAware*DataSource` delegates, which choose the remote service or the local one **on every call** from `AppModeService.isLocal`, so flipping the mode needs no re-registration. Writes are rejected with `LocalDataLockedException` while an import is pending.
+- **`lib/data/local/`** — the drift database (`local_database.dart`, tables and seeds) and a `Local*Service` implementing each interface. `local_database_opener.dart` opens it with SQLCipher (sqlite3mc); the key lives in the OS keyring and never in the app's files. Balances are never stored: they are derived from the transactions. `local_write_guard.dart` turns storage failures (disk full, read-only) into `LocalWriteFailedException`, which repositories report as "not saved".
+- **`lib/data/services/app_mode.service.dart`** — `AppModeService`: online or local, the open database, the startup error, and the import status. `completeImport()` archives the local file and goes online. A listener in `registerSingletons()` clears the repositories and `Caching` whenever the mode flips, so local and online data never mix.
+- **The import** moves local data into a newly created account once: `LocalImportService` (the resumable steps), `LocalImportRepository` (state for the screen) and `LocalImportScreen`. There is no ongoing sync.
+- **Generated code**: `local_database.g.dart` comes from `build_runner` (see Commands) and is committed. `build.yaml` limits the generator to `lib/data/local/`.
+- A feature that can't work offline is hidden in local mode, not left to fail. The router allowlist in `lib/routing.dart` (`_localModeAllowedPaths`) decides which screens exist there.
+
 ### Key Infrastructure
 
 - **`lib/data/services/api.service.factory.dart`** — HTTP plumbing shared by every service
@@ -97,13 +117,14 @@ Translations live in `lib/l10n/*.arb` (`en` is the template, plus `es`, `es_AR`,
 - **`lib/data/services/logger_wrapper.dart`**, **`file_logger_output.dart`** — App-wide logging
 - **`lib/data/services/error_notifier_service.dart`** — `NotifierService`, how repositories surface errors to the UI
 - **`lib/data/services/platform/platform_context.dart`** — Platform detection
+- **`lib/data/services/app_mode.service.dart`**, **`lib/data/services/sources/`**, **`lib/data/local/`** — Online/local switching and the local database (see "Standalone (local) mode")
 - **`lib/data/models/`** — Shapes that mirror API responses (e.g. `reconciliation.dart`)
 - **`lib/domain/models/`** — Domain models used across the UI
 - **`lib/ui/features/*/view_models/`** — UI-specific data shapes (only present in the `authentication` feature today)
 
 ### Testing
 
-Coverage is thin but no longer a single smoke test: `test/widget_test.dart` (full-app smoke test), `test/models/` (`main_account_model_test.dart`, `reconciliation_model_test.dart`), `test/views/reconciliation_screen_test.dart` (screen-level widget test), and `test/localized_number_input_formatter_test.dart`. No mocking library (`mockito`/`mocktail`) is set up — check `pubspec.yaml` before assuming one is available. See the `flutter-write-widget-test` skill for the patterns to follow.
+Coverage is thin but no longer a single smoke test: `test/widget_test.dart` (full-app smoke test), `test/models/` (`main_account_model_test.dart`, `reconciliation_model_test.dart`), `test/views/reconciliation_screen_test.dart` (screen-level widget test), and `test/localized_number_input_formatter_test.dart`. Local-mode code is tested against an in-memory database (`LocalDatabase(NativeDatabase.memory())`) with `AppModeService` built from `test/helpers/fake_platform.dart`; `test/data/local/`, `test/data/services/` and `test/data/repositories/` hold the examples. No mocking library (`mockito`/`mocktail`) is set up — check `pubspec.yaml` before assuming one is available. See the `flutter-write-widget-test` skill for the patterns to follow.
 
 ## Agent skills
 

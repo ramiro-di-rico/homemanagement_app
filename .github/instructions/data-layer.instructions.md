@@ -45,3 +45,13 @@ stored by reference; mutating a cached model mutates the cache.
 
 Register new services and repositories by hand in `registerServices()` in
 `lib/main.dart`. Do **not** add `@injectable` annotations — codegen is not wired up.
+
+## Local (standalone) mode
+
+Repositories depend on the `*DataSource` interfaces in
+`lib/data/services/sources/`. `ModeAware*DataSource` delegates pick the HTTP
+service or the `Local*Service` (`lib/data/local/`, drift + SQLCipher) on every
+call. A resource with no local implementation must be hidden in local mode, never
+left to call the server. After editing a table in `local_database.dart`, run
+`dart run build_runner build --delete-conflicting-outputs` and commit
+`local_database.g.dart`. Full procedure: `.claude/skills/flutter-new-feature/SKILL.md`.

@@ -582,8 +582,12 @@ description: "Task list for Standalone Desktop Mode"
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [ ] T072 [P] Update `CLAUDE.md` (Architecture → Data Flow / Key Infrastructure) and `AGENTS.md`: describe `lib/data/local/`, the `ModeAware*` delegates, `AppModeService`, and that drift code is generated with `build_runner` and committed.
-- [ ] T073 [P] Add a `.claude/skills/` note, or extend `flutter-new-feature/SKILL.md`: a new repository-backed resource must define a data-source interface, and must either get a local implementation or be hidden in local mode.
+- [X] T072 [P] Update `CLAUDE.md` (Architecture → Data Flow / Key Infrastructure) and `AGENTS.md`: describe `lib/data/local/`, the `ModeAware*` delegates, `AppModeService`, and that drift code is generated with `build_runner` and committed.
+
+  Done. `CLAUDE.md` has a new "Standalone (local) mode" section (the `Repository → DataSource → ModeAware* → remote or local` chain, `lib/data/local/`, `AppModeService`, the import, and that drift code is generated and committed), the `build_runner` command under Commands, and entries in Layout, Dependency Injection, Key Infrastructure and Testing. `AGENTS.md` gets two non-negotiables (local mode rules, and generated drift code). The Copilot data-layer instructions get a short matching section. I ran the documented `build_runner` command: it reproduces the committed `local_database.g.dart` with no diff.
+- [X] T073 [P] Add a `.claude/skills/` note, or extend `flutter-new-feature/SKILL.md`: a new repository-backed resource must define a data-source interface, and must either get a local implementation or be hidden in local mode.
+
+  Done, in `flutter-new-feature/SKILL.md` (step 2): a repository for a resource shown on the desktop home must depend on a data-source interface, and must either get a `Local*Service` plus a `ModeAware*` delegate (with the `build_runner` step) or be hidden in local mode and kept off `_localModeAllowedPaths`. `.junie/skills/` links to the same file.
 - [ ] T074 [P] Park the out-of-scope findings as follow-ups, without fixing them here (`/be-workflow:future-ticket` or GitHub issues):
   - Backend: category delete cascades transactions without fixing balances.
   - Backend: `AccountHasTransactionsException` is unmapped and returns 500 instead of 409.

@@ -52,6 +52,16 @@ copy or a symlink target elsewhere.
 6. **A new public route must be allowlisted in the `redirect` guard** in
    `lib/routing.dart`, or it silently redirects to login.
 
+7. **Local (standalone) mode.** Repositories depend on the `*DataSource`
+   interfaces in `lib/data/services/sources/`, not on HTTP services. The
+   `ModeAware*DataSource` delegates pick the remote service or the `Local*Service`
+   in `lib/data/local/` on every call. A resource that is missing a local
+   implementation must be hidden in local mode, never left to call the server.
+8. **Drift code is generated and committed.** After editing a table in
+   `lib/data/local/local_database.dart`, run
+   `dart run build_runner build --delete-conflicting-outputs` and commit
+   `local_database.g.dart`. Never hand-edit it.
+
 ## Verification
 
 Run both before considering a change done:
