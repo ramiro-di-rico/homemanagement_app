@@ -672,6 +672,12 @@ description: "Task list for Standalone Desktop Mode"
   - **Online is unchanged, on purpose:** the server creates every category inactive and the app never sends a follow-up update (research R4), so filtering the shared pickers online would hide categories the user just added. The checkbox stays a no-op online. Listed in `follow-ups.md` as item 4.
   - **Not done:** the Measurable checkbox is the same kind of no-op (`onChanged: (value) {}`) and is not in this finding. The mobile sheet is not filtered, since local mode is desktop-only. The edit sheet has no active toggle; the checkbox is the way to reactivate.
   - Tests: `category_active_toggle_test.dart` (toggle both ways, saved, only that field changes, deactivate from the in-use dialog, failed save, pending move, online unchanged, the picker helper) and `add_transaction_sheet_inactive_category_test.dart`. Five checkbox tests and three sheet tests fail on the old code.
+- [X] T093 RF-16 The category sheets survive a failed request and a double click:
+  - **Failed request:** online, `ApiServiceFactory` throws a plain `Exception`. It escaped `onPressed`, so the sheet stayed with no message, and in the edit sheet the shared category stayed renamed, so the list showed a name that was never saved. Both sheets now catch it, log it, and show the existing "Your change couldn't be saved. Nothing was changed." notice through `NotifierService`. The sheet and the typed name stay, and it can be retried.
+  - **Edit a copy:** the edit sheet saves a new `CategoryModel` and leaves the one in the list alone. To make that work, `CategoryRepository.update` now puts the saved category into the list (and re-sorts, since a rename can move it). Before, it only notified and relied on the caller having mutated the shared object.
+  - **Double click:** both buttons are off while saving (`_saving`), so a double click on "Add" no longer sends two `POST`s, which the server would accept as duplicates.
+  - Tests in `category_sheets_errors_test.dart`: double click on add and on edit, a failed add and edit keeping the sheet and the list, the retry, a taken name, and the repository replacing the item. Six fail on the old code.
+  - **Not done:** `CategoriesListWidget` and the sheets still have the older lints (`could be final`, missing `key`); only the `use_build_context_synchronously` ones in these two sheets were cleared, by checking `mounted` before using the State's context.
 
 ## Dependencies & Execution Order
 

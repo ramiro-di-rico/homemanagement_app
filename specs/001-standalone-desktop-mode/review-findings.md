@@ -330,7 +330,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-16: Category sheets: unhandled online errors and double submit
 
-- [ ] Fixed
+- [x] Fixed in T093.
 
 - **Severity**: Low. **Status**: Confirmed (catch gap). Plausible (duplicate POST).
 - **Where**: `add_category_sheet.dart` (~lines 90-104), `edit_category_sheet.dart` (~lines 100-117).

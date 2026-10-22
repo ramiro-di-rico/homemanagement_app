@@ -42,10 +42,15 @@ class CategoryRepository extends ChangeNotifier {
   Future update(CategoryModel category) async {
     try {
       await categoryService.update(category);
+      // Once saved, what the list shows is what was saved, whatever instance the
+      // caller passed. A renamed category also goes to its place in the order.
+      final index = categories.indexWhere((c) => c.id == category.id);
+      if (index >= 0) categories[index] = category;
+      categories.sort((a, b) => a.name.compareTo(b.name));
       notifyListeners();
     } on LocalWriteFailedException catch (error) {
       notifierService?.notifyWriteRejected(error);
-      // The caller edited the model before saving, so take the stored values back.
+      // A caller that edited the model before saving gets the stored values back.
       try {
         await load();
       } catch (_) {

@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get_it/get_it.dart';
@@ -5,6 +7,7 @@ import 'package:home_management_app/ui/core/extensions/hex_color_extension.dart'
 
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/data/repositories/category.repository.dart';
+import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
@@ -21,6 +24,33 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
   TextEditingController _categoryNameController = TextEditingController();
   Color pickerColor = Colors.red;
   String? _nameError;
+  bool _saving = false;
+
+  Future<void> _submit() async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    // Active and measurable, so the category shows up when adding a
+    // transaction. The server ignores both flags on create.
+    final category = CategoryModel(0, 0, _categoryNameController.text,
+        'empty', true, true, pickerColor.toHex());
+    try {
+      await _categoryRepository.add(category);
+      if (mounted) Navigator.pop(context);
+    } on CategoryNameTakenException {
+      if (!mounted) return;
+      setState(() =>
+          _nameError = AppLocalizations.of(context)!.categoryNameTaken);
+    } on LocalWriteFailedException {
+      // The "not saved" notice is showing. Keep the sheet and the typed name.
+    } catch (error, stackTrace) {
+      // Online, a failed request ends up here. Keep the sheet so it can be retried.
+      developer.log('Could not add the category',
+          name: 'category-sheet', error: error, stackTrace: stackTrace);
+      GetIt.I<NotifierService>().notifyChangeNotSaved();
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,22 +119,8 @@ class _AddCategorySheetState extends State<AddCategorySheet> {
         ),
         SizedBox(width: 20),
         ElevatedButton(
-          onPressed: () async {
-            // Active and measurable, so the category shows up when adding a
-            // transaction. The server ignores both flags on create.
-            var category = CategoryModel(0, 0, _categoryNameController.text,
-                'empty', true, true, pickerColor.toHex());
-            try {
-              await _categoryRepository.add(category);
-              if (mounted) Navigator.pop(context);
-            } on CategoryNameTakenException {
-              if (!mounted) return;
-              setState(() =>
-                  _nameError = AppLocalizations.of(context)!.categoryNameTaken);
-            } on LocalWriteFailedException {
-              // The "not saved" notice is showing. Keep the sheet and the typed name.
-            }
-          },
+          // Off while saving, so a double click can't send the category twice.
+          onPressed: _saving ? null : _submit,
           child: Text('Add'),
         ),
         SizedBox(width: 20),
