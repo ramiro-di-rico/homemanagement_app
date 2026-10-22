@@ -6,6 +6,7 @@ import 'package:home_management_app/data/models/import_progress.dart';
 import 'package:home_management_app/data/services/local_import.service.dart';
 import 'package:home_management_app/data/services/sources/bulk_transaction_client.dart';
 import 'package:home_management_app/data/services/sources/import_currency_missing_exception.dart';
+import 'package:home_management_app/data/services/sources/import_server_not_ready_exception.dart';
 import 'package:home_management_app/data/services/sources/import_wrong_user_exception.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
@@ -40,6 +41,11 @@ class FakeServer
 
   int _nextId = 500;
   int writes = 0;
+
+  /// While positive, reads return nothing, as right after registration.
+  int emptyCategoryReads = 0;
+  int emptyAccountReads = 0;
+  int fetchCalls = 0;
   final List<String> createdCategoryNames = [];
 
   /// Every bulk request: the transactions, and the names of ALL server accounts
@@ -60,7 +66,15 @@ class FakeServer
   Future<List<CurrencyModel>> fetchCurrencies() async => List.of(currencyList);
 
   @override
-  Future<List<CategoryModel>> fetch() async => List.of(categoryList);
+  Future<List<CategoryModel>> fetch() async {
+    fetchCalls++;
+    // The server creates a new user's defaults a moment after registration.
+    if (emptyCategoryReads > 0) {
+      emptyCategoryReads--;
+      return [];
+    }
+    return List.of(categoryList);
+  }
 
   @override
   Future<CategoryModel> add(CategoryModel category) async {
@@ -107,7 +121,9 @@ class FakeServer
   Future delete(dynamic model) => throw UnimplementedError();
 
   // Used through _AccountsOf, not as an override (the account and category seams clash).
-  Future<List<AccountModel>> fetchAccounts() async => [
+  Future<List<AccountModel>> fetchAccounts() async => emptyAccountReads-- > 0
+      ? []
+      : [
     for (final a in accountList)
       AccountModel(
         a.id,
@@ -548,6 +564,116 @@ void main() {
       }
     },
   );
+
+  group('waiting for the server to create the new user\'s defaults (SP-02)', () {
+    late List<Duration> waits;
+
+    LocalImportService serviceWith({Duration timeout = const Duration(seconds: 30)}) =>
+        LocalImportService(
+          database: db,
+          accounts: _AccountsOf(server),
+          categories: server,
+          currencies: server,
+          transactions: server,
+          serverReadyTimeout: timeout,
+          delay: (d) async {
+            waits.add(d);
+            // Nothing may be written while the server is still being set up.
+            expect(server.writes, 0);
+          },
+        );
+
+    setUp(() => waits = []);
+
+    test('does not wait when the server is ready', () async {
+      await seedLocal();
+
+      await serviceWith().run(email: 'a@b.com');
+
+      expect(waits, isEmpty);
+    });
+
+    test('waits, writes nothing meanwhile, then imports without duplicating categories',
+        () async {
+      await seedLocal();
+      server.emptyCategoryReads = 3;
+      final steps = <ImportStep>[];
+
+      final result = await serviceWith().run(
+          email: 'a@b.com', onProgress: (step, done, total) => steps.add(step));
+
+      expect(waits, [const Duration(seconds: 1), const Duration(seconds: 2), const Duration(seconds: 4)]);
+      expect(steps, contains(ImportStep.serverSetup));
+      expect(server.createdCategoryNames, isEmpty);
+      expect(server.categoryList, hasLength(17));
+      expect(result.mismatches, isEmpty);
+    });
+
+    test('also waits for the account, not only the categories', () async {
+      await seedLocal();
+      server.emptyAccountReads = 2;
+
+      await serviceWith().run(email: 'a@b.com');
+
+      expect(waits, hasLength(2));
+      expect(server.accountList.where((a) => a.name == 'Cash'), hasLength(1));
+    });
+
+    test('backs off up to five seconds', () async {
+      await seedLocal();
+      server.emptyCategoryReads = 7;
+
+      await serviceWith().run(email: 'a@b.com');
+
+      expect(waits.map((d) => d.inSeconds), [1, 2, 4, 5, 5, 5, 5]);
+    });
+
+    test('gives up after the timeout without changing anything, and can be retried',
+        () async {
+      await seedLocal();
+      server.emptyCategoryReads = 1000;
+
+      await expectLater(serviceWith().run(email: 'a@b.com'),
+          throwsA(isA<ImportServerNotReadyException>()));
+
+      expect(waits.fold<int>(0, (t, d) => t + d.inSeconds), greaterThanOrEqualTo(30));
+      expect(server.writes, 0);
+      var state = await (db.select(db.importStates)..where((s) => s.id.equals(1))).getSingle();
+      expect(state.status, ImportStatus.failed);
+      expect(state.lastError, contains('ImportServerNotReadyException'));
+
+      server.emptyCategoryReads = 0;
+      final result = await serviceWith().run(email: 'a@b.com');
+
+      expect(result.mismatches, isEmpty);
+      state = await (db.select(db.importStates)..where((s) => s.id.equals(1))).getSingle();
+      expect(state.status, ImportStatus.completed);
+    });
+
+    test('a shorter timeout gives up sooner', () async {
+      await seedLocal();
+      server.emptyCategoryReads = 1000;
+
+      await expectLater(serviceWith(timeout: const Duration(seconds: 3)).run(email: 'a@b.com'),
+          throwsA(isA<ImportServerNotReadyException>()));
+
+      expect(waits.map((d) => d.inSeconds), [1, 2]);
+    });
+  });
+
+  test('an account registered from local mode is held to the same email', () async {
+    await seedLocal();
+    await (db.update(db.importStates)..where((s) => s.id.equals(1))).write(
+        const ImportStatesCompanion(
+            status: Value(ImportStatus.registered), targetEmail: Value('a@b.com')));
+
+    await expectLater(service.run(email: 'other@b.com'),
+        throwsA(isA<ImportWrongUserException>().having((e) => e.expectedEmail, 'email', 'a@b.com')));
+
+    expect(server.writes, 0);
+    final result = await service.run(email: 'A@b.com');
+    expect(result.mismatches, isEmpty);
+  });
 
   test('a retry by another user is refused', () async {
     await seedLocal();

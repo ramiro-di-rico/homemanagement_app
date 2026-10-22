@@ -8,7 +8,7 @@
 - **Linux**: `sudo apt install libsecret-1-dev gnome-keyring`, with a desktop session where the keyring is unlocked.
   - Headless: `eval $(dbus-launch --sh-syntax); echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets`
 - **macOS**: the Keychain Sharing entitlement is present in both `.entitlements` files.
-- **Import scenarios only**: a backend run locally (`../home-management-all`, docker compose), selected with `--dart-define=BACKEND_ORIGIN=http://localhost:8088`. No backend changes are needed.
+- **Import scenarios only**: a backend run locally (`../home-management-all`, docker compose), selected with `--dart-define=BACKEND_ORIGIN=http://localhost:8088`. No backend code changes are needed, but **the new-user event must be processed**: Kafka on (Altair `UseKafka: true`, the `kafka` compose service) and the API's `UserRegistrationKafka` feature enabled. Otherwise the new account never gets its Cash account and default categories, and the import stops with "Your online account isn't ready yet". See `contracts/backend-import.md`.
 
 ## Build and automated checks
 
@@ -40,6 +40,8 @@ Expected:
 | Q9 | US4, FR-018–024 | Reconnect. Click **Create account** and register a new email | Progress is shown, then a summary. The app is online. Accounts, categories, transactions and balances match the local data. `homemanagement_local.backup-YYYY-MM-DD.sqlite` exists |
 | Q10 | R6 | Before Q9, name a transaction exactly like another local account (e.g. a transaction "Savings" in account "Wallet") | After the import, no extra mirror transaction appears online, all accounts have their real names again (no `⟨import …⟩` suffix), and balances still match |
 | Q11 | FR-021, SC-006 | Repeat Q9 on a fresh dataset, but kill the backend halfway through the transaction step. Restart the backend and click **Resume** | It completes. No duplicates (compare the transaction counts per account) |
+| Q16 | SP-01 | In local mode with data, create an account, and when the sign-in or the two-factor prompt appears, close the app. Relaunch | Still local, with a banner offering **Finish moving your local data** (not "Create online account"). It opens the login with the email filled in. Signing in (and the 2FA code, if asked) runs the move. Local data can't be edited meanwhile |
+| Q17 | SP-02 | Run Q9 right after the backend starts, or with the new-user event paused for ~10 s | The import shows "Waiting for your online account to be ready", then continues. No category is duplicated online. With the event off for longer than 30 s it stops with "isn't ready yet" and **Retry** works once it is on |
 | Q12 | FR-026 | Register with an already-used email | You're asked for a different email. Still in local mode, data intact |
 | Q13 | Edge case "returning to local" | After Q9, log out and choose **Use without an account** | A new empty dataset (with default categories). The backup file is unchanged |
 | Q14 | FR-022 | During Q11, after the failure and before resuming, try to add a transaction and rename a category | Both are blocked with the "finish the move first" message. After resuming, the online data matches the local data exactly |

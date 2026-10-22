@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/foundation.dart';
 import 'package:home_management_app/data/local/local_database.dart';
 import 'package:home_management_app/data/local/local_database_opener.dart';
@@ -39,6 +40,7 @@ class AppModeService extends ChangeNotifier {
   LocalDatabase? _database;
   LocalDataUnavailableException? _startupError;
   ImportStatus _importStatus = ImportStatus.notStarted;
+  String? _importTargetEmail;
 
   AppModeService(
     this._platform, {
@@ -69,11 +71,17 @@ class AppModeService extends ChangeNotifier {
 
   ImportStatus get importStatus => _importStatus;
 
-  /// True from the moment an import starts until its file is archived: `inProgress`
-  /// and `failed`, and also `completed`, because a `completed` status that is still
-  /// here means archiving failed. The data was already sent, so anything written
-  /// now would never reach the online account. Local writes are locked meanwhile.
+  /// The email the move was started for, once an account was registered from here.
+  String? get importTargetEmail => _importTargetEmail;
+
+  /// True from the moment an account is registered for the move until the local
+  /// file is archived: `registered`, `inProgress`, `failed`, and also `completed`,
+  /// because a `completed` status that is still here means archiving failed. The
+  /// data was already sent, so anything written now would never reach the online
+  /// account. Local writes are locked meanwhile, and so is leaving local mode,
+  /// which would orphan the account that was created.
   bool get isImportPending =>
+      _importStatus == ImportStatus.registered ||
       _importStatus == ImportStatus.inProgress ||
       _importStatus == ImportStatus.failed ||
       _importStatus == ImportStatus.completed;
@@ -150,6 +158,7 @@ class AppModeService extends ChangeNotifier {
     _isLocal = false;
     _startupError = null;
     _importStatus = ImportStatus.notStarted;
+    _importTargetEmail = null;
     notifyListeners();
   }
 
@@ -158,9 +167,31 @@ class AppModeService extends ChangeNotifier {
     final db = _database;
     if (db == null) return;
     final row = await db.select(db.importStates).getSingle();
-    if (row.status == _importStatus) return;
+    if (row.status == _importStatus && row.targetEmail == _importTargetEmail) {
+      return;
+    }
     _importStatus = row.status;
+    _importTargetEmail = row.targetEmail;
     notifyListeners();
+  }
+
+  /// Records that [email] was just registered from local mode, before the sign-in
+  /// that follows. If the app closes or the sign-in fails in between, the app
+  /// still knows the move is waiting for that account, instead of letting the user
+  /// register the same email again.
+  Future<void> markRegistered(String email) async {
+    final db = _database;
+    if (!_isLocal || db == null) {
+      throw StateError('Only local mode registers an account for a move');
+    }
+    await (db.update(db.importStates)
+          ..where((s) => s.id.equals(LocalDatabase.singleImportStateId)))
+        .write(ImportStatesCompanion(
+      status: const Value(ImportStatus.registered),
+      targetEmail: Value(email),
+      lastError: const Value(null),
+    ));
+    await refreshImportStatus();
   }
 
   /// Ends local mode after a finished import: the local file is kept as a dated
@@ -209,6 +240,7 @@ class AppModeService extends ChangeNotifier {
     _isLocal = false;
     _startupError = null;
     _importStatus = ImportStatus.notStarted;
+    _importTargetEmail = null;
     notifyListeners();
   }
 
@@ -248,6 +280,7 @@ class AppModeService extends ChangeNotifier {
       opened = await _openDatabase(activeFileName, mustExist: mustExist);
       final row = await opened.select(opened.importStates).getSingle();
       _importStatus = row.status;
+      _importTargetEmail = row.targetEmail;
       _database = opened;
     } on LocalDataUnavailableException {
       rethrow;

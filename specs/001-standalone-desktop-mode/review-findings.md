@@ -380,7 +380,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### SP-01: Registration gap can burn the email
 
-- [ ] Spec and tasks updated
+- [x] Fixed: new `registered` status written before the sign-in, `Create account` becomes `Finish moving your local data`, the login opens with the email, `/2fa_screen` is reachable while pending (data-model, spec Assumptions and contract updated; tests in `app_mode_registered_test.dart`, `registration_desktop_local_test.dart`, `local_mode_guard_test.dart`, `post_sign_in_test.dart`, `login_desktop_local_option_test.dart`).
 
 - **Severity**: High. **Status**: Confirmed.
 - **Where**: `lib/ui/features/authentication/views/registration-desktop.dart` (~lines 30-55), `AuthenticationService.register` (does not log in). Spec Assumptions ("The existing registration flow already logs the user in on success"), T063-T065.
@@ -393,7 +393,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### SP-02: Server creates the defaults asynchronously
 
-- [ ] Spec and tasks updated
+- [x] Fixed in code: step 1b polls until the seeded categories and an account exist (1 to 5 s backoff, 30 s), writes nothing meanwhile, and fails resumably (`ImportServerNotReadyException`, "isn't ready yet" + Retry). Spec, data-model, contract and quickstart updated, including the backend setup. **Not yet verified against a real backend** (quickstart Q17).
 
 - **Severity**: High. **Status**: Confirmed (call site).
 - **Where**: `homemanagement-api/HomeManagementApi/Services/Kafka/UserRegistrationMessageHandler.cs:34` calls `AddUserAsync` after Altair publishes a `user-registration` event.

@@ -2,8 +2,13 @@ import 'package:drift/drift.dart';
 
 part 'local_database.g.dart';
 
-/// Stored as its index in `import_states.status`. Append only.
-enum ImportStatus { notStarted, inProgress, failed, completed }
+/// Stored as its index in `import_states.status`. Append only, so `registered`
+/// comes last although it happens before `inProgress`.
+///
+/// `registered`: the online account was created from local mode, but the move
+/// hasn't begun (the user still has to sign in). It is written right after the
+/// registration succeeds, so closing the app at that point can't orphan the account.
+enum ImportStatus { notStarted, inProgress, failed, completed, registered }
 
 @DataClassName('LocalCurrency')
 class Currencies extends Table {
@@ -146,6 +151,11 @@ class LocalDatabase extends _$LocalDatabase {
     ).getSingle();
     return row.read<double>('balance');
   }
+
+  /// Names of the seeded categories, which the server creates for every new user.
+  static List<String> get defaultCategoryNames => [
+        for (final (name, _) in _defaultCategories) name
+      ];
 
   /// Whether the user put anything here: an account, a transaction, or a change
   /// to the seeded categories (added, removed, renamed, restyled or deactivated).

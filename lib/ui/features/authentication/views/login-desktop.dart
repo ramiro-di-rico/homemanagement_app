@@ -17,7 +17,10 @@ import 'user-controls-mixins/email-behavior.dart';
 import 'user-controls-mixins/password-behavior.dart';
 
 class DesktopLoginView extends StatefulWidget {
-  const DesktopLoginView({super.key});
+  /// Typed into the email field when the screen opens.
+  final String? initialEmail;
+
+  const DesktopLoginView({super.key, this.initialEmail});
 
   @override
   State<DesktopLoginView> createState() => _DesktopLoginViewState();
@@ -30,6 +33,15 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
   final TextEditingController emailPasswordResetController = TextEditingController();
   final AppModeService _appModeService = GetIt.I.get<AppModeService>();
   bool _enteringLocal = false;
+  late final TextEditingController _emailController =
+      TextEditingController(text: widget.initialEmail);
+
+  @override
+  void initState() {
+    super.initState();
+    final email = widget.initialEmail;
+    if (email != null) userViewModel.email = email;
+  }
 
   Future<void> _useWithoutAccount() async {
     if (_enteringLocal) return;
@@ -91,6 +103,7 @@ class _DesktopLoginViewState extends State<DesktopLoginView>
                   Padding(
                     padding: EdgeInsets.all(20),
                     child: EmailTextField(
+                      editingController: _emailController,
                       onTextChanged: onEmailChanged,
                       enableEmailField: !isAuthenticating,
                     ),

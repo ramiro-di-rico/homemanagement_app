@@ -17,6 +17,7 @@ import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/data/services/local_import.service.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/sources/import_currency_missing_exception.dart';
+import 'package:home_management_app/data/services/sources/import_server_not_ready_exception.dart';
 import 'package:home_management_app/data/services/sources/import_wrong_user_exception.dart';
 import 'package:home_management_app/domain/models/user.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
@@ -286,6 +287,28 @@ void main() {
       expect(find.text('Retry'), findsOneWidget);
     },
   );
+
+  testWidgets('an account registered a moment ago starts the move', (tester) async {
+    await setStatus(ImportStatus.registered);
+    await pumpScreen(tester, (onProgress) async => finish([]));
+    await settle(tester);
+
+    expect(service.runs, 1);
+    expect(find.text('Continue'), findsOneWidget);
+  });
+
+  testWidgets('says it is waiting for the server, and offers Retry if it never gets ready',
+      (tester) async {
+    await pumpScreen(tester, (onProgress) async {
+      onProgress!(ImportStep.serverSetup, 1, 0);
+      await fail(ImportServerNotReadyException(const Duration(seconds: 30)));
+    });
+    await settle(tester);
+
+    expect(find.text('Waiting for your online account to be ready'), findsOneWidget);
+    expect(find.textContaining("isn't ready yet"), findsOneWidget);
+    expect(find.text('Retry'), findsOneWidget);
+  });
 
   testWidgets('a restart in the middle of a move resumes it', (tester) async {
     await setStatus(ImportStatus.inProgress);

@@ -48,8 +48,9 @@ class Routing{
       routes: [
         GoRoute(
           path: LoginView.fullPath,
-          builder: (context, state) =>
-          !isDesktop ? LoginView() : DesktopLoginView(),
+          builder: (context, state) => !isDesktop
+              ? LoginView()
+              : DesktopLoginView(initialEmail: state.uri.queryParameters['email']),
         ),
         GoRoute(
           path: RegistrationScreen.fullPath,
@@ -157,6 +158,17 @@ class Routing{
                     !authenticationService.isAuthenticated()
                 ? null
                 : HomeScreen.fullPath;
+          }
+          // A registered account is waiting for its move to finish. Registering
+          // again would only say the email is taken, so go on with that account.
+          if (appModeService.isImportPending) {
+            if (location == RegistrationScreen.fullPath) {
+              return authenticationService.isAuthenticated()
+                  ? LocalImportScreen.fullPath
+                  : LoginView.pathFor(email: appModeService.importTargetEmail);
+            }
+            // The sign-in that continues the move may ask for the two-factor code.
+            if (location == TwoFactorAuthenticationView.fullPath) return null;
           }
           // Only what works without a server is reachable (FR-016). Anything
           // else, including invite and reset links, goes back to the home.

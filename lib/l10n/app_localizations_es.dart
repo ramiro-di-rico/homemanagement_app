@@ -1057,6 +1057,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get continueButton => 'Continuar';
+
+  @override
+  String get importWaitingForServer =>
+      'Esperando a que tu cuenta online esté lista';
+
+  @override
+  String get importServerNotReady =>
+      'Tu cuenta online todavía no está lista. Tus datos locales están intactos, así que vuelve a intentarlo en un momento.';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -2086,4 +2094,12 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
 
   @override
   String get continueButton => 'Continuar';
+
+  @override
+  String get importWaitingForServer =>
+      'Esperando a que tu cuenta online esté lista';
+
+  @override
+  String get importServerNotReady =>
+      'Tu cuenta online todavía no está lista. Tus datos locales están intactos, así que volvé a intentarlo en un momento.';
 }

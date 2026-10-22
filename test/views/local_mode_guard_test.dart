@@ -16,6 +16,7 @@ import 'package:home_management_app/routing.dart';
 import 'package:home_management_app/ui/core/screens/bulk_transactions_screen.dart';
 import 'package:home_management_app/ui/features/accounts/views/account-metrics.dart';
 import 'package:home_management_app/ui/features/accounts/views/account.detail.dart';
+import 'package:home_management_app/ui/features/authentication/views/2fa_view.dart';
 import 'package:home_management_app/ui/features/authentication/views/login.dart';
 import 'package:home_management_app/ui/features/dashboard/views/budget_desktop_view.dart';
 import 'package:home_management_app/ui/features/home/views/logging_view.dart';
@@ -180,6 +181,44 @@ void main() {
       await setStatus(ImportStatus.notStarted);
 
       expect(await resolve(tester, createRouter(), LoginView.fullPath),
+          HomeScreen.fullPath);
+    });
+
+    testWidgets('registration goes to the login with the account\'s email, not to a second sign-up',
+        (tester) async {
+      await setStatus(ImportStatus.registered);
+      await (appMode.database!.update(appMode.database!.importStates))
+          .write(const ImportStatesCompanion(targetEmail: Value('a+b@c.com')));
+      await appMode.refreshImportStatus();
+
+      final result = await resolve(tester, createRouter(), RegistrationScreen.fullPath);
+
+      expect(Uri.parse(result).path, LoginView.fullPath);
+      expect(Uri.parse(result).queryParameters['email'], 'a+b@c.com');
+    });
+
+    testWidgets('signed in, registration goes to the import screen', (tester) async {
+      await setStatus(ImportStatus.failed);
+      authentication.user = UserModel(
+          'a@b.com', '', '', 't', 'r', DateTime.now().add(const Duration(days: 1)), false);
+
+      expect(await resolve(tester, createRouter(), RegistrationScreen.fullPath),
+          LocalImportScreen.fullPath);
+    });
+
+    testWidgets('the two-factor screen is reachable, so the sign-in can finish',
+        (tester) async {
+      await setStatus(ImportStatus.registered);
+
+      expect(await resolve(tester, createRouter(), TwoFactorAuthenticationView.fullPath),
+          TwoFactorAuthenticationView.fullPath);
+    });
+
+    testWidgets('without a move waiting, the two-factor screen is still out of reach',
+        (tester) async {
+      await setStatus(ImportStatus.notStarted);
+
+      expect(await resolve(tester, createRouter(), TwoFactorAuthenticationView.fullPath),
           HomeScreen.fullPath);
     });
 

@@ -151,6 +151,22 @@ void main() {
       expect(find.text('IMPORT SCREEN'), findsOneWidget);
     });
 
+    testWidgets('signed out, it opens the login with the account\'s email typed in',
+        (tester) async {
+      final db = appMode.database!;
+      await db.update(db.importStates).write(
+          const ImportStatesCompanion(targetEmail: Value('a@b.com')));
+      await appMode.refreshImportStatus();
+      final router = await pump(tester, pageWithBanner());
+
+      await tester.tap(find.text('Finish moving your local data'));
+      await tester.pumpAndSettle();
+
+      final uri = router.routerDelegate.currentConfiguration.uri;
+      expect(uri.path, LoginView.fullPath);
+      expect(uri.queryParameters['email'], 'a@b.com');
+    });
+
     testWidgets('signed out, it opens the login, not registration', (tester) async {
       await pump(tester, pageWithBanner());
 

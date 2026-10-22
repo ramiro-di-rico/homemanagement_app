@@ -340,5 +340,7 @@
   "importWrongUser": "El traslado se inició para {email}. Inicia sesión con esa cuenta para terminarlo.",
   "importPendingReadOnly": "Tus datos locales se están moviendo a tu cuenta online, así que no se pueden modificar hasta que termine.",
   "localSwitchFailed": "Tu cuenta se creó, pero la aplicación no pudo cambiar a ella todavía. Tus datos locales están intactos. Usa \"Iniciar sesión en una cuenta existente\" para continuar.",
-  "continueButton": "Continuar"
+  "continueButton": "Continuar",
+  "importWaitingForServer": "Esperando a que tu cuenta online esté lista",
+  "importServerNotReady": "Tu cuenta online todavía no está lista. Tus datos locales están intactos, así que vuelve a intentarlo en un momento."
 }

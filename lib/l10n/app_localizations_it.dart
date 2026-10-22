@@ -1053,4 +1053,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get continueButton => 'Continue';
+
+  @override
+  String get importWaitingForServer =>
+      'Waiting for your online account to be ready';
+
+  @override
+  String get importServerNotReady =>
+      'Your online account isn\'t ready yet. Your local data is intact, so try again in a moment.';
 }

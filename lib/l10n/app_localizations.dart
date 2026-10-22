@@ -1950,6 +1950,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue'**
   String get continueButton;
+
+  /// No description provided for @importWaitingForServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for your online account to be ready'**
+  String get importWaitingForServer;
+
+  /// No description provided for @importServerNotReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your online account isn\'t ready yet. Your local data is intact, so try again in a moment.'**
+  String get importServerNotReady;
 }
 
 class _AppLocalizationsDelegate

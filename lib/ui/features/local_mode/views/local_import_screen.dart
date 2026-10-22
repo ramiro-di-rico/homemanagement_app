@@ -6,6 +6,7 @@ import 'package:home_management_app/data/models/import_progress.dart';
 import 'package:home_management_app/data/repositories/local_import.repository.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/sources/import_currency_missing_exception.dart';
+import 'package:home_management_app/data/services/sources/import_server_not_ready_exception.dart';
 import 'package:home_management_app/data/services/sources/import_wrong_user_exception.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/home/views/home.dart';
@@ -31,8 +32,10 @@ class _LocalImportScreenState extends State<LocalImportScreen> {
   final AppModeService _appMode = GetIt.I<AppModeService>();
 
   /// The steps worth showing. Preflight is instant, and restoring names is part
-  /// of finishing the transactions.
+  /// of finishing the transactions. Waiting for the server only takes time right
+  /// after registering, and then the user needs to know why nothing moves.
   static const List<ImportStep> _shownSteps = [
+    ImportStep.serverSetup,
     ImportStep.categories,
     ImportStep.accounts,
     ImportStep.transactions,
@@ -49,7 +52,7 @@ class _LocalImportScreenState extends State<LocalImportScreen> {
     // Online again means the move already finished: only the summary is left.
     if (!mounted || !_appMode.isLocal || _import.isRunning) return;
     switch (_import.status) {
-      case ImportStatus.notStarted:
+      case ImportStatus.notStarted || ImportStatus.registered:
         _import.start();
       case ImportStatus.inProgress || ImportStatus.completed:
         // `completed` while still local means archiving failed: finish it.
@@ -62,6 +65,9 @@ class _LocalImportScreenState extends State<LocalImportScreen> {
   String _errorText(AppLocalizations l10n, Object? error) {
     if (error is ImportCurrencyMissingException) {
       return l10n.importCurrencyMissing(error.codes.join(', '));
+    }
+    if (error is ImportServerNotReadyException) {
+      return l10n.importServerNotReady;
     }
     if (error is ImportWrongUserException) {
       return l10n.importWrongUser(error.expectedEmail);
@@ -179,6 +185,7 @@ class _LocalImportScreenState extends State<LocalImportScreen> {
 
     final (progressDone, progressTotal) = _import.progress;
     final label = switch (step) {
+      ImportStep.serverSetup => l10n.importWaitingForServer,
       ImportStep.categories => l10n.importProgressCategories,
       ImportStep.accounts => l10n.importProgressAccounts,
       ImportStep.transactions => l10n.importProgressTransactions,

@@ -36,6 +36,7 @@ void main() {
     required bool local,
     bool withData = false,
     bool pending = false,
+    ImportStatus? status,
     bool completeSucceeds = true,
   }) async {
     SharedPreferences.setMockInitialValues({});
@@ -53,10 +54,10 @@ void main() {
             name: 'Main', accountType: 0, currencyId: 1, measurable: const Value(true)));
       }
     }
-    if (pending) {
+    if (pending || status != null) {
       final db = appMode.database!;
       await db.update(db.importStates).write(
-          const ImportStatesCompanion(status: Value(ImportStatus.failed)));
+          ImportStatesCompanion(status: Value(status ?? ImportStatus.failed)));
       await appMode.refreshImportStatus();
     }
     GetIt.I.registerSingleton<AppModeService>(appMode);
@@ -158,5 +159,24 @@ void main() {
     await pump(tester);
 
     expect(find.text('home'), findsOneWidget);
+  });
+
+  testWidgets('a registered account with nothing to move switches at once (US4-6)',
+      (tester) async {
+    await setUpMode(local: true, status: ImportStatus.registered);
+
+    await pump(tester);
+
+    expect(appMode.completed, 1);
+    expect(find.text('home'), findsOneWidget);
+  });
+
+  testWidgets('a registered account with local data goes to the import', (tester) async {
+    await setUpMode(local: true, withData: true, status: ImportStatus.registered);
+
+    await pump(tester);
+
+    expect(find.text('import'), findsOneWidget);
+    expect(appMode.completed, 0);
   });
 }

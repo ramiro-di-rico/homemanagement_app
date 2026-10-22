@@ -78,7 +78,7 @@ Schema version starts at **1**. Every later change goes through drift's `Migrati
 |--------|------|-------|
 | `id` | int, PK, always 1 | |
 | `status` | int, not null | See state machine |
-| `target_email` | text, nullable | The email registered for the move. Resuming requires the same logged-in user |
+| `target_email` | text, nullable | The email registered for the move, written as soon as the registration succeeds. Resuming requires the same logged-in user |
 | `started_at` | datetime, nullable | |
 | `last_error` | text, nullable | Last failure message shown on resume |
 | `import_tag` | text, nullable | 8 random hex chars, generated at step 0. Makes temporary account names unique to this import |
@@ -109,18 +109,21 @@ Schema version starts at **1**. Every later change goes through drift's `Migrati
 ### Import (`import_state.status`)
 
 ```text
-notStarted ──register+login──▶ inProgress ──all steps ok──▶ completed ──▶ file archived, appMode=online
-                                  │   ▲
-                         failure  │   │ retry (same email, logged in)
-                                  ▼   │
-                                failed
+notStarted ──register ok──▶ registered ──login──▶ inProgress ──all steps ok──▶ completed ──▶ file archived, appMode=online
+   │                                                   │   ▲
+   └── register ok, nothing to move ──▶ switch at once │   │ retry (same email, logged in)
+                                                       ▼   │
+                                                     failed
 ```
 
-**Local writes are locked** while the status is `inProgress` or `failed`, and also `completed` while the file is still the active one (archiving failed: the data was already sent, so new writes would never reach the account). The `ModeAware*` delegates reject add, update and delete with `LocalDataLockedException` (spec FR-022), so the local data can't drift from what was already sent. Reads still work.
+`registered` is written right after the registration succeeds and **before** the sign-in that follows (SP-01). The sign-in can fail, ask for a two-factor code, or the app can close, and the account already exists: without this status the next "Create account" would say the email is taken, and the move into it would be forbidden (FR-026). While it is set, "Create account" is replaced by "Finish moving your local data", which opens the login with that email typed in, and the two-factor screen is reachable. The enum is stored by index, so `registered` is appended last although it comes first in time.
+
+**Local writes are locked** while the status is `registered`, `inProgress` or `failed`, and also `completed` while the file is still the active one (archiving failed: the data was already sent, so new writes would never reach the account). The `ModeAware*` delegates reject add, update and delete with `LocalDataLockedException` (spec FR-022), so the local data can't drift from what was already sent. Reads still work.
 
 Steps run in order inside `inProgress`. Each one is idempotent, so a retry repeats safely (FR-021):
 
 1. **Preflight**: every local `currencies.name` used by an account exists in `GET currency`. Otherwise abort before any write (FR-020).
+1b. **Wait for the server** (SP-02): the server creates a new user's Cash account and default categories **after** registration returns, from a background event, in two saves. Poll `GET category/v1` and `GET account` (1 s, 2 s, 4 s, then every 5 s, for up to 30 s) until every seeded category name is there and the user has an account. Nothing is written meanwhile, because a `POST` that lands between the two saves would show up again as a duplicate when the defaults arrive. If it never gets ready the move fails as `failed`, with nothing changed, and Retry tries again.
 2. **Categories**: `GET category/v1` → match by name (case-insensitive) → `POST` the missing ones → `PUT` to set icon, color, measurable and `isActive` (the server ignores those on create, see research R4) → store `server_id`.
 3. **Accounts, all under temporary names**. The temporary name is `"<name> ⟨import <import_tag>-<local id>⟩"`, or `"<name> ⟨import <import_tag>-default⟩"` for the server's unmapped default account. See research R6 for why.
    - `GET account`.

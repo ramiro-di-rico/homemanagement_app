@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_management_app/data/local/local_database.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/home/views/home.dart';
@@ -22,9 +23,11 @@ Future<void> goAfterSignIn(BuildContext context) async {
     return;
   }
 
-  // A move that already started always continues, whatever the data looks like.
-  final hasLocalData =
-      appMode.isImportPending || await database.hasUserData();
+  // A move that already began continues whatever the data looks like. Only an
+  // account registered a moment ago (`registered`) with nothing to move skips it.
+  final started = appMode.importStatus != ImportStatus.notStarted &&
+      appMode.importStatus != ImportStatus.registered;
+  final hasLocalData = started || await database.hasUserData();
   if (!context.mounted) return;
   if (hasLocalData) {
     context.go(LocalImportScreen.fullPath);

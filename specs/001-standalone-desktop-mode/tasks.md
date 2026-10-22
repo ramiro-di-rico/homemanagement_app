@@ -633,6 +633,18 @@ description: "Task list for Standalone Desktop Mode"
 - [X] T083 SP-03 `UpdateCategoryModel` sends `id`, the field the server binds. Editing a category used to look for category 0 and fail, **online as well**.
 - [X] T084 UI-04, UI-06 String renames and wording (see T050) and the credential-store wording, which also fits Windows.
 - [X] T085 RF-18 (part) Tests for the opener (first run, key reuse, lost key, wrong key, locked keyring, missing file), the migration, and the failure paths; the weak `isA<Exception>()` assertions are now specific.
+- [X] T086 SP-01 An account registered from local mode is remembered before the sign-in, so a stalled sign-in can't burn the email:
+  - New `ImportStatus.registered`, appended to the enum because it is stored by index. `AppModeService.markRegistered(email)` writes it with `target_email`, and `importTargetEmail` exposes it. `registration-desktop.dart` calls it right after `register` succeeds and before `authenticate`.
+  - `isImportPending` includes `registered`: writes and leaving local mode are locked, and the banner and home app bar read "Finish moving your local data". That opens the login with the email typed in (`LoginView.pathFor`, `DesktopLoginView(initialEmail:)`), or the import screen when signed in.
+  - Router: while pending, registration redirects to the login (signed out) or the import screen (signed in), and `/2fa_screen` is reachable.
+  - `goAfterSignIn`: only `registered` with nothing to move switches at once (US4-6). The import screen starts the move from `registered`, and the wrong-user check covers it.
+  - **Still a dead end:** nothing lets the user abandon a registered-but-unfinished move (for example after forgetting the password). Leaving local mode is refused on purpose, since it would orphan the account. A decision for later.
+  - Tests: `app_mode_registered_test.dart`, `registration_desktop_local_test.dart` (checked to fail without the call), and cases in the guard, post-sign-in, banner, login, import screen and mode-aware tests. Docs: data-model, spec Assumptions, contract, quickstart (Q16).
+- [X] T087 SP-02 The import waits for the server to create the new user's defaults:
+  - New step 1b in `LocalImportService`, after the currency preflight: poll `GET category` and `GET account` until every seeded category name and at least one account exist, backing off 1, 2, 4, then 5 s, for up to 30 s (`serverReadyTimeout`, and an injectable `delay`). Nothing is written while waiting. Past the timeout it throws `ImportServerNotReadyException`, the status is `failed`, and Retry runs it again.
+  - New `ImportStep.serverSetup`, shown on the import screen as "Waiting for your online account to be ready", and the "isn't ready yet" message. Strings in en, es, es_AR.
+  - Documented the backend setup (Altair `UseKafka` and the API's `UserRegistrationKafka`) in the contract and the quickstart prerequisites, with Q17.
+  - Tests in `local_import_service_test.dart` (ready at once, waits then no duplicates, waits for the account, backoff, timeout then retry, shorter timeout) and `local_import_screen_test.dart`. **Not verified against a real backend.**
 
 ## Dependencies & Execution Order
 

@@ -11,6 +11,7 @@ import 'package:home_management_app/data/services/sources/bulk_transaction_clien
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/data/services/sources/currency_data_source.dart';
 import 'package:home_management_app/data/services/sources/import_currency_missing_exception.dart';
+import 'package:home_management_app/data/services/sources/import_server_not_ready_exception.dart';
 import 'package:home_management_app/data/services/sources/import_wrong_user_exception.dart';
 import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/category.dart';
@@ -30,6 +31,8 @@ class LocalImportService {
   final CurrencyDataSource _currencies;
   final BulkTransactionClient _transactions;
   final Random _random;
+  final Duration _serverReadyTimeout;
+  final Future<void> Function(Duration) _delay;
 
   LocalImportService({
     required LocalDatabase database,
@@ -38,7 +41,11 @@ class LocalImportService {
     required CurrencyDataSource currencies,
     required BulkTransactionClient transactions,
     Random? random,
-  }) : _db = database,
+    Duration serverReadyTimeout = const Duration(seconds: 30),
+    Future<void> Function(Duration)? delay,
+  }) : _serverReadyTimeout = serverReadyTimeout,
+       _delay = delay ?? Future<void>.delayed,
+       _db = database,
        _accounts = accounts,
        _categories = categories,
        _currencies = currencies,
@@ -58,6 +65,7 @@ class LocalImportService {
     final tag = await _begin(email);
     try {
       final currencyIds = await _preflight(onProgress);
+      await _waitForServer(onProgress);
       final categoryIds = await _importCategories(onProgress);
       await _importAccounts(tag, currencyIds, onProgress);
       await _importTransactions(categoryIds, onProgress);
@@ -76,6 +84,7 @@ class LocalImportService {
   Future<String> _begin(String email) async {
     final state = await _state();
     final pending =
+        state.status == ImportStatus.registered ||
         state.status == ImportStatus.inProgress ||
         state.status == ImportStatus.failed;
     final target = state.targetEmail;
@@ -145,6 +154,40 @@ class LocalImportService {
       throw ImportCurrencyMissingException(missing..sort());
     }
     return map;
+  }
+
+  // Step 1b
+
+  /// Right after registering, the server hasn't created the user's default
+  /// categories and Cash account yet: it does so in the background, in two saves.
+  /// Importing before that sees empty lists, and anything created in between shows
+  /// up again as a duplicate when the defaults arrive. So wait until the server
+  /// has the seeded categories and at least one account, backing off from 1 to 5
+  /// seconds, and give up (resumably) after [_serverReadyTimeout].
+  Future<void> _waitForServer(ImportProgress? onProgress) async {
+    final seeded = {
+      for (final name in LocalDatabase.defaultCategoryNames)
+        categoryNameKey(name),
+    };
+    var waited = Duration.zero;
+    var step = const Duration(seconds: 1);
+    for (var attempt = 1; ; attempt++) {
+      onProgress?.call(ImportStep.serverSetup, attempt, 0);
+      final categories = {
+        for (final c in await _categories.fetch()) categoryNameKey(c.name),
+      };
+      final ready =
+          categories.containsAll(seeded) &&
+          (await _accounts.fetchAccounts()).isNotEmpty;
+      if (ready) return;
+      if (waited >= _serverReadyTimeout) {
+        throw ImportServerNotReadyException(waited);
+      }
+      await _delay(step);
+      waited += step;
+      if (step < const Duration(seconds: 5)) step *= 2;
+      if (step > const Duration(seconds: 5)) step = const Duration(seconds: 5);
+    }
   }
 
   // Step 2

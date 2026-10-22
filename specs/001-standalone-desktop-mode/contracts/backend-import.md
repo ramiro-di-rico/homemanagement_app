@@ -5,12 +5,24 @@ The import is the only part of this feature that talks to a server. All endpoint
 | Step | Call | Notes |
 |---|---|---|
 | Register | `POST identity/api/registration` `{email, password(AES), language}` | 200 = ok. **400** with ASP.NET Identity errors; a body containing `DuplicateEmail` or `DuplicateUserName` means the email is taken (spec US4-7, FR-026). Client change: `IdentityService.register` returns a result enum instead of `bool` |
-| Login | existing `authenticate` flow | Registration already logs in (`registration-desktop.dart`) |
+| Login | existing `authenticate` flow | Registration does **not** log in: `registration-desktop.dart` calls `register` and then `authenticate` as two steps, and the app records `registered` in between (SP-01). The sign-in may ask for a two-factor code |
+| Wait | poll `GET category/v1` and `GET account` | The server creates the Cash account and the 17 default categories **after** registration returns (SP-02). Poll with backoff (up to 30 s) until the seeded categories and an account exist. Until then `GET` returns `[]` and any `POST` answers 404 |
 | Currencies | `GET currency` → `[{id, name, value}]` | `name` is the ISO code |
 | Categories | `GET category/v1`, `POST category/v1` (200 + created), `PUT category/v1` | `POST` **ignores** isActive/measurable/color and creates the category **inactive**, so every created category is followed by a `PUT` |
 | Accounts | `GET account`; `POST account` `{name, accountType, currencyId}` → **201 + `AccountResultDto`**; `PUT account/{id}` `{accountId, name, archive, measurable, isHidden}` → 200 | Client change only: `AccountService.add` must parse and return the body (today it discards it). The account name column is unbounded `text`, so temporary names fit |
 | Transactions | `POST transactions/bulk` `{transactions:[…]}` → 200 `[updated accounts]` | Existing endpoint, unchanged |
 | Verify | `GET account` | Compare `balance` per mapped account |
+
+## Server behaviour the import must work around: asynchronous provisioning
+
+`UserRegistrationMessageHandler` (`HomeManagementApi/Services/Kafka/`) calls `AddUserAsync` when Altair publishes a `user-registration` event, and only if the API's `UserRegistrationKafka` feature is enabled. `AddUserAsync` saves the user first and the defaults second. So after `POST identity/api/registration` returns:
+
+- the user may not exist on the home-management side for a moment, and its defaults for a little longer;
+- a `POST` that lands between the two saves succeeds, and the defaults then arrive as duplicates.
+
+The import therefore writes nothing until the defaults are visible, and fails resumably if they never are.
+
+**Backend setup for a local run.** The event must be processed. In Altair, `UseKafka` is `true` in `appsettings.json` and `false` in the Development files; with it off, the fallback is a webhook that needs an `AppId` the client doesn't send, so against such a backend the user may never be created and the import will stop with "your online account isn't ready yet". Run the stack with Kafka on (the `kafka` service in `../home-management-all/docker-compose.yml`) and the `UserRegistrationKafka` feature enabled before quickstart Q9 to Q15.
 
 ## Server behaviour the import must work around: transfer mirroring
 

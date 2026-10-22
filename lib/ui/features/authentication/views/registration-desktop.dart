@@ -1,5 +1,9 @@
 import 'package:home_management_app/data/services/identity.service.dart';
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
@@ -43,6 +47,9 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
         this.userViewModel.email, this.userViewModel.password, locale);
 
     if (registrationResult == RegistrationResult.success) {
+      // Before signing in: if that fails, asks for a 2FA code, or the app closes,
+      // the account exists and the move must remember it (SP-01).
+      await _rememberRegistration();
       var authenticatedSuccessfully =
           await this.authenticationService.authenticate(this.userViewModel);
 
@@ -65,6 +72,18 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
     } else {
       setAuthenticatingStatus(false);
       _showErrorDialog('Registration error.', 'Could not register user.');
+    }
+  }
+
+  Future<void> _rememberRegistration() async {
+    final appMode = GetIt.I<AppModeService>();
+    if (!appMode.isLocal) return;
+    try {
+      await appMode.markRegistered(userViewModel.email);
+    } catch (error, stackTrace) {
+      // The account is already created, so carry on with signing in.
+      developer.log('Could not record the registration',
+          name: 'registration', error: error, stackTrace: stackTrace);
     }
   }
 

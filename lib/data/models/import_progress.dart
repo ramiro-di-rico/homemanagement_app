@@ -1,5 +1,6 @@
 enum ImportStep {
   preflight,
+  serverSetup,
   categories,
   accounts,
   transactions,

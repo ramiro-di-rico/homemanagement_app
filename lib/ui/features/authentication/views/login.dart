@@ -14,6 +14,12 @@ import 'user-controls-mixins/password-behavior.dart';
 class LoginView extends StatefulWidget {
   static const String fullPath = '/login_screen';
 
+  /// The login with [email] already typed in, for continuing a move that was
+  /// started for that account.
+  static String pathFor({String? email}) => email == null || email.isEmpty
+      ? fullPath
+      : '$fullPath?email=${Uri.encodeQueryComponent(email)}';
+
   @override
   _LoginViewState createState() => _LoginViewState();
 }

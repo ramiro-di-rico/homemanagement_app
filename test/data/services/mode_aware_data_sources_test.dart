@@ -416,8 +416,10 @@ void main() {
 
       final db = appMode.database!;
       for (final (status, pending) in [
+        (ImportStatus.registered, true),
         (ImportStatus.inProgress, true),
         (ImportStatus.failed, true),
+        (ImportStatus.completed, true),
         (ImportStatus.notStarted, false),
       ]) {
         await db.update(db.importStates).write(ImportStatesCompanion(status: Value(status)));
@@ -462,6 +464,7 @@ void main() {
     });
 
     for (final status in [
+      ImportStatus.registered,
       ImportStatus.inProgress,
       ImportStatus.failed,
       ImportStatus.completed,

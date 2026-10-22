@@ -37,7 +37,7 @@ void main() {
         },
       );
 
-  Future<GoRouter> pumpLogin(WidgetTester tester, AppModeService appMode) async {
+  Future<GoRouter> pumpLogin(WidgetTester tester, AppModeService appMode, {String? initialEmail}) async {
     GetIt.I.registerSingleton(appMode);
     tester.view.physicalSize = const Size(1200, 900);
     tester.view.devicePixelRatio = 1.0;
@@ -46,7 +46,7 @@ void main() {
     final router = GoRouter(
       initialLocation: LoginView.fullPath,
       routes: [
-        GoRoute(path: LoginView.fullPath, builder: (_, _) => const DesktopLoginView()),
+        GoRoute(path: LoginView.fullPath, builder: (_, _) => DesktopLoginView(initialEmail: initialEmail)),
         GoRoute(path: HomeScreen.fullPath, builder: (_, _) => const Text('LOCAL HOME')),
       ],
     );
@@ -155,5 +155,32 @@ void main() {
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
     expect(find.text('Local mode unavailable'), findsNothing);
+  });
+
+  group('continuing a move for an account that was already registered', () {
+    testWidgets('the email is already typed in', (tester) async {
+      await pumpLogin(tester, createAppMode(PlatformType.Desktop), initialEmail: 'a@b.com');
+
+      expect(find.widgetWithText(TextField, 'a@b.com'), findsOneWidget);
+    });
+
+    testWidgets('so only the password is left to type before signing in', (tester) async {
+      await pumpLogin(tester, createAppMode(PlatformType.Desktop), initialEmail: 'a@b.com');
+      await tester.enterText(find.byType(TextField).at(1), 'secret-123');
+      await tester.pump();
+
+      final signIn = find.widgetWithIcon(ElevatedButton, Icons.send);
+      expect(tester.widget<ElevatedButton>(signIn).onPressed, isNotNull);
+    });
+
+    testWidgets('without one, the field starts empty and sign-in stays disabled', (tester) async {
+      await pumpLogin(tester, createAppMode(PlatformType.Desktop));
+      await tester.enterText(find.byType(TextField).at(1), 'secret-123');
+      await tester.pump();
+
+      expect(tester.widget<TextField>(find.byType(TextField).at(0)).controller?.text, isEmpty);
+      expect(find.widgetWithIcon(ElevatedButton, Icons.send), findsNothing,
+          reason: 'the filled sign-in button only appears with a valid email and password');
+    });
   });
 }

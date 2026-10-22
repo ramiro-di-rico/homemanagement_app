@@ -16,7 +16,7 @@ void openImportResume(BuildContext context) {
   final authentication = GetIt.I<AuthenticationService>();
   context.go(authentication.isAuthenticated()
       ? LocalImportScreen.fullPath
-      : LoginView.fullPath);
+      : LoginView.pathFor(email: GetIt.I<AppModeService>().importTargetEmail));
 }
 
 /// A persistent strip saying the user is working locally, with the way to create
