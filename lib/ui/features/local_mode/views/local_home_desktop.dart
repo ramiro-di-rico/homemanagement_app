@@ -86,9 +86,24 @@ class _LocalHomeDesktopState extends State<LocalHomeDesktop> {
     );
   }
 
+  /// Below this width the app bar shows its actions as icons.
+  static const double _compactWidth = 700;
+
+  Widget _action({
+    required bool compact,
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+  }) =>
+      compact
+          ? IconButton(icon: Icon(icon), tooltip: label, onPressed: onPressed)
+          : TextButton.icon(
+              onPressed: onPressed, icon: Icon(icon), label: Text(label));
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final compact = MediaQuery.sizeOf(context).width < _compactWidth;
     return ListenableBuilder(
       listenable: Listenable.merge([_appMode, _accounts]),
       builder: (context, _) => Scaffold(
@@ -97,22 +112,25 @@ class _LocalHomeDesktopState extends State<LocalHomeDesktop> {
           bottom: const LocalModeBanner(),
           actions: [
             // Once the move has started the account exists: finishing it replaces
-            // creating one.
-            TextButton.icon(
+            // creating one. In a narrow window the actions are icons: with their
+            // labels they are wider than the bar.
+            _action(
+              compact: compact,
+              icon: Icons.cloud_outlined,
+              label: _appMode.isImportPending
+                  ? l10n.importResume
+                  : l10n.createOnlineAccount,
               onPressed: _appMode.isImportPending
                   ? () => openImportResume(context)
                   : () => context.go(RegistrationScreen.fullPath),
-              icon: const Icon(Icons.cloud_outlined),
-              label: Text(_appMode.isImportPending
-                  ? l10n.importResume
-                  : l10n.createOnlineAccount),
             ),
             // Not while an import is pending: the move must be finished first.
             if (!_appMode.isImportPending)
-              TextButton.icon(
+              _action(
+                compact: compact,
+                icon: Icons.login,
+                label: l10n.signInExistingAccount,
                 onPressed: _signInToExistingAccount,
-                icon: const Icon(Icons.login),
-                label: Text(l10n.signInExistingAccount),
               ),
             IconButton(
               icon: const Icon(Icons.settings),

@@ -18,8 +18,11 @@ import 'package:home_management_app/ui/features/home/views/home.dart';
 /// of a move it resumes it. After a failure it waits for the user to retry, and the
 /// app stays local with its data intact.
 class LocalImportScreen extends StatefulWidget {
-  static const String path = '/local_import';
-  static const String fullPath = '/home_screen/local_import';
+  /// A top-level route, not a child of `/home_screen`. A child keeps the home page
+  /// underneath it, and that page is only built at the first rebuild: exactly when
+  /// the move ends and the mode flips. It was then built as the home of the wrong
+  /// mode, with the database already closed (or, online, loading everything at once).
+  static const String fullPath = '/local_import';
 
   const LocalImportScreen({super.key});
 

@@ -67,7 +67,7 @@ class AppModeService extends ChangeNotifier {
 When `isLocal` is true:
 
 - `/login_screen` redirects to `/home_screen` (skips auto-login and network), unless an import is in progress and the user isn't authenticated.
-- These routes are allowed: `/home_screen`, `/home_screen/account_detail_screen`, `/home_screen/settings_screen`, `/home_screen/logging_screen`, `/registration_screen`, and the new `/home_screen/local_import`.
+- These routes are allowed: `/home_screen`, `/home_screen/account_detail_screen`, `/home_screen/settings_screen`, `/home_screen/logging_screen`, `/registration_screen`, and the new `/local_import`.
 - Any other route redirects to `/home_screen` (FR-016).
 
 ## Errors the local sources raise (RF-19)

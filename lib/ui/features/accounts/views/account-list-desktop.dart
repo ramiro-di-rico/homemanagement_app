@@ -59,6 +59,8 @@ class _AccountListDesktopViewState extends State<AccountListDesktopView>
   }
 
   load() {
+    // The repository can answer after this view is gone, e.g. after a mode change.
+    if (!mounted) return;
     setState(() {
       this.accounts = accountsRepo.accounts;
     });

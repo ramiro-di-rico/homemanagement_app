@@ -138,14 +138,17 @@ class AuthenticationService {
       isAuthenticating = true;
 
       _logger?.i('Authenticating...');
-      user = isEmailAuthenticationType(email)
+      final result = isEmailAuthenticationType(email)
           ? await _identityService.internalAuthenticate(email, password)
-        : await _identityService.internalAuthenticateV2(email, password);
+          : await _identityService.internalAuthenticateV2(email, password);
 
-      if (user == null) {
-      _logger?.i('Authentication failed');
-      return false;
-    }
+      if (result == null) {
+        // A failed attempt must not sign the current user out: the next request
+        // would then find no token at all and fail on `user!`.
+        _logger?.i('Authentication failed');
+        return false;
+      }
+      user = result;
       _logger?.i('Authentication succeeded, storing user');
       this._userRepository.store(user!);
       return user?.twoFactorRequired == false;

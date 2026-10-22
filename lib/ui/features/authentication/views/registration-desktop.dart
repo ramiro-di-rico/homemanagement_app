@@ -33,12 +33,28 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
         PasswordBehavior,
         PasswordStrengthBehavior,
         NotifierMixin {
+  /// Set when the registration was recorded without telling anyone, so that the
+  /// router doesn't move this screen away while the sign-in is running.
+  bool _announcePending = false;
+
   @override
   Future<void> onButtonPressed() async {
     if (!this.userViewModel.isValid) {
       return;
     }
 
+    try {
+      await _register();
+    } finally {
+      // Whatever happened, the flow is over: now the router may act on it.
+      if (_announcePending) {
+        _announcePending = false;
+        GetIt.I<AppModeService>().announceImportStatus();
+      }
+    }
+  }
+
+  Future<void> _register() async {
     setAuthenticatingStatus(true);
 
     var locale = resolveDeviceLanguage(PlatformDispatcher.instance.locale);
@@ -79,7 +95,8 @@ class _RegistrationDesktopState extends State<RegistrationDesktop>
     final appMode = GetIt.I<AppModeService>();
     if (!appMode.isLocal) return;
     try {
-      await appMode.markRegistered(userViewModel.email);
+      await appMode.markRegistered(userViewModel.email, notify: false);
+      _announcePending = true;
     } catch (error, stackTrace) {
       // The account is already created, so carry on with signing in.
       developer.log('Could not record the registration',

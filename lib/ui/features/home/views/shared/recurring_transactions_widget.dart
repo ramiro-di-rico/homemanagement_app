@@ -63,9 +63,15 @@ class _RecurringTransactionListState extends State<RecurringTransactionList>
                       const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                   child: Row(
                     children: [
-                      Text(
-                        AppLocalizations.of(context)!.recurringTransactions,
-                        style: TextStyle(fontSize: 20),
+                      // Can shrink: in a narrow panel the title, the search box and the
+                      // add button don't all fit at full size.
+                      Flexible(
+                        child: Text(
+                          AppLocalizations.of(context)!.recurringTransactions,
+                          style: TextStyle(fontSize: 20),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       SizedBox(width: 12),
                       Expanded(

@@ -179,7 +179,13 @@ class AppModeService extends ChangeNotifier {
   /// that follows. If the app closes or the sign-in fails in between, the app
   /// still knows the move is waiting for that account, instead of letting the user
   /// register the same email again.
-  Future<void> markRegistered(String email) async {
+  ///
+  /// With [notify] false the change is stored and applied, but nobody is told. The
+  /// registration screen uses it: the router sends the registration screen to the
+  /// login as soon as an import is pending, and that must not happen in the middle
+  /// of the sign-in that is still running. It calls [announceImportStatus] when it
+  /// is done.
+  Future<void> markRegistered(String email, {bool notify = true}) async {
     final db = _database;
     if (!_isLocal || db == null) {
       throw StateError('Only local mode registers an account for a move');
@@ -191,8 +197,14 @@ class AppModeService extends ChangeNotifier {
       targetEmail: Value(email),
       lastError: const Value(null),
     ));
-    await refreshImportStatus();
+    _importStatus = ImportStatus.registered;
+    _importTargetEmail = email;
+    if (notify) notifyListeners();
   }
+
+  /// Tells the listeners (the router, the banner) about a change that was applied
+  /// without notifying, see [markRegistered].
+  void announceImportStatus() => notifyListeners();
 
   /// Ends local mode after a finished import: the local file is kept as a dated
   /// backup and the app goes online.

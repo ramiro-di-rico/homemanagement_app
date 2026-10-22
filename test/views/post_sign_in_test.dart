@@ -10,6 +10,7 @@ import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
 import 'package:home_management_app/ui/features/authentication/views/user-controls-mixins/post-sign-in.dart';
 import 'package:home_management_app/ui/features/home/views/home.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_import_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_platform.dart';
@@ -83,7 +84,7 @@ void main() {
           path: HomeScreen.fullPath,
           builder: (_, __) => const Scaffold(body: Text('home'))),
       GoRoute(
-          path: '/home_screen/local_import',
+          path: LocalImportScreen.fullPath,
           builder: (_, __) => const Scaffold(body: Text('import'))),
     ]);
     await tester.pumpWidget(MaterialApp.router(

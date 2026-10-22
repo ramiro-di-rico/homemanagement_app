@@ -44,8 +44,13 @@ class IdentityUserRepository extends ChangeNotifier {
   }
 
   Future<MyUserViewModel?> getUser() async {
-    _currentUser = _currentUser ?? await _identityUserApi.getUser();
-    notifyListeners();
+    // Only a fetch changes anything. Notifying on every call also notified, from
+    // inside `initState`, when the user was already cached, and the app's own
+    // ancestor listens to this repository: "setState() called during build".
+    if (_currentUser == null) {
+      _currentUser = await _identityUserApi.getUser();
+      notifyListeners();
+    }
     return _currentUser;
   }
 

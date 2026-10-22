@@ -96,10 +96,6 @@ class Routing{
                 !isDesktop ? SettingsScreen() : SettingsDesktopView(),
               ),
               GoRoute(
-                path: LocalImportScreen.path,
-                builder: (context, state) => const LocalImportScreen(),
-              ),
-              GoRoute(
                 path: LoggingView.path,
                 builder: (context, state) => LoggingView(),
               ),
@@ -129,6 +125,10 @@ class Routing{
                 builder: (context, state) => const InviteManagementScreen(),
               ),
             ]),
+        GoRoute(
+          path: LocalImportScreen.fullPath,
+          builder: (context, state) => const LocalImportScreen(),
+        ),
         GoRoute(
           path: TwoFactorAuthenticationView.fullPath,
           builder: (context, state) => TwoFactorAuthenticationView(),

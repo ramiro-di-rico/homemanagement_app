@@ -36,6 +36,8 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
   }
 
   void setAuthenticatingStatus(bool status) {
+    // A sign-in can outlast its screen, for instance when the router moves away.
+    if (!mounted) return;
     setState(() {
       this.isAuthenticating = status;
     });

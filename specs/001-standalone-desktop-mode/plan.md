@@ -94,7 +94,7 @@ specs/001-standalone-desktop-mode/
 lib/
 ├── main.dart                         # MODIFY: async main, read appMode, open DB, register delegates
 ├── myapp.dart                        # MODIFY: pass AppModeService to router
-├── routing.dart                      # MODIFY: local-mode guard + /home_screen/local_import route
+├── routing.dart                      # MODIFY: local-mode guard + /local_import route
 ├── data/
 │   ├── local/                        # NEW
 │   │   ├── local_database.dart       #   drift @DriftDatabase, tables, migrations, seed
