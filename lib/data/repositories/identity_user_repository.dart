@@ -20,14 +20,26 @@ class IdentityUserRepository extends ChangeNotifier {
   MyUserViewModel? get currentUser => _currentUser;
   ThemeMode get themeMode => _themeMode;
 
+  /// Reads the saved theme and language, in every mode. Without it they are only
+  /// available after a sign-in, so local mode would start with the defaults and
+  /// forget what the user chose.
+  Future<void> loadPreferences() async {
+    await _userRepository.loadPreferences();
+    _loadThemeMode();
+    notifyListeners();
+  }
+
   void _loadThemeMode() {
     final themeIndex = _userRepository.preferences?.getInt(themeModeKey) ?? ThemeMode.system.index;
-    _themeMode = ThemeMode.values[themeIndex];
+    _themeMode = themeIndex >= 0 && themeIndex < ThemeMode.values.length
+        ? ThemeMode.values[themeIndex]
+        : ThemeMode.system;
   }
 
   Future setThemeMode(ThemeMode mode) async {
     _themeMode = mode;
-    await _userRepository.preferences?.setInt(themeModeKey, mode.index);
+    final preferences = await _userRepository.loadPreferences();
+    await preferences.setInt(themeModeKey, mode.index);
     notifyListeners();
   }
 
@@ -56,7 +68,8 @@ class IdentityUserRepository extends ChangeNotifier {
   /// Saves the language on this device only, without calling the server.
   /// Used in local mode, where there is no signed-in user.
   Future setLocalLanguage(String language) async {
-    await _userRepository.preferences?.setString(languageKey, language);
+    final preferences = await _userRepository.loadPreferences();
+    await preferences.setString(languageKey, language);
     notifyListeners();
   }
 

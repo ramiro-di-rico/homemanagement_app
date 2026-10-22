@@ -651,6 +651,12 @@ description: "Task list for Standalone Desktop Mode"
   - **Decided and recorded** (research R12 and R13, spec FR-023, data-model step 6): a balance mismatch is reported but the move still completes and the file is archived; `POST api/users/import` is not used (it deletes first, is not atomic, and ignores `IsHidden`); `transactions/filter` is safe here because it only asks about an account id the server created for this user.
   - **Docs fixed:** the `...Z` date example in the contract, and the duplicate-email code note in R8 and the contract.
   - Tests: category tie-break (with a negative control: two fail on the old logic), default-suffix recovery, status-refresh callback, mismatch still completes, date format.
+- [X] T089 RF-10 Theme and language are loaded and saved in local mode:
+  - **Cause:** `UserRepository.preferences` was only opened by `AuthenticationService.init()`, which local mode skips. So `setThemeMode` and `setLocalLanguage` wrote through a null `?.` and silently did nothing: the language dropdown added in T058 did not work at all, and nothing was remembered across restarts.
+  - **Fix:** `UserRepository.loadPreferences()` and `IdentityUserRepository.loadPreferences()` read the stored preferences (and re-read the theme) without signing in. `main()` calls it before `runApp`, in every mode, and a failure there leaves the defaults instead of blocking the window. Both setters now load the preferences themselves, so they can't be a no-op. A stored theme index that is out of range falls back to the system theme.
+  - **Online behaviour change (list it in DR-03):** the saved theme is now restored at startup online too. Before, the repository read it before anything had loaded the preferences, so it always started with the system theme.
+  - Tests: `identity_user_repository_local_preferences_test.dart` (survives a restart, no server call, works without loading first, notifies, bad index) and `local_preferences_widget_test.dart`. Three of them fail on the old code. `main()` itself is not tested; it is one guarded call.
+  - **Not done:** applying the language to the first-run login screen on a fresh install (no saved choice) still follows the system language.
 
 ## Dependencies & Execution Order
 

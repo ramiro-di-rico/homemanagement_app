@@ -59,6 +59,12 @@ Future<void> main() async {
   var appModeService = AppModeService(platform);
   await appModeService.init();
   registerDependencies(platform, appModeService: appModeService);
+  try {
+    // Theme and language, in every mode: local mode never signs in to load them.
+    await GetIt.I<IdentityUserRepository>().loadPreferences();
+  } catch (_) {
+    // The app runs with the defaults. A failure here must not leave it without a window.
+  }
   runApp(MyApp(platform));
 }
 

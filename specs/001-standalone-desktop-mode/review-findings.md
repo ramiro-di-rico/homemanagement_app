@@ -267,7 +267,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-10: Language and theme preferences are not loaded in local mode
 
-- [ ] Fixed
+- [x] Fixed in T089. Worse than reported: the T058 language dropdown wrote to a null object, so choosing a language did nothing in local mode, and the theme was never saved.
 
 - **Severity**: Med. **Status**: Plausible.
 - **Where**: `lib/data/repositories/user.repository.dart:15`, `identity_user_repository.dart` (~lines 24, 30, 44, 60).

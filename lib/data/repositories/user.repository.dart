@@ -11,6 +11,12 @@ class UserRepository {
   String expirationDateKey = 'expirationDateKey';
   SharedPreferences? preferences;
 
+  /// Opens the stored preferences without touching the signed-in user. Theme and
+  /// language live there, and they are needed in local mode, where no sign-in
+  /// ever calls [load].
+  Future<SharedPreferences> loadPreferences() async =>
+      preferences ??= await SharedPreferences.getInstance();
+
   Future<UserModel?> load() async {
     preferences = await SharedPreferences.getInstance();
     var userInfoAvailable = (preferences?.containsKey(emailKey) ?? false) &&
