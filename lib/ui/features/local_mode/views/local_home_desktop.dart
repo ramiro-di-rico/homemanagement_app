@@ -96,10 +96,16 @@ class _LocalHomeDesktopState extends State<LocalHomeDesktop> {
           title: Text(l10n.appTitle),
           bottom: const LocalModeBanner(),
           actions: [
+            // Once the move has started the account exists: finishing it replaces
+            // creating one.
             TextButton.icon(
-              onPressed: () => context.go(RegistrationScreen.fullPath),
+              onPressed: _appMode.isImportPending
+                  ? () => openImportResume(context)
+                  : () => context.go(RegistrationScreen.fullPath),
               icon: const Icon(Icons.cloud_outlined),
-              label: Text(l10n.createOnlineAccount),
+              label: Text(_appMode.isImportPending
+                  ? l10n.importResume
+                  : l10n.createOnlineAccount),
             ),
             // Not while an import is pending: the move must be finished first.
             if (!_appMode.isImportPending)

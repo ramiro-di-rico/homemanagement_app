@@ -1,4 +1,5 @@
 import 'package:drift/native.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +10,7 @@ import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/data/services/password_reset_service.dart';
 import 'package:home_management_app/data/services/platform/platform_strategy.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
+import 'package:home_management_app/domain/models/user.dart';
 import 'package:home_management_app/main.dart';
 import 'package:home_management_app/routing.dart';
 import 'package:home_management_app/ui/core/screens/bulk_transactions_screen.dart';
@@ -18,6 +20,7 @@ import 'package:home_management_app/ui/features/authentication/views/login.dart'
 import 'package:home_management_app/ui/features/dashboard/views/budget_desktop_view.dart';
 import 'package:home_management_app/ui/features/home/views/logging_view.dart';
 import 'package:home_management_app/ui/features/invites/views/invite_management_screen.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_import_screen.dart';
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/reminders/reminders_desktop_view.dart';
 import 'package:home_management_app/ui/features/settings/views/settings.dart';
 import 'package:home_management_app/ui/features/statistics/views/statistics_view.dart';
@@ -118,8 +121,7 @@ void main() {
       'settings': SettingsScreen.fullPath,
       'the log': LoggingView.fullPath,
       'registration': RegistrationScreen.fullPath,
-      // The import screen arrives with US4 (T069), but the guard must allow it.
-      'the import': '/home_screen/local_import',
+      'the import': LocalImportScreen.fullPath,
     };
     reachable.forEach((name, path) {
       testWidgets('$name stays where it is', (tester) async {
@@ -143,6 +145,49 @@ void main() {
       testWidgets('$name redirects to the home', (tester) async {
         expect(await resolve(tester, createRouter(), path), HomeScreen.fullPath);
       });
+    });
+  });
+
+  group('local mode, with a move waiting to finish', () {
+    Future<void> setStatus(ImportStatus status) async {
+      final db = appMode.database!;
+      await db.update(db.importStates).write(ImportStatesCompanion(status: Value(status)));
+      await appMode.refreshImportStatus();
+    }
+
+    setUp(() => appMode.enterLocalMode());
+
+    for (final status in [ImportStatus.inProgress, ImportStatus.failed]) {
+      testWidgets('the login stays reachable when ${status.name} and signed out',
+          (tester) async {
+        await setStatus(status);
+
+        expect(await resolve(tester, createRouter(), LoginView.fullPath),
+            LoginView.fullPath);
+      });
+    }
+
+    testWidgets('signed in, the login goes to the home', (tester) async {
+      await setStatus(ImportStatus.failed);
+      authentication.user = UserModel(
+          'a@b.com', '', '', 't', 'r', DateTime.now().add(const Duration(days: 1)), false);
+
+      expect(await resolve(tester, createRouter(), LoginView.fullPath),
+          HomeScreen.fullPath);
+    });
+
+    testWidgets('with no move waiting the login still goes to the home', (tester) async {
+      await setStatus(ImportStatus.notStarted);
+
+      expect(await resolve(tester, createRouter(), LoginView.fullPath),
+          HomeScreen.fullPath);
+    });
+
+    testWidgets('everything else stays as restricted as before', (tester) async {
+      await setStatus(ImportStatus.failed);
+
+      expect(await resolve(tester, createRouter(), BudgetDesktopView.fullPath),
+          HomeScreen.fullPath);
     });
   });
 

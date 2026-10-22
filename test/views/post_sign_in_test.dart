@@ -35,6 +35,7 @@ void main() {
   Future<void> setUpMode({
     required bool local,
     bool withData = false,
+    bool pending = false,
     bool completeSucceeds = true,
   }) async {
     SharedPreferences.setMockInitialValues({});
@@ -51,6 +52,12 @@ void main() {
         await db.into(db.accounts).insert(AccountsCompanion.insert(
             name: 'Main', accountType: 0, currencyId: 1, measurable: const Value(true)));
       }
+    }
+    if (pending) {
+      final db = appMode.database!;
+      await db.update(db.importStates).write(
+          const ImportStatesCompanion(status: Value(ImportStatus.failed)));
+      await appMode.refreshImportStatus();
     }
     GetIt.I.registerSingleton<AppModeService>(appMode);
   }
@@ -131,5 +138,25 @@ void main() {
     await tester.tap(find.text('ok'));
     await tester.pumpAndSettle();
     expect(find.text('sign in'), findsOneWidget);
+  });
+
+  testWidgets('a move waiting to finish continues even if the local data looks empty',
+      (tester) async {
+    await setUpMode(local: true, pending: true);
+
+    await pump(tester);
+
+    expect(find.text('import'), findsOneWidget);
+    expect(appMode.completed, 0);
+  });
+
+  testWidgets('works when no app mode is registered, as in the mobile app',
+      (tester) async {
+    await setUpMode(local: false);
+    await GetIt.I.reset();
+
+    await pump(tester);
+
+    expect(find.text('home'), findsOneWidget);
   });
 }

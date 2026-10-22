@@ -163,7 +163,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(signInAction), findsNothing);
-      expect(find.text(createAction), findsNWidgets(2), reason: 'app bar and banner');
+      expect(find.text(createAction), findsNothing, reason: 'the account already exists');
+      expect(find.text('Finish moving your local data'), findsNWidgets(2),
+          reason: 'app bar and banner');
     });
 
     testWidgets('"Create online account" opens registration, from the app bar and from the banner', (tester) async {

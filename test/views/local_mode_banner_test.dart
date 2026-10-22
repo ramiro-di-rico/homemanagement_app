@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,14 +6,27 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_management_app/data/local/local_database.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
+import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
+import 'package:home_management_app/ui/features/authentication/views/login.dart';
 import 'package:home_management_app/ui/features/authentication/views/registration.dart';
 import 'package:home_management_app/ui/features/home/views/logging_view.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_import_screen.dart';
 import 'package:home_management_app/ui/features/local_mode/views/local_mode_banner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_platform.dart';
+
+class _Auth implements AuthenticationService {
+  bool signedIn = false;
+
+  @override
+  bool isAuthenticated() => signedIn;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   late AppModeService appMode;
@@ -36,6 +50,8 @@ void main() {
     final router = GoRouter(routes: [
       GoRoute(path: '/', builder: (_, _) => home),
       GoRoute(path: RegistrationScreen.fullPath, builder: (_, _) => const Text('REGISTRATION SCREEN')),
+      GoRoute(path: LoginView.fullPath, builder: (_, _) => const Text('LOGIN SCREEN')),
+      GoRoute(path: LocalImportScreen.fullPath, builder: (_, _) => const Text('IMPORT SCREEN')),
     ]);
     await tester.pumpWidget(MaterialApp.router(
       routerConfig: router,
@@ -102,6 +118,63 @@ void main() {
 
       expect(find.byType(LocalModeBanner), findsOneWidget);
       expect(find.text("You're working locally on this computer"), findsOneWidget);
+    });
+  });
+
+  group('while an import is pending', () {
+    late _Auth auth;
+
+    setUp(() async {
+      await setUpMode(local: true);
+      auth = _Auth();
+      GetIt.I.registerSingleton<AuthenticationService>(auth);
+      final db = appMode.database!;
+      await db.update(db.importStates).write(
+          const ImportStatesCompanion(status: Value(ImportStatus.failed)));
+      await appMode.refreshImportStatus();
+    });
+
+    testWidgets('offers to finish the move instead of creating an account', (tester) async {
+      await pump(tester, pageWithBanner());
+
+      expect(find.text('Finish moving your local data'), findsOneWidget);
+      expect(find.text('Create online account'), findsNothing);
+    });
+
+    testWidgets('signed in, it opens the import screen', (tester) async {
+      auth.signedIn = true;
+      await pump(tester, pageWithBanner());
+
+      await tester.tap(find.text('Finish moving your local data'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('IMPORT SCREEN'), findsOneWidget);
+    });
+
+    testWidgets('signed out, it opens the login, not registration', (tester) async {
+      await pump(tester, pageWithBanner());
+
+      await tester.tap(find.text('Finish moving your local data'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('LOGIN SCREEN'), findsOneWidget);
+      expect(find.text('REGISTRATION SCREEN'), findsNothing);
+    });
+
+    testWidgets('the text changes by itself when the move starts', (tester) async {
+      final db = appMode.database!;
+      await db.update(db.importStates).write(
+          const ImportStatesCompanion(status: Value(ImportStatus.notStarted)));
+      await appMode.refreshImportStatus();
+      await pump(tester, pageWithBanner());
+      expect(find.text('Create online account'), findsOneWidget);
+
+      await db.update(db.importStates).write(
+          const ImportStatesCompanion(status: Value(ImportStatus.inProgress)));
+      await appMode.refreshImportStatus();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Finish moving your local data'), findsOneWidget);
     });
   });
 

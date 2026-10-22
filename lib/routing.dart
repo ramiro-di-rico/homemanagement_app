@@ -151,7 +151,12 @@ class Routing{
         if (appModeService.isLocal) {
           final location = state.matchedLocation;
           if (location == LoginView.fullPath) {
-            return HomeScreen.fullPath;
+            // A move that started but didn't finish is resumed by signing in to
+            // the account that was created for it.
+            return appModeService.isImportPending &&
+                    !authenticationService.isAuthenticated()
+                ? null
+                : HomeScreen.fullPath;
           }
           // Only what works without a server is reachable (FR-016). Anything
           // else, including invite and reset links, goes back to the home.

@@ -563,10 +563,17 @@ description: "Task list for Standalone Desktop Mode"
   - On failure: the message for the error (`importCurrencyMissing` with the codes, `importWrongUser` with the email, otherwise `importFailed`) and Retry. The app stays local. `ImportWrongUserException` now carries `expectedEmail` for that message.
   - New key `continueButton` (en, es, es_AR).
   - **Not covered here:** a user who is not signed in (e.g. after an app restart) gets the generic failure text with Retry. Getting them to sign in is T070.
-- [ ] T070 [US4] Handle a resumed import:
+- [X] T070 [US4] Handle a resumed import:
   - In `lib/ui/features/local_mode/views/local_mode_banner.dart`, when `import_states.status` is `inProgress` or `failed`, show `importResume`. It opens the import screen, or registration/login if unauthenticated.
   - In `lib/routing.dart`, while an import is pending and the user isn't authenticated, allow `/login_screen` in local mode instead of redirecting it home.
   - In `lib/ui/features/authentication/views/user-controls-mixins/authentication-behavior.dart` `successFullAuthentication`, go to `LocalImportScreen.fullPath` when local with an import pending.
+
+  Done.
+  - **Banner** (`local_mode_banner.dart`): while `isImportPending` (so `inProgress`, `failed`, and `completed`-but-not-archived), its button reads `importResume` instead of `createOnlineAccount`, and updates by itself when the status changes. The button goes to the import screen when signed in and to **the login** when not. The task said "registration/login": registration is wrong here, because the account already exists and registering again only says the email is taken. `openImportResume(context)` is shared.
+  - **Local home** (`local_home_desktop.dart`): the app bar's "Create online account" is replaced the same way while pending, for the same reason. This was not in the task text.
+  - **Router**: in local mode `/login_screen` is allowed only when an import is pending and the user is not signed in. Signed in, or with nothing pending, it still goes to the home. Everything else stays as restricted as before.
+  - **Sign-in**: `successFullAuthentication` now calls the shared `goAfterSignIn`, so a login, a registration and the two-factor path all decide in one place. `goAfterSignIn` treats a pending import like local data (it continues to the import screen even if the local data looks empty), and no longer fails when no `AppModeService` is registered (the mobile app).
+  - Tests: banner, home app bar, guard and `post_sign_in_test.dart`. `successFullAuthentication` itself is not tested directly; it only delegates to `goAfterSignIn`.
 - [ ] T071 [US4] Run quickstart Q9–Q15 by hand against a local backend (`../home-management-all` docker compose, `--dart-define=BACKEND_ORIGIN=http://localhost:8088`). Time Q9 with 5 accounts, 20 categories and 1,000 transactions; it must take under 2 minutes (SC-004).
 
 **Checkpoint**: All user stories work on their own and together.

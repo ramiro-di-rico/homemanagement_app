@@ -2,8 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
+import 'package:home_management_app/data/services/authentication.service.dart';
 import 'package:home_management_app/l10n/app_localizations.dart';
+import 'package:home_management_app/ui/features/authentication/views/login.dart';
 import 'package:home_management_app/ui/features/authentication/views/registration.dart';
+import 'package:home_management_app/ui/features/local_mode/views/local_import_screen.dart';
+
+/// Where "finish moving your local data" leads: the import screen when the user is
+/// signed in, and the login otherwise (the account already exists, so registering
+/// again would only say the email is taken). The router lets the login through
+/// while an import is pending.
+void openImportResume(BuildContext context) {
+  final authentication = GetIt.I<AuthenticationService>();
+  context.go(authentication.isAuthenticated()
+      ? LocalImportScreen.fullPath
+      : LoginView.fullPath);
+}
 
 /// A persistent strip saying the user is working locally, with the way to create
 /// an online account (FR-017).
@@ -45,11 +59,20 @@ class LocalModeBanner extends StatelessWidget implements PreferredSizeWidget {
                   style: TextStyle(color: colors.onSecondaryContainer),
                 ),
               ),
-              TextButton(
-                style: TextButton.styleFrom(
-                    foregroundColor: colors.onSecondaryContainer),
-                onPressed: () => context.go(RegistrationScreen.fullPath),
-                child: Text(l10n.createOnlineAccount),
+              // Once the move has started the account exists: finishing it replaces
+              // creating one.
+              ListenableBuilder(
+                listenable: GetIt.I<AppModeService>(),
+                builder: (context, _) => TextButton(
+                  style: TextButton.styleFrom(
+                      foregroundColor: colors.onSecondaryContainer),
+                  onPressed: GetIt.I<AppModeService>().isImportPending
+                      ? () => openImportResume(context)
+                      : () => context.go(RegistrationScreen.fullPath),
+                  child: Text(GetIt.I<AppModeService>().isImportPending
+                      ? l10n.importResume
+                      : l10n.createOnlineAccount),
+                ),
               ),
             ],
           ),

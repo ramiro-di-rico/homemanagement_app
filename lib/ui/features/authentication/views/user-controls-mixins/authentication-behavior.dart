@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:home_management_app/ui/core/custom/keyboard.factory.dart';
 import 'package:home_management_app/ui/features/authentication/view_models/user-view-model.dart';
 import 'package:home_management_app/data/services/authentication.service.dart';
-import 'package:home_management_app/ui/features/home/views/home.dart';
+import 'package:home_management_app/ui/features/authentication/views/user-controls-mixins/post-sign-in.dart';
 import 'package:home_management_app/ui/features/authentication/views/2fa_view.dart';
 
 mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
@@ -83,7 +83,8 @@ mixin AuthenticationBehavior<T extends StatefulWidget> on State<T> {
 
   Future successFullAuthentication() async {
     if (!mounted) return;
-    this.context.go(HomeScreen.fullPath);
+    // Home online, or the import screen when a local move is waiting to finish.
+    await goAfterSignIn(this.context);
   }
 
   Future autoAuthenticate() async {
