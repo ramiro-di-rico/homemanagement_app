@@ -6,6 +6,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3/common.dart' show CommonDatabase;
 
 import 'local_database.dart';
 
@@ -40,6 +41,27 @@ class LocalDataUnavailableException implements Exception {
 
 const String localDatabaseKeyName = 'local_db_key_v1';
 
+/// What a key may contain: the base64url alphabet the app generates. Anything else
+/// means the stored value is damaged, and it must not reach the SQL (a quote would
+/// break the statement, or silently change the passphrase).
+final RegExp _keyPattern = RegExp(r'^[A-Za-z0-9_\-=]+$');
+
+const String _keyRejected = 'PRAGMA key was not accepted by the SQLite library';
+
+/// Sets the passphrase. It runs in the database's background isolate, before drift
+/// creates or seeds anything, so nothing is written unless it succeeds.
+///
+/// sqlite3mc answers a single row, `ok`. Plain SQLite doesn't know the pragma and
+/// answers nothing, which would otherwise go unnoticed until a plaintext file had
+/// been written. `PRAGMA cipher` can't tell them apart: it reports a cipher either
+/// way.
+void applyKey(CommonDatabase db, String key) {
+  final result = db.select("PRAGMA key = '$key'");
+  if (result.length != 1 || result.first.values.first != 'ok') {
+    throw StateError(_keyRejected);
+  }
+}
+
 /// Opens the encrypted local database, creating it and its key on first use.
 ///
 /// The key lives in the OS keyring and is passed to sqlite3mc as a passphrase,
@@ -56,6 +78,9 @@ Future<LocalDatabase> openLocalDatabase({
   bool mustExist = false,
   FlutterSecureStorage? secureStorage,
   Future<Directory> Function()? supportDirectory,
+  // Only meant to be replaced in tests. It must be a top-level function: it runs in
+  // the database's isolate.
+  void Function(CommonDatabase, String) keySetup = applyKey,
 }) async {
   final storage = secureStorage ?? const FlutterSecureStorage();
   final directory = await (supportDirectory ?? getApplicationSupportDirectory)();
@@ -70,13 +95,19 @@ Future<LocalDatabase> openLocalDatabase({
   }
 
   final key = await _readOrCreateKey(storage, fileExists: fileExists);
+  if (!_keyPattern.hasMatch(key)) {
+    // Checked before the file is touched. The key itself is never put in the error.
+    throw LocalDataUnavailableException(LocalDataUnavailableReason.unreadable,
+        cause: 'the stored key has unexpected characters');
+  }
 
   final database = LocalDatabase(driftDatabase(
     name: name,
     native: DriftNativeOptions(
       databaseDirectory: () async => directory,
-      // Runs in a background isolate, so it captures only the key String.
-      setup: (db) => db.execute("PRAGMA key = '$key';"),
+      // Runs in a background isolate, so it captures only the key String and a
+      // top-level function.
+      setup: (db) => keySetup(db, key),
     ),
   ));
 
@@ -93,6 +124,12 @@ Future<LocalDatabase> openLocalDatabase({
     rethrow;
   } catch (e) {
     await database.close();
+    // The setup failure comes back wrapped, from another isolate, so it is found
+    // by its message.
+    if (e.toString().contains(_keyRejected)) {
+      throw LocalDataUnavailableException(
+          LocalDataUnavailableReason.notEncrypted);
+    }
     throw LocalDataUnavailableException(LocalDataUnavailableReason.unreadable,
         cause: e);
   }

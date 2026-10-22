@@ -657,6 +657,11 @@ description: "Task list for Standalone Desktop Mode"
   - **Online behaviour change (list it in DR-03):** the saved theme is now restored at startup online too. Before, the repository read it before anything had loaded the preferences, so it always started with the system theme.
   - Tests: `identity_user_repository_local_preferences_test.dart` (survives a restart, no server call, works without loading first, notifies, bad index) and `local_preferences_widget_test.dart`. Three of them fail on the old code. `main()` itself is not tested; it is one guarded call.
   - **Not done:** applying the language to the first-run login screen on a fresh install (no saved choice) still follows the system language.
+- [X] T090 RF-13 The encryption check happens before anything is written, and the key is validated:
+  - **`applyKey`** (`local_database_opener.dart`) now sets the passphrase in the database's own isolate and requires `PRAGMA key` to answer exactly one row, `ok` (checked against sqlite3mc). A SQLite that doesn't know the pragma answers nothing, so the open fails before drift creates or seeds a plaintext file, and is reported as `notEncrypted`. `PRAGMA cipher` could not tell them apart, since it reports a cipher either way, so it is only a second check now.
+  - **The key is validated** against the base64url alphabet before it is used (`^[A-Za-z0-9_\-=]+$`). A damaged keyring value, for example one with a quote, is reported as `unreadable` before any file is touched. It is never replaced, and never appears in the error. Without the check, a quote either broke the statement or, when escaped, silently changed the passphrase.
+  - New `keySetup` parameter on `openLocalDatabase`, for tests only (a top-level function, because it runs in the isolate).
+  - Tests in `local_database_opener_test.dart`: damaged keys with no file and with an existing one, the key never appearing in the error, generated keys passing, `applyKey` against sqlite3mc and a stand-in plain SQLite, and the opener with a library that refuses the key (no data written). Seven fail on the old behavior.
 
 ## Dependencies & Execution Order
 

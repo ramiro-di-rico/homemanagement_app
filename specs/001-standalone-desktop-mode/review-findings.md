@@ -296,7 +296,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-13: Encryption self-check is weak and runs after the file is created
 
-- [ ] Fixed
+- [x] Fixed in T090.
 
 - **Severity**: Low. **Status**: Confirmed by probe.
 - **Where**: `lib/data/local/local_database_opener.dart` (~lines 65, 70-75).
