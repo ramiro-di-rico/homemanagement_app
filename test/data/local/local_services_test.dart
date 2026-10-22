@@ -160,17 +160,83 @@ void main() {
       expect((await transactions.pageNameFiltering(page, '%')).map((t) => t.name), ['100% juice']);
     });
 
-    test('suggested returns distinct names, most recent first, at most 10', () async {
-      for (var i = 0; i < 12; i++) {
-        await transactions.add(tx(1, TransactionType.Outcome,
-            name: 'Item $i', date: DateTime(2026, 1, 1 + i)));
-      }
-      await transactions.add(tx(1, TransactionType.Outcome,
-          name: 'Item 0', date: DateTime(2026, 2, 1)));
-      final result = await transactions.suggested();
-      expect(result, hasLength(10));
-      expect(result.map((t) => t.name).toSet(), hasLength(10));
-      expect(result.first.name, 'Item 0');
+    group('suggested (RF-14)', () {
+      test('has one entry per name, most recent first', () async {
+        await transactions.add(tx(1, TransactionType.Outcome, name: 'Coffee', date: DateTime(2026, 1, 1)));
+        await transactions.add(tx(1, TransactionType.Outcome, name: 'Tea', date: DateTime(2026, 1, 3)));
+        await transactions.add(tx(1, TransactionType.Outcome, name: 'Coffee', date: DateTime(2026, 1, 5)));
+
+        final result = await transactions.suggested();
+
+        expect(result.map((t) => t.name), ['Coffee', 'Tea']);
+      });
+
+      test('takes the latest by date, not the one entered last', () async {
+        await transactions.add(tx(1000, TransactionType.Outcome, name: 'Rent', date: DateTime(2026, 3, 1)));
+        // Back-filled afterwards: a higher id, but an older date.
+        await transactions.add(tx(500, TransactionType.Outcome, name: 'Rent', date: DateTime(2025, 1, 1), categoryId: 2));
+
+        final result = await transactions.suggested();
+
+        expect(result, hasLength(1));
+        expect(result.single.amount, 1000, reason: 'the current rent, not the old one');
+        expect(result.single.categoryId, 1);
+      });
+
+      test('on the same date the higher id wins', () async {
+        await transactions.add(tx(10, TransactionType.Outcome, name: 'Bus', date: DateTime(2026, 2, 1)));
+        await transactions.add(tx(12, TransactionType.Outcome, name: 'Bus', date: DateTime(2026, 2, 1)));
+
+        expect((await transactions.suggested()).single.amount, 12);
+      });
+
+      test('an income and an outcome with the same name are two suggestions', () async {
+        await transactions.add(tx(100, TransactionType.Income, name: 'Refund', date: DateTime(2026, 1, 1)));
+        await transactions.add(tx(30, TransactionType.Outcome, name: 'Refund', date: DateTime(2026, 1, 2)));
+
+        final result = await transactions.suggested();
+
+        expect(result.map((t) => t.transactionType),
+            [TransactionType.Outcome, TransactionType.Income]);
+        expect(result.map((t) => t.amount), [30, 100]);
+      });
+
+      test('is not capped, so a name outside the latest few is still found', () async {
+        for (var i = 0; i < 25; i++) {
+          await transactions.add(tx(1, TransactionType.Outcome,
+              name: 'Item $i', date: DateTime(2026, 1, 1).add(Duration(days: i))));
+        }
+
+        final result = await transactions.suggested();
+
+        expect(result, hasLength(25));
+        expect(result.first.name, 'Item 24');
+        expect(result.map((t) => t.name), contains('Item 0'));
+      });
+
+      test('names that differ by case are different suggestions, as on the server', () async {
+        await transactions.add(tx(1, TransactionType.Outcome, name: 'rent', date: DateTime(2026, 1, 1)));
+        await transactions.add(tx(2, TransactionType.Outcome, name: 'Rent', date: DateTime(2026, 1, 2)));
+
+        expect((await transactions.suggested()).map((t) => t.name), ['Rent', 'rent']);
+      });
+
+      test('carries the category name, and nothing when there are no transactions', () async {
+        expect(await transactions.suggested(), isEmpty);
+        await transactions.add(tx(5, TransactionType.Outcome, name: 'Bus', categoryId: 3));
+
+        expect((await transactions.suggested()).single.categoryName, 'Transportation');
+      });
+
+      test('a deleted transaction stops being the suggestion', () async {
+        await transactions.add(tx(1000, TransactionType.Outcome, name: 'Rent', date: DateTime(2026, 3, 1)));
+        final newest = await transactions.add(tx(1100, TransactionType.Outcome, name: 'Rent', date: DateTime(2026, 4, 1)));
+        expect((await transactions.suggested()).single.amount, 1100);
+
+        await transactions.delete(newest.transactionModel.id);
+
+        expect((await transactions.suggested()).single.amount, 1000);
+      });
     });
   });
 

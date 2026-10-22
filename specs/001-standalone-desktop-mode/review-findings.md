@@ -311,7 +311,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-14: `suggested()` differs from the server
 
-- [ ] Fixed
+- [x] Fixed in T091.
 
 - **Severity**: Low. **Status**: Confirmed.
 - **Where**: `lib/data/local/local_transaction.service.dart` (~lines 58-59).

@@ -26,7 +26,7 @@ abstract interface class CurrencyDataSource {
 abstract interface class TransactionDataSource {
   Future<List<TransactionModel>> page(TransactionPageModel page);
   Future<List<TransactionModel>> pageNameFiltering(TransactionPageModel page, String name);
-  Future<List<TransactionModel>> suggested();          // local: most recent distinct names
+  Future<List<TransactionModel>> suggested();          // local: latest per name and type, not capped (RF-14)
   Future<TransactionWithBalanceModel> add(TransactionModel transaction);
   Future update(TransactionModel transaction);
   Future delete(int id);

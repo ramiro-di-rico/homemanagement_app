@@ -52,14 +52,28 @@ class LocalTransactionService implements TransactionDataSource {
         .toList();
   }
 
-  /// The 10 most recent transactions with distinct names.
+  /// What to offer while typing a name: for every name and type, the latest
+  /// transaction (by date, then id), so the amount and category suggested are the
+  /// current ones. An income and an outcome with the same name are two suggestions,
+  /// like on the server, and a back-dated entry doesn't override a newer one.
+  ///
+  /// Not capped, because the screen filters this list by what is typed: a cap would
+  /// hide any name that isn't among the latest few.
+  ///
+  /// Unlike the server, this is not limited to names that recur every month: a new
+  /// local dataset would otherwise have no suggestions for its first months. The
+  /// server also sends neutral values for the id, account and date; here they are
+  /// the real ones, and the sheet only copies the name, category, amount and type.
   @override
   Future<List<TransactionModel>> suggested() async {
     final rows = await _db.customSelect(
       'SELECT t.*, c.name AS category_name FROM transactions t '
       'JOIN categories c ON c.id = t.category_id '
-      'WHERE t.id IN (SELECT MAX(id) FROM transactions GROUP BY name) '
-      'ORDER BY t.date DESC, t.id DESC LIMIT 10',
+      'WHERE t.id IN (SELECT id FROM ('
+      'SELECT id, ROW_NUMBER() OVER ('
+      'PARTITION BY name, transaction_type ORDER BY date DESC, id DESC) AS rank '
+      'FROM transactions) WHERE rank = 1) '
+      'ORDER BY t.date DESC, t.id DESC',
       readsFrom: {_db.transactions, _db.categories},
     ).get();
     return rows

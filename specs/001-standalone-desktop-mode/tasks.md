@@ -662,6 +662,10 @@ description: "Task list for Standalone Desktop Mode"
   - **The key is validated** against the base64url alphabet before it is used (`^[A-Za-z0-9_\-=]+$`). A damaged keyring value, for example one with a quote, is reported as `unreadable` before any file is touched. It is never replaced, and never appears in the error. Without the check, a quote either broke the statement or, when escaped, silently changed the passphrase.
   - New `keySetup` parameter on `openLocalDatabase`, for tests only (a top-level function, because it runs in the isolate).
   - Tests in `local_database_opener_test.dart`: damaged keys with no file and with an existing one, the key never appearing in the error, generated keys passing, `applyKey` against sqlite3mc and a stand-in plain SQLite, and the opener with a library that refuses the key (no data written). Seven fail on the old behavior.
+- [X] T091 RF-14 Local suggestions match what the server offers per name and type:
+  - **Query:** one row per (name, type), the latest by date and then id (`ROW_NUMBER() OVER (PARTITION BY name, transaction_type ORDER BY date DESC, id DESC)`), most recent first, with no `LIMIT`. Before, it grouped by name only, took `MAX(id)`, and kept 10 names. That collapsed an income and an outcome with the same name, let a back-dated entry override the current amount and category, and hid any name outside the latest ten, because the sheet filters this list by what is typed.
+  - **Still different from the server, on purpose:** the server only suggests names that recur in enough distinct months (default 6) and sends neutral id, account and date. Local suggests every name and type that exists, because a new local dataset would otherwise have none for its first months. The sheet copies only the name, category, amount and type, so the neutral values don't matter. Documented in the method's comment and in `contracts/data-sources.md`.
+  - Tests in `local_services_test.dart` (one per name, latest by date not by entry order, same-date tie, both types, 25 names with no cap, case-sensitive names, category name, delete). Three fail on the old query.
 
 ## Dependencies & Execution Order
 
