@@ -41,6 +41,22 @@ class LocalDataUnavailableException implements Exception {
 
 const String localDatabaseKeyName = 'local_db_key_v1';
 
+/// Opt-in, for macOS builds that are not signed with a development team
+/// (`--dart-define=MACOS_LEGACY_KEYCHAIN=true`). The default, the data protection
+/// keychain, needs the `keychain-access-groups` entitlement to be backed by a team
+/// prefix, and an ad-hoc signed build gets error -34018 instead, which is reported
+/// as `keyringUnavailable`.
+///
+/// **Do not mix the two on one machine.** The key is stored in one keychain or the
+/// other. A file created by a build using one cannot be opened by a build using the
+/// other: it is reported as `keyMissing` and the data is left alone. Use it only
+/// for local development, never for a release.
+const bool _macLegacyKeychain = bool.fromEnvironment('MACOS_LEGACY_KEYCHAIN');
+
+/// How the key is stored on macOS. Other platforms ignore it.
+MacOsOptions macOsKeychainOptions({bool legacyKeychain = _macLegacyKeychain}) =>
+    MacOsOptions(usesDataProtectionKeychain: !legacyKeychain);
+
 /// What a key may contain: the base64url alphabet the app generates. Anything else
 /// means the stored value is damaged, and it must not reach the SQL (a quote would
 /// break the statement, or silently change the passphrase).
@@ -82,7 +98,8 @@ Future<LocalDatabase> openLocalDatabase({
   // the database's isolate.
   void Function(CommonDatabase, String) keySetup = applyKey,
 }) async {
-  final storage = secureStorage ?? const FlutterSecureStorage();
+  final storage =
+      secureStorage ?? FlutterSecureStorage(mOptions: macOsKeychainOptions());
   final directory = await (supportDirectory ?? getApplicationSupportDirectory)();
   final name = fileName.endsWith('.sqlite')
       ? fileName.substring(0, fileName.length - '.sqlite'.length)

@@ -678,6 +678,10 @@ description: "Task list for Standalone Desktop Mode"
   - **Double click:** both buttons are off while saving (`_saving`), so a double click on "Add" no longer sends two `POST`s, which the server would accept as duplicates.
   - Tests in `category_sheets_errors_test.dart`: double click on add and on edit, a failed add and edit keeping the sheet and the list, the retry, a taken name, and the repository replacing the item. Six fail on the old code.
   - **Not done:** `CategoriesListWidget` and the sheets still have the older lints (`could be final`, missing `key`); only the `use_build_context_synchronously` ones in these two sheets were cleared, by checking `mounted` before using the State's context.
+- [ ] T094 RF-17 Verify the macOS keychain and signing on a Mac. **Prepared, not verified (no Mac here):**
+  - **What the code and the plugin source say:** the default data protection keychain needs a team-prefixed `keychain-access-groups`; this project signs ad hoc, so local mode is expected to report `keyringUnavailable` (-34018) on a macOS build without a team. T002 put the entitlement in both macOS entitlement files, so it is in every macOS build; whether that affects launching an ad-hoc build (online mode included) is unknown. Details in research R2.
+  - **Added, off by default:** `macOsKeychainOptions()` in the opener, and `--dart-define=MACOS_LEGACY_KEYCHAIN=true` to store the key in the legacy keychain for development builds without a team. Default behaviour is unchanged. Not for releases, and not to be mixed with the default on one machine (a file made under one is `keyMissing` under the other, and is left alone). Tests: the option is the data protection keychain by default and the legacy one only when asked.
+  - **To do on a Mac:** quickstart Q18. Close this task and RF-17 with its result, then decide between a signing team (keep the default) and removing the entitlement.
 
 ## Dependencies & Execution Order
 

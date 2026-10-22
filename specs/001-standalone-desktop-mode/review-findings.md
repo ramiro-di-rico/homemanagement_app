@@ -339,7 +339,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-17: macOS keychain entitlement with ad-hoc signing
 
-- [ ] Verified on a Mac
+- [ ] Verified on a Mac. **Prepared in T094, not settled:** an opt-in `MACOS_LEGACY_KEYCHAIN` build flag exists and the checks are written down (quickstart Q18, research R2), but nothing has run on a Mac.
 
 - **Severity**: Med if macOS ships. **Status**: Plausible (not verified, T005 only ran on Linux).
 - **Where**: `macos/Runner/DebugProfile.entitlements`, `Release.entitlements` (`keychain-access-groups`), `macos/Runner.xcodeproj/project.pbxproj` (`CODE_SIGN_IDENTITY = "-"`, no `DEVELOPMENT_TEAM`).

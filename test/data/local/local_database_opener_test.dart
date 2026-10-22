@@ -251,4 +251,16 @@ void main() {
       expect(file.existsSync() ? file.lengthSync() : 0, 0);
     });
   });
+
+  group('where the key is kept on macOS', () {
+    test('the data protection keychain by default, as the plugin does', () {
+      expect(macOsKeychainOptions().usesDataProtectionKeychain, isTrue);
+      expect(macOsKeychainOptions().toMap()['usesDataProtectionKeychain'], 'true');
+    });
+
+    test('the legacy keychain only when it is asked for', () {
+      expect(macOsKeychainOptions(legacyKeychain: true).usesDataProtectionKeychain, isFalse);
+      expect(macOsKeychainOptions(legacyKeychain: true).toMap()['usesDataProtectionKeychain'], 'false');
+    });
+  });
 }
