@@ -106,7 +106,7 @@ class FakeServer
   @override
   Future delete(dynamic model) => throw UnimplementedError();
 
-  @override
+  // Used through _AccountsOf, not as an override (the account and category seams clash).
   Future<List<AccountModel>> fetchAccounts() async => [
     for (final a in accountList)
       AccountModel(

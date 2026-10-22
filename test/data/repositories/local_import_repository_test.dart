@@ -53,7 +53,6 @@ class _StubService implements LocalImportService {
 void main() {
   late Directory directory;
   late AppModeService appMode;
-  late LocalDatabase database;
   late _Auth auth;
   late _StubService service;
   late LocalImportRepository repository;
@@ -86,7 +85,6 @@ void main() {
     );
     await appMode.init();
     await appMode.enterLocalMode();
-    database = appMode.database!;
     await File(
       '${directory.path}/${AppModeService.activeFileName}',
     ).writeAsString('x');
@@ -239,7 +237,6 @@ void main() {
     );
     await appMode.init();
     await appMode.enterLocalMode();
-    database = appMode.database!;
     var runs = 0;
     build((email, onProgress) async {
       runs++;

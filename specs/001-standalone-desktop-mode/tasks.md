@@ -594,6 +594,8 @@ description: "Task list for Standalone Desktop Mode"
   - Backend: single `POST transactions` resolves the transfer target by name across all users before the ownership check.
   - Client: `CryptographyService` has a hardcoded AES key and IV.
   - Client: the `TransactionService.filter` query overwrite; `internalAuthenticateV2` uses the wrong URL.
+
+  **Drafted, not filed.** The five items are written up as ready-to-file issues in `specs/001-standalone-desktop-mode/follow-ups.md`, each with where it is, the effect, and a suggested fix. Each was checked against the code. Backend items belong in `ramiro-di-rico/homemanagement-api`, client items in this repo. Filing them publishes them, so it waits for a go-ahead; close this task once they are filed. One correction to the task text: the transfer-target lookup (item 3) is worse than "before the ownership check": it matches **any user's** account by name, so a transaction named "Cash" can be rejected because another user's default "Cash" was found first.
 - [ ] T075 Run the full `quickstart.md` (Q1–Q15 plus the performance spot-check), then `flutter analyze`, `flutter test` and `flutter build linux --release`.
   - **Required before release:** repeat Q1, Q4, Q6 and Q7 on a Windows build and a macOS build. That verifies the bundled sqlite3mc library, the keychain entitlement (T002) and Credential Manager (FR-001, SC-007).
   - Time SC-001 (first launch to first local transaction in under 2 minutes, for a first-time user).
@@ -605,6 +607,13 @@ description: "Task list for Standalone Desktop Mode"
 
 **Source**: [review-findings.md](./review-findings.md). Each item lists the finding it closes. Group A (data safety, before T052) is done. The remaining findings stay in that file with their suggested placement.
 
+
+  **Partly done. The manual part is not.**
+  - **Ran, on Linux:** `pub get`, `build_runner` (the generated drift file is unchanged), `gen-l10n` (no diff), `flutter analyze` (0 errors; the 21 warnings and ~780 hints that remain are in code this feature didn't touch, so "clean" in the quickstart was never true for this repo; the two warnings in this feature's tests were fixed), `flutter test` (337 pass), and `flutter build linux --release`, whose bundle contains `libsqlite3mc.so`.
+  - **Covered by automated tests, not by hand:** Q6 (the file isn't plain SQLite) and Q7 (lost key) in `local_database_opener_test.dart`; Q4, Q5, Q8 and Q15 in part by the local-mode screen and data-source tests.
+  - **Performance (plan.md goal, <100 ms):** on the real encrypted file with 5 accounts and 1,000 transactions, p95 over 20 runs: add 1.2 ms, update 0.7 ms, delete 0.6 ms, page of 10 0.8 ms, balances for 5 accounts 0.4 ms. Seeding 1,000 transactions took 1.5 s. This measures the data layer, not the screens. SC-001 (first launch to first transaction under 2 minutes) and SC-004 (import under 2 minutes) were **not** timed.
+  - **Not done:** Q1-Q3 and Q8-Q15 by hand, the Windows and macOS builds, and anything against a real backend.
+  - **Before the import scenarios (Q9-Q15), see `review-findings.md` SP-01 and SP-02**, which are still unchecked: the email can be burned if the app closes between registering and signing in, and the server creates the default categories and Cash account asynchronously, so the import may see none of them right after registering. Both can make Q9 fail or duplicate categories against a real backend. They are not covered by the unit tests.
 - [X] T076 RF-01, UI-01 Entering local mode is single-flight and its button shows it is busy:
   - `AppModeService.enterLocalMode()` shares one running call, so a double click can't open the database twice.
   - The opener reads the key back after writing it and uses the stored value.
