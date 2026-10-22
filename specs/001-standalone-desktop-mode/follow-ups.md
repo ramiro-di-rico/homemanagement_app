@@ -34,16 +34,24 @@ Status: drafts, not yet filed.
 - **Suggested fix**: scope the lookup to the current user's accounts before comparing names.
 - **Source**: `review-findings.md` SP-04. The import avoids this endpoint and uses the bulk one.
 
+
+### 4. Categories created online are inactive, and the app never fixes that (backend and client)
+
+- **Where**: `POST category/v1` in the backend ignores `isActive`, `measurable` and `color` and creates the category inactive. `CategoryService.add` in the app (`lib/data/services/category.service.dart`) posts it and does nothing more.
+- **Effect**: every category a user adds online is inactive on the server. Nothing filters on the flag online today, so it goes unnoticed, but it blocks using it: the add-transaction pickers can't be limited to active categories online without hiding the ones just created, and the Active checkbox on the categories list can't be enabled.
+- **Suggested fix**: either make `POST` honour the flags, or send a `PUT category/v1` right after the `POST` (the local import already does this, and `UpdateCategoryModel` now sends the `id` the server binds). Then enable the Active checkbox and filter the online pickers too.
+- **Source**: research R4, `review-findings.md` RF-15.
+
 ## Client (`homemanagement_app`)
 
-### 4. `CryptographyService` uses a hardcoded AES key and IV
+### 5. `CryptographyService` uses a hardcoded AES key and IV
 
 - **Where**: `lib/data/services/cryptography.service.dart`.
 - **Problem**: the key and the IV are the same string literal in the source, and the IV never changes between calls, so the same password always gives the same ciphertext.
 - **Effect**: anyone with the app binary has the key. The encryption only hides the password from casual inspection; it is not a security boundary, and the transport relies on HTTPS.
 - **Suggested fix**: decide what this is for. If the goal is confidentiality, stop sending the password through it and rely on TLS, or agree a scheme with Altair (the server decrypts it). Changing it needs the same change on the server's decrypter, so it is not a client-only fix.
 
-### 5. `TransactionService.filter` overwrites its paging parameters; `internalAuthenticateV2` uses the wrong URL
+### 6. `TransactionService.filter` overwrites its paging parameters; `internalAuthenticateV2` uses the wrong URL
 
 - **Where (filter)**: `lib/data/services/transaction.service.dart`, `filter`. When `accountIds` is given, `queryFilter = 'accountIds=...'` **replaces** the `currentPage=...&pageSize=...` that was set on the line before, because it uses `=` instead of `+=`.
 - **Effect (filter)**: a search with account filters sends no page or size, so the server's defaults apply and paging doesn't work as the screen expects.

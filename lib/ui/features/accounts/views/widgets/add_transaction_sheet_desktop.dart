@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:home_management_app/ui/core/custom/components/app-textfield.dart';
 import 'package:home_management_app/ui/core/custom/formatters/localized_number_input_formatter.dart';
 import 'package:home_management_app/domain/models/account.dart';
+import 'package:home_management_app/domain/models/category.dart';
 import 'package:intl/intl.dart';
 
 import 'package:home_management_app/ui/core/custom/components/dropdown.component.dart';
@@ -67,6 +68,18 @@ class _AddTransactionSheetDesktopState
 
   List<TransactionModel> suggestions = [];
 
+  /// The category an existing transaction already has. It stays in the list even if
+  /// it was deactivated since, so editing the transaction doesn't silently change it.
+  int? _keepCategoryId;
+
+  /// What can be chosen. In local mode a deactivated category is no longer offered;
+  /// online it still is, because the server creates every category inactive.
+  List<CategoryModel> get _categoryChoices => CategoryRepository.selectable(
+        categoryRepository.categories,
+        onlyActive: _isLocal,
+        keep: _keepCategoryId,
+      );
+
   @override
   void initState() {
     super.initState();
@@ -77,12 +90,10 @@ class _AddTransactionSheetDesktopState
     accountRepository =
         widget.accountRepository ?? GetIt.I<AccountRepository>();
     accountModel = widget._accountModel;
+    _keepCategoryId = widget.transactionModel?.categoryId;
     transactionModel =
         widget.transactionModel ??
-        TransactionModel.empty(
-          accountModel.id,
-          categoryRepository.categories.first.id,
-        );
+        TransactionModel.empty(accountModel.id, _categoryChoices.first.id);
     nameController.addListener(onNameChanged);
     priceController.addListener(onPriceChanged);
     nameController.text = transactionModel.name;
@@ -246,7 +257,11 @@ class _AddTransactionSheetDesktopState
                         selection.transaction;
                     nameController.text = selectionModel.name;
                     transactionModel.name = selectionModel.name;
-                    transactionModel.categoryId = selectionModel.categoryId;
+                    // A past transaction may use a category that was switched off since.
+                    if (_categoryChoices
+                        .any((c) => c.id == selectionModel.categoryId)) {
+                      transactionModel.categoryId = selectionModel.categoryId;
+                    }
                     transactionModel.amount = selectionModel.amount;
                     transactionModel.transactionType =
                         selectionModel.transactionType;
@@ -338,9 +353,7 @@ class _AddTransactionSheetDesktopState
                       (element) => element.id == transactionModel.categoryId,
                     )
                     .name,
-                items: categoryRepository.categories
-                    .map((e) => e.name)
-                    .toList(),
+                items: _categoryChoices.map((e) => e.name).toList(),
                 onChanged: (categoryName) {
                   transactionModel.categoryId = categoryRepository.categories
                       .firstWhere((element) => element.name == categoryName)

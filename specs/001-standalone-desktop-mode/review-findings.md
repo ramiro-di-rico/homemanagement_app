@@ -321,7 +321,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-15: "Deactivate" category has no visible effect, and can't be undone
 
-- [ ] Fixed
+- [x] Fixed in T092, in local mode. Online is unchanged on purpose (see the task).
 
 - **Severity**: Low. **Status**: Confirmed.
 - **Where**: `lib/ui/features/settings/views/settings-widgets/categories_list_widget.dart` (~lines 147-153, 259-288), and the add-transaction category pickers.

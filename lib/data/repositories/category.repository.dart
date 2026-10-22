@@ -66,6 +66,38 @@ class CategoryRepository extends ChangeNotifier {
     }
   }
 
+  /// Turns a category on or off. An inactive category keeps its history but is no
+  /// longer offered when adding a transaction (in local mode, see [selectable]).
+  ///
+  /// The category is only replaced once the change is saved, so a failed save
+  /// leaves what is shown as it was. Returns whether it was saved.
+  Future<bool> setActive(CategoryModel category, bool isActive) async {
+    final updated = CategoryModel(category.id, category.userId, category.name,
+        category.icon, category.measurable, isActive, category.color);
+    try {
+      await categoryService.update(updated);
+    } on LocalWriteFailedException catch (error) {
+      notifierService?.notifyWriteRejected(error);
+      return false;
+    }
+    final index = categories.indexWhere((c) => c.id == category.id);
+    if (index >= 0) categories[index] = updated;
+    notifyListeners();
+    return true;
+  }
+
+  /// The categories to offer when choosing one for a transaction. With [onlyActive],
+  /// the inactive ones are left out, except [keep], which an existing transaction
+  /// may already have. Never empty: if every category were switched off, all of them
+  /// are offered, so the picker can't end up with nothing to choose.
+  static List<CategoryModel> selectable(List<CategoryModel> all,
+      {required bool onlyActive, int? keep}) {
+    if (!onlyActive) return all;
+    final chosen =
+        all.where((c) => c.isActive || c.id == keep).toList(growable: false);
+    return chosen.isEmpty ? all : chosen;
+  }
+
   List<CategoryModel> getActiveCategories() {
     var activeCategories = categories.where((element) => element.isActive).toList();
     activeCategories.sort((a, b) => a.name.compareTo(b.name));

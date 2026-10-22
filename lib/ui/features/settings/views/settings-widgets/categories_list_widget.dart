@@ -5,6 +5,7 @@ import 'package:home_management_app/ui/core/extensions/hex_color_extension.dart'
 import 'package:home_management_app/ui/features/settings/views/settings-widgets/add_category_sheet.dart';
 
 import 'package:home_management_app/data/repositories/category.repository.dart';
+import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/ui/core/mixins/notifier_mixin.dart';
@@ -19,6 +20,9 @@ class CategoriesListWidget extends StatefulWidget {
 
 class _CategoriesListWidgetState extends State<CategoriesListWidget> with NotifierMixin {
   CategoryRepository _categoryRepository = GetIt.I<CategoryRepository>();
+
+  bool get _isLocal =>
+      GetIt.I.isRegistered<AppModeService>() && GetIt.I<AppModeService>().isLocal;
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
 
@@ -149,7 +153,11 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
                                   checkColor: backgroundColor,
                                   activeColor: contentColor,
                                   side: BorderSide(color: contentColor, width: 2),
-                                  onChanged: (value) {}
+                                  // Local mode only. Online the server ignores the flag
+                                  // on create and the pickers don't filter on it yet.
+                                  onChanged: _isLocal
+                                      ? (value) => _categoryRepository.setActive(category, value ?? false)
+                                      : (value) {}
                               )
                           ),
                           SizedBox(width: 20),
@@ -276,16 +284,7 @@ class _CategoriesListWidgetState extends State<CategoriesListWidget> with Notifi
         ),
       );
       if (deactivate != true) return;
-      await _categoryRepository.update(CategoryModel(
-          category.id,
-          category.userId,
-          category.name,
-          category.icon,
-          category.measurable,
-          false,
-          category.color));
-      // `update` doesn't replace the item in the list, so reload it.
-      await _categoryRepository.load();
+      await _categoryRepository.setActive(category, false);
     }
   }
 
