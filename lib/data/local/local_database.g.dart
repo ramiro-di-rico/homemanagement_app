@@ -2340,6 +2340,14 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $TransactionsTable transactions = $TransactionsTable(this);
   late final $ImportStatesTable importStates = $ImportStatesTable(this);
+  late final Index categoriesNameKey = Index(
+    'categories_name_key',
+    'CREATE UNIQUE INDEX categories_name_key ON categories (name_key)',
+  );
+  late final Index transactionsAccountDate = Index(
+    'transactions_account_date',
+    'CREATE INDEX transactions_account_date ON transactions (account_id, date DESC, id DESC)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2350,6 +2358,8 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
     categories,
     transactions,
     importStates,
+    categoriesNameKey,
+    transactionsAccountDate,
   ];
 }
 

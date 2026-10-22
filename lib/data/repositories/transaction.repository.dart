@@ -9,6 +9,7 @@ import 'package:home_management_app/domain/models/tag.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/repositories/account.repository.dart';
 import 'package:home_management_app/data/repositories/tag.repository.dart';
+import 'package:home_management_app/data/services/sources/local_read_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 import 'package:home_management_app/data/services/transaction.service.dart';
@@ -20,7 +21,7 @@ import 'account.container.dart';
 class TransactionRepository extends ChangeNotifier {
   /// Server-only operations (tags, previews). Hidden in local mode.
   TransactionService transactionService;
-  late final TransactionDataSource _dataSource;
+  final TransactionDataSource _dataSource;
   AccountRepository accountRepository;
   NotifierService errorNotifierService;
   TagRepository? _tagRepository;
@@ -37,13 +38,12 @@ class TransactionRepository extends ChangeNotifier {
 
   TransactionRepository(
       {required this.transactionService,
-      TransactionDataSource? dataSource,
+      required TransactionDataSource dataSource,
       required this.accountRepository,
       required this.errorNotifierService,
       TagRepository? tagRepository})
-      : _tagRepository = tagRepository {
-    _dataSource = dataSource ?? transactionService;
-  }
+      : _tagRepository = tagRepository,
+        _dataSource = dataSource;
 
   Future add(TransactionModel transaction) async {
     final TransactionWithBalanceModel transactionResult;
@@ -163,7 +163,14 @@ class TransactionRepository extends ChangeNotifier {
   }
 
   Future fetchPage() async {
-    var result = await getPage();
+    final List<TransactionModel> result;
+    try {
+      result = await getPage();
+    } on LocalReadFailedException {
+      // What is shown stays as it was.
+      errorNotifierService.notifyReadFailed();
+      return;
+    }
     populateInternalLists(result);
     notifyListeners();
   }

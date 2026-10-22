@@ -16,7 +16,7 @@ extension LocalAccountMapping on LocalAccount {
       name,
       balance,
       measurable,
-      accountType == 1 ? AccountType.BankAccount : AccountType.Cash,
+      accountTypeFromInt(accountType),
       currencyId,
       0,
       archive,
@@ -36,7 +36,7 @@ extension LocalTransactionMapping on LocalTransaction {
       name,
       amount,
       fromStoredDate(date),
-      transactionType == 0 ? TransactionType.Income : TransactionType.Outcome,
+      transactionTypeFromInt(transactionType),
       categoryName: categoryName);
 }
 
@@ -49,4 +49,26 @@ DateTime toStoredDate(DateTime date) =>
 DateTime fromStoredDate(DateTime stored) {
   final utc = stored.toUtc();
   return DateTime(utc.year, utc.month, utc.day);
+}
+
+/// How the types are stored: the same numbers the server uses (`0` = Cash and
+/// Income, `1` = BankAccount and Outcome). Kept here, next to what reads them back.
+int accountTypeToInt(AccountType type) => type == AccountType.Cash ? 0 : 1;
+
+AccountType accountTypeFromInt(int value) =>
+    value == 1 ? AccountType.BankAccount : AccountType.Cash;
+
+int transactionTypeToInt(TransactionType type) =>
+    type == TransactionType.Income ? 0 : 1;
+
+TransactionType transactionTypeFromInt(int value) =>
+    value == 0 ? TransactionType.Income : TransactionType.Outcome;
+
+/// A name for an account or a category: trimmed, and 1 to 100 characters.
+String validName(String raw) {
+  final name = raw.trim();
+  if (name.isEmpty || name.length > 100) {
+    throw ArgumentError.value(raw, 'name', 'must be 1 to 100 characters');
+  }
+  return name;
 }

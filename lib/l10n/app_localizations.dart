@@ -1962,6 +1962,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your online account isn\'t ready yet. Your local data is intact, so try again in a moment.'**
   String get importServerNotReady;
+
+  /// No description provided for @couldNotReadData.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data couldn\'t be read. Nothing was changed.'**
+  String get couldNotReadData;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:home_management_app/domain/models/currency.dart';
 
 import 'local_database.dart';
 import 'local_mappers.dart';
+import 'local_write_guard.dart';
 
 class LocalCurrencyService implements CurrencyDataSource {
   final LocalDatabase _db;
@@ -11,10 +12,10 @@ class LocalCurrencyService implements CurrencyDataSource {
   LocalCurrencyService(this._db);
 
   @override
-  Future<List<CurrencyModel>> fetchCurrencies() async {
+  Future<List<CurrencyModel>> fetchCurrencies() => guardRead(() async {
     final rows = await (_db.select(_db.currencies)
           ..orderBy([(c) => OrderingTerm.asc(c.id)]))
         .get();
     return rows.map((c) => c.toModel()).toList();
-  }
+  });
 }

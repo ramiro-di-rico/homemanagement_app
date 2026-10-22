@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart' show CouldNotRollBackException;
 import 'package:drift/isolate.dart' show DriftRemoteException;
+import 'package:home_management_app/data/services/sources/local_read_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:sqlite3/common.dart' show SqliteException;
 
@@ -24,14 +25,31 @@ Future<T> guardWrite<T>(Future<T> Function() write) async {
     return await write();
   } catch (error, stackTrace) {
     final cause = _rootCause(error);
-    final isStorageFailure = cause is FileSystemException ||
-        (cause is SqliteException && _storageFailureCodes.contains(cause.resultCode));
-    if (isStorageFailure) {
+    if (_isStorageFailure(cause)) {
       Error.throwWithStackTrace(LocalWriteFailedException(cause), stackTrace);
     }
     rethrow;
   }
 }
+
+/// The same for a read: a *storage* failure becomes [LocalReadFailedException], so
+/// the repositories can say the data couldn't be read instead of letting a raw
+/// database error reach the screen. Anything else passes through unchanged.
+Future<T> guardRead<T>(Future<T> Function() read) async {
+  try {
+    return await read();
+  } catch (error, stackTrace) {
+    final cause = _rootCause(error);
+    if (_isStorageFailure(cause)) {
+      Error.throwWithStackTrace(LocalReadFailedException(cause), stackTrace);
+    }
+    rethrow;
+  }
+}
+
+bool _isStorageFailure(Object cause) =>
+    cause is FileSystemException ||
+    (cause is SqliteException && _storageFailureCodes.contains(cause.resultCode));
 
 /// Looks through the wrappers drift puts around the real error: a
 /// [DriftRemoteException] from the background isolate, and a

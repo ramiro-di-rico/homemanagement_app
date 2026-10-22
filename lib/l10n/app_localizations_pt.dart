@@ -1059,4 +1059,8 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get importServerNotReady =>
       'Your online account isn\'t ready yet. Your local data is intact, so try again in a moment.';
+
+  @override
+  String get couldNotReadData =>
+      'Your data couldn\'t be read. Nothing was changed.';
 }

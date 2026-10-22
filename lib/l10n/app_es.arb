@@ -342,5 +342,6 @@
   "localSwitchFailed": "Tu cuenta se creó, pero la aplicación no pudo cambiar a ella todavía. Tus datos locales están intactos. Usa \"Iniciar sesión en una cuenta existente\" para continuar.",
   "continueButton": "Continuar",
   "importWaitingForServer": "Esperando a que tu cuenta online esté lista",
-  "importServerNotReady": "Tu cuenta online todavía no está lista. Tus datos locales están intactos, así que vuelve a intentarlo en un momento."
+  "importServerNotReady": "Tu cuenta online todavía no está lista. Tus datos locales están intactos, así que vuelve a intentarlo en un momento.",
+  "couldNotReadData": "No se pudieron leer tus datos. No se cambió nada."
 }

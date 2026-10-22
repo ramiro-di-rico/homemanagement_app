@@ -69,3 +69,15 @@ When `isLocal` is true:
 - `/login_screen` redirects to `/home_screen` (skips auto-login and network), unless an import is in progress and the user isn't authenticated.
 - These routes are allowed: `/home_screen`, `/home_screen/account_detail_screen`, `/home_screen/settings_screen`, `/home_screen/logging_screen`, `/registration_screen`, and the new `/home_screen/local_import`.
 - Any other route redirects to `/home_screen` (FR-016).
+
+## Errors the local sources raise (RF-19)
+
+| Exception | When | What the repositories do |
+|---|---|---|
+| `LocalWriteFailedException` | A write fails because the storage did | Notice "not saved"; nothing changed |
+| `LocalDataLockedException` (a `LocalWriteFailedException`) | A write while an import is pending | Notice with the reason |
+| `LocalReadFailedException` | A read fails because the storage did | Account, category and transaction loads keep what is shown and show "couldn't be read" |
+| `LocalRecordNotFoundException` | An **update** of a row that is gone | Surfaces as a failed update. A **delete** of a missing row is a no-op |
+| `AccountHasTransactionsException`, `CategoryInUseException`, `CategoryNameTakenException` | Rules of the data | Handled by the screens that offer the choice |
+
+Anything that is not a storage failure (a bad statement, a constraint) is passed through unchanged: it is a bug, and must not be shown as "not saved" or "couldn't be read".

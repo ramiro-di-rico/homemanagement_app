@@ -37,6 +37,7 @@ class Accounts extends Table {
 }
 
 @DataClassName('LocalCategory')
+@TableIndex(name: 'categories_name_key', unique: true, columns: {#nameKey})
 class Categories extends Table {
   IntColumn get id => integer().autoIncrement()();
 
@@ -54,6 +55,8 @@ class Categories extends Table {
 }
 
 @DataClassName('LocalTransaction')
+@TableIndex.sql(
+    'CREATE INDEX transactions_account_date ON transactions (account_id, date DESC, id DESC)')
 class Transactions extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get accountId => integer()
@@ -89,6 +92,14 @@ class ImportStates extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// The SQL for the balance of a group of transactions: income minus outcome, `0.0`
+/// when there are none. The one definition, used for a single account here and for
+/// every account in `LocalAccountService`. [alias] is the table alias, if any.
+String balanceSql({String alias = ''}) {
+  final p = alias.isEmpty ? '' : '$alias.';
+  return 'COALESCE(SUM(CASE ${p}transaction_type WHEN 0 THEN ${p}amount ELSE -${p}amount END), 0.0)';
+}
+
 /// How category names are compared: trimmed and lower-cased with Dart's Unicode
 /// rules. The import (T065) must match server categories with this same folding.
 String categoryNameKey(String name) => name.trim().toLowerCase();
@@ -106,11 +117,8 @@ class LocalDatabase extends _$LocalDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async {
+          // The two indexes are declared on their tables, so this creates them.
           await m.createAll();
-          await customStatement(
-              'CREATE UNIQUE INDEX categories_name_key ON categories (name_key)');
-          await customStatement(
-              'CREATE INDEX transactions_account_date ON transactions (account_id, date DESC, id DESC)');
           await _seed();
         },
         onUpgrade: (m, from, to) async {
@@ -144,7 +152,7 @@ class LocalDatabase extends _$LocalDatabase {
   /// Income minus outcome for one account (FR-008). Balances are never stored.
   Future<double> accountBalance(int accountId) async {
     final row = await customSelect(
-      'SELECT COALESCE(SUM(CASE transaction_type WHEN 0 THEN amount ELSE -amount END), 0.0) AS balance '
+      'SELECT ${balanceSql()} AS balance '
       'FROM transactions WHERE account_id = ?',
       variables: [Variable.withInt(accountId)],
       readsFrom: {transactions},

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:home_management_app/domain/models/category.dart';
 import 'package:home_management_app/data/services/error_notifier_service.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_read_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 
 class CategoryRepository extends ChangeNotifier {
@@ -19,7 +20,13 @@ class CategoryRepository extends ChangeNotifier {
 
   Future load() async {
     // Fetch before clearing, so a failed read keeps what is already shown.
-    var result = await categoryService.fetch();
+    final List<CategoryModel> result;
+    try {
+      result = await categoryService.fetch();
+    } on LocalReadFailedException {
+      notifierService?.notifyReadFailed();
+      return;
+    }
     categories.clear();
     categories.addAll(result);
     categories.sort((a, b) => a.name.compareTo(b.name));

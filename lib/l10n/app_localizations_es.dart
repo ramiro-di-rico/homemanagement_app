@@ -1065,6 +1065,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get importServerNotReady =>
       'Tu cuenta online todavía no está lista. Tus datos locales están intactos, así que vuelve a intentarlo en un momento.';
+
+  @override
+  String get couldNotReadData =>
+      'No se pudieron leer tus datos. No se cambió nada.';
 }
 
 /// The translations for Spanish Castilian, as used in Argentina (`es_AR`).
@@ -2102,4 +2106,8 @@ class AppLocalizationsEsAr extends AppLocalizationsEs {
   @override
   String get importServerNotReady =>
       'Tu cuenta online todavía no está lista. Tus datos locales están intactos, así que volvé a intentarlo en un momento.';
+
+  @override
+  String get couldNotReadData =>
+      'No se pudieron leer tus datos. No se cambió nada.';
 }

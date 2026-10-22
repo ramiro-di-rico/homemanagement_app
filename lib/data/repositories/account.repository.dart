@@ -4,6 +4,7 @@ import 'package:home_management_app/domain/models/account.dart';
 import 'package:home_management_app/domain/models/metrics/account-metrics.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_read_failed_exception.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
 import 'package:home_management_app/data/services/error_notifier_service.dart';
 
@@ -43,7 +44,14 @@ class AccountRepository extends ChangeNotifier {
       _internalAccounts.where((account) => account.id == id).firstOrNull;
 
   Future load() async {
-    var result = await this.accountService.fetchAccounts();
+    // Fetched before anything is cleared, so a failed read keeps what is shown.
+    final List<AccountModel> result;
+    try {
+      result = await this.accountService.fetchAccounts();
+    } on LocalReadFailedException {
+      notifierService.notifyReadFailed();
+      return;
+    }
     this._internalAccounts.clear();
     this._internalAccounts.addAll(result);
     _loadAccounts(result);

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:home_management_app/data/models/transaction-with-balance.dart';
+import 'package:home_management_app/data/services/sources/local_record_not_found_exception.dart';
 import 'package:home_management_app/data/services/sources/transaction_data_source.dart';
 import 'package:home_management_app/domain/models/transaction.dart';
 import 'package:home_management_app/domain/models/transaction.page.dart';
@@ -23,7 +24,7 @@ class LocalTransactionService implements TransactionDataSource {
       _page(page, name);
 
   Future<List<TransactionModel>> _page(
-      TransactionPageModel page, String? name) async {
+      TransactionPageModel page, String? name) => guardRead(() async {
     final query = _db.select(_db.transactions).join([
       innerJoin(_db.categories,
           _db.categories.id.equalsExp(_db.transactions.categoryId)),
@@ -50,7 +51,7 @@ class LocalTransactionService implements TransactionDataSource {
             .readTable(_db.transactions)
             .toModel(r.readTable(_db.categories).name))
         .toList();
-  }
+  });
 
   /// What to offer while typing a name: for every name and type, the latest
   /// transaction (by date, then id), so the amount and category suggested are the
@@ -65,7 +66,7 @@ class LocalTransactionService implements TransactionDataSource {
   /// server also sends neutral values for the id, account and date; here they are
   /// the real ones, and the sheet only copies the name, category, amount and type.
   @override
-  Future<List<TransactionModel>> suggested() async {
+  Future<List<TransactionModel>> suggested() => guardRead(() async {
     final rows = await _db.customSelect(
       'SELECT t.*, c.name AS category_name FROM transactions t '
       'JOIN categories c ON c.id = t.category_id '
@@ -81,7 +82,7 @@ class LocalTransactionService implements TransactionDataSource {
             .map(r.data)
             .toModel(r.read<String>('category_name')))
         .toList();
-  }
+  });
 
   /// There is no transfer mirroring locally, so `targetAccount` is always null.
   @override
@@ -94,7 +95,7 @@ class LocalTransactionService implements TransactionDataSource {
             categoryId: transaction.categoryId,
             name: name,
             amount: transaction.amount,
-            transactionType: _typeToInt(transaction.transactionType),
+            transactionType: transactionTypeToInt(transaction.transactionType),
             date: toStoredDate(transaction.date),
             createdAt: DateTime.now().toUtc(),
           ),
@@ -115,25 +116,27 @@ class LocalTransactionService implements TransactionDataSource {
   @override
   Future update(TransactionModel transaction) => guardedTransaction(_db, () async {
     final name = _validate(transaction);
-    await (_db.update(_db.transactions)
+    final changed = await (_db.update(_db.transactions)
           ..where((t) => t.id.equals(transaction.id)))
         .write(TransactionsCompanion(
       accountId: Value(transaction.accountId),
       categoryId: Value(transaction.categoryId),
       name: Value(name),
       amount: Value(transaction.amount),
-      transactionType: Value(_typeToInt(transaction.transactionType)),
+      transactionType: Value(transactionTypeToInt(transaction.transactionType)),
       date: Value(toStoredDate(transaction.date)),
     ));
+    if (changed == 0) {
+      throw LocalRecordNotFoundException('transaction', transaction.id);
+    }
   });
 
+  /// Deleting one that is already gone is not an error: it is not there, which is
+  /// what was asked for.
   @override
   Future delete(int id) => guardedTransaction(_db, () async {
     await (_db.delete(_db.transactions)..where((t) => t.id.equals(id))).go();
   });
-
-  int _typeToInt(TransactionType type) =>
-      type == TransactionType.Income ? 0 : 1;
 
   String _validate(TransactionModel transaction) {
     final name = transaction.name.trim();

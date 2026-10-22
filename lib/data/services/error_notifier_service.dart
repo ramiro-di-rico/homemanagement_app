@@ -27,6 +27,10 @@ class NotifierService extends ChangeNotifier {
   void notifyChangeNotSaved() =>
       notifyLocalized((l10n) => l10n.changeNotSaved, isError: true);
 
+  /// Reading the local data failed. What is shown stays as it was.
+  void notifyReadFailed() =>
+      notifyLocalized((l10n) => l10n.couldNotReadData, isError: true);
+
   /// A local write was rejected and nothing changed. While an import is pending the
   /// notice says why, and otherwise it is the generic "not saved".
   void notifyWriteRejected(Object error) {

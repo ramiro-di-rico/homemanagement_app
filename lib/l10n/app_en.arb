@@ -536,5 +536,6 @@
   "localSwitchFailed": "Your account was created, but the app couldn't switch to it yet. Your local data is intact. Use \"Sign in to an existing account\" to continue.",
   "continueButton": "Continue",
   "importWaitingForServer": "Waiting for your online account to be ready",
-  "importServerNotReady": "Your online account isn't ready yet. Your local data is intact, so try again in a moment."
+  "importServerNotReady": "Your online account isn't ready yet. Your local data is intact, so try again in a moment.",
+  "couldNotReadData": "Your data couldn't be read. Nothing was changed."
 }

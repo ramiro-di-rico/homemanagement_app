@@ -11,7 +11,6 @@ import 'package:home_management_app/data/services/platform/platform_type.dart';
 import 'package:home_management_app/data/services/app_mode.service.dart';
 import 'package:home_management_app/data/services/sources/account_data_source.dart';
 import 'package:home_management_app/data/services/sources/local_write_failed_exception.dart';
-import 'package:home_management_app/ui/features/accounts/views/account-detail-desktop.dart';
 import 'package:home_management_app/ui/features/accounts/views/account.detail.dart';
 import 'package:home_management_app/ui/features/accounts/views/widgets/add_transaction_sheet_desktop.dart';
 import 'package:home_management_app/ui/core/mixins/notifier_mixin.dart';

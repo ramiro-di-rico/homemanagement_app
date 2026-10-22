@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:home_management_app/data/services/sources/category_data_source.dart';
+import 'package:home_management_app/data/services/sources/local_record_not_found_exception.dart';
 import 'package:home_management_app/domain/models/category.dart';
 
 import 'local_database.dart';
@@ -13,16 +14,16 @@ class LocalCategoryService implements CategoryDataSource {
 
   /// Includes inactive categories. Filtering stays in `CategoryRepository`.
   @override
-  Future<List<CategoryModel>> fetch() async {
+  Future<List<CategoryModel>> fetch() => guardRead(() async {
     final rows = await (_db.select(_db.categories)
           ..orderBy([(c) => OrderingTerm.asc(c.id)]))
         .get();
     return rows.map((c) => c.toModel()).toList();
-  }
+  });
 
   @override
   Future<CategoryModel> add(CategoryModel category) => guardedTransaction(_db, () async {
-    final name = _validName(category.name);
+    final name = validName(category.name);
     await _ensureNameFree(name, exceptId: null);
     final id = await _db.into(_db.categories).insert(CategoriesCompanion.insert(
           name: name,
@@ -40,9 +41,10 @@ class LocalCategoryService implements CategoryDataSource {
 
   @override
   Future update(CategoryModel category) => guardedTransaction(_db, () async {
-    final name = _validName(category.name);
+    final name = validName(category.name);
     await _ensureNameFree(name, exceptId: category.id);
-    await (_db.update(_db.categories)..where((c) => c.id.equals(category.id)))
+    final changed = await (_db.update(_db.categories)
+          ..where((c) => c.id.equals(category.id)))
         .write(CategoriesCompanion(
       name: Value(name),
       nameKey: Value(categoryNameKey(name)),
@@ -51,8 +53,11 @@ class LocalCategoryService implements CategoryDataSource {
       measurable: Value(category.measurable),
       isActive: Value(category.isActive),
     ));
+    if (changed == 0) throw LocalRecordNotFoundException('category', category.id);
   });
 
+  /// Deleting one that is already gone is not an error: it is not there, which is
+  /// what was asked for.
   @override
   Future delete(CategoryModel category) => guardedTransaction(_db, () async {
     final used = await (_db.select(_db.transactions)
@@ -69,13 +74,5 @@ class LocalCategoryService implements CategoryDataSource {
       ..where((c) => c.nameKey.equals(categoryNameKey(name)));
     if (exceptId != null) query.where((c) => c.id.equals(exceptId).not());
     if ((await query.get()).isNotEmpty) throw CategoryNameTakenException();
-  }
-
-  String _validName(String raw) {
-    final name = raw.trim();
-    if (name.isEmpty || name.length > 100) {
-      throw ArgumentError.value(raw, 'name', 'must be 1 to 100 characters');
-    }
-    return name;
   }
 }

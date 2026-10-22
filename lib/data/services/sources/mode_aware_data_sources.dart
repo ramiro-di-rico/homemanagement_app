@@ -29,7 +29,11 @@ class _ModeSwitch<T> {
 
   T get current {
     if (!appMode.isLocal) return remote;
-    final database = appMode.database!;
+    final database = appMode.database;
+    if (database == null) {
+      // Local mode, but the data could not be opened (see `startupError`).
+      throw StateError('Local database is not open');
+    }
     if (!identical(database, _localDatabase)) {
       _local = _createLocal(database);
       _localDatabase = database;
@@ -54,7 +58,7 @@ class ModeAwareAccountDataSource implements AccountDataSource {
       : _source = _ModeSwitch(remote, appMode, LocalAccountService.new);
 
   @override
-  Future<List<AccountModel>> fetchAccounts() => _source.current.fetchAccounts();
+  Future<List<AccountModel>> fetchAccounts() async => _source.current.fetchAccounts();
 
   @override
   Future<AccountModel> add(AccountModel account) async => _source.writable.add(account);
@@ -73,7 +77,7 @@ class ModeAwareCategoryDataSource implements CategoryDataSource {
       : _source = _ModeSwitch(remote, appMode, LocalCategoryService.new);
 
   @override
-  Future<List<CategoryModel>> fetch() => _source.current.fetch();
+  Future<List<CategoryModel>> fetch() async => _source.current.fetch();
 
   @override
   Future<CategoryModel> add(CategoryModel category) async =>
@@ -93,7 +97,7 @@ class ModeAwareCurrencyDataSource implements CurrencyDataSource {
       : _source = _ModeSwitch(remote, appMode, LocalCurrencyService.new);
 
   @override
-  Future<List<CurrencyModel>> fetchCurrencies() =>
+  Future<List<CurrencyModel>> fetchCurrencies() async =>
       _source.current.fetchCurrencies();
 }
 
@@ -105,16 +109,16 @@ class ModeAwareTransactionDataSource implements TransactionDataSource {
       : _source = _ModeSwitch(remote, appMode, LocalTransactionService.new);
 
   @override
-  Future<List<TransactionModel>> page(TransactionPageModel page) =>
+  Future<List<TransactionModel>> page(TransactionPageModel page) async =>
       _source.current.page(page);
 
   @override
   Future<List<TransactionModel>> pageNameFiltering(
-          TransactionPageModel page, String name) =>
+          TransactionPageModel page, String name) async =>
       _source.current.pageNameFiltering(page, name);
 
   @override
-  Future<List<TransactionModel>> suggested() => _source.current.suggested();
+  Future<List<TransactionModel>> suggested() async => _source.current.suggested();
 
   @override
   Future<TransactionWithBalanceModel> add(TransactionModel transaction) async =>

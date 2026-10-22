@@ -429,6 +429,20 @@ void main() {
     });
   });
 
+  test('local mode whose data could not be opened says so, instead of failing on a null', () async {
+    SharedPreferences.setMockInitialValues({'appMode': 'local'});
+    final appMode = createService(
+        opener: (_, {required mustExist}) async =>
+            throw LocalDataUnavailableException(LocalDataUnavailableReason.fileMissing));
+    await appMode.init();
+    expect(appMode.isLocal, isTrue);
+    expect(appMode.database, isNull);
+
+    await expectLater(
+        ModeAwareAccountDataSource(FakeRemoteAccounts(), appMode).fetchAccounts(),
+        throwsA(isA<StateError>().having((e) => e.message, 'message', 'Local database is not open')));
+  });
+
   group('write lock while an import is pending (FR-022)', () {
     late AppModeService appMode;
     late FakeRemoteAccounts remote;

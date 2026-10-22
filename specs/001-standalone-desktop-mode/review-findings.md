@@ -361,7 +361,7 @@ Uncommitted at review time: `linux/flutter/generated_plugins.cmake`, `windows/fl
 
 ### RF-19: Code cleanups
 
-- [ ] Done
+- [x] Done in T096, except the `drift/remote.dart` import, kept as `drift/isolate.dart` on purpose (see the task).
 
 - **Severity**: Low.
 - The balance SQL is written twice (`local_database.dart` ~line 111 and `local_account.service.dart` ~line 17). Keep one.
