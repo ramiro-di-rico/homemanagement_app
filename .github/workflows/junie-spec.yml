@@ -1,0 +1,218 @@
+name: Spec Kit phases
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: speckit-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  phase:
+    if: |
+      (github.event_name == 'issues' && startsWith(github.event.label.name, 'speckit:')) ||
+      (github.event_name == 'issue_comment'
+        && !github.event.issue.pull_request
+        && contains(github.event.issue.labels.*.name, 'speckit:clarify')
+        && contains(github.event.comment.body, '@junie-agent')
+        && github.event.comment.author_association == 'OWNER')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      ISSUE: ${{ github.event.issue.number }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve phase, branch and command
+        id: state
+        env:
+          LABEL: ${{ github.event.label.name }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "issue_comment" ]; then
+            phase=clarify
+          else
+            phase="${LABEL#speckit:}"
+          fi
+          case "$phase" in
+            specify|clarify|plan|tasks|implement) ;;
+            *) echo "::error::Unknown phase: $phase"; exit 1 ;;
+          esac
+          branch="$(printf '%03d' "$ISSUE")-issue"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            git checkout "$branch"
+          elif [ "$phase" = specify ]; then
+            git checkout -b "$branch"
+          else
+            echo "::error::Branch $branch does not exist. Start with speckit:specify."
+            exit 1
+          fi
+          cmd=".junie/commands/speckit-${phase}.md"
+          if [ ! -f "$cmd" ]; then
+            echo "::error::Could not find the command file $cmd"
+            exit 1
+          fi
+          {
+            echo "phase=$phase"
+            echo "branch=$branch"
+            echo "cmd=$cmd"
+          } >> "$GITHUB_OUTPUT"
+          # feature.json is git-ignored, so later phases do not get it from the
+          # branch; the Spec Kit scripts need it (or SPECIFY_FEATURE_DIRECTORY).
+          mkdir -p .specify
+          printf '{\n  "feature_directory": "specs/%s"\n}\n' "$branch" > .specify/feature.json
+          echo "SPECIFY_FEATURE_DIRECTORY=specs/$branch" >> "$GITHUB_ENV"
+
+      - name: Build issue context
+        id: ctx
+        run: |
+          gh issue view "$ISSUE" --json title,body,comments --jq '
+            "# " + .title + "\n\n" + (.body // "") + "\n\n## Comments\n" +
+            ([.comments[]
+              | select(.authorAssociation == "OWNER" or (.author.login | test("github-actions")))
+              | "- @" + .author.login + ": " + .body] | join("\n"))
+          ' > "$RUNNER_TEMP/issue.md"
+          delim="EOF_$(openssl rand -hex 8)"
+          { echo "context<<$delim"; cat "$RUNNER_TEMP/issue.md"; echo "$delim"; } >> "$GITHUB_OUTPUT"
+
+      - uses: JetBrains/junie-github-action@v1
+        id: junie
+        with:
+          junie_api_key: ${{ secrets.JUNIE_API_KEY }}
+          silent_mode: true
+          # The action resets the checkout to base_branch before running Junie.
+          # Later phases need the feature branch (it holds specs/<branch>);
+          # the specify phase has no remote feature branch yet.
+          base_branch: ${{ steps.state.outputs.phase == 'specify' && github.event.repository.default_branch || steps.state.outputs.branch }}
+          prompt: |
+            IMPORTANT: this is an unattended CI run. You are in EXECUTION
+            mode: do NOT enter Plan Mode and do NOT propose a plan for
+            approval. Write the files directly to disk with your edit tools.
+            Finishing without having written the phase's output files, or
+            without a final summary message, is a failure.
+
+            You are running exactly ONE phase of the GitHub Spec Kit
+            workflow: "${{ steps.state.outputs.phase }}". The words "plan" and
+            "planning" in the phase name or the command file refer to the Spec
+            Kit artifacts (plan.md, research.md, ...), not to Plan Mode.
+
+            - Execute the instructions in ${{ steps.state.outputs.cmd }}
+              as if the user had invoked that command, using the issue
+              quoted below as the user input.
+            - The feature branch is already checked out:
+              ${{ steps.state.outputs.branch }}. The feature directory is
+              specs/${{ steps.state.outputs.branch }}. Do NOT create or
+              switch git branches, even if the command file says so.
+            - Follow .specify/memory/constitution.md.
+            - The environment variable SPECIFY_FEATURE_DIRECTORY and the file
+              .specify/feature.json point to the feature directory. If a Spec
+              Kit script still reports it missing, rerun it with
+              SPECIFY_FEATURE_DIRECTORY=specs/${{ steps.state.outputs.branch }}.
+            - If the phase is "tasks", afterwards also run
+              .junie/commands/speckit-analyze.md in read-only mode and include its findings in your
+              summary.
+            - Do only this phase. Do not start the next one.
+            - This is a non-interactive CI run: NEVER call Plan Mode (do not
+              enter it, even for the "plan" phase, which only means writing the
+              plan.md artifacts) and do not wait for approval; make the file changes directly and then finish
+              with the summary.
+            - If you need decisions from the user, do not guess: end your
+              summary with a numbered list of specific questions.
+            - On the last line of your summary, write NEXT_STEP: followed by
+              the phase you recommend next (clarify, plan, tasks, implement
+              or done). Recommend clarify if there are open questions.
+
+            ISSUE START
+            ${{ steps.ctx.outputs.context }}
+            ISSUE END
+
+      - name: Commit, open PR and comment
+        env:
+          PHASE: ${{ steps.state.outputs.phase }}
+          BRANCH: ${{ steps.state.outputs.branch }}
+          TITLE: ${{ github.event.issue.title }}
+          SUMMARY: ${{ steps.junie.outputs.junie_summary }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "HEAD before commit: $(git rev-parse --abbrev-ref HEAD)"
+          git log --oneline --graph --all -n 8
+          # GITHUB_TOKEN can never push workflow changes, so never stage them.
+          git add -A -- . ':!.github/workflows'
+          # Junie may have switched branches; carry its changes back onto the feature branch.
+          if [ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]; then
+            if ! git diff --cached --quiet; then
+              git stash push -q
+              git checkout "$BRANCH"
+              git stash pop -q
+            else
+              git checkout "$BRANCH"
+            fi
+          fi
+          git add -A -- . ':!.github/workflows'
+          if ! git diff --cached --quiet; then
+            git commit -m "speckit($PHASE): #$ISSUE"
+            git push -u origin "$BRANCH"
+          fi
+          pr_url=$(gh pr list --head "$BRANCH" --state open --json url --jq '.[0].url // empty')
+          if [ -z "$pr_url" ] \
+             && git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+            gh pr create --draft --head "$BRANCH" \
+              --title "Spec Kit: $TITLE" --body "Spec Kit artifacts for #$ISSUE."
+            pr_url=$(gh pr list --head "$BRANCH" --state open --json url --jq '.[0].url // empty')
+          fi
+          if [ "$PHASE" = implement ]; then
+            gh pr ready "$pr_url" || true
+          fi
+          suggested=$(printf '%s\n' "$SUMMARY" | grep -oE 'NEXT_STEP: *(clarify|plan|tasks|implement|done)' | tail -n1 | sed 's/NEXT_STEP: *//' || true)
+          if [ -z "$suggested" ]; then
+            case "$PHASE" in
+              specify) suggested=clarify ;;
+              clarify) suggested=plan ;;
+              plan) suggested=tasks ;;
+              tasks) suggested=implement ;;
+              implement) suggested=done ;;
+            esac
+          fi
+          case "$suggested" in
+            clarify)
+              if [ "$PHASE" = clarify ]; then
+                todo="answer the questions in a comment mentioning \`@junie-agent\`."
+              else
+                todo="review the spec and add the label \`speckit:clarify\`."
+              fi ;;
+            done) todo="review and merge the PR." ;;
+            *) todo="review the PR and add the label \`speckit:$suggested\`." ;;
+          esac
+          {
+            echo "### Spec Kit · phase \`$PHASE\`"
+            echo
+            printf '%s\n' "$SUMMARY" | grep -v 'NEXT_STEP:' || true
+            if [ -n "$pr_url" ]; then echo; echo "PR: $pr_url"; fi
+            echo
+            echo "**Next step:** $todo"
+            echo
+            echo '```mermaid'
+            echo 'flowchart LR'
+            echo '  specify --> clarify --> plan --> tasks --> implement --> done([merge])'
+            echo '  specify -.-> plan'
+            echo '  clarify -.->|"@junie-agent"| clarify'
+            echo '  classDef current fill:#e7f1fb,stroke:#1f6feb,stroke-width:2px'
+            echo '  classDef next fill:#e5f4e4,stroke:#2da44e,stroke-dasharray:4'
+            echo "  class $PHASE current"
+            if [ "$suggested" != "$PHASE" ]; then echo "  class $suggested next"; fi
+            echo '```'
+          } > "$RUNNER_TEMP/comment.md"
+          gh issue comment "$ISSUE" --body-file "$RUNNER_TEMP/comment.md"
+          for l in specify clarify plan tasks implement; do
+            if [ "$l" != "$PHASE" ]; then
+              gh issue edit "$ISSUE" --remove-label "speckit:$l" 2>/dev/null || true
+            fi
+          done
