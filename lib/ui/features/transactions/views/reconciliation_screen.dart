@@ -252,7 +252,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
             title: missing.row.name,
             subtitle: _rowSubtitle(missing.row),
             note: localizations.reconciliationLinkedRow(linked.transaction.name),
-            amount: _amountLabel(missing.row.price, missing.row.isIncome()),
+            amount: _amountLabel(missing.row.amount, missing.row.isIncome()),
           );
         }
 
@@ -287,7 +287,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
               ),
             ],
           ),
-          secondary: _amountLabel(missing.row.price, missing.row.isIncome()),
+          secondary: _amountLabel(missing.row.amount, missing.row.isIncome()),
         );
       },
     );
@@ -320,7 +320,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
             subtitle:
                 '${_formatDate(context, transaction.date)} · ${transaction.categoryName}',
             note: localizations.reconciliationLinkedTransaction(linked.row.name),
-            amount: _amountLabel(transaction.price, transaction.isIncome()),
+            amount: _amountLabel(transaction.amount, transaction.isIncome()),
           );
         }
 
@@ -357,7 +357,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
                 ),
             ],
           ),
-          secondary: _amountLabel(transaction.price, transaction.isIncome()),
+          secondary: _amountLabel(transaction.amount, transaction.isIncome()),
         );
       },
     );
@@ -397,7 +397,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
                     child: Text(
                       '${match.transaction.name} · '
                       '${_formatDate(context, match.transaction.date)} · '
-                      '${_formatAmount(match.transaction.price)}',
+                      '${_formatAmount(match.transaction.amount)}',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
@@ -501,7 +501,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
           leading: const Icon(Icons.help_outline, color: Colors.orange),
           title: Text(ambiguous.row.name),
           subtitle: Text(_rowSubtitle(ambiguous.row)),
-          trailing: _amountLabel(ambiguous.row.price, ambiguous.row.isIncome()),
+          trailing: _amountLabel(ambiguous.row.amount, ambiguous.row.isIncome()),
         );
       },
     );
@@ -520,7 +520,7 @@ class _ReconciliationScreenState extends State<ReconciliationScreen> {
           leading: const Icon(Icons.check_circle_outline, color: Colors.green),
           title: Text(matched.row.name),
           subtitle: Text(_rowSubtitle(matched.row)),
-          trailing: _amountLabel(matched.row.price, matched.row.isIncome()),
+          trailing: _amountLabel(matched.row.amount, matched.row.isIncome()),
         );
       },
     );

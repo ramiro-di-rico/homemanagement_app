@@ -78,7 +78,7 @@ class TransactionRepository extends ChangeNotifier {
         .removeWhere((element) => element.id == transactionModel.id);
     mapContainerToTransctions();
     this.accountRepository.updateBalance(transactionModel.accountId,
-        -transactionModel.price, transactionModel.transactionType);
+        -transactionModel.amount, transactionModel.transactionType);
 
     _invalidateSuggestionsCache();
     errorNotifierService.notify('Transaction ${transactionModel.name} removed successfully');
@@ -91,9 +91,9 @@ class TransactionRepository extends ChangeNotifier {
     var currentTransaction = currentContainer.transactions
         .firstWhere((x) => x.id == transactionModel.id);
     this.accountRepository.revertBalance(currentTransaction.accountId,
-        currentTransaction.price, currentTransaction.transactionType);
+        currentTransaction.amount, currentTransaction.transactionType);
     this.accountRepository.updateBalance(transactionModel.accountId,
-        transactionModel.price, transactionModel.transactionType);
+        transactionModel.amount, transactionModel.transactionType);
 
     var index = currentContainer.transactions
         .indexWhere((element) => element.id == transactionModel.id);

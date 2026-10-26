@@ -33,14 +33,14 @@ MatchKind _parseMatchKind(int value) => switch (value) {
 class StatementRowModel {
   final String reference;
   final String name;
-  final double price;
+  final double amount;
   final DateTime date;
   final TransactionType transactionType;
 
   StatementRowModel({
     required this.reference,
     required this.name,
-    required this.price,
+    required this.amount,
     required this.date,
     required this.transactionType,
   });
@@ -48,7 +48,7 @@ class StatementRowModel {
   factory StatementRowModel.fromJson(dynamic json) => StatementRowModel(
         reference: json['reference'],
         name: json['name'],
-        price: double.parse(json['price'].toString()),
+        amount: double.parse((json['amount'] ?? json['price']).toString()),
         date: DateTime.parse(json['date']),
         transactionType:
             TransactionModel.parse(json['transactionType'], categoryName: ''),
@@ -262,7 +262,7 @@ class ReconciliationPreviewModel {
 /// A transaction to create out of a statement row.
 class ReconciliationTransactionToCreate {
   final String name;
-  final double price;
+  final double amount;
   final DateTime date;
   final TransactionType transactionType;
   final int categoryId;
@@ -270,7 +270,7 @@ class ReconciliationTransactionToCreate {
 
   ReconciliationTransactionToCreate({
     required this.name,
-    required this.price,
+    required this.amount,
     required this.date,
     required this.transactionType,
     required this.categoryId,
@@ -284,7 +284,7 @@ class ReconciliationTransactionToCreate {
   ) =>
       ReconciliationTransactionToCreate(
         name: row.name,
-        price: row.price,
+        amount: row.amount,
         date: row.date,
         transactionType: row.transactionType,
         categoryId: categoryId,
@@ -293,7 +293,7 @@ class ReconciliationTransactionToCreate {
 
   Map toJson() => {
         'name': name,
-        'price': price,
+        'amount': amount,
         'date': date.toIso8601String(),
         'transactionType': transactionType == TransactionType.Income ? 0 : 1,
         'categoryId': categoryId,
